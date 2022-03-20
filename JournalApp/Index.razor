@@ -3,3 +3,15 @@
 <h1>Hello, world!</h1>
 
 Welcome to your new, single page, app.
+
+<EditForm Model="this">
+	<InputCheckbox @bind-Value="value" />
+</EditForm>
+
+@code {
+	private bool value
+	{
+		get => (bool)Preferences.Get("IsChecked", false);
+		set => Preferences.Set("IsChecked", value);
+	}
+}
