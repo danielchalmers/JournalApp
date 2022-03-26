@@ -22,8 +22,7 @@ jobs:
 
     - name: Prepare keystore
       run: |
-        echo "${{ secrets.RELEASE_KEYSTORE }}" > release.keystore.asc
-        gpg -d --passphrase "{{ secrets.RELEASE_KEYSTORE_PASS }}" --batch release.keystore.asc > release.keystore
+        echo -n "${{ secrets.RELEASE_KEYSTORE }}" | base64 --decode > release.keystore
 
     - name: Build Android project
       run: dotnet publish -f:net6.0-android -c:Release -p:AndroidKeyStore=True -p:AndroidSigningKeyStore=release.keystore -p:AndroidSigningStorePass="{{ secrets.RELEASE_KEYSTORE_PASS }}" -p:AndroidSigningKeyAlias=key -p:AndroidSigningKeyPass="{{ secrets.RELEASE_KEYSTORE_PASS }}"
