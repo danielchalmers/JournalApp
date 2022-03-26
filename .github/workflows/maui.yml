@@ -17,13 +17,13 @@ jobs:
       with:
         dotnet-version: '6.0.x'
 
-    - name: Install MAUI workloads
+    - name: Install MAUI workload
       run: dotnet workload install maui
 
     - name: Prepare keystore
       run: |
         echo "${{ secrets.RELEASE_KEYSTORE }}" > release.keystore.asc
-        gpg -d --passpgrase "{{ secrets.RELEASE_KEYSTORE_PASS }}" --batch release.keystore.asc > release.keystore
+        gpg -d --passphrase "{{ secrets.RELEASE_KEYSTORE_PASS }}" --batch release.keystore.asc > release.keystore
 
     - name: Build Android project
       run: dotnet publish -f:net6.0-android -c:Release -p:AndroidKeyStore=True -p:AndroidSigningKeyStore=release.keystore -p:AndroidSigningStorePass="{{ secrets.RELEASE_KEYSTORE_PASS }}" -p:AndroidSigningKeyAlias=key -p:AndroidSigningKeyPass="{{ secrets.RELEASE_KEYSTORE_PASS }}"
