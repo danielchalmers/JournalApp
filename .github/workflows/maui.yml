@@ -7,12 +7,12 @@ on:
 
 jobs:
   maui-android:
-    runs-on: windows-2022
+    runs-on: windows-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Setup .NET Core SDK
+    - name: Setup .NET SDK
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '6.0.x'
@@ -21,10 +21,9 @@ jobs:
       run: dotnet workload install maui
 
     - name: Prepare keystore
-      run: |
-        echo -n "${{ secrets.RELEASE_KEYSTORE }}" | base64 --decode > release.keystore
+      run: echo -n "${{ secrets.RELEASE_KEYSTORE }}" | base64 --decode > release.keystore
 
-    - name: Build Android project
+    - name: Publish Android project
       run: dotnet publish -f:net6.0-android -c:Release -p:AndroidKeyStore=True -p:AndroidSigningKeyStore=release.keystore -p:AndroidSigningStorePass="{{ secrets.RELEASE_KEYSTORE_PASS }}" -p:AndroidSigningKeyAlias=key -p:AndroidSigningKeyPass="{{ secrets.RELEASE_KEYSTORE_PASS }}"
     
     - name: Upload build artifacts
