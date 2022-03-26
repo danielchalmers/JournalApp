@@ -1,0 +1,34 @@
+name: .NET MAUI
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  maui-android:
+    runs-on: windows-2022
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup .NET Core SDK
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '6.0.x'
+
+    - name: Install MAUI workloads
+      run: dotnet workload install maui
+
+    - name: Prepare keystore
+      run: |
+        echo "${{ secrets.RELEASE_KEYSTORE }}" > release.keystore.asc
+        gpg -d --passpgrase "{{ secrets.RELEASE_KEYSTORE_PASS }}" --batch release.keystore.asc > release.keystore
+
+    - name: Build Android project
+      run: dotnet publish -f:net6.0-android -c:Release -p:AndroidKeyStore=True -p:AndroidSigningKeyStore=release.keystore -p:AndroidSigningStorePass="{{ secrets.RELEASE_KEYSTORE_PASS }}" -p:AndroidSigningKeyAlias=key -p:AndroidSigningKeyPass="{{ secrets.RELEASE_KEYSTORE_PASS }}"
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        path: '*Release\net*-android\**\*-Signed.apk'
