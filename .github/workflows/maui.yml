@@ -21,7 +21,10 @@ jobs:
       run: dotnet workload install maui
 
     - name: Prepare keystore
-      run: echo -n "${{ secrets.RELEASE_KEYSTORE }}" | base64 --decode > release.keystore
+      uses: timheuer/base64-to-file@v1.1
+      with:
+        fileName: 'release.keystore'
+        encodedString: ${{ secrets.RELEASE_KEYSTORE }}
 
     - name: Publish Android project
       run: dotnet publish -f:net6.0-android -c:Release -p:AndroidKeyStore=True -p:AndroidSigningKeyStore=release.keystore -p:AndroidSigningStorePass="{{ secrets.RELEASE_KEYSTORE_PASS }}" -p:AndroidSigningKeyAlias=key -p:AndroidSigningKeyPass="{{ secrets.RELEASE_KEYSTORE_PASS }}"
