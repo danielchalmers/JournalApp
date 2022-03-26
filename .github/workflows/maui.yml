@@ -31,6 +31,6 @@ jobs:
       run: dotnet publish -f:net6.0-android -c:Release -p:AndroidKeyStore=True -p:AndroidSigningKeyStore=release.keystore -p:AndroidSigningStorePass="{{ secrets.RELEASE_KEYSTORE_PASS }}" -p:AndroidSigningKeyAlias=key -p:AndroidSigningKeyPass="{{ secrets.RELEASE_KEYSTORE_PASS }}"
     
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
-        path: '*Release\net*-android\**\*-Signed.apk'
+        path: '**/Release/**/*-Signed.apk'
