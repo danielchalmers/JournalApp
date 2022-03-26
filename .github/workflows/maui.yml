@@ -9,11 +9,12 @@ jobs:
   maui-android:
     runs-on: windows-latest
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+      with:
+        # Full history for automatic git versioning during build
+        fetch-depth: 0
 
-    - name: Setup .NET SDK
-      uses: actions/setup-dotnet@v1
+    - uses: actions/setup-dotnet@v2
       with:
         dotnet-version: '6.0.x'
 
