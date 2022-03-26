@@ -5,10 +5,10 @@
              x:Class="JournalApp.MainPage"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
 
-    <b:BlazorWebView HostPage="wwwroot/index.html">
-        <b:BlazorWebView.RootComponents>
-            <b:RootComponent Selector="#app" ComponentType="{x:Type local:Index}" />
-        </b:BlazorWebView.RootComponents>
-    </b:BlazorWebView>
+	<b:BlazorWebView HostPage="wwwroot/index.html">
+		<b:BlazorWebView.RootComponents>
+			<b:RootComponent Selector="#app" ComponentType="{x:Type local:Main}" />
+		</b:BlazorWebView.RootComponents>
+	</b:BlazorWebView>
 
 </ContentPage>

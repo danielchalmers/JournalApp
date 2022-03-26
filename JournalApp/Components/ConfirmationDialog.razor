@@ -1,0 +1,29 @@
+﻿@namespace JournalApp
+
+<Modal Title="@title"
+	   Visible="@Visible"
+	   OnOk="@HandleOk"
+	   OnCancel="@HandleCancel">
+	<p>Some contents...</p>
+	<p>Some contents...</p>
+	<p>Some contents...</p>
+</Modal>
+
+@code {
+	string title = "BasicModal";
+
+	[Parameter]
+	public bool Visible { get; set; }
+
+	private void HandleOk(MouseEventArgs e)
+	{
+		Console.WriteLine(e);
+		Visible = false;
+	}
+
+	private void HandleCancel(MouseEventArgs e)
+	{
+		Console.WriteLine(e);
+		Visible = false;
+	}
+}
