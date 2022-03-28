@@ -1,29 +1,53 @@
 ﻿@namespace JournalApp
 
-<Modal Title="@title"
+@using System.ComponentModel.DataAnnotations
+@using System.Text.Json
+
+<Modal Title="@("BasicModal")"
 	   Visible="@Visible"
 	   OnOk="@HandleOk"
 	   OnCancel="@HandleCancel">
-	<p>Some contents...</p>
-	<p>Some contents...</p>
-	<p>Some contents...</p>
+	<Form Loading="_loading" Model="@Model"
+		  LabelColSpan="8"
+		  WrapperColSpan="16"
+		  OnFinish="OnFinish"
+		  OnFinishFailed="OnFinishFailed"
+		  @ref="@_form">
+		<FormItem Label="Today's note">
+			<InputTextArea @bind-Value="@context.Text" />
+		</FormItem>
+	</Form>
 </Modal>
 
 @code {
-	string title = "BasicModal";
+	bool _loading = false;
+	Form<Day> _form;
 
 	[Parameter]
 	public bool Visible { get; set; }
 
-	private void HandleOk(MouseEventArgs e)
+	[Parameter]
+	public Day Model { get; set; }
+
+	void HandleCancel(MouseEventArgs e)
 	{
-		Console.WriteLine(e);
+		Console.WriteLine("e");
 		Visible = false;
 	}
 
-	private void HandleCancel(MouseEventArgs e)
+	void HandleOk(MouseEventArgs e)
 	{
-		Console.WriteLine(e);
+		_form.Submit();
+	}
+
+	void OnFinish(EditContext editContext)
+	{
+		Console.WriteLine("e");
 		Visible = false;
+	}
+
+	void OnFinishFailed(EditContext editContext)
+	{
+		Console.WriteLine($"Failed:{JsonSerializer.Serialize(Model)}");
 	}
 }

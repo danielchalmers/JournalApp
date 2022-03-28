@@ -12,6 +12,7 @@
 
     <ApplicationTitle>JournalApp</ApplicationTitle>
     <ApplicationId>com.danielchalmers.journalapp</ApplicationId>
+    <ApplicationId Condition="$(TargetFramework.Contains('-windows'))">2B30B066-B4D9-4C17-8A4B-C72E1ABC4BF3</ApplicationId>
 
     <!-- Required for C# Hot Reload -->
     <UseInterpreter Condition="'$(Configuration)' == 'Debug'">True</UseInterpreter>
@@ -35,6 +36,7 @@
 
   <ItemGroup>
     <PackageReference Include="AntDesign" Version="0.10.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.3" />
   </ItemGroup>
 
 </Project>
