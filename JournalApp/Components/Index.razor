@@ -2,11 +2,9 @@
 @page "/"
 @inject ApplicationDbContext db;
 
-<h1>Hello, world!</h1>
-
 @*TODO: DynamicComponent ??*@
 <AntList DataSource="@db.Entries">
-	<Header><h2>Header</h2></Header>
+	<Header>Your journal</Header>
 	<ChildContent>
 		@if (@context.GetType() == typeof(Note))
 		{
@@ -21,7 +19,11 @@
 			</ListItem>
 		}
 	</ChildContent>
-	<Footer><h2>Footer</h2></Footer>
+	<Footer>
+		<div>
+			You've reached the end <BackTop />
+		</div>
+	</Footer>
 </AntList>
 
 @code {
