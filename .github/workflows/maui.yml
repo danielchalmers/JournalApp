@@ -25,6 +25,7 @@ jobs:
       uses: timheuer/base64-to-file@v1.1
       with:
         fileName: 'release.keystore'
+        fileDir: '.'
         encodedString: ${{ secrets.RELEASE_KEYSTORE }}
 
     - name: Publish Android project
