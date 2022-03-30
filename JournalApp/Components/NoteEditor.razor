@@ -1,13 +1,12 @@
 ﻿@namespace JournalApp
-
 @using System.ComponentModel.DataAnnotations
 @using System.Text.Json
 
-<Modal Title="@("BasicModal")"
+<Modal Title="Edit Note"
 	   Visible="@Visible"
 	   OnOk="@HandleOk"
 	   OnCancel="@HandleCancel">
-	<Form Loading="_loading" Model="@Model"
+	<Form Model="@Model"
 		  LabelColSpan="8"
 		  WrapperColSpan="16"
 		  OnFinish="OnFinish"
@@ -20,29 +19,26 @@
 </Modal>
 
 @code {
-	bool _loading = false;
-	Form<Day> _form;
+	Form<Note> _form;
 
 	[Parameter]
 	public bool Visible { get; set; }
 
 	[Parameter]
-	public Day Model { get; set; }
-
-	void HandleCancel(MouseEventArgs e)
-	{
-		Console.WriteLine("e");
-		Visible = false;
-	}
+	public Note Model { get; set; }
 
 	void HandleOk(MouseEventArgs e)
 	{
 		_form.Submit();
 	}
 
+	void HandleCancel(MouseEventArgs e)
+	{
+		Visible = false;
+	}
+
 	void OnFinish(EditContext editContext)
 	{
-		Console.WriteLine("e");
 		Visible = false;
 	}
 

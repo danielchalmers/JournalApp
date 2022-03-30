@@ -1,0 +1,23 @@
+﻿@namespace JournalApp
+@inherits Card
+
+<Card Title="@(Note.Date.ToString())">
+	<ChildContent>
+		<NoteEditor Visible="@EditorVisible" Model="@Note" />
+	</ChildContent>
+	<ActionTemplate>
+		<CardAction><Icon Type="setting" OnClick="@(() => ShowModal())" /></CardAction>
+	</ActionTemplate>
+</Card>
+
+@code {
+	bool EditorVisible;
+
+	[Parameter]
+	public Note Note { get; set; }
+
+	void ShowModal()
+	{
+		EditorVisible = true;
+	}
+}

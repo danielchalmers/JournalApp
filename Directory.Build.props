@@ -5,7 +5,7 @@
     <Features>strict</Features>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
-
+  
   <PropertyGroup Condition="$(TargetFramework.Contains('-android'))">
     <SupportedOSPlatformVersion>21.0</SupportedOSPlatformVersion>
   </PropertyGroup>
@@ -13,7 +13,6 @@
   <PropertyGroup Condition="$(TargetFramework.Contains('-windows'))">
     <SupportedOSPlatformVersion Condition="$(TargetFramework.Contains('-windows'))">10.0.17763.0</SupportedOSPlatformVersion>
     <TargetPlatformMinVersion Condition="$(TargetFramework.Contains('-windows'))">10.0.17763.0</TargetPlatformMinVersion>
-    <OutputType>WinExe</OutputType>
     <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
   </PropertyGroup>
 

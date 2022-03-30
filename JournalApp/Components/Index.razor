@@ -4,29 +4,29 @@
 
 <h1>Hello, world!</h1>
 
-Welcome to your new, single page, app.
-
-<EditForm Model="this">
-	<InputCheckbox @bind-Value="value" />
-</EditForm>
-
-<Button Type="@ButtonType.Primary" OnClick="@ShowModal">Hello World!</Button>
-<ConfirmationDialog Visible="@visible" Model="@_model" />
+@*TODO: DynamicComponent ??*@
+<AntList DataSource="@db.Entries">
+	<Header><h2>Header</h2></Header>
+	<ChildContent>
+		@if (@context.GetType() == typeof(Note))
+		{
+			<ListItem>
+				<NoteCard Note="@((Note)context)" />
+			</ListItem>
+		}
+		else
+		{
+			<ListItem>
+				<p>@(context.Date.ToString())</p>
+			</ListItem>
+		}
+	</ChildContent>
+	<Footer><h2>Footer</h2></Footer>
+</AntList>
 
 @code {
-	bool value
+	protected override async Task OnInitializedAsync()
 	{
-		get => (bool)Preferences.Get("IsChecked", false);
-		set => Preferences.Set("IsChecked", value);
-	}
-
-	Day _model;
-	bool visible;
-
-	void ShowModal()
-	{
-		_model = db.Days.OrderBy(x => x.Date).Last();
-
-		visible = true;
+		await base.OnInitializedAsync();
 	}
 }
