@@ -3,7 +3,7 @@ name: .NET MAUI
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   maui-android:
@@ -11,26 +11,31 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
-        # Full history for automatic git versioning during build
-        fetch-depth: 0
+        fetch-depth: 0  # Need full history for git versioning
 
     - uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: '6.0.x'
+        include-prerelease: true
 
     - name: Install MAUI workload
       run: dotnet workload install maui
 
     - name: Prepare keystore
+      id: create_keystore
       uses: timheuer/base64-to-file@v1.1
       with:
         fileName: 'release.keystore'
         encodedString: ${{ secrets.RELEASE_KEYSTORE }}
 
     - name: Publish Android project
-      run: dotnet publish -f:net6.0-android -c:Release -p:AndroidKeyStore=True -p:AndroidSigningKeyStore=release.keystore -p:AndroidSigningStorePass="{{ secrets.RELEASE_KEYSTORE_PASS }}" -p:AndroidSigningKeyAlias=key -p:AndroidSigningKeyPass="{{ secrets.RELEASE_KEYSTORE_PASS }}"
+      run: >
+        dotnet publish -f:net6.0-android -c:Release
+        -p:AndroidKeyStore=True
+        -p:AndroidSigningKeyStore=${{ steps.create_keystore.outputs.filePath }}
+        -p:AndroidSigningStorePass="{{ secrets.RELEASE_KEYSTORE_PASS }}"
+        -p:AndroidSigningKeyAlias=key
+        -p:AndroidSigningKeyPass="{{ secrets.RELEASE_KEYSTORE_PASS }}"
     
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        path: '**/Release/**/*-Signed.apk'
+#    - uses: actions/upload-artifact@v3
+#      with:
+#        path: "**/Release/**/*-Signed.apk"
