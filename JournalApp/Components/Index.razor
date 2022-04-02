@@ -4,7 +4,14 @@
 
 @*TODO: DynamicComponent ??*@
 <AntList DataSource="@db.Entries">
-	<Header>Your journal</Header>
+	<Header>
+		<Affix OffsetTop="10">
+			<div>
+				Your journal
+				<Button Type="@ButtonType.Primary" Icon="@IconType.Outline.FileAdd" Size="small" />
+			</div>
+		</Affix>
+	</Header>
 	<ChildContent>
 		@if (@context.GetType() == typeof(Note))
 		{
@@ -21,6 +28,16 @@
 	</ChildContent>
 	<Footer>
 		<div>
+			<Dropdown Placement="@Placement.TopRight">
+				<Overlay>
+					<Menu>
+						<MenuItem Title="icon New note" />
+					</Menu>
+				</Overlay>
+				<ChildContent>
+					<Button>TopRight</Button>
+				</ChildContent>
+			</Dropdown>
 			You've reached the end <BackTop />
 		</div>
 	</Footer>
