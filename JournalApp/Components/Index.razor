@@ -1,13 +1,14 @@
 ﻿@namespace JournalApp
 @page "/"
+@inherits LayoutComponentBase
 @inject ApplicationDbContext db;
 
 <Layout>
-	<Header Class="app-header">
+	<Header Id="app-header">
 		<Row>
 			<Col Flex=@("none")>
-			<span style="color: red;">JournalApp </span>
-			<Icon Type="@IconType.Outline.Smile" Theme="@IconThemeType.Twotone" TwotoneColor="#eb2f96" />
+			<span style="color: #512BD4;">JournalApp </span>
+			<Icon Type="@IconType.Outline.Smile" Theme="@IconThemeType.Twotone" TwotoneColor="white" />
 			</Col>
 
 			<Col Flex=@("auto") />
@@ -30,7 +31,7 @@
 		</Row>
 	</Header>
 
-	<Content Class="app-body">
+	<Content Id="app-body">
 		<AntList DataSource="@db.Entries" Grid="grid">
 			@if (!@context.IsDeleted)
 			{
@@ -51,17 +52,19 @@
 	</Content>
 </Layout>
 
+<AntContainer />
+
 @code {
 	ListGridType grid = new()
-    {
-        Gutter = 16,
-        Xs = 1,
-        Sm = 1,
-        Md = 2,
-        Lg = 2,
-        Xl = 4,
-        Xxl = 4,
-    };
+		{
+			Gutter = 8,
+			Xs = 1,
+			Sm = 2,
+			Md = 2,
+			Lg = 3,
+			Xl = 3,
+			Xxl = 3,
+		};
 
 	protected override async Task OnInitializedAsync()
 	{
