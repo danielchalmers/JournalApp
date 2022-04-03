@@ -2,49 +2,67 @@
 @page "/"
 @inject ApplicationDbContext db;
 
-@*TODO: DynamicComponent ??*@
-<AntList DataSource="@db.Entries">
-	<Header>
-		<Affix OffsetTop="10">
-			<div>
-				Your journal
-			</div>
-		</Affix>
+<Layout>
+	<Header Class="app-header">
+		<Row>
+			<Col Flex=@("none")>
+			<span style="color: red;">JournalApp </span>
+			<Icon Type="@IconType.Outline.Smile" Theme="@IconThemeType.Twotone" TwotoneColor="#eb2f96" />
+			</Col>
+
+			<Col Flex=@("auto") />
+
+			<Col Flex=@("none")>
+			<Dropdown Placement="@Placement.TopRight">
+				<ChildContent>
+					<Button Type="@ButtonType.Primary" Icon="@IconType.Outline.Plus" />
+				</ChildContent>
+
+				<Overlay>
+					<Menu>
+						<MenuItem Icon="@IconType.Outline.FileAdd" OnClick="@(() => NewNote())">
+							<span> New note</span>
+						</MenuItem>
+					</Menu>
+				</Overlay>
+			</Dropdown>
+			</Col>
+		</Row>
 	</Header>
 
-	<ChildContent>
-		@if (!@context.IsDeleted)
-		{
-			@if (@context.GetType() == typeof(Note))
+	<Content Class="app-body">
+		<AntList DataSource="@db.Entries" Grid="grid">
+			@if (!@context.IsDeleted)
 			{
-				<ListItem>
-					<NoteCard Note="@((Note)context)" />
-				</ListItem>
+				@if (@context.GetType() == typeof(Note))
+				{
+					<ListItem>
+						<NoteCard Note="@((Note)context)" />
+					</ListItem>
+				}
+				else
+				{
+					<ListItem>
+						<p>@(context.Date.ToString())</p>
+					</ListItem>
+				}
 			}
-			else
-			{
-				<ListItem>
-					<p>@(context.Date.ToString())</p>
-				</ListItem>
-			}
-		}
-	</ChildContent>
-</AntList>
-
-<Dropdown Class="floating-action-button" Placement="@Placement.TopRight">
-	<Overlay>
-		<Menu>
-			<MenuItem Icon="@IconType.Outline.FileAdd" OnClick="@(() => NewNote())">
-				New note
-			</MenuItem>
-		</Menu>
-	</Overlay>
-	<ChildContent>
-		<Button Type="@ButtonType.Primary" Shape="@ButtonShape.Circle" Icon="@IconType.Outline.FileAdd" OnClick="@(() => NewNote())" />
-	</ChildContent>
-</Dropdown>
+		</AntList>
+	</Content>
+</Layout>
 
 @code {
+	ListGridType grid = new()
+    {
+        Gutter = 16,
+        Xs = 1,
+        Sm = 1,
+        Md = 2,
+        Lg = 2,
+        Xl = 4,
+        Xxl = 4,
+    };
+
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
@@ -53,5 +71,6 @@
 	void NewNote()
 	{
 		db.Entries.Add(new JournalEntry { Date = DateTime.Now });
+		db.SaveChanges();
 	}
 }

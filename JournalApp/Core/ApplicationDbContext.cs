@@ -4,34 +4,51 @@ namespace JournalApp;
 
 public class ApplicationDbContext : DbContext
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        : base(options)
     {
-        //SQLitePCL.Batteries_V2.Init();
         Database.EnsureDeleted();
         Database.EnsureCreated();
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<Note>().HasData(
             new Note()
             {
-                Date = DateTime.Now,
+                Date = DateTime.Now - TimeSpan.FromDays(1),
+                Text = "Yesterday's note"
+            },
+            new Note()
+            {
+                Date = DateTime.Now - TimeSpan.FromDays(7),
+                Text = "Last week's note"
+            },
+            new Note()
+            {
+                Date = DateTime.Now - TimeSpan.FromDays(31),
+                Text = "Last month's note"
+            },
+            new Note()
+            {
+                Date = DateTime.Now - TimeSpan.FromDays(1),
                 Text = "Hello world, this is my note!"
             }
         );
+
         modelBuilder.Entity<JournalEntry>().HasData(
             new JournalEntry()
             {
                 Date = DateTime.Now
-            }, new JournalEntry()
+            },
+            new JournalEntry()
             {
                 Date = DateTime.Now + TimeSpan.FromHours(1)
             }
-        ); ;
-
-        base.OnModelCreating(modelBuilder);
+        );
     }
 
-    public DbSet<JournalEntry> Entries { get; set; }
+    public DbSet<JournalEntry> Entries { get; set; } = default!;
 }
