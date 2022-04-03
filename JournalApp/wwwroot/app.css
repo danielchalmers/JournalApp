@@ -61,3 +61,10 @@ a, .btn-link {
 	.blazor-error-boundary::after {
 		content: "An error has occurred."
 	}
+
+
+.floating-action-button {
+	position: fixed;
+	bottom: 50px;
+	right: 50px;
+}

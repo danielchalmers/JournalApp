@@ -2,10 +2,19 @@
 @using System.ComponentModel.DataAnnotations
 @using System.Text.Json
 
+@{
+	RenderFragment modalFooter = @<Template>
+		<Popconfirm Title="Delete?" OkText="Yes" CancelText="Cancel" OnConfirm="OnDelete">
+			<Button Type="@ButtonType.Dashed" Color="Color.Red1">Delete</Button>
+		</Popconfirm>
+		<Button OnClick="@OnOk" @key="@( "submit" )" Type="@ButtonType.Primary">Update</Button>
+		<Button OnClick="@OnCancel" @key="@( "back" )">Close</Button>
+	</Template>;
+}
+
 <Modal Title="Edit Note"
 	   Visible="@Visible"
-	   OnOk="@OnOk"
-	   OnCancel="@OnCancel">
+	   Footer="@modalFooter">
 	<Form Model="@Model"
 		  OnFinish="OnFinish"
 		  @ref="@_form">
@@ -23,6 +32,12 @@
 
 	[Parameter]
 	public Note Model { get; set; }
+
+	void OnDelete()
+	{
+		Model.IsDeleted = true;
+		Visible = false;
+	}
 
 	void OnOk(MouseEventArgs e)
 	{

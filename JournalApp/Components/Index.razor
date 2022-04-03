@@ -8,44 +8,50 @@
 		<Affix OffsetTop="10">
 			<div>
 				Your journal
-				<Button Type="@ButtonType.Primary" Icon="@IconType.Outline.FileAdd" Size="small" />
 			</div>
 		</Affix>
 	</Header>
+
 	<ChildContent>
-		@if (@context.GetType() == typeof(Note))
+		@if (!@context.IsDeleted)
 		{
-			<ListItem>
-				<NoteCard Note="@((Note)context)" />
-			</ListItem>
-		}
-		else
-		{
-			<ListItem>
-				<p>@(context.Date.ToString())</p>
-			</ListItem>
+			@if (@context.GetType() == typeof(Note))
+			{
+				<ListItem>
+					<NoteCard Note="@((Note)context)" />
+				</ListItem>
+			}
+			else
+			{
+				<ListItem>
+					<p>@(context.Date.ToString())</p>
+				</ListItem>
+			}
 		}
 	</ChildContent>
-	<Footer>
-		<div>
-			<Dropdown Placement="@Placement.TopRight">
-				<Overlay>
-					<Menu>
-						<MenuItem Title="icon New note" />
-					</Menu>
-				</Overlay>
-				<ChildContent>
-					<Button>TopRight</Button>
-				</ChildContent>
-			</Dropdown>
-			You've reached the end <BackTop />
-		</div>
-	</Footer>
 </AntList>
+
+<Dropdown Class="floating-action-button" Placement="@Placement.TopRight">
+	<Overlay>
+		<Menu>
+			<MenuItem Icon="@IconType.Outline.FileAdd" OnClick="@(() => NewNote())">
+				New note
+			</MenuItem>
+		</Menu>
+	</Overlay>
+	<ChildContent>
+		<Button Type="@ButtonType.Primary" Shape="@ButtonShape.Circle" Icon="@IconType.Outline.FileAdd" OnClick="@(() => NewNote())" />
+	</ChildContent>
+</Dropdown>
 
 @code {
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
+	}
+
+	void NewNote()
+	{
+		db.Entries.Add(new JournalEntry { Date = DateTime.Now });
 	}
 }
