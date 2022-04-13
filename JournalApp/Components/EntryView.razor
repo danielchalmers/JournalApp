@@ -1,0 +1,106 @@
+﻿@namespace JournalApp
+@using System.ComponentModel.DataAnnotations
+@using System.Text.Json
+@inherits Card
+@inject ConfirmService _confirmService
+@*@inject ModalService _modalService*@
+
+<div>
+	@if (Full)
+	{
+		<DatePicker @bind-Value="@Model.Date" />
+	}
+	else
+	{
+		@Model.Date.ToString()
+	}
+
+	<br />
+
+	<div>
+		@if (@Model is Note note)
+		{
+			<br />
+			<TextArea MinRows="4" MaxRows="4" Bordered="true" Placeholder="What's on your mind?" @bind-Value="note.Text" @onfocus="@(() => OnFocus())" @onblur="@(() => Full = false)" />
+		}
+	</div>
+
+	<br />
+
+	<div hidden="@(!Full)">
+		<Row>
+			<Col Flex=@("none")>
+			<Button OnClick="@OnDelete" Type="@ButtonType.Link" Danger Icon="@IconType.Outline.Delete">Delete</Button>
+			</Col>
+
+			<Col Flex=@("auto") />
+
+			<Col Flex=@("none")>
+			<Button OnClick="@OnOk" @key="@( "submit" )" Type="@ButtonType.Primary">Update</Button>
+			</Col>
+			<Col Flex=@("none")>
+			<Button OnClick="@OnCancel" @key="@( "back" )">Close</Button>
+			</Col>
+		</Row>
+	</div>
+</div>
+
+@code {
+	[Parameter]
+	public bool Full { get; set; }
+
+	[Parameter]
+	public JournalEntry Model { get; set; }
+
+	async void OnDelete()
+	{
+		if (await _confirmService.Show("This entry will be deleted.", "Delete entry", ConfirmButtons.OKCancel, ConfirmIcon.Warning) != ConfirmResult.OK)
+			return;
+
+		Model.IsDeleted = true;
+		//Visible = false;
+	}
+
+	void OnOk()
+	{
+		//Visible = false;
+	}
+
+	void OnCancel()
+	{
+		//Visible = false;
+	}
+
+
+
+	async void OnFocus()
+	{
+		Full = true;
+
+		// TODO: Open a modal like twitter does so we can edit in fullscreen and also get around the problem of clicking a button triggering the onblur event and turning Full controls off.
+
+		//RenderFragment AddContent() => builder =>
+		//{
+		//	builder.OpenElement(0, "li");
+		//	builder.SetKey(item);
+		//	builder.AddContent(1, item.ToString());
+		//	builder.CloseElement();
+		//};
+		//
+		//
+		// If i cant get this recursive component working then maybe I can separate the shell and content parts. Maybe i should do that anyway.
+		//
+		//
+
+		//if (Full)
+		//	return;
+
+		//await _modalService.CreateConfirmAsync(new ConfirmOptions
+		//	{
+		//		Content = (builder) =>
+		//					{
+		//						builder.AddContent(1, new EntryView { Full = true, Model = Model });
+		//					}
+		//	});
+	}
+}

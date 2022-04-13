@@ -1,56 +1,53 @@
 ﻿@namespace JournalApp
 @page "/"
-@inherits LayoutComponentBase
+@*@inherits LayoutComponentBase*@
 @inject ApplicationDbContext db;
 
-<Layout>
-	<Header Id="app-header">
-		<Row>
-			<Col Flex=@("none")>
-			<span style="color: #512BD4;">JournalApp </span>
-			<Icon Type="@IconType.Outline.Smile" Theme="@IconThemeType.Twotone" TwotoneColor="white" />
-			</Col>
+<div>
+	<Layout>
+		<Header Id="app-header">
+			<Row>
+				<Col Flex=@("none")>
+				<div>
+					<span style="color: #512BD4;">JournalApp </span>
+					<Icon Type="@IconType.Outline.Smile" Theme="@IconThemeType.Twotone" TwotoneColor="white" />
+				</div>
+				</Col>
 
-			<Col Flex=@("auto") />
+				<Col Flex=@("auto") />
 
-			<Col Flex=@("none")>
-			<Dropdown Placement="@Placement.TopRight">
-				<ChildContent>
-					<Button Type="@ButtonType.Primary" Icon="@IconType.Outline.Plus" />
-				</ChildContent>
+				<Col Flex=@("none")>
+				<div>
+					<Dropdown Placement="@Placement.TopRight">
+						<ChildContent>
+							<Button Type="@ButtonType.Primary" Icon="@IconType.Outline.Plus" />
+						</ChildContent>
 
-				<Overlay>
-					<Menu>
-						<MenuItem Icon="@IconType.Outline.FileAdd" OnClick="@(() => NewNote())">
-							<span> New note</span>
-						</MenuItem>
-					</Menu>
-				</Overlay>
-			</Dropdown>
-			</Col>
-		</Row>
-	</Header>
+						<Overlay>
+							<Menu>
+								<MenuItem Icon="@IconType.Outline.FileAdd" OnClick="@(() => NewNote())">
+									<span> New note</span>
+								</MenuItem>
+							</Menu>
+						</Overlay>
+					</Dropdown>
+				</div>
+				</Col>
+			</Row>
+		</Header>
 
-	<Content Id="app-body">
-		<AntList DataSource="@db.Entries" Grid="grid">
-			@if (!@context.IsDeleted)
-			{
-				@if (@context.GetType() == typeof(Note))
+		<Content Id="app-body">
+			<AntList DataSource="@db.Entries" Grid="grid">
+				@if (!@context.IsDeleted)
 				{
 					<ListItem>
-						<NoteCard Note="@((Note)context)" />
+						<EntryView Model="@context" />
 					</ListItem>
 				}
-				else
-				{
-					<ListItem>
-						<p>@(context.Date.ToString())</p>
-					</ListItem>
-				}
-			}
-		</AntList>
-	</Content>
-</Layout>
+			</AntList>
+		</Content>
+	</Layout>
+</div>
 
 <AntContainer />
 
