@@ -19,7 +19,7 @@ jobs:
       with:
         fileName: 'release.keystore'
         fileDir: '.'
-        encodedString: ${{ secrets.RELEASE_KEYSTORE }}
+        encodedString: "${{ secrets.RELEASE_KEYSTORE }}"
 
     - uses: actions/setup-dotnet@v2
 
@@ -31,10 +31,10 @@ jobs:
         dotnet publish -c:Release
         -f:net6.0-android
         -p:AndroidKeyStore=True
-        -p:AndroidSigningKeyStore="{{ steps.create_keystore.outputs.filePath }}"
-        -p:AndroidSigningStorePass="{{ secrets.RELEASE_KEYSTORE_PASS }}"
+        -p:AndroidSigningKeyStore="${{ steps.create_keystore.outputs.filePath }}"
+        -p:AndroidSigningStorePass="${{ secrets.RELEASE_KEYSTORE_PASS }}"
         -p:AndroidSigningKeyAlias=key
-        -p:AndroidSigningKeyPass="{{ secrets.RELEASE_KEYSTORE_PASS }}"
+        -p:AndroidSigningKeyPass="${{ secrets.RELEASE_KEYSTORE_PASS }}"
     
     - uses: actions/upload-artifact@v3
       with:
