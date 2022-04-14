@@ -15,17 +15,12 @@
 		@Model.Date.ToString()
 	}
 
-	<br />
-
 	<div>
 		@if (@Model is Note note)
 		{
-			<br />
-			<TextArea MinRows="4" MaxRows="4" Bordered="true" Placeholder="What's on your mind?" @bind-Value="note.Text" @onfocus="@(() => OnFocus())" @onblur="@(() => Full = false)" />
+			<TextArea MinRows="4" MaxRows="4" Bordered="true" Placeholder="What's on your mind?" @bind-Value="note.Text" @onfocus="@(() => Full = true)" @onblur="@(() => Full = false)" />
 		}
 	</div>
-
-	<br />
 
 	<div hidden="@(!Full)">
 		<Row>
@@ -71,36 +66,34 @@
 		//Visible = false;
 	}
 
+	//async void OnFocus()
+	//{
+	//	Full = true;
+
+	//	// TODO: Open a modal like twitter does so we can edit in fullscreen and also get around the problem of clicking a button triggering the onblur event and turning Full controls off.
+
+	//	RenderFragment AddContent() => builder =>
+	//	{
+	//		builder.OpenElement(0, "li");
+	//		builder.SetKey(item);
+	//		builder.AddContent(1, item.ToString());
+	//		builder.CloseElement();
+	//	};
 
 
-	async void OnFocus()
-	{
-		Full = true;
+	//	//If i cant get this recursive component working then maybe I can separate the shell and content parts. Maybe i should do that anyway.
 
-		// TODO: Open a modal like twitter does so we can edit in fullscreen and also get around the problem of clicking a button triggering the onblur event and turning Full controls off.
 
-		//RenderFragment AddContent() => builder =>
-		//{
-		//	builder.OpenElement(0, "li");
-		//	builder.SetKey(item);
-		//	builder.AddContent(1, item.ToString());
-		//	builder.CloseElement();
-		//};
-		//
-		//
-		// If i cant get this recursive component working then maybe I can separate the shell and content parts. Maybe i should do that anyway.
-		//
-		//
 
-		//if (Full)
-		//	return;
+	//	if (Full)
+	//		return;
 
-		//await _modalService.CreateConfirmAsync(new ConfirmOptions
-		//	{
-		//		Content = (builder) =>
-		//					{
-		//						builder.AddContent(1, new EntryView { Full = true, Model = Model });
-		//					}
-		//	});
-	}
+	//	await _modalService.CreateConfirmAsync(new ConfirmOptions
+	//		{
+	//			Content = (builder) =>
+	//						{
+	//							builder.AddContent(1, new EntryView { Full = true, Model = Model });
+	//						}
+	//		});
+	//}
 }

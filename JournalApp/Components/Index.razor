@@ -1,16 +1,12 @@
 ﻿@namespace JournalApp
 @page "/"
-@*@inherits LayoutComponentBase*@
 @inject ApplicationDbContext db;
 
 <Layout Style="height:100%">
-	<Header Id="app-header">
+	<Header Id="main-header">
 		<Row>
 			<Col Flex=@("none")>
-			<div>
-				<span style="color: #512BD4;">JournalApp </span>
-				<Icon Type="@IconType.Outline.Smile" Theme="@IconThemeType.Twotone" TwotoneColor="white" />
-			</div>
+			<span style="color: #512BD4">@ThisAssembly.AssemblyTitle 🙂</span>
 			</Col>
 
 			<Col Flex=@("auto") />
@@ -35,8 +31,8 @@
 		</Row>
 	</Header>
 
-	<Content Id="app-body">
-		<AntList Id="app-timeline" DataSource="@db.Entries" Grid="grid">
+	<Content Id="main-body">
+		<AntList Id="main-timeline" DataSource="@db.Entries" Grid="TimelineGridType">
 			@if (!@context.IsDeleted)
 			{
 				<ListItem>
@@ -50,7 +46,7 @@
 <AntContainer />
 
 @code {
-	ListGridType grid = new()
+	ListGridType TimelineGridType = new()
 		{
 			Gutter = 8,
 			Xs = 1,
@@ -61,14 +57,9 @@
 			Xxl = 3,
 		};
 
-	protected override async Task OnInitializedAsync()
-	{
-		await base.OnInitializedAsync();
-	}
-
 	void NewNote()
 	{
-		db.Entries.Add(new JournalEntry { Date = DateTime.Now });
+		db.Entries.Add(new() { Date = DateTime.Now });
 		db.SaveChanges();
 	}
 }

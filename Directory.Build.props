@@ -1,19 +1,16 @@
 <Project>
 
+  <!-- Language and Build -->
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
-    <Features>strict</Features>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   
-  <PropertyGroup Condition="$(TargetFramework.Contains('-android'))">
-    <SupportedOSPlatformVersion>21.0</SupportedOSPlatformVersion>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="$(TargetFramework.Contains('-windows'))">
-    <SupportedOSPlatformVersion Condition="$(TargetFramework.Contains('-windows'))">10.0.17763.0</SupportedOSPlatformVersion>
-    <TargetPlatformMinVersion Condition="$(TargetFramework.Contains('-windows'))">10.0.17763.0</TargetPlatformMinVersion>
-    <RuntimeIdentifier>win10-x64</RuntimeIdentifier>
+  <!-- Platform Versions -->
+  <PropertyGroup>
+		<SupportedOSPlatformVersion Condition="$(TargetFramework.Contains('-android'))">21.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$(TargetFramework.Contains('-windows'))">10.0.17763.0</SupportedOSPlatformVersion>
+		<TargetPlatformMinVersion Condition="$(TargetFramework.Contains('-windows'))">10.0.17763.0</TargetPlatformMinVersion>
   </PropertyGroup>
 
 </Project>
