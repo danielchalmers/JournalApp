@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Components.WebView.Maui;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace JournalApp;
 
@@ -10,11 +9,10 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder()
-            .RegisterBlazorMauiWebView()
             .UseMauiApp<App>()
             .ConfigureFonts(fonts => fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"));
 
-        builder.Services.AddBlazorWebView();
+        builder.Services.AddMauiBlazorWebView();
         builder.Services.AddAntDesign();
 
         builder.Services.AddDbContextFactory<ApplicationDbContext>(options => options

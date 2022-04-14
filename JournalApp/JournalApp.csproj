@@ -30,14 +30,9 @@
     <Content Remove="Properties\launchSettings.json" />
   </ItemGroup>
 
-  <ItemGroup Condition="$(TargetFramework.Contains('-windows'))">
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.1" />
-    <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.0.0.30" />
-  </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="AntDesign" Version="0.10.5" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.4" />
   </ItemGroup>
 
 </Project>
