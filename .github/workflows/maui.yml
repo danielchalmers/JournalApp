@@ -18,7 +18,6 @@ jobs:
       uses: timheuer/base64-to-file@v1.1
       with:
         fileName: 'release.keystore'
-        fileDir: '.'
         encodedString: "${{ secrets.RELEASE_KEYSTORE }}"
 
     - uses: actions/setup-dotnet@v2
