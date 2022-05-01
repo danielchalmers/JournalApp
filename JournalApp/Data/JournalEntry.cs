@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace JournalApp;
+﻿namespace JournalApp;
 
 public class JournalEntry
 {

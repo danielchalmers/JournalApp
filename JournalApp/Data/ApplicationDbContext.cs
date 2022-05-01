@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace JournalApp;
+﻿namespace JournalApp;
 
 public class ApplicationDbContext : DbContext
 {

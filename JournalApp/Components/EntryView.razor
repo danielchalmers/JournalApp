@@ -3,7 +3,7 @@
 @using System.Text.Json
 @inherits Card
 @inject ConfirmService _confirmService
-@*@inject ModalService _modalService*@
+@inject ModalService _modalService
 
 <div>
 	@if (Full)
@@ -18,7 +18,7 @@
 	<div>
 		@if (@Model is Note note)
 		{
-			<TextArea MinRows="4" MaxRows="4" Bordered="true" Placeholder="What's on your mind?" @bind-Value="note.Text" @onfocus="@(() => Full = true)" @onblur="@(() => Full = false)" />
+			<TextArea MinRows="4" MaxRows="4" Bordered="true" Placeholder="What's on your mind?" @bind-Value="note.Text" @onfocus="@(() => OnFocus())" />
 		}
 	</div>
 
@@ -66,34 +66,39 @@
 		//Visible = false;
 	}
 
-	//async void OnFocus()
-	//{
-	//	Full = true;
+	private ModalRef _modalRef;
+	async void OnFocus()
+	{
+		if (Full)
+			return; // Don't open recursively.
 
-	//	// TODO: Open a modal like twitter does so we can edit in fullscreen and also get around the problem of clicking a button triggering the onblur event and turning Full controls off.
-
-	//	RenderFragment AddContent() => builder =>
-	//	{
-	//		builder.OpenElement(0, "li");
-	//		builder.SetKey(item);
-	//		builder.AddContent(1, item.ToString());
-	//		builder.CloseElement();
-	//	};
-
-
-	//	//If i cant get this recursive component working then maybe I can separate the shell and content parts. Maybe i should do that anyway.
+		// https://antblazor.com/en-US/components/modal#components-modal-demo-modal_service_for_modal
+		
 
 
 
-	//	if (Full)
-	//		return;
+		// The idea is to dynamically transform the EntryView into a dialog on click (twitter)
+		// while re-using as much code as possible and keeping layout simple and not duplicated across files.
 
-	//	await _modalService.CreateConfirmAsync(new ConfirmOptions
-	//		{
-	//			Content = (builder) =>
-	//						{
-	//							builder.AddContent(1, new EntryView { Full = true, Model = Model });
-	//						}
-	//		});
-	//}
+		// This might be one route to doing it:
+
+
+        var modalConfig = new ModalOptions();
+        modalConfig.Title = "Basic Form";
+        modalConfig.OnCancel = async (e) =>
+        {
+            Console.WriteLine("OnCancel");
+            await _modalRef.CloseAsync();
+        };
+
+        modalConfig.AfterClose = () =>
+        {
+            Console.WriteLine("AfterClose");
+            InvokeAsync(StateHasChanged);
+            return Task.CompletedTask;
+        };
+
+		_modalRef = await _modalService
+			.CreateModalAsync<EntryView>(modalConfig);
+	}
 }
