@@ -27,7 +27,7 @@ jobs:
 
     - name: Publish Android project
       run: >
-        dotnet publish -c:Release
+        dotnet publish -c:Release -o "publish"
         -f:net6.0-android
         -p:AndroidKeyStore=True
         -p:AndroidSigningKeyStore="${{ steps.create_keystore.outputs.filePath }}"
@@ -37,4 +37,4 @@ jobs:
     
     - uses: actions/upload-artifact@v3
       with:
-        path: "**/bin/Release/**-Signed.apk"
+        path: "publish/*.aab"
