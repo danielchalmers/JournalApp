@@ -3,10 +3,11 @@ name: Release
 on:
   push:
     tags:
-      - "v*.*.*"
+      - "v*.*"
 
 jobs:
   upload-android:
+    runs-on: ubuntu-latest
     steps:
     - uses: ./.github/workflows/build.yml
 
