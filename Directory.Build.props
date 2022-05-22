@@ -1,12 +1,12 @@
 <Project>
 
-  <!-- Language and Build -->
+  <!-- Build -->
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
   
-  <!-- Platform Versions -->
+  <!-- Platform -->
   <PropertyGroup>
 		<SupportedOSPlatformVersion Condition="$(TargetFramework.Contains('-android'))">21.0</SupportedOSPlatformVersion>
 		<SupportedOSPlatformVersion Condition="$(TargetFramework.Contains('-windows'))">10.0.17763.0</SupportedOSPlatformVersion>
