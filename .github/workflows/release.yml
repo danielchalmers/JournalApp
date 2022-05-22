@@ -13,7 +13,6 @@ jobs:
       with:
         fetch-depth: 0 # Need full history for git versioning
 
-    steps:
     - uses: ./.github/workflows/build.yml
 
     - uses: softprops/action-gh-release@v1
