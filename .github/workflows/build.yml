@@ -1,4 +1,4 @@
-name: .NET MAUI
+name: Build
 
 on:
   push:
@@ -6,8 +6,7 @@ on:
       - main
 
 jobs:
-  maui-android:
-    runs-on: windows-latest
+  android:
     steps:
     - uses: actions/checkout@v3
       with:
