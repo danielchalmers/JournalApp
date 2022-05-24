@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net6.0-android</TargetFrameworks>
-    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows')) and '$(MSBuildRuntimeType)' == 'Full'">$(TargetFrameworks);net6.0-windows10.0.19041</TargetFrameworks>
+		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net6.0-windows10.0.19041.0</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <RootNamespace>JournalApp</RootNamespace>
     <UseMaui>true</UseMaui>
@@ -13,15 +13,19 @@
     <ApplicationTitle>JournalApp</ApplicationTitle>
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
     <ApplicationId>com.danielchalmers.journalapp</ApplicationId>
-    <ApplicationId Condition="$(TargetFramework.Contains('-windows'))">2B30B066-B4D9-4C17-8A4B-C72E1ABC4BF3</ApplicationId>
+    <ApplicationIdGuid>2B30B066-B4D9-4C17-8A4B-C72E1ABC4BF3</ApplicationIdGuid>
+    
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">23.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
+		<TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <!-- App Icon -->
-    <MauiIcon Include="Resources\appicon.svg" ForegroundFile="Resources\appiconfg.svg" Color="#512BD4" />
+		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
 
-    <!-- Splash Screen -->
-    <MauiSplashScreen Include="Resources\appiconfg.svg" Color="#512BD4" BaseSize="128,128" />
+		<!-- Splash Screen -->
+		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
 
     <!-- Images -->
     <MauiImage Include="Resources\Images\*" />
