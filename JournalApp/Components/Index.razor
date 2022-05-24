@@ -21,7 +21,7 @@
 
 					<Overlay>
 						<Menu>
-							<MenuItem Icon="@IconType.Outline.FileAdd" OnClick="@(() => NewNote())">
+							<MenuItem Icon="@IconType.Outline.FileAdd" OnClick="@NewNote">
 								<span> New note</span>
 							</MenuItem>
 						</Menu>
@@ -58,9 +58,9 @@
 			Xxl = 3,
 		};
 
-	void NewNote()
+	async Task NewNote()
 	{
-		db.Entries.Add(new() { Date = DateTime.Now });
-		db.SaveChanges();
+		await db.Entries.AddAsync(new() { Date = DateTime.Now });
+		await db.SaveChangesAsync();
 	}
 }
