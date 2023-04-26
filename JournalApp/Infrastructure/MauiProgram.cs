@@ -1,4 +1,6 @@
-﻿namespace JournalApp;
+﻿using MudBlazor.Services;
+
+namespace JournalApp;
 
 public static class MauiProgram
 {
@@ -8,13 +10,13 @@ public static class MauiProgram
     {
         var builder = MauiApp.CreateBuilder()
             .UseMauiApp<App>()
-            .ConfigureFonts(fonts => fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"));
+            .ConfigureFonts(fonts => fonts.AddFont("Roboto-Regular.ttf", "RobotoRegular"));
 
         builder.Services.AddMauiBlazorWebView();
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();
 #endif
-        builder.Services.AddAntDesign();
+        builder.Services.AddMudServices();
 
         builder.Services.AddDbContextFactory<ApplicationDbContext>(options => options
             .UseSqlite($"Data Source = {DbFilename}")

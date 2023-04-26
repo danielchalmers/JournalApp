@@ -1,63 +1,37 @@
 ﻿@namespace JournalApp
 @page "/"
 @inherits LayoutComponentBase
-@inject ApplicationDbContext db;
+@inject ApplicationDbContext db
 
-<Layout Style="height:100%">
-	<Header Id="main-header">
-		<Row>
-			<Col Flex=@("none")>
-			<span style="color: #512BD4">@ThisAssembly.AssemblyTitle 🙂</span>
-			</Col>
+<MudThemeProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
 
-			<Col Flex=@("auto") />
+<MudAppBar id="main-header" Color="Color.Primary" Fixed="false" Dense="true">
+	<MudText>@ThisAssembly.AssemblyTitle 🙂</MudText>
 
-			<Col Flex=@("none")>
-			<div>
-				<Dropdown Placement="@Placement.TopRight">
-					<ChildContent>
-						<Button Type="@ButtonType.Primary" Icon="@IconType.Outline.Plus" />
-					</ChildContent>
+	<MudSpacer />
 
-					<Overlay>
-						<Menu>
-							<MenuItem Icon="@IconType.Outline.FileAdd" OnClick="@NewNote">
-								<span> New note</span>
-							</MenuItem>
-						</Menu>
-					</Overlay>
-				</Dropdown>
-			</div>
-			</Col>
-		</Row>
-	</Header>
+	<MudMenu Color="Color.Secondary" StartIcon="@Icons.Material.Outlined.ArrowDropDown" Variant="Variant.Filled">
+		<MudMenuItem OnClick="NewNote" Icon="@Icons.Material.Outlined.Add">New note</MudMenuItem>
+	</MudMenu>
+</MudAppBar>
 
-	<Content Id="main-body">
-		<AntList Id="main-timeline" DataSource="@db.Entries" Grid="TimelineGridType">
-			@if (!@context.IsDeleted)
-			{
-				<ListItem>
+<div id="main-body">
+	<MudStack id="main-timeline">
+		@foreach (var context in db.Entries.Where(e => !e.IsDeleted))
+		{
+			<MudCard>
+				@if (!@context.IsDeleted)
+				{
 					<EntryView Model="@context" />
-				</ListItem>
-			}
-		</AntList>
-	</Content>
-</Layout>
-
-<AntContainer />
+				}
+			</MudCard>
+		}
+	</MudStack>
+</div>
 
 @code {
-	ListGridType TimelineGridType = new()
-		{
-			Gutter = 8,
-			Xs = 1,
-			Sm = 2,
-			Md = 2,
-			Lg = 3,
-			Xl = 3,
-			Xxl = 3,
-		};
-
 	async Task NewNote()
 	{
 		await db.Entries.AddAsync(new() { Date = DateTime.Now });

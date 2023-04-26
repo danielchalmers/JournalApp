@@ -1,46 +1,40 @@
 ﻿@namespace JournalApp
 @using System.ComponentModel.DataAnnotations
 @using System.Text.Json
-@inherits Card
-@inject ConfirmService _confirmService
-@inject ModalService _modalService
+@inject IDialogService DialogService
 
-<div>
-	@if (Full)
-	{
-		<DatePicker @bind-Value="@Model.Date" />
-	}
-	else
-	{
-		@Model.Date.ToString()
-	}
+<MudCard>
+	<MudCardContent>
+		@if (Full)
+		{
+			<MudDatePicker @bind-Date="@Model.Date" />
+		}
+		else
+		{
+			@Model.Date.ToString()
+		}
 
-	<div>
 		@if (@Model is Note note)
 		{
-			<TextArea MinRows="4" MaxRows="4" Bordered="true" Placeholder="What's on your mind?" @bind-Value="note.Text" @onfocus="@(() => OnFocus())" />
+			<MudTextField Lines="4" Placeholder="What's on your mind?" @bind-Value="note.Text" @onfocus="OnFocus" OnBlur="OnBlur" />
 		}
-	</div>
+	</MudCardContent>
 
-	<div hidden="@(!Full)">
-		<Row>
-			<Col Flex=@("none")>
-			<Button OnClick="@OnDelete" Type="@ButtonType.Link" Danger Icon="@IconType.Outline.Delete">Delete</Button>
-			</Col>
+	@if (Full)
+	{
+		<MudCardActions>
+			<MudButton OnClick="OnDelete" StartIcon="@Icons.Material.Outlined.Delete">Delete</MudButton>
 
-			<Col Flex=@("auto") />
+			<MudButton OnClick="OnOk" StartIcon="@Icons.Material.Outlined.Update">Update</MudButton>
 
-			<Col Flex=@("none")>
-			<Button OnClick="@OnOk" @key="@( "submit" )" Type="@ButtonType.Primary">Update</Button>
-			</Col>
-			<Col Flex=@("none")>
-			<Button OnClick="@OnCancel" @key="@( "back" )">Close</Button>
-			</Col>
-		</Row>
-	</div>
-</div>
+			<MudButton OnClick="OnCancel" StartIcon="@Icons.Material.Outlined.Cancel">Close</MudButton>
+		</MudCardActions>
+	}
+</MudCard>
 
 @code {
+	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
 	[Parameter]
 	public bool Full { get; set; }
 
@@ -49,56 +43,29 @@
 
 	async void OnDelete()
 	{
-		if (await _confirmService.Show("This entry will be deleted.", "Delete entry", ConfirmButtons.OKCancel, ConfirmIcon.Warning) != ConfirmResult.OK)
+		if (await DialogService.ShowMessageBox("Delete entry", $"This entry from {Model.Date} will be deleted.", yesText: "Delete", noText: "Keep it") == true)
 			return;
 
 		Model.IsDeleted = true;
-		//Visible = false;
 	}
 
 	void OnOk()
 	{
-		//Visible = false;
 	}
 
 	void OnCancel()
 	{
-		//Visible = false;
 	}
 
-	private ModalRef _modalRef;
-	async void OnFocus()
+	void OnFocus()
 	{
-		if (Full)
-			return; // Don't open recursively.
+		Full = true;
 
-		// https://antblazor.com/en-US/components/modal#components-modal-demo-modal_service_for_modal
-		
+		// Open self in a dialog like Twitter for full editing experience
+	}
 
-
-
-		// The idea is to dynamically transform the EntryView into a dialog on click (twitter)
-		// while re-using as much code as possible and keeping layout simple and not duplicated across files.
-
-		// This might be one route to doing it:
-
-
-        var modalConfig = new ModalOptions();
-        modalConfig.Title = "Basic Form";
-        modalConfig.OnCancel = async (e) =>
-        {
-            Console.WriteLine("OnCancel");
-            await _modalRef.CloseAsync();
-        };
-
-        modalConfig.AfterClose = () =>
-        {
-            Console.WriteLine("AfterClose");
-            InvokeAsync(StateHasChanged);
-            return Task.CompletedTask;
-        };
-
-		_modalRef = await _modalService
-			.CreateModalAsync<EntryView>(modalConfig);
+	void OnBlur()
+	{
+		//Full = false;
 	}
 }
