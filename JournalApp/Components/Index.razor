@@ -34,7 +34,7 @@
 @code {
 	async Task NewNote()
 	{
-		await db.Entries.AddAsync(new() { Date = DateTime.Now });
+		await db.Entries.AddAsync(new Note() { Date = DateTime.Now });
 		await db.SaveChangesAsync();
 	}
 }
