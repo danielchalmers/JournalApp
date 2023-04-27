@@ -6,14 +6,7 @@
 
 <MudCard>
 	<MudCardContent>
-		@if (Full)
-		{
-			<MudDatePicker @bind-Date="@Model.Date" />
-		}
-		else
-		{
-			@Model.Date.ToString()
-		}
+		@Model.Date.ToString()
 
 		@if (@Model is Note note)
 		{
