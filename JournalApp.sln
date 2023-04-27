@@ -4,6 +4,16 @@ VisualStudioVersion = 17.0.31611.283
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JournalApp", "JournalApp\JournalApp.csproj", "{DDDAF171-71A4-467A-BA11-9C4589CA0B3E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BC38128F-ED70-4D23-BA7C-E1E8DB5E5176}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		.github\workflows\build-and-deploy.yml = .github\workflows\build-and-deploy.yml
+		Directory.Build.props = Directory.Build.props
+		global.json = global.json
+		version.json = version.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
