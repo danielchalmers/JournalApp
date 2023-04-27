@@ -20,7 +20,7 @@
 
 <div id="main-body">
 	<MudStack id="main-timeline">
-		@foreach (var context in db.Entries.Where(e => !e.IsDeleted))
+		@foreach (var context in db.Entries.OrderByDescending(e => e.Date).Where(e => !e.IsDeleted))
 		{
 			<EntryView Model="@context" />
 		}
