@@ -3,6 +3,7 @@
 @using System.Text.Json
 @inject IDialogService DialogService
 @inject FocusService FocusService
+@inject ApplicationDbContext db
 
 <MudCard>
 	<MudCardContent>
@@ -35,21 +36,26 @@
 	{
 		base.OnInitialized();
 
-		FocusService.FocusChanged += (_, entry) =>
+		FocusService.FocusChanged += async (_, entry) =>
 		{
-			var isFocusedOnCurrentEntry = entry == Model;
-			Full = isFocusedOnCurrentEntry;
+			// Save changes now that user has finished editing the last note.
+			await db.SaveChangesAsync();
+
+			// Make this full if it's the one being requested, otherwise make it small.
+			Full = entry == Model;
+
+			// Update the UI to reflect this change.
 			StateHasChanged();
 		};
 	}
 
 	async Task Delete()
 	{
-		if (await DialogService.ShowMessageBox("Delete entry", $"This entry from {Model.Date} will be deleted.", yesText: "Delete", noText: "Keep it") == true)
+		if (await DialogService.ShowMessageBox("Delete entry", $"This entry from {Model.Date} will be deleted.", yesText: "Delete", noText: "Keep it") != true)
 			return;
 
 		Model.IsDeleted = true;
-		StateHasChanged();
+		await db.SaveChangesAsync();
 	}
 
 	void OnFocus()

@@ -22,10 +22,7 @@
 		@foreach (var context in db.Entries.Where(e => !e.IsDeleted))
 		{
 			<MudCard>
-				@if (!@context.IsDeleted)
-				{
-					<EntryView Model="@context" />
-				}
+				<EntryView Model="@context" />
 			</MudCard>
 		}
 	</MudStack>
