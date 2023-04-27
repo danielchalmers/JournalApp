@@ -23,13 +23,15 @@ jobs:
         encodedString: "${{ secrets.RELEASE_KEYSTORE_BASE64 }}"
 
     - uses: actions/setup-dotnet@v2
+    
+    - name: Show .NET info
+      run: dotnet --info
 
     - name: Install .NET MAUI
       run: dotnet workload install maui android wasm-tools
 
     - name: Build for Android
       run: >
-        dotnet --info
         dotnet publish -c:Release -o "publish"
         -f:net7.0-android
         -p:AndroidKeyStore=True
