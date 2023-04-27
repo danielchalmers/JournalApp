@@ -11,7 +11,6 @@
     <EnableDefaultCssItems>false</EnableDefaultCssItems>
 
     <ApplicationTitle>JournalApp</ApplicationTitle>
-    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
     <ApplicationId>com.danielchalmers.journalapp</ApplicationId>
     <ApplicationIdGuid>2B30B066-B4D9-4C17-8A4B-C72E1ABC4BF3</ApplicationIdGuid>
   </PropertyGroup>
