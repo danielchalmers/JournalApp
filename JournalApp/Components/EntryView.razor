@@ -3,15 +3,16 @@
 @using System.Text.Json
 @inject IDialogService DialogService
 @inject FocusService FocusService
-@inject ApplicationDbContext db
 
 <MudCard>
 	<MudCardContent>
-		@Model.Date.ToString()
+		<div class="d-flex justify-center">
+			<MudText Typo="Typo.caption">@Model.Date.ToString()</MudText>
+		</div>
 
 		@if (@Model is Note note)
 		{
-			<MudTextField Lines="4" Placeholder="What's on your mind?" @bind-Value="note.Text" @onfocus="OnFocus" />
+			<MudTextField Lines="@(Full ? 6 : 3)" Placeholder="What's on your mind?" @bind-Value="note.Text" @onfocus="OnFocus" DisableUnderLine="true" />
 		}
 	</MudCardContent>
 
@@ -36,15 +37,9 @@
 	{
 		base.OnInitialized();
 
-		FocusService.FocusChanged += async (_, entry) =>
+		FocusService.FocusChanged += (_, entry) =>
 		{
-			// Save changes now that user has finished editing the last note.
-			await db.SaveChangesAsync();
-
-			// Make this full if it's the one being requested, otherwise make it small.
 			Full = entry == Model;
-
-			// Update the UI to reflect this change.
 			StateHasChanged();
 		};
 	}
@@ -55,7 +50,6 @@
 			return;
 
 		Model.IsDeleted = true;
-		await db.SaveChangesAsync();
 	}
 
 	void OnFocus()

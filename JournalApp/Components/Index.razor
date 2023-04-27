@@ -2,6 +2,7 @@
 @page "/"
 @inherits LayoutComponentBase
 @inject ApplicationDbContext db
+@inject FocusService FocusService
 
 <MudThemeProvider />
 <MudDialogProvider />
@@ -13,7 +14,7 @@
 	<MudSpacer />
 
 	<MudMenu Color="Color.Secondary" StartIcon="@Icons.Material.Outlined.ArrowDropDown" Variant="Variant.Filled">
-		<MudMenuItem OnClick="NewNote" Icon="@Icons.Material.Outlined.Add">New note</MudMenuItem>
+		<MudMenuItem OnClick="NewNote" Icon="@Icons.Material.Outlined.Comment">New note</MudMenuItem>
 	</MudMenu>
 </MudAppBar>
 
@@ -21,14 +22,24 @@
 	<MudStack id="main-timeline">
 		@foreach (var context in db.Entries.Where(e => !e.IsDeleted))
 		{
-			<MudCard>
-				<EntryView Model="@context" />
-			</MudCard>
+			<EntryView Model="@context" />
 		}
 	</MudStack>
 </div>
 
 @code {
+
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+
+		FocusService.FocusChanged += async (_, _) =>
+		{
+			// Save changes now that user has finished editing a note.
+			await db.SaveChangesAsync();
+		};
+	}
+
 	async Task NewNote()
 	{
 		await db.Entries.AddAsync(new Note() { Date = DateTime.Now });
