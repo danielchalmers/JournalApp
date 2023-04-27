@@ -17,6 +17,7 @@ public static class MauiProgram
         builder.Services.AddBlazorWebViewDeveloperTools();
 #endif
         builder.Services.AddMudServices();
+        builder.Services.AddSingleton<FocusService>();
 
         builder.Services.AddDbContextFactory<ApplicationDbContext>(options => options
             .UseSqlite($"Data Source = {DbFilename}")

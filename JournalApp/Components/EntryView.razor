@@ -2,6 +2,7 @@
 @using System.ComponentModel.DataAnnotations
 @using System.Text.Json
 @inject IDialogService DialogService
+@inject FocusService FocusService
 
 <MudCard>
 	<MudCardContent>
@@ -16,18 +17,14 @@
 
 		@if (@Model is Note note)
 		{
-			<MudTextField Lines="4" Placeholder="What's on your mind?" @bind-Value="note.Text" @onfocus="OnFocus" OnBlur="OnBlur" />
+			<MudTextField Lines="4" Placeholder="What's on your mind?" @bind-Value="note.Text" @onfocus="OnFocus" />
 		}
 	</MudCardContent>
 
 	@if (Full)
 	{
 		<MudCardActions>
-			<MudButton OnClick="OnDelete" StartIcon="@Icons.Material.Outlined.Delete">Delete</MudButton>
-
-			<MudButton OnClick="OnOk" StartIcon="@Icons.Material.Outlined.Update">Update</MudButton>
-
-			<MudButton OnClick="OnCancel" StartIcon="@Icons.Material.Outlined.Cancel">Close</MudButton>
+			<MudButton OnClick="Delete" StartIcon="@Icons.Material.Outlined.Delete">Delete</MudButton>
 		</MudCardActions>
 	}
 </MudCard>
@@ -41,31 +38,29 @@
 	[Parameter]
 	public JournalEntry Model { get; set; }
 
-	async void OnDelete()
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+
+		FocusService.FocusChanged += (_, entry) =>
+		{
+			var isFocusedOnCurrentEntry = entry == Model;
+			Full = isFocusedOnCurrentEntry;
+			StateHasChanged();
+		};
+	}
+
+	async Task Delete()
 	{
 		if (await DialogService.ShowMessageBox("Delete entry", $"This entry from {Model.Date} will be deleted.", yesText: "Delete", noText: "Keep it") == true)
 			return;
 
 		Model.IsDeleted = true;
-	}
-
-	void OnOk()
-	{
-	}
-
-	void OnCancel()
-	{
+		StateHasChanged();
 	}
 
 	void OnFocus()
 	{
-		Full = true;
-
-		// Open self in a dialog like Twitter for full editing experience
-	}
-
-	void OnBlur()
-	{
-		//Full = false;
+		FocusService.ChangeFocus(Model);
 	}
 }
