@@ -9,7 +9,7 @@ on:
 
 jobs:
   android:
-    runs-on: ubuntu-latest
+    runs-on: windows-2022
     steps:
     - uses: actions/checkout@v3
       with:
@@ -24,13 +24,14 @@ jobs:
 
     - uses: actions/setup-dotnet@v2
 
-    - name: Install MAUI workload
-      run: dotnet workload install maui-android
+    - name: Install .NET MAUI
+      run: dotnet workload install maui android wasm-tools
 
-    - name: Publish Android project
+    - name: Build for Android
       run: >
+        dotnet --info
         dotnet publish -c:Release -o "publish"
-        -f:net6.0-android
+        -f:net7.0-android
         -p:AndroidKeyStore=True
         -p:AndroidSigningKeyStore="${{ steps.create_keystore.outputs.filePath }}"
         -p:AndroidSigningStorePass="${{ secrets.RELEASE_KEYSTORE_PASS }}"
