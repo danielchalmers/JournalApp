@@ -1,4 +1,5 @@
-﻿using MudBlazor.Services;
+﻿using MudBlazor;
+using MudBlazor.Services;
 
 namespace JournalApp;
 
@@ -16,8 +17,16 @@ public static class MauiProgram
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();
 #endif
-        builder.Services.AddMudServices();
         builder.Services.AddSingleton<FocusService>();
+
+        builder.Services.AddMudServices(c =>
+        {
+            c.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomCenter;
+            c.SnackbarConfiguration.NewestOnTop = true;
+            c.SnackbarConfiguration.HideTransitionDuration = 300;
+            c.SnackbarConfiguration.ShowTransitionDuration = 300;
+            c.SnackbarConfiguration.SnackbarVariant = Variant.Text;
+        });
 
         builder.Services.AddDbContextFactory<ApplicationDbContext>(options => options
             .UseSqlite($"Data Source = {DbFilename}")

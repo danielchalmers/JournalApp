@@ -3,6 +3,7 @@
 @inherits LayoutComponentBase
 @inject ApplicationDbContext db
 @inject FocusService FocusService
+@inject ISnackbar SnackbarService
 
 <MudThemeProvider />
 <MudDialogProvider />
@@ -58,5 +59,18 @@
 	{
 		StateHasChanged();
 		await db.SaveChangesAsync();
+
+		SnackbarService.Add("Entry deleted", Severity.Normal, c =>
+		{
+			c.Action = "Undo";
+			c.ActionColor = Color.Primary;
+			c.Onclick = async snackbar =>
+			{
+				SnackbarService.Remove(snackbar);
+				entry.IsDeleted = false;
+				StateHasChanged();
+				await db.SaveChangesAsync();
+			};
+		});
 	}
 }
