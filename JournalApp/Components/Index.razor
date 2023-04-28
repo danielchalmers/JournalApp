@@ -22,7 +22,7 @@
 	<MudStack id="main-timeline">
 		@foreach (var context in db.Entries.OrderByDescending(e => e.Date).Where(e => !e.IsDeleted))
 		{
-			<EntryView Model="@context" />
+			<EntryView Model="@context" EntryDeleted="@(async () => await OnEntryDeleted(context))" />
 		}
 	</MudStack>
 </div>
@@ -45,6 +45,12 @@
 	async Task NewNote()
 	{
 		await db.Entries.AddAsync(new Note() { Date = DateTime.Now });
+		await db.SaveChangesAsync();
+	}
+
+	async Task OnEntryDeleted(JournalEntry entry)
+	{
+		StateHasChanged();
 		await db.SaveChangesAsync();
 	}
 }
