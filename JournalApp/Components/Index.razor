@@ -35,6 +35,8 @@
 
 		FocusService.FocusChanged += async (_, _) =>
 		{
+			StateHasChanged();
+
 			// Save changes now that user has finished editing a note.
 			await db.SaveChangesAsync();
 		};
