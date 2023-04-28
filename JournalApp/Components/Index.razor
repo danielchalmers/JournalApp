@@ -20,9 +20,15 @@
 
 <div id="main-body">
 	<MudStack id="main-timeline">
-		@foreach (var context in db.Entries.OrderByDescending(e => e.Date).Where(e => !e.IsDeleted))
+		@*Sort notes chronologically and group by day*@
+		@foreach (var group in db.Entries.OrderByDescending(e => e.Date).Where(e => !e.IsDeleted).GroupBy(e => e.Date.Date))
 		{
-			<EntryView Model="@context" EntryDeleted="@(async () => await OnEntryDeleted(context))" />
+			<MudDivider />
+
+			@foreach (var context in group)
+			{
+				<EntryView Model="@context" EntryDeleted="@(async () => await OnEntryDeleted(context))" />
+			}
 		}
 	</MudStack>
 </div>
