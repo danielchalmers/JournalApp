@@ -7,10 +7,14 @@
 	}
 
 #splash-screen {
-	font-family: sans-serif;
 	display: flex;
 	justify-content: center;
-	margin-top: 10em;
+}
+
+#loading-text {
+	margin-top: 40vh;
+	font-family: sans-serif;
+	font-size: 5vw;
 }
 
 #main-header {
