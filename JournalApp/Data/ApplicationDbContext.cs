@@ -7,46 +7,21 @@ public class ApplicationDbContext : DbContext
     {
         Database.EnsureDeleted();
         Database.EnsureCreated();
+
+        Days.Add(new Day()
+        {
+            Date = DateOnly.FromDateTime(DateTime.Now),
+            DataPoints = new List<DataPoint>
+            {
+                new NumberDataPoint { Name = "Sleep" },
+                new ScaleDataPoint { Name = "Happiness" },
+                new BoolDataPoint { Name = "Productive?" },
+                new NoteDataPoint { Name = "Notes" },
+            }
+        });
+
+        SaveChanges();
     }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-
-        modelBuilder.Entity<Note>().HasData(
-            new Note()
-            {
-                Date = DateTime.Now - TimeSpan.FromDays(1),
-                Text = "Yesterday's note"
-            },
-            new Note()
-            {
-                Date = DateTime.Now - TimeSpan.FromDays(7),
-                Text = "Last week's note"
-            },
-            new Note()
-            {
-                Date = DateTime.Now - TimeSpan.FromDays(31),
-                Text = "Last month's note"
-            },
-            new Note()
-            {
-                Date = DateTime.Now - TimeSpan.FromDays(1),
-                Text = "Hello world, this is my note!"
-            }
-        );
-
-        modelBuilder.Entity<JournalEntry>().HasData(
-            new JournalEntry()
-            {
-                Date = DateTime.Now
-            },
-            new JournalEntry()
-            {
-                Date = DateTime.Now + TimeSpan.FromHours(1)
-            }
-        );
-    }
-
-    public DbSet<JournalEntry> Entries { get; set; } = default!;
+    public DbSet<Day> Days { get; set; } = default!;
 }

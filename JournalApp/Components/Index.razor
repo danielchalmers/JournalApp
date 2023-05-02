@@ -2,7 +2,6 @@
 @page "/"
 @inherits LayoutComponentBase
 @inject ApplicationDbContext db
-@inject FocusService FocusService
 @inject ISnackbar SnackbarService
 
 <MudThemeProvider IsDarkMode="true" />
@@ -13,64 +12,49 @@
 	<MudText>@ThisAssembly.AssemblyTitle 🙂</MudText>
 
 	<MudSpacer />
-
-	<MudMenu Color="Color.Secondary" StartIcon="@Icons.Material.Outlined.ArrowDropDown" Variant="Variant.Filled">
-		<MudMenuItem OnClick="NewNote" Icon="@Icons.Material.Outlined.Comment">New note</MudMenuItem>
-	</MudMenu>
 </MudAppBar>
 
 <div id="main-body">
-	<MudStack id="main-timeline">
-		@*Sort notes chronologically and group by day*@
-		@foreach (var group in db.Entries.OrderByDescending(e => e.Date).Where(e => !e.IsDeleted).GroupBy(e => e.Date.Date))
-		{
-			<MudDivider />
-
-			@foreach (var context in group)
-			{
-				<EntryView Model="@context" EntryDeleted="@(async () => await OnEntryDeleted(context))" />
-			}
+	<div id="main-timeline">
+		@{
+			var day = db.Days.Single();
 		}
-	</MudStack>
+
+		<div class="d-flex justify-center">
+			<MudText>@day.Date.ToString()</MudText>
+		</div>
+
+		<MudStack>
+			@foreach (var group in day.DataPoints.GroupBy(x => x.GetType()))
+			{
+				<MudDivider />
+
+				@foreach (var dataPoint in group)
+				{
+					<MudText>@dataPoint.Name</MudText>
+
+					@if (dataPoint is NumberDataPoint numberDataPoint)
+					{
+						<MudSlider Value="@numberDataPoint.Value" Variant="Variant.Filled" ValueLabel="true" TickMarkLabel="true" />
+					}
+					else if (dataPoint is ScaleDataPoint scaleDataPoint)
+					{
+						<MudRating SelectedValue="scaleDataPoint.ScaleIndex" />
+					}
+					else if (dataPoint is BoolDataPoint boolDataPoint)
+					{
+						<MudCheckBox @bind-Checked="boolDataPoint.Value" />
+					}
+					else if (dataPoint is NoteDataPoint noteDataPoint)
+					{
+						<MudTextField @bind-Value="noteDataPoint.Value" Lines="4" Placeholder="What's on your mind?" DisableUnderLine="true" />
+					}
+				}
+			}
+		</MudStack>
+	</div>
 </div>
 
 @code {
 
-	protected override void OnInitialized()
-	{
-		base.OnInitialized();
-
-		FocusService.FocusChanged += async (_, _) =>
-		{
-			StateHasChanged();
-
-			// Save changes now that user has finished editing a note.
-			await db.SaveChangesAsync();
-		};
-	}
-
-	async Task NewNote()
-	{
-		await db.Entries.AddAsync(new Note() { Date = DateTime.Now });
-		await db.SaveChangesAsync();
-	}
-
-	async Task OnEntryDeleted(JournalEntry entry)
-	{
-		StateHasChanged();
-		await db.SaveChangesAsync();
-
-		SnackbarService.Add("Entry deleted", Severity.Normal, c =>
-		{
-			c.Action = "Undo";
-			c.ActionColor = Color.Primary;
-			c.Onclick = async snackbar =>
-			{
-				SnackbarService.Remove(snackbar);
-				entry.IsDeleted = false;
-				StateHasChanged();
-				await db.SaveChangesAsync();
-			};
-		});
-	}
 }

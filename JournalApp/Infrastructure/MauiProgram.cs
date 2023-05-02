@@ -17,7 +17,6 @@ public static class MauiProgram
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();
 #endif
-        builder.Services.AddSingleton<FocusService>();
 
         builder.Services.AddMudServices(c =>
         {
