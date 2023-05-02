@@ -28,5 +28,5 @@ public class NumberDataPoint : DataPoint
 
 public class NoteDataPoint : DataPoint
 {
-    public int Value { get; set; }
+    public string Value { get; set; }
 }

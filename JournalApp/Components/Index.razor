@@ -9,7 +9,7 @@
 <MudSnackbarProvider />
 
 <MudAppBar id="main-header" Color="Color.Primary" Fixed="false" Dense="true">
-	<MudText>@ThisAssembly.AssemblyTitle 🙂</MudText>
+	<MudText>🙂 @ThisAssembly.AssemblyTitle</MudText>
 
 	<MudSpacer />
 </MudAppBar>
@@ -21,25 +21,25 @@
 		}
 
 		<div class="d-flex justify-center">
-			<MudText>@day.Date.ToString()</MudText>
+			<MudText Typo="Typo.h4">@day.Date.ToString("ddd, MMM d")</MudText>
 		</div>
 
 		<MudStack>
 			@foreach (var group in day.DataPoints.GroupBy(x => x.GetType()))
 			{
-				<MudDivider />
+				<MudDivider Style="margin-top:1em;margin-bottom:1em;" />
 
 				@foreach (var dataPoint in group)
 				{
-					<MudText>@dataPoint.Name</MudText>
+					<MudText Align="Align.Center"><b>@dataPoint.Name</b></MudText>
 
 					@if (dataPoint is SleepDataPoint sleepDataPoint)
 					{
-						<MudSlider T="decimal" @bind-Value="sleepDataPoint.Value" Variant="Variant.Filled" ValueLabel="true" TickMarkLabel="true" Min="0" Max="24" Step="0.5m" />
+						<MudSlider @bind-Value="sleepDataPoint.Value" Variant="Variant.Filled" ValueLabel="true" Min="0" Max="24" Step="0.5m">@sleepDataPoint.Value</MudSlider>
 					}
 					else if (dataPoint is ScaleDataPoint scaleDataPoint)
 					{
-						<MudRating SelectedValue="scaleDataPoint.ScaleIndex" />
+						<MudRating @bind-SelectedValue="scaleDataPoint.ScaleIndex" Size="Size.Large" />
 					}
 					else if (dataPoint is BoolDataPoint boolDataPoint)
 					{
@@ -51,7 +51,7 @@
 					}
 					else if (dataPoint is NoteDataPoint noteDataPoint)
 					{
-						<MudTextField @bind-Value="noteDataPoint.Value" Lines="4" Placeholder="What's on your mind?" DisableUnderLine="true" />
+						<MudTextField @bind-Value="noteDataPoint.Value" Lines="4" Placeholder="What's on your mind?" />
 					}
 				}
 			}
