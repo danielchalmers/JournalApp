@@ -33,9 +33,9 @@
 				{
 					<MudText>@dataPoint.Name</MudText>
 
-					@if (dataPoint is NumberDataPoint numberDataPoint)
+					@if (dataPoint is SleepDataPoint sleepDataPoint)
 					{
-						<MudSlider Value="@numberDataPoint.Value" Variant="Variant.Filled" ValueLabel="true" TickMarkLabel="true" />
+						<MudSlider T="decimal" @bind-Value="sleepDataPoint.Value" Variant="Variant.Filled" ValueLabel="true" TickMarkLabel="true" Min="0" Max="24" Step="0.5m" />
 					}
 					else if (dataPoint is ScaleDataPoint scaleDataPoint)
 					{
@@ -44,6 +44,10 @@
 					else if (dataPoint is BoolDataPoint boolDataPoint)
 					{
 						<MudCheckBox @bind-Checked="boolDataPoint.Value" />
+					}
+					else if (dataPoint is NumberDataPoint numberDataPoint)
+					{
+						<MudNumericField @bind-Value="numberDataPoint.Value" />
 					}
 					else if (dataPoint is NoteDataPoint noteDataPoint)
 					{

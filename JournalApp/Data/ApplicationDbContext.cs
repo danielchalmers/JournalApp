@@ -13,9 +13,10 @@ public class ApplicationDbContext : DbContext
             Date = DateOnly.FromDateTime(DateTime.Now),
             DataPoints = new List<DataPoint>
             {
-                new NumberDataPoint { Name = "Sleep" },
+                new SleepDataPoint { Name = "Sleep" },
                 new ScaleDataPoint { Name = "Happiness" },
                 new BoolDataPoint { Name = "Productive?" },
+                new NumberDataPoint { Name = "Weight" },
                 new NoteDataPoint { Name = "Notes" },
             }
         });

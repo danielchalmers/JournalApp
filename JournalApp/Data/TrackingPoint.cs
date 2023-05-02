@@ -6,9 +6,9 @@ public class DataPoint
     public string Name { get; set; }
 }
 
-public class NumberDataPoint : DataPoint
+public class SleepDataPoint : DataPoint
 {
-    public int Value { get; set; }
+    public decimal Value { get; set; }
 }
 
 public class ScaleDataPoint : DataPoint
@@ -19,6 +19,11 @@ public class ScaleDataPoint : DataPoint
 public class BoolDataPoint : DataPoint
 {
     public bool Value { get; set; }
+}
+
+public class NumberDataPoint : DataPoint
+{
+    public double Value { get; set; }
 }
 
 public class NoteDataPoint : DataPoint
