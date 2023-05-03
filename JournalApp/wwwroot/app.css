@@ -20,10 +20,11 @@
 #main-header {
 	top: 0;
 	position: sticky;
+	background-color: mediumpurple;
+	z-index: 1000;
 }
 
 #main-body {
-	padding: 16px;
 	display: flex;
 	justify-content: center;
 }

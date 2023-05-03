@@ -1,7 +1,6 @@
 ﻿@namespace JournalApp
 @typeparam T where T : DataPoint
 
-
 @foreach (var group in DataPoints.GroupBy(x => x.GetType()))
 {
 	@foreach (var dataPoint in group)

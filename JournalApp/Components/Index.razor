@@ -8,30 +8,30 @@
 <MudDialogProvider />
 <MudSnackbarProvider />
 
-<MudAppBar id="main-header" Color="Color.Primary" Fixed="false" Dense="true">
-	<MudText>🙂 @ThisAssembly.AssemblyTitle</MudText>
+<div id="main-header">
+	<MudAppBar Color="Color.Primary" Fixed="false" Dense="true">
+		<MudText>🙂 @ThisAssembly.AssemblyTitle</MudText>
 
-	<MudSpacer />
-</MudAppBar>
+		<MudSpacer />
+	</MudAppBar>
+
+	<div class="d-flex justify-center" style="margin:1em">
+		<MudText Typo="Typo.h5">@day.Date.ToString("ddd, MMM d")</MudText>
+	</div>
+
+	<MudDivider />
+</div>
 
 <div id="main-body">
-	<div id="main-timeline">
-		<div class="d-flex justify-center">
-			<MudText Typo="Typo.h4">@day.Date.ToString("ddd, MMM d")</MudText>
-		</div>
+	<MudStack id="main-timeline">
+		<DataPointGroup DataPoints="day.DataPoints" />
 
 		<MudDivider />
 
-		<MudStack>
-			<DataPointGroup DataPoints="day.DataPoints" />
+		<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote">New note</MudButton>
 
-			<MudDivider />
-
-			<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote">New note</MudButton>
-
-			<DataPointGroup DataPoints="day.Notes" />
-		</MudStack>
-	</div>
+		<DataPointGroup DataPoints="day.Notes" />
+	</MudStack>
 </div>
 
 @code {

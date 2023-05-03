@@ -15,7 +15,8 @@ public class ApplicationDbContext : DbContext
             {
                 new SleepDataPoint { Name = "Sleep" },
                 new ScaleDataPoint { Name = "Happiness" },
-                new BoolDataPoint { Name = "Productive?" },
+                new ScaleDataPoint { Name = "Productivity" },
+                new BoolDataPoint { Name = "Updated JournalApp" },
                 new NumberDataPoint { Name = "Weight" },
             },
             Notes = new List<NoteDataPoint>

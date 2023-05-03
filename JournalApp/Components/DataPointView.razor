@@ -12,7 +12,7 @@ else if (DataPoint is ScaleDataPoint scaleDataPoint)
 }
 else if (DataPoint is BoolDataPoint boolDataPoint)
 {
-	<MudCheckBox @bind-Checked="boolDataPoint.Value" />
+	<MudCheckBox @bind-Checked="boolDataPoint.Value" TriState="true" />
 }
 else if (DataPoint is NumberDataPoint numberDataPoint)
 {
