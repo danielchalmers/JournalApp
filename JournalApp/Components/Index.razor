@@ -16,49 +16,38 @@
 
 <div id="main-body">
 	<div id="main-timeline">
-		@{
-			var day = db.Days.Single();
-		}
-
 		<div class="d-flex justify-center">
 			<MudText Typo="Typo.h4">@day.Date.ToString("ddd, MMM d")</MudText>
 		</div>
 
+		<MudDivider />
+
 		<MudStack>
-			@foreach (var group in day.DataPoints.GroupBy(x => x.GetType()))
-			{
-				<MudDivider Style="margin-top:1em;margin-bottom:1em;" />
+			<DataPointGroup DataPoints="day.DataPoints" />
 
-				@foreach (var dataPoint in group)
-				{
-					<MudText Align="Align.Center"><b>@dataPoint.Name</b></MudText>
+			<MudDivider />
 
-					@if (dataPoint is SleepDataPoint sleepDataPoint)
-					{
-						<MudSlider @bind-Value="sleepDataPoint.Value" Variant="Variant.Filled" ValueLabel="true" Min="0" Max="24" Step="0.5m">@sleepDataPoint.Value</MudSlider>
-					}
-					else if (dataPoint is ScaleDataPoint scaleDataPoint)
-					{
-						<MudRating @bind-SelectedValue="scaleDataPoint.ScaleIndex" Size="Size.Large" />
-					}
-					else if (dataPoint is BoolDataPoint boolDataPoint)
-					{
-						<MudCheckBox @bind-Checked="boolDataPoint.Value" />
-					}
-					else if (dataPoint is NumberDataPoint numberDataPoint)
-					{
-						<MudNumericField @bind-Value="numberDataPoint.Value" />
-					}
-					else if (dataPoint is NoteDataPoint noteDataPoint)
-					{
-						<MudTextField @bind-Value="noteDataPoint.Value" Lines="4" Placeholder="What's on your mind?" />
-					}
-				}
-			}
+			<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote">New note</MudButton>
+
+			<DataPointGroup DataPoints="day.Notes" />
 		</MudStack>
 	</div>
 </div>
 
 @code {
+	Day day;
 
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+
+		day = db.Days.Single();
+	}
+
+	async Task NewNote()
+	{
+		day.Notes.Add(new NoteDataPoint { Name = $"Note at {DateTimeOffset.Now:h:mm:ss tt}" });
+
+		await db.SaveChangesAsync();
+	}
 }

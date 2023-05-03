@@ -17,7 +17,9 @@ public class ApplicationDbContext : DbContext
                 new ScaleDataPoint { Name = "Happiness" },
                 new BoolDataPoint { Name = "Productive?" },
                 new NumberDataPoint { Name = "Weight" },
-                new NoteDataPoint { Name = "Notes" },
+            },
+            Notes = new List<NoteDataPoint>
+            {
             }
         });
 

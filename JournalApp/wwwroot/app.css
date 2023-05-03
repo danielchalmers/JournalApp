@@ -34,6 +34,11 @@
 	margin-bottom: 20em;
 }
 
+.mud-divider {
+	margin-top: 1em !important;
+	margin-bottom: 1em !important;
+}
+
 #blazor-error-ui {
 	background: darkorange;
 	bottom: 0;

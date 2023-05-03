@@ -6,4 +6,6 @@ public class Day
     public DateOnly Date { get; set; }
 
     public ICollection<DataPoint> DataPoints { get; set; }
+
+    public ICollection<NoteDataPoint> Notes { get; set; }
 }

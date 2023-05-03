@@ -8,7 +8,7 @@ public class DataPoint
 
 public class SleepDataPoint : DataPoint
 {
-    public decimal Value { get; set; }
+    public decimal Hours { get; set; }
 }
 
 public class ScaleDataPoint : DataPoint
@@ -26,7 +26,12 @@ public class NumberDataPoint : DataPoint
     public double Value { get; set; }
 }
 
-public class NoteDataPoint : DataPoint
+public class TextDataPoint : DataPoint
 {
     public string Value { get; set; }
+}
+
+public class NoteDataPoint : TextDataPoint
+{
+    //public DateTimeOffset DateTime { get; set; }
 }

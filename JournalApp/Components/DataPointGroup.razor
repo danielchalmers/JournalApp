@@ -1,0 +1,16 @@
+﻿@namespace JournalApp
+@typeparam T where T : DataPoint
+
+
+@foreach (var group in DataPoints.GroupBy(x => x.GetType()))
+{
+	@foreach (var dataPoint in group)
+	{
+		<DataPointView DataPoint="dataPoint" />
+	}
+}
+
+@code {
+	[Parameter]
+	public ICollection<T> DataPoints { get; set; }
+}
