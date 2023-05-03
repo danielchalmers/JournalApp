@@ -40,6 +40,13 @@
 	margin-bottom: 1em !important;
 }
 
+.data-point-view {
+	min-height: 3em;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
 #blazor-error-ui {
 	background: darkorange;
 	bottom: 0;

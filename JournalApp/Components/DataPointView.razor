@@ -1,32 +1,32 @@
 ﻿@namespace JournalApp
 
-@if (DataPoint is SleepDataPoint sleepDataPoint)
-{
-	<div class="d-flex align-center gap-2">
-		<MudText>@DataPoint.Name:</MudText>
-		<MudText Style="width:3em">@sleepDataPoint.Hours</MudText>
-		<MudSlider @bind-Value="sleepDataPoint.Hours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" />
-	</div>
-}
-else if (DataPoint is ScaleDataPoint scaleDataPoint)
-{
-	<div class="d-flex align-center gap-2">
-		<MudText>@DataPoint.Name</MudText>
+<div class="data-point-view">
+	<MudText Style="width:9em" Align="Align.Right">@DataPoint.Name:</MudText>
+
+	@if (DataPoint is SleepDataPoint sleepDataPoint)
+	{
+		<div class="d-flex align-center gap-2 flex-grow-1">
+			<MudText>@((sleepDataPoint.Hours ?? 0).ToString("00.0"))</MudText>
+			<MudSlider @bind-Value="sleepDataPoint.Hours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" />
+		</div>
+	}
+	else if (DataPoint is ScaleDataPoint scaleDataPoint)
+	{
 		<MudRating @bind-SelectedValue="scaleDataPoint.ScaleIndex" Size="Size.Large" />
-	</div>
-}
-else if (DataPoint is BoolDataPoint boolDataPoint)
-{
-	<MudCheckBox @bind-Checked="boolDataPoint.Value" TriState="true" Label="@DataPoint.Name" Color="Color.Primary" />
-}
-else if (DataPoint is NumberDataPoint numberDataPoint)
-{
-	<MudNumericField @bind-Value="numberDataPoint.Value" Label="@DataPoint.Name" />
-}
-else if (DataPoint is TextDataPoint textDataPoint)
-{
-	<MudTextField @bind-Value="textDataPoint.Value" Lines="4" Placeholder="What's on your mind?" Label="@DataPoint.Name" />
-}
+	}
+	else if (DataPoint is BoolDataPoint boolDataPoint)
+	{
+		<MudCheckBox @bind-Checked="boolDataPoint.Value" TriState="true" Color="Color.Primary" />
+	}
+	else if (DataPoint is NumberDataPoint numberDataPoint)
+	{
+		<MudNumericField @bind-Value="numberDataPoint.Value" Margin="Margin.None" />
+	}
+	else if (DataPoint is TextDataPoint textDataPoint)
+	{
+		<MudTextField @bind-Value="textDataPoint.Value" Lines="4" Placeholder="What's on your mind?" Margin="Margin.None" />
+	}
+</div>
 
 @code {
 	[Parameter]
