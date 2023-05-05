@@ -1,0 +1,25 @@
+﻿@namespace JournalApp
+@inject IDialogService DialogService
+
+
+<MudDialog>
+	<DialogContent>
+		<MudTextField @bind-Value="DataPoint.Value" Lines="20" />
+	</DialogContent>
+
+	<DialogActions>
+		<MudButton Color="Color.Primary" OnClick="Submit">Save</MudButton>
+	</DialogActions>
+</MudDialog>
+
+@code {
+	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+	[Parameter]
+	public TextDataPoint DataPoint { get; set; }
+
+	void Submit()
+	{
+		MudDialog.Close(DialogResult.Ok(true));
+	}
+}

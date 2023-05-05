@@ -1,11 +1,12 @@
 ﻿@namespace JournalApp
+@inject IDialogService DialogService
 
 <div class="data-point-view">
 	<MudText Style="width:9em" Align="Align.Right">@DataPoint.Name:</MudText>
 
 	@if (DataPoint is SleepDataPoint sleepDataPoint)
 	{
-		<div class="d-flex align-center gap-2 flex-grow-1">
+		<div class="d-flex align-center flex-grow-1 gap-2">
 			<MudText>@((sleepDataPoint.Hours ?? 0).ToString("00.0"))</MudText>
 			<MudSlider @bind-Value="sleepDataPoint.Hours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" />
 		</div>
@@ -24,11 +25,32 @@
 	}
 	else if (DataPoint is TextDataPoint textDataPoint)
 	{
-		<MudTextField @bind-Value="textDataPoint.Value" Lines="4" Placeholder="What's on your mind?" Margin="Margin.None" />
+		<div class="d-flex flex-column flex-grow-1 gap-2">
+			<MudTextField @bind-Value="textDataPoint.Value" Lines="4" Placeholder="What's on your mind?" Margin="Margin.None" />
+
+			<MudLink OnClick="async () => await EditTextInDialog(textDataPoint)">Edit...</MudLink>
+		</div>
 	}
 </div>
 
 @code {
 	[Parameter]
 	public DataPoint DataPoint { get; set; }
+
+	async Task EditTextInDialog(TextDataPoint textDataPoint)
+	{
+		var parameters = new DialogParameters();
+		parameters.Add(nameof(EditTextDialog.DataPoint), DataPoint);
+
+		var options = new DialogOptions()
+			{
+				CloseButton = true,
+				CloseOnEscapeKey = false,
+				DisableBackdropClick = true,
+				FullWidth = true,
+				NoHeader = true,
+			};
+
+		var result = await DialogService.Show<EditTextDialog>("Edit text", parameters, options).Result;
+	}
 }
