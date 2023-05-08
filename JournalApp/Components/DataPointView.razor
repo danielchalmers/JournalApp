@@ -1,55 +1,54 @@
 ﻿@namespace JournalApp
+@typeparam T where T : DataPoint
 @inject IDialogService DialogService
 
 <div class="data-point-view">
 	<MudText Style="width:9em" Align="Align.Right">@DataPoint.Name:</MudText>
 
-	@if (DataPoint is SleepDataPoint sleepDataPoint)
+	@if (DataPoint is SleepDataPoint sleepDp)
 	{
 		<div class="d-flex align-center flex-grow-1 gap-2">
-			<MudText>@((sleepDataPoint.Hours ?? 0).ToString("00.0"))</MudText>
-			<MudSlider @bind-Value="sleepDataPoint.Hours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" />
+			<MudText>@((sleepDp.Hours ?? 0).ToString("00.0"))</MudText>
+			<MudSlider @bind-Value="sleepDp.Hours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" />
 		</div>
 	}
-	else if (DataPoint is ScaleDataPoint scaleDataPoint)
+	else if (DataPoint is ScaleDataPoint scaleDp)
 	{
-		<MudRating @bind-SelectedValue="scaleDataPoint.ScaleIndex" Size="Size.Large" />
+		<MudRating @bind-SelectedValue="scaleDp.ScaleIndex" Size="Size.Large" />
 	}
-	else if (DataPoint is BoolDataPoint boolDataPoint)
+	else if (DataPoint is BoolDataPoint boolDp)
 	{
-		<MudCheckBox @bind-Checked="boolDataPoint.Value" TriState="true" Color="Color.Primary" />
+		<MudCheckBox @bind-Checked="boolDp.Value" TriState="true" Color="Color.Primary" />
 	}
-	else if (DataPoint is NumberDataPoint numberDataPoint)
+	else if (DataPoint is NumberDataPoint numberDp)
 	{
-		<MudNumericField @bind-Value="numberDataPoint.Value" Margin="Margin.None" />
+		<MudNumericField @bind-Value="numberDp.Value" Margin="Margin.None" />
 	}
-	else if (DataPoint is TextDataPoint textDataPoint)
+	else if (DataPoint is TextDataPoint textDp)
 	{
 		<div class="d-flex flex-column flex-grow-1 gap-2">
-			<MudTextField @bind-Value="textDataPoint.Value" Lines="4" Placeholder="What's on your mind?" Margin="Margin.None" />
+			<MudTextField @bind-Value="textDp.Value" Lines="4" Placeholder="What's on your mind?" Margin="Margin.None" />
 
-			<MudLink OnClick="async () => await EditTextInDialog(textDataPoint)">Edit...</MudLink>
+			<MudLink OnClick="EditTextInDialog">Edit...</MudLink>
 		</div>
 	}
 </div>
 
 @code {
 	[Parameter]
-	public DataPoint DataPoint { get; set; }
+	public T DataPoint { get; set; }
 
-	async Task EditTextInDialog(TextDataPoint textDataPoint)
+	async Task EditTextInDialog()
 	{
-		var parameters = new DialogParameters();
-		parameters.Add(nameof(EditTextDialog.DataPoint), DataPoint);
-
+		var parameters = new DialogParameters { { nameof(EditTextDialog.DataPoint), DataPoint } };
 		var options = new DialogOptions()
-			{
-				CloseButton = true,
-				CloseOnEscapeKey = false,
-				DisableBackdropClick = true,
-				FullWidth = true,
-				NoHeader = true,
-			};
+		{
+			CloseButton = true,
+			CloseOnEscapeKey = false,
+			DisableBackdropClick = true,
+			FullWidth = true,
+			NoHeader = true,
+		};
 
 		var result = await DialogService.Show<EditTextDialog>("Edit text", parameters, options).Result;
 	}

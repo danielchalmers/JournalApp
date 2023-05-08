@@ -24,13 +24,13 @@
 
 <div id="main-body">
 	<MudStack id="main-timeline">
-		<DataPointGroup DataPoints="day.DataPoints" />
+		<MultiDataPoints DataPoints="day.DataPoints" />
 
 		<MudDivider />
 
 		<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote">New note</MudButton>
 
-		<DataPointGroup DataPoints="day.Notes" />
+		<MultiDataPoints DataPoints="day.Notes" />
 	</MudStack>
 </div>
 
