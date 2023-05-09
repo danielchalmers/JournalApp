@@ -3,7 +3,13 @@
 public class DataPoint
 {
     [Key]
+    public int Id { get; set; }
+
+    public Day Day { get; set; }
+
     public string Name { get; set; }
+
+    public override string ToString() => $"{Name} ({Id})";
 }
 
 public class SleepDataPoint : DataPoint

@@ -15,8 +15,12 @@
 		<MudSpacer />
 	</MudAppBar>
 
-	<div class="d-flex justify-center" style="margin:1em">
+	<div class="d-flex justify-center align-center gap-4" style="margin:1em">
+		<MudIconButton Icon="@Icons.Material.Outlined.ArrowBack" aria-label="previous" OnClick="PreviousDay" Disabled="@(day.Date.DayNumber <= 1)" />
+
 		<MudText Typo="Typo.h5">@day.Date.ToString("ddd, MMM d")</MudText>
+
+		<MudIconButton Icon="@Icons.Material.Outlined.ArrowForward" aria-label="next" OnClick="NextDay" Disabled="@(day.Date > DateOnly.FromDateTime(DateTime.Now))" />
 	</div>
 
 	<MudDivider />
@@ -41,7 +45,7 @@
 	{
 		await base.OnInitializedAsync();
 
-		day = db.Days.Single();
+		day = await db.GetDay(DateTime.Now);
 	}
 
 	async Task NewNote()
@@ -49,5 +53,15 @@
 		day.Notes.Add(new NoteDataPoint { Name = $"Note at {DateTimeOffset.Now:h:mm:ss tt}" });
 
 		await db.SaveChangesAsync();
+	}
+
+	async Task PreviousDay()
+	{
+		day = await db.GetPreviousDay(day);
+	}
+
+	async Task NextDay()
+	{
+		day = await db.GetNextDay(day);
 	}
 }
