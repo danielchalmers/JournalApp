@@ -28,6 +28,7 @@ public static class MauiProgram
         });
 
         builder.Services.AddDbContextFactory<ApplicationDbContext>(options => options
+            .UseLazyLoadingProxies()
             .UseSqlite($"Data Source = {DbFilename}")
             .EnableSensitiveDataLogging());
 

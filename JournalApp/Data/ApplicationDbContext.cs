@@ -5,7 +5,6 @@ public class ApplicationDbContext : DbContext
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
-        Database.EnsureDeleted();
         Database.EnsureCreated();
     }
 
@@ -14,6 +13,13 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<Day>()
             .HasMany(e => e.DataPoints)
             .WithOne(e => e.Day);
+
+        modelBuilder.Entity<SleepDataPoint>().HasBaseType<DataPoint>();
+        modelBuilder.Entity<ScaleDataPoint>().HasBaseType<DataPoint>();
+        modelBuilder.Entity<BoolDataPoint>().HasBaseType<DataPoint>();
+        modelBuilder.Entity<NumberDataPoint>().HasBaseType<DataPoint>();
+        modelBuilder.Entity<TextDataPoint>().HasBaseType<DataPoint>();
+        modelBuilder.Entity<NoteDataPoint>().HasBaseType<TextDataPoint>();
     }
 
     protected DbSet<Day> Days { get; set; } = default!;
