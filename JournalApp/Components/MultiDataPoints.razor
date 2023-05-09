@@ -1,9 +1,12 @@
 ﻿@namespace JournalApp
 @typeparam T where T : DataPoint
 
-@foreach (var dataPoint in DataPoints.OrderBy(x => x.Id))
+@foreach (var group in DataPoints.GroupBy(x => x.GetType()))
 {
-	<DataPointView DataPoint="dataPoint" />
+	@foreach (var dataPoint in group)
+	{
+		<DataPointView DataPoint="dataPoint" />
+	}
 }
 
 @code {
