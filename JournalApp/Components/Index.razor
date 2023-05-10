@@ -17,6 +17,7 @@
 
 		<MudMenu Icon="@Icons.Material.Filled.MoreVert">
 			<MudMenuItem OnClick="ResetDatabase">Reset database...</MudMenuItem>
+			<MudMenuItem OnClick="ManageDataPoints">Choose data points...</MudMenuItem>
 		</MudMenu>
 	</MudAppBar>
 
@@ -81,5 +82,18 @@
 
 		await db.Database.EnsureDeletedAsync();
 		Application.Current.Quit();
+	}
+
+	async Task ManageDataPoints()
+	{
+		var options = new DialogOptions()
+			{
+				CloseButton = true,
+				CloseOnEscapeKey = true,
+				DisableBackdropClick = false,
+				FullWidth = true,
+			};
+
+		await DialogService.Show<ManageDataPoints>("Data Points", options).Result;
 	}
 }

@@ -5,15 +5,16 @@ public class ApplicationDbContext : DbContext
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
+        Database.EnsureDeleted();
         Database.EnsureCreated();
 
-        DataPointTemplates ??= new List<DataPointTemplate>
+        DataPointCategories ??= new List<DataPointCategory>
         {
-            new SleepDataPoint { Name = "Sleep", SequenceNumber = 1 },
-            new ScaleDataPoint { Name = "Happiness", SequenceNumber = 2 },
-            new ScaleDataPoint { Name = "Productivity", SequenceNumber = 3 },
-            new BoolDataPoint { Name = "Updated JournalApp", SequenceNumber = 4 },
-            new NumberDataPoint { Name = "Weight", SequenceNumber = 5 },
+            new() { Name = "Sleep", Type = typeof(SleepDataPoint), SequenceNumber = 1 },
+            new() { Name = "Happiness", Type = typeof(ScaleDataPoint), SequenceNumber = 2 },
+            new() { Name = "Productivity", Type = typeof(ScaleDataPoint), SequenceNumber = 3 },
+            new() { Name = "Updated JournalApp", Type = typeof(BoolDataPoint), SequenceNumber = 4 },
+            new() { Name = "Weight", Type = typeof(NumberDataPoint), SequenceNumber = 5 },
         };
     }
 
@@ -33,7 +34,7 @@ public class ApplicationDbContext : DbContext
 
     protected DbSet<Day> Days { get; set; } = default!;
 
-    protected IList<DataPointTemplate> DataPointTemplates { get; set; }
+    public IList<DataPointCategory> DataPointCategories { get; set; }
 
     public Task<Day> GetDay(DateTime dateTime) => GetDay(DateOnly.FromDateTime(dateTime));
 
@@ -48,7 +49,7 @@ public class ApplicationDbContext : DbContext
         }
 
         // Add missing data points.
-        foreach (var template in DataPointTemplates.Where(x => !day.DataPoints.Any(y => y.Name == x.Name)))
+        foreach (var template in DataPointCategories.Where(x => !day.DataPoints.Any(y => y.Name == x.Name)))
         {
             var dataPoint = (DataPoint)template.Clone();
             dataPoint.Id = default;

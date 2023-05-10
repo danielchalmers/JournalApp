@@ -1,0 +1,49 @@
+﻿@namespace JournalApp
+@inject IDialogService DialogService
+
+<MudDialog>
+	<DialogContent>
+		<MudTextField @bind-Value="Name" />
+		
+		<MudSelect T="Type" Label="Type" @bind-Value="SelectedType">
+			@foreach (var type in DatePointTypes)
+			{
+				<MudSelectItem T="Type" Value="type">@type.Name</MudSelectItem>
+			}
+		</MudSelect>
+	</DialogContent>
+
+	<DialogActions>
+		<MudButton OnClick="Cancel">Cancel</MudButton>
+
+		<MudButton Color="Color.Primary" OnClick="Submit">Add</MudButton>
+	</DialogActions>
+</MudDialog>
+
+@code {
+	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+	public string Name { get; set; } = "My data point";
+
+	public IReadOnlyList<Type> DatePointTypes { get; set; } = new[] { typeof(ScaleDataPoint), typeof(BoolDataPoint), typeof(NumberDataPoint) };
+
+	public Type SelectedType { get; set; }
+
+	public DataPointCategory Category { get; set; }
+
+	void Cancel()
+	{
+		MudDialog.Close(DialogResult.Cancel());
+	}
+
+	void Submit()
+	{
+		Category = new()
+		{
+			Name = Name,
+			Type = SelectedType,
+		};
+
+		MudDialog.Close(DialogResult.Ok(Category));
+	}
+}

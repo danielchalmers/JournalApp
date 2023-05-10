@@ -1,0 +1,39 @@
+﻿@namespace JournalApp
+@inject ApplicationDbContext db
+@inject IDialogService DialogService
+
+<MudDialog>
+	<DialogContent>
+		<MudButton OnClick="New">Add Data Point Category</MudButton>
+
+		<MudDataGrid Items="db.DataPointCategories">
+			<Columns>
+				<PropertyColumn Property="x => x.Name" />
+				<PropertyColumn Property="x => x.SequenceNumber" />
+			</Columns>
+		</MudDataGrid>
+	</DialogContent>
+
+	<DialogActions>
+		<MudButton Color="Color.Primary" OnClick="Submit">Done</MudButton>
+	</DialogActions>
+</MudDialog>
+
+@code {
+	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+	async Task New()
+	{
+		var result = await DialogService.Show<NewDataPointCategory>().Result;
+
+		if (result.Canceled)
+			return;
+
+		db.DataPointCategories.Add((DataPointCategory)result.Data);
+	}
+
+	void Submit()
+	{
+		MudDialog.Close(DialogResult.Ok(true));
+	}
+}
