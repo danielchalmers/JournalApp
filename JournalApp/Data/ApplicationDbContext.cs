@@ -6,6 +6,15 @@ public class ApplicationDbContext : DbContext
         : base(options)
     {
         Database.EnsureCreated();
+
+        DataPointTemplates ??= new List<DataPointTemplate>
+        {
+            new SleepDataPoint { Name = "Sleep", SequenceNumber = 1 },
+            new ScaleDataPoint { Name = "Happiness", SequenceNumber = 2 },
+            new ScaleDataPoint { Name = "Productivity", SequenceNumber = 3 },
+            new BoolDataPoint { Name = "Updated JournalApp", SequenceNumber = 4 },
+            new NumberDataPoint { Name = "Weight", SequenceNumber = 5 },
+        };
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -24,6 +33,8 @@ public class ApplicationDbContext : DbContext
 
     protected DbSet<Day> Days { get; set; } = default!;
 
+    protected IList<DataPointTemplate> DataPointTemplates { get; set; }
+
     public Task<Day> GetDay(DateTime dateTime) => GetDay(DateOnly.FromDateTime(dateTime));
 
     public async Task<Day> GetDay(DateOnly date)
@@ -32,13 +43,21 @@ public class ApplicationDbContext : DbContext
 
         if (day == null)
         {
-            var newDay = NewDay(date);
-
-            Days.Add(newDay);
-            await SaveChangesAsync();
-
-            return newDay;
+            day = NewDay(date);
+            Days.Add(day);
         }
+
+        // Add missing data points.
+        foreach (var template in DataPointTemplates.Where(x => !day.DataPoints.Any(y => y.Name == x.Name)))
+        {
+            var dataPoint = (DataPoint)template.Clone();
+            dataPoint.Id = default;
+            dataPoint.Day = day;
+            day.DataPoints.Add(dataPoint);
+        }
+
+        // Force IDs to be assigned.
+        await SaveChangesAsync();
 
         return day;
     }
@@ -51,16 +70,7 @@ public class ApplicationDbContext : DbContext
     {
         Id = date.DayNumber,
         Date = date,
-        DataPoints = new List<DataPoint>
-        {
-            new SleepDataPoint { Name = "Sleep", SequenceNumber = 1 },
-            new ScaleDataPoint { Name = "Happiness", SequenceNumber = 2 },
-            new ScaleDataPoint { Name = "Productivity", SequenceNumber = 3 },
-            new BoolDataPoint { Name = "Updated JournalApp", SequenceNumber = 4 },
-            new NumberDataPoint { Name = "Weight", SequenceNumber = 5 },
-        },
-        Notes = new List<NoteDataPoint>
-        {
-        }
+        DataPoints = new List<DataPoint>(),
+        Notes = new List<NoteDataPoint>(),
     };
 }

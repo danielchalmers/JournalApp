@@ -1,15 +1,20 @@
 ﻿namespace JournalApp;
 
-public class DataPoint
+public class DataPointTemplate
+{
+    public string Name { get; set; }
+
+    public int SequenceNumber { get; set; }
+
+    public object Clone() => MemberwiseClone();
+}
+
+public class DataPoint : DataPointTemplate
 {
     [Key]
     public int Id { get; set; }
 
     public virtual Day Day { get; set; }
-
-    public string Name { get; set; }
-
-    public int SequenceNumber { get; set; }
 
     public override string ToString() => $"{Name} ({Id})";
 }
