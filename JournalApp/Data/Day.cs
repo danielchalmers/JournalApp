@@ -12,4 +12,15 @@ public class Day
     public virtual ICollection<NoteDataPoint> Notes { get; set; }
 
     public override string ToString() => $"{Date} ({Id})";
+
+    public void AddNewNote()
+    {
+        var lastNoteSequenceNumber = Notes.Count == 0 ? 0 : Notes.Max(x => x.SequenceNumber);
+
+        Notes.Add(new()
+        {
+            Name = $"Note at {DateTimeOffset.Now:h:mm:ss tt}",
+            SequenceNumber = lastNoteSequenceNumber + 1
+        });
+    }
 }

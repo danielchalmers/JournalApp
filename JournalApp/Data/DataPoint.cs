@@ -9,6 +9,8 @@ public class DataPoint
 
     public string Name { get; set; }
 
+    public int SequenceNumber { get; set; }
+
     public override string ToString() => $"{Name} ({Id})";
 }
 

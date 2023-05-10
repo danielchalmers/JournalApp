@@ -53,11 +53,11 @@ public class ApplicationDbContext : DbContext
         Date = date,
         DataPoints = new List<DataPoint>
         {
-            new SleepDataPoint { Name = "Sleep" },
-            new ScaleDataPoint { Name = "Happiness" },
-            new ScaleDataPoint { Name = "Productivity" },
-            new BoolDataPoint { Name = "Updated JournalApp" },
-            new NumberDataPoint { Name = "Weight" },
+            new SleepDataPoint { Name = "Sleep", SequenceNumber = 1 },
+            new ScaleDataPoint { Name = "Happiness", SequenceNumber = 2 },
+            new ScaleDataPoint { Name = "Productivity", SequenceNumber = 3 },
+            new BoolDataPoint { Name = "Updated JournalApp", SequenceNumber = 4 },
+            new NumberDataPoint { Name = "Weight", SequenceNumber = 5 },
         },
         Notes = new List<NoteDataPoint>
         {

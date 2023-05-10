@@ -48,11 +48,9 @@
 		day = await db.GetDay(DateTime.Now);
 	}
 
-	async Task NewNote()
+	void NewNote()
 	{
-		day.Notes.Add(new NoteDataPoint { Name = $"Note at {DateTimeOffset.Now:h:mm:ss tt}" });
-
-		await db.SaveChangesAsync();
+		day.AddNewNote();
 	}
 
 	async Task PreviousDay()
