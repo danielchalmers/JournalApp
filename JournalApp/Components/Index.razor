@@ -3,6 +3,7 @@
 @inherits LayoutComponentBase
 @inject ApplicationDbContext db
 @inject ISnackbar SnackbarService
+@inject IDialogService DialogService
 
 <MudThemeProvider IsDarkMode="true" />
 <MudDialogProvider />
@@ -13,6 +14,10 @@
 		<MudText>🙂 @ThisAssembly.AssemblyTitle</MudText>
 
 		<MudSpacer />
+
+		<MudMenu Icon="@Icons.Material.Filled.MoreVert">
+			<MudMenuItem OnClick="ResetDatabase">Reset database...</MudMenuItem>
+		</MudMenu>
 	</MudAppBar>
 
 	<div class="d-flex justify-center align-center gap-4" style="margin:1em">
@@ -61,5 +66,20 @@
 	async Task NextDay()
 	{
 		day = await db.GetNextDay(day);
+	}
+
+	async Task ResetDatabase()
+	{
+		var result = await DialogService.ShowMessageBox(
+			"Reset database",
+			"This will reset the database and close the app. Are you sure you want to continue?",
+			yesText: "Delete everything",
+			cancelText: "Cancel");
+
+		if (result != true)
+			return;
+
+		await db.Database.EnsureDeletedAsync();
+		Application.Current.Quit();
 	}
 }
