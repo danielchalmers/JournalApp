@@ -9,7 +9,7 @@ public class DataPointCategory
 
     public string Name { get; set; }
 
-    public int SequenceNumber { get; set; }
+    public int Index { get; set; }
 
     public bool Enabled { get; set; } = true;
 
@@ -17,7 +17,7 @@ public class DataPointCategory
 
     public virtual HashSet<DataPoint> DataPoints { get; set; } = new();
 
-    public override string ToString() => $"{string.Join("|", Group, Name)} - #{SequenceNumber}";
+    public override string ToString() => $"{string.Join("|", Group, Name)} - #{Index}";
 }
 
 public class DataPoint

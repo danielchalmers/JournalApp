@@ -6,7 +6,12 @@
 @inject IDialogService DialogService
 
 <MudThemeProvider IsDarkMode="true" />
-<MudDialogProvider />
+<MudDialogProvider FullWidth="true"
+				   MaxWidth="MaxWidth.Large"
+				   NoHeader="true"
+				   CloseButton="false"
+				   DisableBackdropClick="true"
+				   CloseOnEscapeKey="false" />
 <MudSnackbarProvider />
 
 <div id="main-header">
@@ -95,14 +100,6 @@
 
 	async Task ManageDataPoints()
 	{
-		var options = new DialogOptions()
-			{
-				CloseButton = true,
-				CloseOnEscapeKey = true,
-				DisableBackdropClick = false,
-				FullWidth = true,
-			};
-
-		await DialogService.Show<ManageDataPoints>("Data Points", options).Result;
+		await DialogService.Show<ManageDataPoints>().Result;
 	}
 }

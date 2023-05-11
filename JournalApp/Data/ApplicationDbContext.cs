@@ -9,15 +9,15 @@ public class ApplicationDbContext : DbContext
 
         // Default data point categories.
         if (!DataPointCategories.Any(x => x.Name == "Sleep"))
-            DataPointCategories.Add(new() { Name = "Sleep", Type = DataType.Sleep, SequenceNumber = 1 });
+            DataPointCategories.Add(new() { Name = "Sleep", Type = DataType.Sleep, Index = 1 });
         if (!DataPointCategories.Any(x => x.Name == "Happiness"))
-            DataPointCategories.Add(new() { Name = "Happiness", Type = DataType.Scale, SequenceNumber = 2 });
+            DataPointCategories.Add(new() { Name = "Happiness", Type = DataType.Scale, Index = 2 });
         if (!DataPointCategories.Any(x => x.Name == "Productivity"))
-            DataPointCategories.Add(new() { Name = "Productivity", Type = DataType.Scale, SequenceNumber = 3 });
+            DataPointCategories.Add(new() { Name = "Productivity", Type = DataType.Scale, Index = 3 });
         if (!DataPointCategories.Any(x => x.Name == "Updated JournalApp"))
-            DataPointCategories.Add(new() { Name = "Updated JournalApp", Type = DataType.Bool, SequenceNumber = 4 });
+            DataPointCategories.Add(new() { Name = "Updated JournalApp", Type = DataType.Bool, Index = 4 });
         if (!DataPointCategories.Any(x => x.Name == "Weight"))
-            DataPointCategories.Add(new() { Name = "Weight", Type = DataType.Number, SequenceNumber = 5 });
+            DataPointCategories.Add(new() { Name = "Weight", Type = DataType.Number, Index = 5 });
         if (!DataPointCategories.Any(x => x.Name == "Note"))
             DataPointCategories.Add(new() { Group = "Notes", Name = "Note", Type = DataType.Text });
     }

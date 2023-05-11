@@ -3,27 +3,31 @@
 
 <MudDialog>
 	<DialogContent>
-		<MudTextField @bind-Value="Name" />
+		<MudForm @ref="form" @bind-IsValid="@success">
+			<MudTextField Label="Name of category" @bind-Value="Name" Placeholder="My data point" Required="true" Validation="@((string x) => !string.IsNullOrEmpty(x))" />
 
-		<MudSelect Label="Type" @bind-Value="SelectedType">
-			@foreach (var type in Enum.GetValues<DataType>())
-			{
-				<MudSelectItem Value="type">@type</MudSelectItem>
-			}
-		</MudSelect>
+			<MudSelect Label="Type of data" @bind-Value="SelectedType" Required="true" Validation="@((DataType t) => t != DataType.None)">
+				<MudSelectItem Value="DataType.Scale">Star rating</MudSelectItem>
+				<MudSelectItem Value="DataType.Bool">Yes, no, or N/A</MudSelectItem>
+				<MudSelectItem Value="DataType.Number">Number</MudSelectItem>
+			</MudSelect>
+		</MudForm>
 	</DialogContent>
 
 	<DialogActions>
 		<MudButton OnClick="Cancel">Cancel</MudButton>
 
-		<MudButton Color="Color.Primary" OnClick="Submit">Add</MudButton>
+		<MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(!success)">Add</MudButton>
 	</DialogActions>
 </MudDialog>
 
 @code {
+	MudForm form;
+	bool success;
+
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
-	public string Name { get; set; } = "My data point";
+	public string Name { get; set; }
 
 	public DataType SelectedType { get; set; }
 

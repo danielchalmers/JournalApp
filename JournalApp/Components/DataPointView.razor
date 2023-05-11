@@ -36,15 +36,7 @@
 	async Task EditTextInDialog()
 	{
 		var parameters = new DialogParameters { { nameof(EditTextDialog.DataPoint), DataPoint } };
-		var options = new DialogOptions()
-			{
-				CloseButton = true,
-				CloseOnEscapeKey = false,
-				DisableBackdropClick = true,
-				FullWidth = true,
-				NoHeader = true,
-			};
 
-		var result = await DialogService.Show<EditTextDialog>("Edit text", parameters, options).Result;
+		var result = await DialogService.Show<EditTextDialog>("Edit text", parameters).Result;
 	}
 }

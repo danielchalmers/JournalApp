@@ -4,16 +4,16 @@
 
 <MudDialog>
 	<DialogContent>
-		<MudButton OnClick="New">Add Data Point Category</MudButton>
-
-		<MudDataGrid Items="db.DataPointCategories">
+		<MudDataGrid Items="db.DataPointCategories" SortMode="SortMode.None" EditMode="DataGridEditMode.Cell" ReadOnly="false" Class="mr-16" Dense="true">
 			<Columns>
 				<PropertyColumn Property="x => x.Name" />
-				<PropertyColumn Property="x => x.SequenceNumber" />
+				<PropertyColumn Property="x => x.Index" />
 				<PropertyColumn Property="x => x.Enabled" />
 				<PropertyColumn Property="x => x.Type" />
 			</Columns>
 		</MudDataGrid>
+
+		<MudButton Color="Color.Secondary" Variant="Variant.Filled" OnClick="New">Create a new category...</MudButton>
 	</DialogContent>
 
 	<DialogActions>
@@ -32,13 +32,15 @@
 			return;
 
 		var newCategory = (DataPointCategory)result.Data;
-		newCategory.SequenceNumber = db.DataPointCategories.Max(x => x.SequenceNumber) + 1;
+		newCategory.Index = db.DataPointCategories.Max(x => x.Index) + 1;
 
 		db.DataPointCategories.Add(newCategory);
+		await db.SaveChangesAsync();
 	}
 
-	void Submit()
+	async Task Submit()
 	{
+		await db.SaveChangesAsync();
 		MudDialog.Close(DialogResult.Ok(true));
 	}
 }
