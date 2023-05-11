@@ -5,19 +5,19 @@ public class DataPointCategory
     [Key]
     public int Id { get; set; }
 
-    public virtual Day Day { get; set; }
+    public string Group { get; set; }
 
     public string Name { get; set; }
-
-    public Type Type { get; set; }
 
     public int SequenceNumber { get; set; }
 
     public bool Enabled { get; set; } = true;
 
-    public Dictionary<Day, DataPoint> Pairs = new();
+    public DataType Type { get; set; }
 
-    public override string ToString() => $"{Name} ({Id})";
+    public virtual HashSet<DataPoint> DataPoints { get; set; } = new();
+
+    public override string ToString() => $"{string.Join("|", Group, Name)} - #{SequenceNumber}";
 }
 
 public class DataPoint
@@ -26,44 +26,27 @@ public class DataPoint
     public int Id { get; set; }
 
     public virtual Day Day { get; set; }
-}
 
-public class SleepDataPoint : DataPoint
-{
-    public decimal? Hours { get; set; }
+    public virtual DataPointCategory Category { get; set; }
 
-    public override string ToString() => $"Sleep: {Hours}";
-}
+    public DataType DataType { get; set; }
 
-public class ScaleDataPoint : DataPoint
-{
+    public decimal? SleepHours { get; set; }
     public int ScaleIndex { get; set; }
+    public bool? Bool { get; set; }
+    public double? Number { get; set; }
+    public string Text { get; set; }
 
-    public override string ToString() => $"Scale: {ScaleIndex}";
+    public override string ToString() => $"{DataType} ({Category})";
 }
 
-public class BoolDataPoint : DataPoint
+[Flags]
+public enum DataType
 {
-    public bool? Value { get; set; }
-
-    public override string ToString() => $"Bool: {Value}";
-}
-
-public class NumberDataPoint : DataPoint
-{
-    public double? Value { get; set; }
-
-    public override string ToString() => $"Number: {Value}";
-}
-
-public class TextDataPoint : DataPoint
-{
-    public string Value { get; set; }
-
-    public override string ToString() => $"Text: {Value.Length} long";
-}
-
-public class NoteDataPoint : TextDataPoint
-{
-    public override string ToString() => $"Note: {Value.Length} long";
+    None = 0,
+    Sleep = 1 << 0,
+    Scale = 1 << 1,
+    Bool = 1 << 2,
+    Number = 1 << 3,
+    Text = 1 << 4,
 }

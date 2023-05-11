@@ -4,11 +4,11 @@
 <MudDialog>
 	<DialogContent>
 		<MudTextField @bind-Value="Name" />
-		
-		<MudSelect T="Type" Label="Type" @bind-Value="SelectedType">
-			@foreach (var type in DatePointTypes)
+
+		<MudSelect Label="Type" @bind-Value="SelectedType">
+			@foreach (var type in Enum.GetValues<DataType>())
 			{
-				<MudSelectItem T="Type" Value="type">@type.Name</MudSelectItem>
+				<MudSelectItem Value="type">@type</MudSelectItem>
 			}
 		</MudSelect>
 	</DialogContent>
@@ -25,9 +25,7 @@
 
 	public string Name { get; set; } = "My data point";
 
-	public IReadOnlyList<Type> DatePointTypes { get; set; } = new[] { typeof(ScaleDataPoint), typeof(BoolDataPoint), typeof(NumberDataPoint) };
-
-	public Type SelectedType { get; set; }
+	public DataType SelectedType { get; set; }
 
 	public DataPointCategory Category { get; set; }
 
@@ -39,10 +37,10 @@
 	void Submit()
 	{
 		Category = new()
-		{
-			Name = Name,
-			Type = SelectedType,
-		};
+			{
+				Name = Name,
+				Type = SelectedType,
+			};
 
 		MudDialog.Close(DialogResult.Ok(Category));
 	}

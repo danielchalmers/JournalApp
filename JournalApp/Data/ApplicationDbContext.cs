@@ -5,36 +5,39 @@ public class ApplicationDbContext : DbContext
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
-        Database.EnsureDeleted();
         Database.EnsureCreated();
 
-        DataPointCategories ??= new List<DataPointCategory>
-        {
-            new() { Name = "Sleep", Type = typeof(SleepDataPoint), SequenceNumber = 1 },
-            new() { Name = "Happiness", Type = typeof(ScaleDataPoint), SequenceNumber = 2 },
-            new() { Name = "Productivity", Type = typeof(ScaleDataPoint), SequenceNumber = 3 },
-            new() { Name = "Updated JournalApp", Type = typeof(BoolDataPoint), SequenceNumber = 4 },
-            new() { Name = "Weight", Type = typeof(NumberDataPoint), SequenceNumber = 5 },
-        };
+        // Default data point categories.
+        if (!DataPointCategories.Any(x => x.Name == "Sleep"))
+            DataPointCategories.Add(new() { Name = "Sleep", Type = DataType.Sleep, SequenceNumber = 1 });
+        if (!DataPointCategories.Any(x => x.Name == "Happiness"))
+            DataPointCategories.Add(new() { Name = "Happiness", Type = DataType.Scale, SequenceNumber = 2 });
+        if (!DataPointCategories.Any(x => x.Name == "Productivity"))
+            DataPointCategories.Add(new() { Name = "Productivity", Type = DataType.Scale, SequenceNumber = 3 });
+        if (!DataPointCategories.Any(x => x.Name == "Updated JournalApp"))
+            DataPointCategories.Add(new() { Name = "Updated JournalApp", Type = DataType.Bool, SequenceNumber = 4 });
+        if (!DataPointCategories.Any(x => x.Name == "Weight"))
+            DataPointCategories.Add(new() { Name = "Weight", Type = DataType.Number, SequenceNumber = 5 });
+        if (!DataPointCategories.Any(x => x.Name == "Note"))
+            DataPointCategories.Add(new() { Group = "Notes", Name = "Note", Type = DataType.Text });
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Day>()
+        modelBuilder.Entity<DataPointCategory>()
             .HasMany(e => e.DataPoints)
-            .WithOne(e => e.Day);
+            .WithOne(e => e.Category);
 
-        modelBuilder.Entity<SleepDataPoint>().HasBaseType<DataPoint>();
-        modelBuilder.Entity<ScaleDataPoint>().HasBaseType<DataPoint>();
-        modelBuilder.Entity<BoolDataPoint>().HasBaseType<DataPoint>();
-        modelBuilder.Entity<NumberDataPoint>().HasBaseType<DataPoint>();
-        modelBuilder.Entity<TextDataPoint>().HasBaseType<DataPoint>();
-        modelBuilder.Entity<NoteDataPoint>().HasBaseType<TextDataPoint>();
+        modelBuilder.Entity<DataPoint>()
+            .HasOne(e => e.Category);
+
+        modelBuilder.Entity<DataPoint>()
+            .HasOne(e => e.Day);
     }
 
     protected DbSet<Day> Days { get; set; } = default!;
 
-    public IList<DataPointCategory> DataPointCategories { get; set; }
+    public DbSet<DataPointCategory> DataPointCategories { get; set; }
 
     public Task<Day> GetDay(DateTime dateTime) => GetDay(DateOnly.FromDateTime(dateTime));
 
@@ -48,13 +51,18 @@ public class ApplicationDbContext : DbContext
             Days.Add(day);
         }
 
-        // Add missing data points.
-        foreach (var template in DataPointCategories.Where(x => !day.DataPoints.Any(y => y.Name == x.Name)))
+        // Add any missing data points.
+        foreach (var category in DataPointCategories)
         {
-            var dataPoint = (DataPoint)template.Clone();
-            dataPoint.Id = default;
-            dataPoint.Day = day;
-            day.DataPoints.Add(dataPoint);
+            if (!category.DataPoints.Where(x => x.Day == day).Any(x => x.Category.Name == category.Name))
+            {
+                category.DataPoints.Add(new DataPoint
+                {
+                    Day = day,
+                    Category = category,
+                    DataType = category.Type,
+                });
+            }
         }
 
         // Force IDs to be assigned.
@@ -71,7 +79,5 @@ public class ApplicationDbContext : DbContext
     {
         Id = date.DayNumber,
         Date = date,
-        DataPoints = new List<DataPoint>(),
-        Notes = new List<NoteDataPoint>(),
     };
 }

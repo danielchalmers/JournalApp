@@ -3,7 +3,7 @@
 
 <MudDialog>
 	<DialogContent>
-		<MudTextField @bind-Value="DataPoint.Value" Lines="20" />
+		<MudTextField @bind-Value="DataPoint.Text" Lines="20" />
 	</DialogContent>
 
 	<DialogActions>
@@ -15,7 +15,7 @@
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
 	[Parameter]
-	public TextDataPoint DataPoint { get; set; }
+	public DataPoint DataPoint { get; set; }
 
 	void Submit()
 	{

@@ -10,6 +10,8 @@
 			<Columns>
 				<PropertyColumn Property="x => x.Name" />
 				<PropertyColumn Property="x => x.SequenceNumber" />
+				<PropertyColumn Property="x => x.Enabled" />
+				<PropertyColumn Property="x => x.Type" />
 			</Columns>
 		</MudDataGrid>
 	</DialogContent>
@@ -29,7 +31,10 @@
 		if (result.Canceled)
 			return;
 
-		db.DataPointCategories.Add((DataPointCategory)result.Data);
+		var newCategory = (DataPointCategory)result.Data;
+		newCategory.SequenceNumber = db.DataPointCategories.Max(x => x.SequenceNumber) + 1;
+
+		db.DataPointCategories.Add(newCategory);
 	}
 
 	void Submit()

@@ -34,13 +34,13 @@
 
 <div id="main-body">
 	<MudStack id="main-timeline">
-		<MultiDataPoints DataPoints="day.DataPoints" />
+		<MultiDataPoints Day="day" Categories="@(db.DataPointCategories.Where(c => c.Group == null))" />
 
 		<MudDivider />
 
 		<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote">New note</MudButton>
 
-		<MultiDataPoints DataPoints="day.Notes" />
+		<MultiDataPoints Day="day" Categories="@(db.DataPointCategories.Where(c => c.Group == "Notes"))" />
 	</MudStack>
 </div>
 
@@ -54,9 +54,18 @@
 		day = await db.GetDay(DateTime.Now);
 	}
 
-	void NewNote()
+	async Task NewNote()
 	{
-		day.AddNewNote();
+		var notes = db.DataPointCategories.Single(x => x.Group == "Notes");
+
+		notes.DataPoints.Add(new()
+			{
+				Day = day,
+				Category = notes,
+				DataType = DataType.Text,
+			});
+
+		await db.SaveChangesAsync();
 	}
 
 	async Task PreviousDay()

@@ -1,12 +1,20 @@
 ﻿@namespace JournalApp
-@typeparam T where T : DataPoint
 
-@foreach (var dataPoint in DataPoints.OrderBy(x => x.SequenceNumber))
+@foreach (var category in Categories.OrderBy(x => x.SequenceNumber))
 {
-	<DataPointView DataPoint="dataPoint" />
+	@foreach (var point in category.DataPoints.Where(x => x.Day == Day))
+	{
+		<div class="data-point-view">
+			<MudText Style="width:9em" Align="Align.Right">@category.Name:</MudText>
+			<DataPointView DataPoint="point" />
+		</div>
+	}
 }
 
 @code {
 	[Parameter]
-	public ICollection<T> DataPoints { get; set; }
+	public Day Day { get; set; }
+
+	[Parameter]
+	public IEnumerable<DataPointCategory> Categories { get; set; }
 }
