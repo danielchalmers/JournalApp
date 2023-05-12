@@ -23,6 +23,7 @@
 		<MudMenu Icon="@Icons.Material.Filled.MoreVert">
 			<MudMenuItem OnClick="ResetDatabase">Reset database...</MudMenuItem>
 			<MudMenuItem OnClick="ManageDataPoints">Choose data points...</MudMenuItem>
+			<MudMenuItem OnClick="@(() => AppInfo.Current.ShowSettingsUI())">System settings...</MudMenuItem>
 			<MudMenuItem Disabled="true">v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
 		</MudMenu>
 	</MudAppBar>
