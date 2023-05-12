@@ -4,12 +4,28 @@
 
 <MudDialog>
 	<DialogContent>
-		<MudDataGrid Items="db.DataPointCategories" SortMode="SortMode.None" EditMode="DataGridEditMode.Cell" ReadOnly="false" Dense="true">
+		<MudDataGrid Items="db.DataPointCategories" SortMode="SortMode.None" ReadOnly="false" EditMode="DataGridEditMode.Cell" Dense="true" Elevation="0">
 			<Columns>
 				<PropertyColumn Property="x => x.Name" />
+
 				<PropertyColumn Property="x => x.Index" />
-				<PropertyColumn Property="x => x.Enabled" />
-				<PropertyColumn Property="x => x.Type" />
+
+				<PropertyColumn Property="x => x.Enabled">
+					<EditTemplate>
+						<MudSwitch @bind-Checked="context.Item.Enabled" />
+					</EditTemplate>
+				</PropertyColumn>
+
+				<PropertyColumn Property="x => x.Type">
+					<EditTemplate>
+						<MudSelect @bind-Value="context.Item.Type" Required Margin="Margin.Dense">
+							@foreach (var item in Enum.GetValues<DataType>())
+							{
+								<MudSelectItem Value="@item">@item</MudSelectItem>
+							}
+						</MudSelect>
+					</EditTemplate>
+				</PropertyColumn>
 			</Columns>
 		</MudDataGrid>
 	</DialogContent>
@@ -26,7 +42,7 @@
 
 	async Task New()
 	{
-		var result = await DialogService.Show<NewDataPointCategory>().Result;
+		var result = await DialogService.Show<NewCategory>().Result;
 
 		if (result.Canceled)
 			return;
