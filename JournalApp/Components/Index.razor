@@ -8,35 +8,33 @@
 <MudThemeProvider IsDarkMode="true" />
 <MudDialogProvider FullWidth="true"
 				   MaxWidth="MaxWidth.Large"
-				   NoHeader="true"
+				   NoHeader="false"
 				   CloseButton="false"
 				   DisableBackdropClick="true"
 				   CloseOnEscapeKey="false" />
 <MudSnackbarProvider />
 
 <div id="main-header">
-	<MudAppBar Color="Color.Primary" Fixed="false" Dense="true">
+	<MudAppBar Color="Color.Primary" Fixed="false">
 		<MudText>🙂 @ThisAssembly.AssemblyTitle</MudText>
 
 		<MudSpacer />
 
 		<MudMenu Icon="@Icons.Material.Filled.MoreVert">
 			<MudMenuItem OnClick="ResetDatabase">Reset database...</MudMenuItem>
-			<MudMenuItem OnClick="ManageDataPoints">Choose data points...</MudMenuItem>
+			<MudMenuItem OnClick="ManageDataPoints">Manage data points...</MudMenuItem>
 			<MudMenuItem OnClick="@(() => AppInfo.Current.ShowSettingsUI())">System settings...</MudMenuItem>
 			<MudMenuItem Disabled="true">v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
 		</MudMenu>
 	</MudAppBar>
 
-	<div class="d-flex justify-center align-center gap-4" style="margin:1em">
-		<MudIconButton Icon="@Icons.Material.Outlined.ArrowBack" aria-label="previous" OnClick="PreviousDay" Disabled="@(day.Date.DayNumber <= 1)" />
+	<div class="d-flex justify-center align-center pa-2">
+		<MudIconButton Icon="@Icons.Material.Outlined.ArrowBack" OnClick="PreviousDay" Disabled="@(day.Date.DayNumber <= 1)" />
 
-		<MudText Typo="Typo.h5">@day.Date.ToString("ddd, MMM d")</MudText>
+		<MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false" Style="width:7em">@day.Date.ToString("ddd, MMM d")</MudText>
 
-		<MudIconButton Icon="@Icons.Material.Outlined.ArrowForward" aria-label="next" OnClick="NextDay" Disabled="@(day.Date > DateOnly.FromDateTime(DateTime.Now))" />
+		<MudIconButton Icon="@Icons.Material.Outlined.ArrowForward" OnClick="NextDay" Disabled="@(day.Date > DateOnly.FromDateTime(DateTime.Now))" />
 	</div>
-
-	<MudDivider />
 </div>
 
 <div id="main-body">
@@ -102,6 +100,6 @@
 
 	async Task ManageDataPoints()
 	{
-		await DialogService.Show<ManageDataPoints>().Result;
+		await DialogService.Show<ManageDataPoints>("Manage data points").Result;
 	}
 }

@@ -42,7 +42,7 @@
 
 	async Task New()
 	{
-		var result = await DialogService.Show<NewCategory>().Result;
+		var result = await DialogService.Show<NewCategory>("New category").Result;
 
 		if (result.Canceled)
 			return;

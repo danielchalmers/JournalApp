@@ -18,8 +18,8 @@ public class ApplicationDbContext : DbContext
             DataPointCategories.Add(new() { Name = "Updated JournalApp", Type = DataType.Bool, Index = 4 });
         if (!DataPointCategories.Any(x => x.Name == "Weight"))
             DataPointCategories.Add(new() { Name = "Weight", Type = DataType.Number, Index = 5 });
-        if (!DataPointCategories.Any(x => x.Name == "Note"))
-            DataPointCategories.Add(new() { Group = "Notes", Name = "Note", Type = DataType.Text });
+        if (!DataPointCategories.Any(x => x.Group == "Notes"))
+            DataPointCategories.Add(new() { Group = "Notes", Type = DataType.Text });
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

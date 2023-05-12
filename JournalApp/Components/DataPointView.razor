@@ -3,9 +3,9 @@
 
 @if (DataPoint.DataType.HasFlag(DataType.Sleep))
 {
-	<div class="d-flex align-center flex-grow-1 gap-2">
-		<MudText>@((DataPoint.SleepHours ?? 0).ToString("00.0"))</MudText>
+	<div class="d-flex align-center flex-grow-1 gap-4">
 		<MudSlider @bind-Value="DataPoint.SleepHours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" />
+		<MudText Typo="Typo.caption">@((DataPoint.SleepHours ?? 0).ToString("00.0"))</MudText>
 	</div>
 }
 @if (DataPoint.DataType.HasFlag(DataType.Scale))
@@ -18,12 +18,12 @@
 }
 @if (DataPoint.DataType.HasFlag(DataType.Number))
 {
-	<MudNumericField @bind-Value="DataPoint.Number" Margin="Margin.None" />
+	<MudNumericField @bind-Value="DataPoint.Number" HideSpinButtons="true" />
 }
 @if (DataPoint.DataType.HasFlag(DataType.Text))
 {
 	<div class="d-flex flex-column flex-grow-1 gap-2">
-		<MudTextField @bind-Value="DataPoint.Text" Lines="4" Placeholder="What's on your mind?" Margin="Margin.None" />
+		<MudTextField @bind-Value="DataPoint.Text" Lines="4" Placeholder="What's on your mind?" />
 
 		<MudLink OnClick="EditTextInDialog">Edit...</MudLink>
 	</div>

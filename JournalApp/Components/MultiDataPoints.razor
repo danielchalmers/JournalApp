@@ -5,7 +5,11 @@
 	@foreach (var point in category.DataPoints.Where(x => x.Day == Day))
 	{
 		<div class="data-point-view">
-			<MudText Style="width:9em" Align="Align.Right">@category.Name:</MudText>
+			@if (!string.IsNullOrEmpty(category.Name))
+			{
+				<MudText Style="width:7em" Align="Align.Right">@category.Name:</MudText>
+			}
+
 			<DataPointView DataPoint="point" />
 		</div>
 	}
