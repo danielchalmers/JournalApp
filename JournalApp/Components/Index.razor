@@ -43,9 +43,9 @@
 
 		<MudDivider />
 
-		<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote">New note</MudButton>
-
 		<MultiDataPoints Day="day" Categories="@(db.DataPointCategories.Where(c => c.Group == "Notes"))" />
+
+		<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote">New note</MudButton>
 	</MudStack>
 </div>
 
