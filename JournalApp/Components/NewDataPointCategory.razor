@@ -4,9 +4,9 @@
 <MudDialog>
 	<DialogContent>
 		<MudForm @ref="form" @bind-IsValid="@success">
-			<MudTextField Label="Name of category" @bind-Value="Name" Placeholder="My data point" Required="true" Validation="@((string x) => !string.IsNullOrEmpty(x))" />
+			<MudTextField Label="Name of category" @bind-Value="Name" Placeholder="New data point" Required="true" Immediate="true" />
 
-			<MudSelect Label="Type of data" @bind-Value="SelectedType" Required="true" Validation="@((DataType t) => t != DataType.None)">
+			<MudSelect Label="Type of data" @bind-Value="SelectedType">
 				<MudSelectItem Value="DataType.Scale">Star rating</MudSelectItem>
 				<MudSelectItem Value="DataType.Bool">Yes, no, or N/A</MudSelectItem>
 				<MudSelectItem Value="DataType.Number">Number</MudSelectItem>
@@ -29,7 +29,7 @@
 
 	public string Name { get; set; }
 
-	public DataType SelectedType { get; set; }
+	public DataType SelectedType { get; set; } = DataType.Scale;
 
 	public DataPointCategory Category { get; set; }
 
