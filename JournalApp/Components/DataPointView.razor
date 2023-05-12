@@ -10,7 +10,7 @@
 }
 @if (DataPoint.DataType.HasFlag(DataType.Scale))
 {
-	<MudRating @bind-SelectedValue="DataPoint.ScaleIndex" Size="Size.Large" />
+	<MudRating @bind-SelectedValue="DataPoint.ScaleIndex" Size="Size.Large" FullIcon="@Icons.Material.Filled.Circle" EmptyIcon="@Icons.Material.Outlined.Circle" Color="Color.Primary" />
 }
 @if (DataPoint.DataType.HasFlag(DataType.Bool))
 {
