@@ -35,11 +35,6 @@
 
 	async Task EditTextInDialog()
 	{
-		var parameters = new DialogParameters { { nameof(EditTextDialog.DataPoint), DataPoint } };
-
-		var result = await DialogService.Show<EditTextDialog>("Edit text", parameters).Result;
-
-		if (string.IsNullOrWhiteSpace(DataPoint.Text))
-			DataPoint.IsDeleted = true;
+		await EditTextDialog.ShowDialog(DialogService, DataPoint);
 	}
 }

@@ -63,13 +63,17 @@
 	{
 		var notes = db.DataPointCategories.Single(x => x.Group == "Notes");
 
-		notes.DataPoints.Add(new()
+		var dataPoint = new DataPoint()
 			{
 				Day = day,
 				Category = notes,
 				CreatedAt = DateTimeOffset.Now,
 				DataType = DataType.Text,
-			});
+			};
+
+		await EditTextDialog.ShowDialog(DialogService, dataPoint);
+
+		notes.DataPoints.Add(dataPoint);
 
 		await db.SaveChangesAsync();
 	}

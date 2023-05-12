@@ -21,4 +21,14 @@
 	{
 		MudDialog.Close(DialogResult.Ok(true));
 	}
+
+	public static async Task ShowDialog(IDialogService dialogService, DataPoint dataPoint)
+	{
+		var parameters = new DialogParameters { { nameof(EditTextDialog.DataPoint), dataPoint } };
+
+		await dialogService.Show<EditTextDialog>("Edit text", parameters).Result;
+
+		if (string.IsNullOrWhiteSpace(dataPoint.Text))
+			dataPoint.IsDeleted = true;
+	}
 }
