@@ -29,6 +29,8 @@ public class DataPoint
 
     public virtual DataPointCategory Category { get; set; }
 
+    public bool IsDeleted { get; set; }
+
     public DateTimeOffset CreatedAt { get; set; }
 
     public DataType DataType { get; set; }

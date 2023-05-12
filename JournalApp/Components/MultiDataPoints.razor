@@ -2,7 +2,7 @@
 
 @foreach (var category in Categories.Where(x => x.Enabled).OrderBy(x => x.Index))
 {
-	@foreach (var point in category.DataPoints.Where(x => x.Day == Day))
+	@foreach (var point in category.DataPoints.Where(x => x.Day == Day && !x.IsDeleted))
 	{
 		<div class="data-point-view">
 			@if (!string.IsNullOrEmpty(category.Name))
