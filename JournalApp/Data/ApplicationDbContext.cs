@@ -103,8 +103,8 @@ public class ApplicationDbContext : DbContext
             Days.Add(day);
         }
 
-        // Add any missing data points.
-        foreach (var category in DataPointCategories)
+        // Add any missing data points for the main group of categories.
+        foreach (var category in DataPointCategories.Where(c => c.Group == null))
         {
             if (!category.DataPoints.Where(x => x.Day == day).Any(x => x.Category.Guid == category.Guid))
             {
