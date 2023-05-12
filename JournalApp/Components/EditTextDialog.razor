@@ -26,7 +26,7 @@
 	{
 		var parameters = new DialogParameters { { nameof(EditTextDialog.DataPoint), dataPoint } };
 
-		await dialogService.Show<EditTextDialog>("Edit text", parameters).Result;
+		await dialogService.Show<EditTextDialog>($"Edit note from {dataPoint.CreatedAt}", parameters).Result;
 
 		if (string.IsNullOrWhiteSpace(dataPoint.Text))
 			dataPoint.IsDeleted = true;
