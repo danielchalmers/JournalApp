@@ -25,31 +25,31 @@
 			<MudMenuItem OnClick="ManageDataPoints">Manage data points...</MudMenuItem>
 			<MudMenuItem OnClick="@(() => AppInfo.Current.ShowSettingsUI())">System settings...</MudMenuItem>
 			<MudMenuItem Disabled="true">v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
-		</MudMenu>
-	</MudAppBar>
+			</MudMenu>
+		</MudAppBar>
 
-	<div class="d-flex justify-center align-center pa-2">
-		<MudIconButton Icon="@Icons.Material.Outlined.ArrowBack" OnClick="PreviousDay" Disabled="@(day.Date.DayNumber <= 1)" />
+		<div class="d-flex justify-center align-center pa-2">
+			<MudIconButton Icon="@Icons.Material.Outlined.ArrowBack" OnClick="PreviousDay" Disabled="@(day.Date.DayNumber <= 1)" />
 
-		<MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false" Style="width:7em">@day.Date.ToString("ddd, MMM d")</MudText>
+			<MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false" Style="width:7em">@day.Date.ToString("ddd, MMM d")</MudText>
 
-		<MudIconButton Icon="@Icons.Material.Outlined.ArrowForward" OnClick="NextDay" Disabled="@(day.Date > DateOnly.FromDateTime(DateTime.Now))" />
+			<MudIconButton Icon="@Icons.Material.Outlined.ArrowForward" OnClick="NextDay" Disabled="@(day.Date > DateOnly.FromDateTime(DateTime.Now))" />
+		</div>
 	</div>
-</div>
 
-<div id="main-body">
-	<MudStack id="main-timeline">
-		<MultiDataPoints Day="day" Categories="@(db.DataPointCategories.Where(c => c.Group == null))" />
+	<div id="main-body">
+		<MudStack id="main-timeline">
+			<MultiDataPoints Day="day" Categories="@(db.DataPointCategories.Where(c => c.Group == null))" />
 
-		<MudDivider />
+			<MudDivider />
 
-		<MultiDataPoints Day="day" Categories="@(db.DataPointCategories.Where(c => c.Group == "Notes"))" />
+			<MultiDataPoints Day="day" Categories="@(db.DataPointCategories.Where(c => c.Group == "Notes"))" />
 
-		<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote">New note</MudButton>
-	</MudStack>
-</div>
+			<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote">New note</MudButton>
+		</MudStack>
+	</div>
 
-@code {
+	@code {
 	Day day;
 
 	protected override async Task OnInitializedAsync()
@@ -67,6 +67,7 @@
 			{
 				Day = day,
 				Category = notes,
+				CreatedAt = DateTimeOffset.Now,
 				DataType = DataType.Text,
 			});
 

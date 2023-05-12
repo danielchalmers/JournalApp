@@ -56,10 +56,11 @@ public class ApplicationDbContext : DbContext
         {
             if (!category.DataPoints.Where(x => x.Day == day).Any(x => x.Category.Name == category.Name))
             {
-                category.DataPoints.Add(new DataPoint
+                category.DataPoints.Add(new()
                 {
                     Day = day,
                     Category = category,
+                    CreatedAt = DateTimeOffset.Now,
                     DataType = category.Type,
                 });
             }

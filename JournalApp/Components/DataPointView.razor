@@ -23,7 +23,7 @@
 @if (DataPoint.DataType.HasFlag(DataType.Text))
 {
 	<div class="d-flex flex-column flex-grow-1 gap-2">
-		<MudTextField @bind-Value="DataPoint.Text" Lines="4" Placeholder="What's on your mind?" />
+		<MudTextField @bind-Value="DataPoint.Text" Lines="4" Placeholder="What's on your mind?" Label="@(DataPoint.CreatedAt.ToString("h:mm tt"))" />
 
 		<MudLink OnClick="EditTextInDialog">Edit...</MudLink>
 	</div>
