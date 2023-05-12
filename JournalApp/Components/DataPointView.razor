@@ -4,7 +4,7 @@
 @if (DataPoint.DataType.HasFlag(DataType.Sleep))
 {
 	<div class="d-flex align-center flex-grow-1 gap-4">
-		<MudSlider @bind-Value="DataPoint.SleepHours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" />
+		<MudSlider @bind-Value="DataPoint.SleepHours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" Size="Size.Large" />
 		<MudText Typo="Typo.caption">@((DataPoint.SleepHours ?? 0).ToString("00.0"))</MudText>
 	</div>
 }
