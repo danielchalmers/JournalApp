@@ -3,7 +3,7 @@
 public class DataPointCategory
 {
     [Key]
-    public int Id { get; set; }
+    public Guid Guid { get; set; }
 
     public string Group { get; set; }
 
@@ -23,7 +23,7 @@ public class DataPointCategory
 public class DataPoint
 {
     [Key]
-    public int Id { get; set; }
+    public Guid Guid { get; set; }
 
     public virtual Day Day { get; set; }
 
