@@ -35,7 +35,7 @@
 }
 @if (DataPoint.DataType.HasFlag(DataType.Number))
 {
-	<MudNumericField @bind-Value="DataPoint.Number" HideSpinButtons="true" />
+	<MudNumericField @bind-Value="DataPoint.Number" HideSpinButtons="true" Class="mt-n4" />
 }
 @if (DataPoint.DataType.HasFlag(DataType.Text))
 {
