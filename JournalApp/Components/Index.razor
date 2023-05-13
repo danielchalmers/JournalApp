@@ -33,7 +33,9 @@
 		<div class="d-flex justify-center align-center pa-1">
 			<MudIconButton Icon="@Icons.Material.Outlined.ArrowBack" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
 
-			<MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false" Style="width:7em">@_day.Date.ToString("ddd, MMM d")</MudText>
+			<MudButton OnClick="OnDayClicked">
+				<MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false" Style="width:7em">@_day.Date.ToString("ddd, MMM d")</MudText>
+			</MudButton>
 
 			<MudIconButton Icon="@Icons.Material.Outlined.ArrowForward" OnClick="NextDay" Disabled="@(_day.Date > DateOnly.FromDateTime(DateTime.Now))" />
 		</div>
@@ -97,6 +99,11 @@
 		notes.DataPoints.Add(dataPoint);
 
 		await db.SaveChangesAsync();
+	}
+
+	async Task OnDayClicked()
+	{
+		await ScrollManager.ScrollToTopAsync("main-body");
 	}
 
 	async Task PreviousDay()
