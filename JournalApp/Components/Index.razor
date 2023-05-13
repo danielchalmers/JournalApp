@@ -4,6 +4,7 @@
 @inject ApplicationDbContext db
 @inject ISnackbar SnackbarService
 @inject IDialogService DialogService
+@inject IScrollManager ScrollManager
 
 <MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" />
 <MudDialogProvider FullWidth="true"
@@ -25,34 +26,34 @@
 			<MudMenuItem OnClick="ManageDataPoints">Manage data points...</MudMenuItem>
 			<MudMenuItem OnClick="@(() => AppInfo.Current.ShowSettingsUI())">System settings...</MudMenuItem>
 			<MudMenuItem Disabled="true">v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
-		</MudMenu>
-	</MudAppBar>
+			</MudMenu>
+		</MudAppBar>
 
-	<div class="d-flex justify-center align-center pa-1">
-		<MudIconButton Icon="@Icons.Material.Outlined.ArrowBack" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
+		<div class="d-flex justify-center align-center pa-1">
+			<MudIconButton Icon="@Icons.Material.Outlined.ArrowBack" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
 
-		<MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false" Style="width:7em">@_day.Date.ToString("ddd, MMM d")</MudText>
+			<MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false" Style="width:7em">@_day.Date.ToString("ddd, MMM d")</MudText>
 
-		<MudIconButton Icon="@Icons.Material.Outlined.ArrowForward" OnClick="NextDay" Disabled="@(_day.Date > DateOnly.FromDateTime(DateTime.Now))" />
+			<MudIconButton Icon="@Icons.Material.Outlined.ArrowForward" OnClick="NextDay" Disabled="@(_day.Date > DateOnly.FromDateTime(DateTime.Now))" />
+		</div>
 	</div>
-</div>
 
-<div id="main-body">
-	<MudStack id="main-timeline">
-		<MultiDataPoints Day="_day" Categories="@(db.DataPointCategories.Where(c => c.Group == null))" />
+	<div id="main-body">
+		<MudStack id="main-timeline">
+			<MultiDataPoints Day="_day" Categories="@(db.DataPointCategories.Where(c => c.Group == null))" />
 
-		<MudDivider />
+			<MudDivider />
 
-		<MultiDataPoints Day="_day" Categories="@(db.DataPointCategories.Where(c => c.Group == "Notes"))" />
+			<MultiDataPoints Day="_day" Categories="@(db.DataPointCategories.Where(c => c.Group == "Notes"))" />
 
-		<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote">New note</MudButton>
-	</MudStack>
-</div>
+			<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote">New note</MudButton>
+		</MudStack>
+	</div>
 
-@code {
+	@code {
 	Day _day;
-	private bool _isDarkMode;
-	private MudThemeProvider _mudThemeProvider;
+	bool _isDarkMode;
+	MudThemeProvider _mudThemeProvider;
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
@@ -100,11 +101,13 @@
 	async Task PreviousDay()
 	{
 		_day = await db.GetPreviousDay(_day);
+		await ScrollManager.ScrollToTopAsync("main-body");
 	}
 
 	async Task NextDay()
 	{
 		_day = await db.GetNextDay(_day);
+		await ScrollManager.ScrollToTopAsync("main-body");
 	}
 
 	async Task ResetDatabase()
