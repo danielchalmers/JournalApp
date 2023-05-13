@@ -35,6 +35,7 @@ public class DataPoint
 
     public DataType DataType { get; set; }
 
+    public string Mood { get; set; }
     public decimal? SleepHours { get; set; }
     public int ScaleIndex { get; set; }
     public bool? Bool { get; set; }
@@ -42,15 +43,18 @@ public class DataPoint
     public string Text { get; set; }
 
     public override string ToString() => $"{DataType} ({Category})";
+
+    public static IReadOnlyList<string> Moods { get; } = new[] { "😁", "😀", "🙂", "😐", "🙁", "😢", "😭", };
 }
 
 [Flags]
 public enum DataType
 {
     None = 0,
-    Sleep = 1 << 0,
-    Scale = 1 << 1,
-    Bool = 1 << 2,
-    Number = 1 << 3,
-    Text = 1 << 4,
+    Mood = 1 << 0,
+    Sleep = 1 << 1,
+    Scale = 1 << 2,
+    Bool = 1 << 3,
+    Number = 1 << 4,
+    Text = 1 << 5,
 }

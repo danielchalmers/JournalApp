@@ -8,6 +8,17 @@ public class ApplicationDbContext : DbContext
         Database.EnsureCreated();
 
         // Seed categories.
+        if (!DataPointCategories.Any(x => x.Guid == new Guid("D90D89FB-F5B9-47CF-AE4E-3EC0D635E783")))
+        {
+            DataPointCategories.Add(new()
+            {
+                Guid = new Guid("D90D89FB-F5B9-47CF-AE4E-3EC0D635E783"),
+                Name = "Mood",
+                Type = DataType.Mood,
+                Index = 1,
+            });
+        }
+
         if (!DataPointCategories.Any(x => x.Guid == new Guid("D8657B36-F3A0-486F-BF80-0CF057919C7D")))
         {
             DataPointCategories.Add(new()
@@ -15,7 +26,7 @@ public class ApplicationDbContext : DbContext
                 Guid = new Guid("D8657B36-F3A0-486F-BF80-0CF057919C7D"),
                 Name = "Sleep",
                 Type = DataType.Sleep,
-                Index = 1,
+                Index = 2,
             });
         }
 
@@ -26,7 +37,7 @@ public class ApplicationDbContext : DbContext
                 Guid = new Guid("74B8FFBF-2251-4029-A655-7D37F69F47CD"),
                 Name = "Happiness",
                 Type = DataType.Scale,
-                Index = 2,
+                Index = 3,
             });
         }
 
@@ -37,7 +48,7 @@ public class ApplicationDbContext : DbContext
                 Guid = new Guid("40B5AF7B-4F4E-4E77-BD6B-F7855CF773AB"),
                 Name = "Productivity",
                 Type = DataType.Scale,
-                Index = 3,
+                Index = 4,
             });
         }
 
@@ -48,7 +59,7 @@ public class ApplicationDbContext : DbContext
                 Guid = new Guid("B764A259-8BBC-4578-AE7B-83B2CFB92FF3"),
                 Name = "Updated JournalApp",
                 Type = DataType.Bool,
-                Index = 4,
+                Index = 5,
             });
         }
 
@@ -59,7 +70,7 @@ public class ApplicationDbContext : DbContext
                 Guid = new Guid("480DC07D-1330-486F-9B30-EC83A3D4E6F0"),
                 Name = "Weight",
                 Type = DataType.Number,
-                Index = 5,
+                Index = 6,
             });
         }
 
