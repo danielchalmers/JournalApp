@@ -14,13 +14,13 @@
 #loading-text {
 	margin-top: 40vh;
 	font-family: sans-serif;
-	font-size: 6vw;
+	font-size: 12vw;
 }
 
 #main-header {
 	top: 0;
 	position: sticky;
-	background-color: mediumpurple;
+	background-color: var(--mud-palette-primary-lighten);
 	z-index: 1000;
 }
 

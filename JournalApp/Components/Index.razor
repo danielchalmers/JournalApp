@@ -5,7 +5,7 @@
 @inject ISnackbar SnackbarService
 @inject IDialogService DialogService
 
-<MudThemeProvider IsDarkMode="true" />
+<MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" />
 <MudDialogProvider FullWidth="true"
 				   MaxWidth="MaxWidth.Large"
 				   NoHeader="false"
@@ -25,38 +25,57 @@
 			<MudMenuItem OnClick="ManageDataPoints">Manage data points...</MudMenuItem>
 			<MudMenuItem OnClick="@(() => AppInfo.Current.ShowSettingsUI())">System settings...</MudMenuItem>
 			<MudMenuItem Disabled="true">v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
-			</MudMenu>
-		</MudAppBar>
+		</MudMenu>
+	</MudAppBar>
 
-		<div class="d-flex justify-center align-center pa-2">
-			<MudIconButton Icon="@Icons.Material.Outlined.ArrowBack" OnClick="PreviousDay" Disabled="@(day.Date.DayNumber <= 1)" />
+	<div class="d-flex justify-center align-center pa-2">
+		<MudIconButton Icon="@Icons.Material.Outlined.ArrowBack" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
 
-			<MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false" Style="width:7em">@day.Date.ToString("ddd, MMM d")</MudText>
+		<MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false" Style="width:7em">@_day.Date.ToString("ddd, MMM d")</MudText>
 
-			<MudIconButton Icon="@Icons.Material.Outlined.ArrowForward" OnClick="NextDay" Disabled="@(day.Date > DateOnly.FromDateTime(DateTime.Now))" />
-		</div>
+		<MudIconButton Icon="@Icons.Material.Outlined.ArrowForward" OnClick="NextDay" Disabled="@(_day.Date > DateOnly.FromDateTime(DateTime.Now))" />
 	</div>
+</div>
 
-	<div id="main-body">
-		<MudStack id="main-timeline">
-			<MultiDataPoints Day="day" Categories="@(db.DataPointCategories.Where(c => c.Group == null))" />
+<div id="main-body">
+	<MudStack id="main-timeline">
+		<MultiDataPoints Day="_day" Categories="@(db.DataPointCategories.Where(c => c.Group == null))" />
 
-			<MudDivider />
+		<MudDivider />
 
-			<MultiDataPoints Day="day" Categories="@(db.DataPointCategories.Where(c => c.Group == "Notes"))" />
+		<MultiDataPoints Day="_day" Categories="@(db.DataPointCategories.Where(c => c.Group == "Notes"))" />
 
-			<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote">New note</MudButton>
-		</MudStack>
-	</div>
+		<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote">New note</MudButton>
+	</MudStack>
+</div>
 
-	@code {
-	Day day;
+@code {
+	Day _day;
+	private bool _isDarkMode;
+	private MudThemeProvider _mudThemeProvider;
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			_isDarkMode = await _mudThemeProvider.GetSystemPreference();
+			await _mudThemeProvider.WatchSystemPreference(OnSystemPreferenceChanged);
+			StateHasChanged();
+		}
+	}
+
+	private Task OnSystemPreferenceChanged(bool newValue)
+	{
+		_isDarkMode = newValue;
+		StateHasChanged();
+		return Task.CompletedTask;
+	}
 
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
 
-		day = await db.GetDay(DateTime.Now);
+		_day = await db.GetDay(DateTime.Now);
 	}
 
 	async Task NewNote()
@@ -65,7 +84,7 @@
 
 		var dataPoint = new DataPoint()
 			{
-				Day = day,
+				Day = _day,
 				Category = notes,
 				CreatedAt = DateTimeOffset.Now,
 				DataType = DataType.Text,
@@ -80,12 +99,12 @@
 
 	async Task PreviousDay()
 	{
-		day = await db.GetPreviousDay(day);
+		_day = await db.GetPreviousDay(_day);
 	}
 
 	async Task NextDay()
 	{
-		day = await db.GetNextDay(day);
+		_day = await db.GetNextDay(_day);
 	}
 
 	async Task ResetDatabase()
