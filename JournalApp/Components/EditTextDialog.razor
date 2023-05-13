@@ -3,19 +3,29 @@
 
 <MudDialog>
 	<DialogContent>
-		<MudTextField @bind-Value="DataPoint.Text" Lines="20" />
+		<MudTextField @ref="_textField" @bind-Value="DataPoint.Text" Lines="12" Class="mt-n6" />
 	</DialogContent>
 
 	<DialogActions>
-		<MudButton Color="Color.Primary" OnClick="Submit">Save</MudButton>
+		<MudButton Color="Color.Primary" OnClick="Submit">Save changes</MudButton>
 	</DialogActions>
 </MudDialog>
 
 @code {
+	MudTextField<string> _textField;
+
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
 	[Parameter]
 	public DataPoint DataPoint { get; set; }
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			await _textField.FocusAsync();
+		}
+	}
 
 	void Submit()
 	{
