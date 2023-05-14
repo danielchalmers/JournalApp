@@ -49,6 +49,11 @@
 	padding: 4px 16px !important;
 }
 
+.mud-rating-root {
+	flex-grow: 1;
+	justify-content: space-between;
+}
+
 .data-point-view {
 	min-height: 3em;
 	display: flex;
