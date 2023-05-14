@@ -31,7 +31,7 @@
 }
 @if (DataPoint.DataType.HasFlag(DataType.Bool))
 {
-	<MudCheckBox @bind-Checked="DataPoint.Bool" TriState="true" Color="Color.Primary" />
+	<ButtonGroupCheckBox @bind-SelectedValue="DataPoint.Bool" />
 }
 @if (DataPoint.DataType.HasFlag(DataType.Number))
 {
