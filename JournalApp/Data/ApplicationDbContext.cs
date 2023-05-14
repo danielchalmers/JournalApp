@@ -110,7 +110,11 @@ public class ApplicationDbContext : DbContext
 
         if (day == null)
         {
-            day = NewDay(date);
+            day = new()
+            {
+                Date = date,
+            };
+
             Days.Add(day);
         }
 
@@ -138,10 +142,4 @@ public class ApplicationDbContext : DbContext
     public Task<Day> GetNextDay(Day day) => GetDay(day.Date.GetNextDate());
 
     public Task<Day> GetPreviousDay(Day day) => GetDay(day.Date.GetPreviousDate());
-
-    private static Day NewDay(DateOnly date) => new()
-    {
-        Id = date.DayNumber,
-        Date = date,
-    };
 }

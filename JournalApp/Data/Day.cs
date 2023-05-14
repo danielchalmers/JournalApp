@@ -3,9 +3,9 @@
 public class Day
 {
     [Key]
-    public int Id { get; set; }
+    public Guid Guid { get; set; }
 
     public DateOnly Date { get; set; }
 
-    public override string ToString() => $"{Date} ({Id})";
+    public override string ToString() => $"{Date}";
 }
