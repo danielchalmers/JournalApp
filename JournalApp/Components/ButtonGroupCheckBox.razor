@@ -1,15 +1,15 @@
 ﻿@namespace JournalApp
 
 <MudStack Row="true" Spacing="0" Class="d-flex flex-grow-1">
-	@foreach (var option in options.Keys)
+	@foreach (var option in options)
 	{
-		<MudButton Color="Color.Primary" Class="flex-grow-1" Variant="@(options[option] == SelectedValue ? Variant.Filled : Variant.Outlined)" OnClick="@(() => OnClick(option))">@option</MudButton>
+		<MudButton Color="Color.Primary" Class="flex-grow-1" Variant="@(option.Value == SelectedValue ? Variant.Filled : Variant.Outlined)" OnClick="@(() => OnClick(option.Value))">@option.Key</MudButton>
 	}
 </MudStack>
 
 @code {
-	Dictionary<string, bool> options = new() { { "No", false }, { "Yes", true } };
 	bool? _selectedValue;
+	Dictionary<string, bool> options = new() { { "No", false }, { "Yes", true } };
 
 	[Parameter]
 	public bool? SelectedValue
@@ -28,11 +28,11 @@
 	[Parameter]
 	public EventCallback<bool?> SelectedValueChanged { get; set; }
 
-	void OnClick(string newValue)
+	void OnClick(bool value)
 	{
-		if (options[newValue] == SelectedValue)
+		if (value == SelectedValue)
 			SelectedValue = null;
 		else
-			SelectedValue = options[newValue];
+			SelectedValue = value;
 	}
 }
