@@ -115,10 +115,12 @@ public class ApplicationDbContext : DbContext
                 Date = date,
             };
 
-            Days.Add(day);
+            await Days.AddAsync(day);
+            await SaveChangesAsync();
         }
 
         // Add any missing data points for the main group of categories.
+        var anyDataPointsAdded = false;
         foreach (var category in DataPointCategories.Where(c => c.Group == null))
         {
             if (!category.DataPoints.Where(x => x.Day == day).Any(x => x.Category.Guid == category.Guid))
@@ -130,11 +132,12 @@ public class ApplicationDbContext : DbContext
                     CreatedAt = DateTimeOffset.Now,
                     DataType = category.Type,
                 });
+                anyDataPointsAdded = true;
             }
         }
 
-        // Force IDs to be assigned.
-        await SaveChangesAsync();
+        if (anyDataPointsAdded)
+            await SaveChangesAsync();
 
         return day;
     }
