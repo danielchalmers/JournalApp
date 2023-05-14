@@ -33,9 +33,15 @@
 		<div class="d-flex justify-center align-center pa-1">
 			<MudIconButton Icon="@Icons.Material.Outlined.ArrowBack" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
 
-			<MudButton OnClick="OnDayClicked">
-				<MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false" Style="width:7em">@_day.Date.ToString("ddd, MMM d")</MudText>
-			</MudButton>
+			<MudMenu @ref="datePickerMenu" AnchorOrigin="Origin.BottomLeft">
+				<ActivatorContent>
+					<MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false" Style="width:7em">@_day.Date.ToString("ddd, MMM d")</MudText>
+				</ActivatorContent>
+
+				<ChildContent>
+					<MudDatePicker PickerVariant="PickerVariant.Static" DateChanged="OnDaySelected" DisableToolbar="true" />
+				</ChildContent>
+			</MudMenu>
 
 			<MudIconButton Icon="@Icons.Material.Outlined.ArrowForward" OnClick="NextDay" Disabled="@(_day.Date > DateOnly.FromDateTime(DateTime.Now))" />
 		</div>
@@ -57,6 +63,7 @@
 	Day _day;
 	bool _isDarkMode;
 	MudThemeProvider _mudThemeProvider;
+	MudMenu datePickerMenu;
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
@@ -101,21 +108,26 @@
 		await db.SaveChangesAsync();
 	}
 
-	async Task OnDayClicked()
+	async Task OnDaySelected(DateTime? dateTime)
 	{
+		datePickerMenu.CloseMenu();
+		await SetDay(await db.GetDay(dateTime.Value));
+	}
+
+	async Task SetDay(Day day)
+	{
+		_day = day;
 		await ScrollManager.ScrollToTopAsync("main-body");
 	}
 
 	async Task PreviousDay()
 	{
-		_day = await db.GetPreviousDay(_day);
-		await ScrollManager.ScrollToTopAsync("main-body");
+		await SetDay(await db.GetPreviousDay(_day));
 	}
 
 	async Task NextDay()
 	{
-		_day = await db.GetNextDay(_day);
-		await ScrollManager.ScrollToTopAsync("main-body");
+		await SetDay(await db.GetNextDay(_day));
 	}
 
 	async Task ResetDatabase()
