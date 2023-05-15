@@ -24,7 +24,7 @@
 
 		<MudMenu Icon="@Icons.Material.Filled.MoreVert">
 			<MudMenuItem OnClick="ResetDatabase">Reset database...</MudMenuItem>
-			<MudMenuItem OnClick="ManageDataPoints">Manage data points...</MudMenuItem>
+			<MudMenuItem OnClick="ManageCategories">Manage categories...</MudMenuItem>
 			<MudMenuItem OnClick="@(() => AppInfo.Current.ShowSettingsUI())">System settings...</MudMenuItem>
 			<MudMenuItem Disabled="true">v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
 		</MudMenu>
@@ -49,7 +49,7 @@
 
 <div id="main-body">
 	<MudStack id="main-timeline">
-		@foreach (var group in db.DataPointCategories.Where(x => x.Enabled).GroupBy(x => x.Group))
+		@foreach (var group in db.Categories.Where(x => x.Enabled).GroupBy(x => x.Group))
 		{
 			@if (!string.IsNullOrEmpty(group.Key))
 			{
@@ -113,7 +113,7 @@
 
 	async Task NewNote()
 	{
-		var notes = db.DataPointCategories.Single(x => x.Group == "Notes");
+		var notes = db.Categories.Single(x => x.Group == "Notes");
 
 		var dataPoint = new DataPoint()
 			{
@@ -167,8 +167,8 @@
 		Application.Current.Quit();
 	}
 
-	async Task ManageDataPoints()
+	async Task ManageCategories()
 	{
-		await DialogService.Show<ManageDataPoints>("Manage data points").Result;
+		await DialogService.Show<ManageCategories>("Manage categories").Result;
 	}
 }

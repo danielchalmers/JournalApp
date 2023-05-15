@@ -4,7 +4,7 @@
 
 <MudDialog>
 	<DialogContent>
-		<MudDataGrid Items="db.DataPointCategories.Where(c => c.Group == null)" SortMode="SortMode.None" ReadOnly="false" EditMode="DataGridEditMode.Cell" Dense="true" Elevation="0">
+		<MudDataGrid Items="db.Categories.Where(c => c.Group == null)" SortMode="SortMode.None" ReadOnly="false" EditMode="DataGridEditMode.Cell" Dense="true" Elevation="0">
 			<Columns>
 				<PropertyColumn Property="x => x.Name" />
 
@@ -48,9 +48,9 @@
 			return;
 
 		var newCategory = (DataPointCategory)result.Data;
-		newCategory.Index = db.DataPointCategories.Max(x => x.Index) + 1;
+		newCategory.Index = db.Categories.Max(x => x.Index) + 1;
 
-		db.DataPointCategories.Add(newCategory);
+		db.Categories.Add(newCategory);
 		await db.SaveChangesAsync();
 	}
 

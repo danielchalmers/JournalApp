@@ -4,11 +4,11 @@
 <MudDialog>
 	<DialogContent>
 		<MudForm @ref="form" @bind-IsValid="@success">
-			<MudTextField Label="Name of category" @bind-Value="Name" Placeholder="New data point" Required="true" Immediate="true" />
+			<MudTextField Label="Name of category" @bind-Value="Name" Required="true" Immediate="true" />
 
 			<MudSelect Label="Type of data" @bind-Value="SelectedType">
-				<MudSelectItem Value="DataType.Scale">Star rating</MudSelectItem>
-				<MudSelectItem Value="DataType.Bool">Yes, no, or N/A</MudSelectItem>
+				<MudSelectItem Value="DataType.Scale">1-5 scale</MudSelectItem>
+				<MudSelectItem Value="DataType.Bool">Yes or no</MudSelectItem>
 				<MudSelectItem Value="DataType.Number">Number</MudSelectItem>
 			</MudSelect>
 		</MudForm>
@@ -41,10 +41,10 @@
 	void Submit()
 	{
 		Category = new()
-			{
-				Name = Name,
-				Type = SelectedType,
-			};
+		{
+			Name = Name,
+			Type = SelectedType,
+		};
 
 		MudDialog.Close(DialogResult.Ok(Category));
 	}

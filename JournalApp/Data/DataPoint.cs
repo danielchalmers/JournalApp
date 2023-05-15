@@ -17,7 +17,7 @@ public class DataPointCategory
 
     public virtual HashSet<DataPoint> DataPoints { get; set; } = new();
 
-    public override string ToString() => $"{string.Join("|", Group, Name)} - #{Index}";
+    public override string ToString() => $"{string.Join("|", Group, Name)} #{Index}";
 }
 
 public class DataPoint
