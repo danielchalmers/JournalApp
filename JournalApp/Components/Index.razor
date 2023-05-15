@@ -39,7 +39,7 @@
 			</ActivatorContent>
 
 			<ChildContent>
-				<MudDatePicker PickerVariant="PickerVariant.Static" DateChanged="OnDaySelected" DisableToolbar="true" />
+					<MudDatePicker PickerVariant="PickerVariant.Static" DateChanged="OnDaySelected" DisableToolbar="true" IsDateDisabledFunc="@(dt => dt > DateTime.Now)" />
 			</ChildContent>
 		</MudMenu>
 
