@@ -27,41 +27,61 @@
 			<MudMenuItem OnClick="ManageDataPoints">Manage data points...</MudMenuItem>
 			<MudMenuItem OnClick="@(() => AppInfo.Current.ShowSettingsUI())">System settings...</MudMenuItem>
 			<MudMenuItem Disabled="true">v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
-			</MudMenu>
-		</MudAppBar>
+		</MudMenu>
+	</MudAppBar>
 
-		<div class="d-flex justify-center align-center pa-1">
-			<MudIconButton Icon="@Icons.Material.Outlined.ArrowBack" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
+	<div class="d-flex justify-center align-center pa-1">
+		<MudIconButton Icon="@Icons.Material.Outlined.ArrowBack" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
 
-			<MudMenu @ref="datePickerMenu" AnchorOrigin="Origin.BottomLeft">
-				<ActivatorContent>
-					<MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false" Style="width:7em">@_day.Date.ToString("ddd, MMM d")</MudText>
-				</ActivatorContent>
+		<MudMenu @ref="datePickerMenu" AnchorOrigin="Origin.BottomLeft">
+			<ActivatorContent>
+				<MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false" Style="width:7em">@_day.Date.ToString("ddd, MMM d")</MudText>
+			</ActivatorContent>
 
-				<ChildContent>
-					<MudDatePicker PickerVariant="PickerVariant.Static" DateChanged="OnDaySelected" DisableToolbar="true" />
-				</ChildContent>
-			</MudMenu>
+			<ChildContent>
+				<MudDatePicker PickerVariant="PickerVariant.Static" DateChanged="OnDaySelected" DisableToolbar="true" />
+			</ChildContent>
+		</MudMenu>
 
-			<MudIconButton Icon="@Icons.Material.Outlined.ArrowForward" OnClick="NextDay" Disabled="@(_day.Date > DateOnly.FromDateTime(DateTime.Now))" />
-		</div>
+		<MudIconButton Icon="@Icons.Material.Outlined.ArrowForward" OnClick="NextDay" Disabled="@(_day.Date > DateOnly.FromDateTime(DateTime.Now))" />
 	</div>
+</div>
 
-	<div id="main-body">
-		<MudStack id="main-timeline">
-			<MultiDataPoints Day="_day" Categories="@(db.DataPointCategories.Where(c => c.Group == null))" />
+<div id="main-body">
+	<MudStack id="main-timeline">
+		@foreach (var group in db.DataPointCategories.Where(x => x.Enabled).GroupBy(x => x.Group))
+		{
+			@if (!string.IsNullOrEmpty(group.Key))
+			{
+				<MudDivider />
 
-			<MudDivider />
+				<MudText Typo="Typo.h5">@group.Key</MudText>
+			}
 
-			<MudText Typo="Typo.h5">Notes:</MudText>
+			@foreach (var category in group.OrderBy(x => x.Index))
+			{
+				@foreach (var point in category.DataPoints.Where(x => x.Day == _day && !x.IsDeleted))
+				{
+					<div class="data-point-view">
+						@if (!string.IsNullOrEmpty(category.Name))
+						{
+							<MudText Style="width:7em" Align="Align.Right">@category.Name:</MudText>
+						}
 
-			<MultiDataPoints Day="_day" Categories="@(db.DataPointCategories.Where(c => c.Group == "Notes"))" />
+						<DataPointView DataPoint="point" />
+					</div>
+				}
+			}
 
-			<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote">New note</MudButton>
-		</MudStack>
-	</div>
+			@if (group.Key == "Notes")
+			{
+				<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote">New note</MudButton>
+			}
+		}
+	</MudStack>
+</div>
 
-	@code {
+@code {
 	Day _day;
 	bool _isDarkMode;
 	MudThemeProvider _mudThemeProvider;
