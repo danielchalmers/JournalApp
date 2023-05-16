@@ -47,14 +47,13 @@ public class DataPoint
     public static IReadOnlyList<string> Moods { get; } = new[] { "😁", "😀", "🙂", "😐", "🙁", "😢", "😭", };
 }
 
-[Flags]
 public enum DataType
 {
-    None = 0,
-    Mood = 1 << 0,
-    Sleep = 1 << 1,
-    Scale = 1 << 2,
-    Bool = 1 << 3,
-    Number = 1 << 4,
-    Text = 1 << 5,
+    None,
+    Mood,
+    Sleep,
+    Scale,
+    Bool,
+    Number,
+    Text,
 }

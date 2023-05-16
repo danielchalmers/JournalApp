@@ -1,7 +1,7 @@
 ﻿@namespace JournalApp
 @inject IDialogService DialogService
 
-@if (DataPoint.DataType.HasFlag(DataType.Mood))
+@if (DataPoint.DataType == DataType.Mood)
 {
 	<MudMenu>
 		<ActivatorContent>
@@ -18,26 +18,26 @@
 		</ChildContent>
 	</MudMenu>
 }
-@if (DataPoint.DataType.HasFlag(DataType.Sleep))
+@if (DataPoint.DataType == DataType.Sleep)
 {
 	<div class="d-flex align-center flex-grow-1 gap-4">
 		<MudSlider @bind-Value="DataPoint.SleepHours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" Size="Size.Large" />
 		<MudText Typo="Typo.caption">@((DataPoint.SleepHours ?? 0).ToString("00.0"))</MudText>
 	</div>
 }
-@if (DataPoint.DataType.HasFlag(DataType.Scale))
+@if (DataPoint.DataType == DataType.Scale)
 {
 	<MudRating @bind-SelectedValue="DataPoint.ScaleIndex" Size="Size.Large" FullIcon="@Icons.Material.Filled.Circle" EmptyIcon="@Icons.Material.Outlined.Circle" Color="Color.Primary" />
 }
-@if (DataPoint.DataType.HasFlag(DataType.Bool))
+@if (DataPoint.DataType == DataType.Bool)
 {
 	<ButtonGroupCheckBox @bind-SelectedValue="DataPoint.Bool" />
 }
-@if (DataPoint.DataType.HasFlag(DataType.Number))
+@if (DataPoint.DataType == DataType.Number)
 {
 	<MudNumericField @bind-Value="DataPoint.Number" HideSpinButtons="true" Class="mt-n4" />
 }
-@if (DataPoint.DataType.HasFlag(DataType.Text))
+@if (DataPoint.DataType == DataType.Text)
 {
 	<div class="d-flex flex-column flex-grow-1 gap-2">
 		<MudTextField @bind-Value="DataPoint.Text" Lines="4" Placeholder="What's on your mind?" Label="@(DataPoint.CreatedAt.ToString("h:mm tt"))" />
