@@ -39,6 +39,10 @@
 }
 @if (DataPoint.DataType == DataType.Text)
 {
+	<MudTextField @bind-Value="DataPoint.Text" />
+}
+@if (DataPoint.DataType == DataType.Note)
+{
 	<div class="d-flex flex-column flex-grow-1 gap-2">
 		<MudTextField @bind-Value="DataPoint.Text" Lines="4" Placeholder="What's on your mind?" Label="@(DataPoint.CreatedAt.ToString("h:mm tt"))" />
 

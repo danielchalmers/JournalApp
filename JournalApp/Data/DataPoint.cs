@@ -56,4 +56,5 @@ public enum DataType
     Bool,
     Number,
     Text,
+    Note,
 }

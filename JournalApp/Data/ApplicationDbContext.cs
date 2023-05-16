@@ -53,7 +53,7 @@ public class ApplicationDbContext : DbContext
         {
             Guid = new Guid("BF394F35-2228-4933-BF38-AF5B1B97AEF7"),
             Group = "Notes",
-            Type = DataType.Text,
+            Type = DataType.Note,
         });
     }
 
