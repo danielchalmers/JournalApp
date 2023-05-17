@@ -20,7 +20,7 @@ jobs:
         fileName: 'release.keystore'
         encodedString: "${{ secrets.RELEASE_KEYSTORE_BASE64 }}"
 
-    - uses: actions/setup-dotnet@v2
+    - uses: actions/setup-dotnet@v3
     
     - name: Show .NET info
       run: dotnet --info
