@@ -12,7 +12,7 @@
 
 				<PropertyColumn Property="x => x.Enabled">
 					<EditTemplate>
-						<MudSwitch @bind-Checked="context.Item.Enabled" />
+						<MudSwitch @bind-Checked="context.Item.Enabled" Color="Color.Primary" />
 					</EditTemplate>
 				</PropertyColumn>
 
@@ -20,9 +20,7 @@
 				{
 					<PropertyColumn Property="x => x.Type">
 						<EditTemplate>
-							<MudSelect @bind-Value="context.Item.Type"
-													   Required
-										   Margin="Margin.Dense">
+							<MudSelect @bind-Value="context.Item.Type" Required Margin="Margin.Dense">
 									@foreach (var item in Enum.GetValues<DataType>())
 								{
 									<MudSelectItem Value="@item">@item</MudSelectItem>
@@ -35,7 +33,11 @@
 				{
 					<PropertyColumn Property="x => x.MedicationUnit" Title="Unit" />
 
-					<PropertyColumn Property="x => x.MedicationEveryDay" Title="Every day" />
+					<PropertyColumn Property="x => x.MedicationEveryDay" Title="Every day">
+						<EditTemplate>
+							<MudSwitch @bind-Checked="context.Item.MedicationEveryDay" Color="Color.Primary" />
+						</EditTemplate>
+					</PropertyColumn>
 				}
 			</Columns>
 		</MudDataGrid>
