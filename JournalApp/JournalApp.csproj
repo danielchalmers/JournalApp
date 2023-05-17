@@ -42,7 +42,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="7.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.5" />
-    <PackageReference Include="MudBlazor" Version="6.2.4" />
+    <PackageReference Include="MudBlazor" Version="6.2.5" />
     <PackageReference Include="Nerdbank.GitVersioning" Version="3.6.132" PrivateAssets="All" />
   </ItemGroup>
 
