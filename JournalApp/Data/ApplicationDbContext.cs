@@ -123,9 +123,15 @@ public class ApplicationDbContext : DbContext
         foreach (var category in Categories)
         {
             if (category.Group == "Notes")
-                continue;
-
-            if (!category.DataPoints.Where(x => x.Day == day).Any(x => x.Category.Guid == category.Guid))
+            {
+                if (category.DataPoints.Count == 0)
+                {
+                    var note = CreateNote(day);
+                    note.Text = "I just started using JournalApp! 😎";
+                    category.DataPoints.Add(note);
+                }
+            }
+            else if (!category.DataPoints.Where(x => x.Day == day).Any(x => x.Category.Guid == category.Guid))
             {
                 var dataPoint = new DataPoint()
                 {
@@ -151,4 +157,17 @@ public class ApplicationDbContext : DbContext
     public Task<Day> GetNextDay(Day day) => GetDay(day.Date.GetNextDate());
 
     public Task<Day> GetPreviousDay(Day day) => GetDay(day.Date.GetPreviousDate());
+
+    public DataPoint CreateNote(Day day)
+    {
+        var notes = Categories.Single(x => x.Group == "Notes");
+
+        return new()
+        {
+            Day = day,
+            Category = notes,
+            CreatedAt = DateTimeOffset.Now,
+            DataType = DataType.Note,
+        };
+    }
 }

@@ -173,19 +173,11 @@
 
 	async Task NewNote()
 	{
-		var notes = db.Categories.Single(x => x.Group == "Notes");
+		var note = db.CreateNote(_day);
 
-		var dataPoint = new DataPoint()
-			{
-				Day = _day,
-				Category = notes,
-				CreatedAt = DateTimeOffset.Now,
-				DataType = DataType.Note,
-			};
+		await EditTextDialog.ShowDialog(DialogService, note);
 
-		await EditTextDialog.ShowDialog(DialogService, dataPoint);
-
-		notes.DataPoints.Add(dataPoint);
+		note.Category.DataPoints.Add(note);
 
 		await db.SaveChangesAsync();
 	}
