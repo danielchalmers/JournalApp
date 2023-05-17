@@ -1,0 +1,72 @@
+﻿@namespace JournalApp
+@inject IDialogService DialogService
+
+<MudDialog>
+	<DialogContent>
+		<MudForm @ref="form" @bind-IsValid="@success">
+			<MudTextField Label="@("Name of " + (Group == "Medications" ? "medication" : "category"))" @bind-Value="Name" Required="true" Immediate="true" />
+
+			@if (Group == null)
+			{
+				<MudSelect Label="Type of data" @bind-Value="SelectedType">
+					<MudSelectItem Value="DataType.Scale">1-5 scale</MudSelectItem>
+					<MudSelectItem Value="DataType.Bool">Yes or no</MudSelectItem>
+					<MudSelectItem Value="DataType.Number">Number</MudSelectItem>
+				</MudSelect>
+			}
+			else if (Group == "Medications")
+			{
+				<div class="d-flex flex-row flex-grow-1 gap-2">
+					<MudNumericField @bind-Value="MedicationDose" HideSpinButtons="true" Label="Dose" />
+
+					<MudTextField @bind-Value="MedicationUnit" Label="Unit" />
+				</div>
+			}
+		</MudForm>
+	</DialogContent>
+
+	<DialogActions>
+		<MudButton OnClick="Cancel">Cancel</MudButton>
+
+		<MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(!success)">Add</MudButton>
+	</DialogActions>
+</MudDialog>
+
+@code {
+	MudForm form;
+	bool success;
+
+	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+	[Parameter]
+	public string Group { get; set; }
+
+	public string Name { get; set; }
+
+	public DataType SelectedType { get; set; } = DataType.Scale;
+
+	public decimal? MedicationDose { get; set; }
+
+	public string MedicationUnit { get; set; } = "mg";
+
+	public DataPointCategory Category { get; set; }
+
+	void Cancel()
+	{
+		MudDialog.Close(DialogResult.Cancel());
+	}
+
+	void Submit()
+	{
+		Category = new()
+		{
+			Group = Group,
+			Name = Name,
+			Type = Group == "Medications" ? DataType.Medication : SelectedType,
+			MedicationDose = MedicationDose,
+			MedicationUnit = MedicationUnit,
+		};
+
+		MudDialog.Close(DialogResult.Ok(Category));
+	}
+}

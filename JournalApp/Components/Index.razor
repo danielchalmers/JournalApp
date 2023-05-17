@@ -25,31 +25,32 @@
 		<MudMenu Icon="@Icons.Material.Filled.MoreVert">
 			<MudMenuItem OnClick="ResetDatabase">Reset database...</MudMenuItem>
 			<MudMenuItem OnClick="ManageCategories">Manage categories...</MudMenuItem>
+			<MudMenuItem OnClick="ManageMedications">Manage medications...</MudMenuItem>
 			<MudMenuItem OnClick="@(() => AppInfo.Current.ShowSettingsUI())">System settings...</MudMenuItem>
 			<MudMenuItem Disabled="true">v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
-		</MudMenu>
-	</MudAppBar>
+			</MudMenu>
+		</MudAppBar>
 
-	<div class="d-flex justify-center align-center pa-1">
-		<MudIconButton Icon="@Icons.Material.Outlined.ArrowBack" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
+		<div class="d-flex justify-center align-center pa-1">
+			<MudIconButton Icon="@Icons.Material.Outlined.ArrowBack" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
 
-		<MudMenu @ref="datePickerMenu" AnchorOrigin="Origin.BottomLeft">
-			<ActivatorContent>
-				<MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false" Style="width:7em">@_day.Date.ToString("ddd, MMM d")</MudText>
-			</ActivatorContent>
+			<MudMenu @ref="datePickerMenu" AnchorOrigin="Origin.BottomLeft">
+				<ActivatorContent>
+					<MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false" Style="width:7em">@_day.Date.ToString("ddd, MMM d")</MudText>
+				</ActivatorContent>
 
-			<ChildContent>
+				<ChildContent>
 					<MudDatePicker PickerVariant="PickerVariant.Static" DateChanged="OnDaySelected" DisableToolbar="true" IsDateDisabledFunc="@(dt => dt > DateTime.Now)" />
-			</ChildContent>
-		</MudMenu>
+				</ChildContent>
+			</MudMenu>
 
-		<MudIconButton Icon="@Icons.Material.Outlined.ArrowForward" OnClick="NextDay" Disabled="@(_day.Date > DateOnly.FromDateTime(DateTime.Now))" />
+			<MudIconButton Icon="@Icons.Material.Outlined.ArrowForward" OnClick="NextDay" Disabled="@(_day.Date > DateOnly.FromDateTime(DateTime.Now))" />
+		</div>
 	</div>
-</div>
 
-<div id="main-body">
-	<MudStack id="main-timeline">
-		@foreach (var group in db.Categories.Where(x => x.Enabled).GroupBy(x => x.Group))
+	<div id="main-body">
+		<MudStack id="main-timeline">
+			@foreach (var group in db.Categories.Where(x => x.Enabled).GroupBy(x => x.Group))
 		{
 			@if (!string.IsNullOrEmpty(group.Key))
 			{
@@ -80,7 +81,7 @@
 
 			@if (group.Key == "Medications")
 			{
-				<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Medication" OnClick="NewMedication">New medication</MudButton>
+				<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Medication" OnClick="ManageMedications">Manage medications</MudButton>
 			}
 		}
 	</MudStack>
@@ -158,6 +159,12 @@
 		await DialogService.Show<ManageCategories>("Manage categories").Result;
 	}
 
+	async Task ManageMedications()
+	{
+		var parameters = new DialogParameters { { nameof(JournalApp.ManageCategories.Group), "Medications" } };
+		await DialogService.Show<ManageCategories>("Manage medications", parameters).Result;
+	}
+
 	async Task NewNote()
 	{
 		var notes = db.Categories.Single(x => x.Group == "Notes");
@@ -173,25 +180,6 @@
 		await EditTextDialog.ShowDialog(DialogService, dataPoint);
 
 		notes.DataPoints.Add(dataPoint);
-
-		await db.SaveChangesAsync();
-	}
-
-	async Task NewMedication()
-	{
-		var meds = db.Categories.Single(x => x.Group == "Medications");
-
-		var dataPoint = new DataPoint()
-			{
-				Day = _day,
-				Category = meds,
-				CreatedAt = DateTimeOffset.Now,
-				DataType = DataType.Medication,
-			};
-
-		await EditMedicationDialog.ShowDialog(DialogService, dataPoint);
-
-		meds.DataPoints.Add(dataPoint);
 
 		await db.SaveChangesAsync();
 	}

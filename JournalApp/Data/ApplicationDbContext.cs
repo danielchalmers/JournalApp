@@ -5,7 +5,6 @@ public class ApplicationDbContext : DbContext
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
-        Database.EnsureDeleted();
         Database.EnsureCreated();
 
         SeedCategory(new()
@@ -56,12 +55,6 @@ public class ApplicationDbContext : DbContext
             Group = "Notes",
             Type = DataType.Note,
         });
-        SeedCategory(new()
-        {
-            Guid = new Guid("1315C1D8-D489-4E8F-A3C2-C7517B7EF89D"),
-            Group = "Medications",
-            Type = DataType.Medication,
-        });
     }
 
     private void SeedCategory(DataPointCategory category)
@@ -87,7 +80,7 @@ public class ApplicationDbContext : DbContext
 
     protected DbSet<Day> Days { get; set; } = default!;
 
-    public DbSet<DataPointCategory> Categories { get; set; }
+    public DbSet<DataPointCategory> Categories { get; set; } = default!;
 
     public Task<Day> GetDay(DateTime dateTime) => GetDay(DateOnly.FromDateTime(dateTime));
 
@@ -106,27 +99,38 @@ public class ApplicationDbContext : DbContext
             await SaveChangesAsync();
         }
 
-        // Add any missing data points for the main group of categories.
+        if (AddMissingDataPoints(day))
+            await SaveChangesAsync();
+
+        return day;
+    }
+
+    private bool AddMissingDataPoints(Day day)
+    {
         var anyDataPointsAdded = false;
-        foreach (var category in Categories.Where(c => c.Group == null))
+        foreach (var category in Categories)
         {
+            if (category.Group == "Notes")
+                continue;
+
             if (!category.DataPoints.Where(x => x.Day == day).Any(x => x.Category.Guid == category.Guid))
             {
-                category.DataPoints.Add(new()
+                var dataPoint = new DataPoint()
                 {
                     Day = day,
                     Category = category,
                     CreatedAt = DateTimeOffset.Now,
                     DataType = category.Type,
-                });
+                    Dose = category.MedicationDose,
+                    Text = category.MedicationUnit,
+                };
+
+                category.DataPoints.Add(dataPoint);
                 anyDataPointsAdded = true;
             }
         }
 
-        if (anyDataPointsAdded)
-            await SaveChangesAsync();
-
-        return day;
+        return anyDataPointsAdded;
     }
 
     public Task<Day> GetNextDay(Day day) => GetDay(day.Date.GetNextDate());

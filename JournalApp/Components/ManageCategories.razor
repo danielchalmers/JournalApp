@@ -4,7 +4,7 @@
 
 <MudDialog>
 	<DialogContent>
-		<MudDataGrid Items="db.Categories.Where(c => c.Group == null)" SortMode="SortMode.None" ReadOnly="false" EditMode="DataGridEditMode.Cell" Dense="true" Elevation="0">
+		<MudDataGrid Items="db.Categories.Where(c => c.Group == Group)" SortMode="SortMode.None" ReadOnly="false" EditMode="DataGridEditMode.Cell" Dense="true" Elevation="0">
 			<Columns>
 				<PropertyColumn Property="x => x.Name" />
 
@@ -16,22 +16,31 @@
 					</EditTemplate>
 				</PropertyColumn>
 
-				<PropertyColumn Property="x => x.Type">
-					<EditTemplate>
-						<MudSelect @bind-Value="context.Item.Type" Required Margin="Margin.Dense">
-							@foreach (var item in Enum.GetValues<DataType>())
-							{
-								<MudSelectItem Value="@item">@item</MudSelectItem>
-							}
-						</MudSelect>
-					</EditTemplate>
-				</PropertyColumn>
+				@if (Group == null)
+				{
+					<PropertyColumn Property="x => x.Type">
+						<EditTemplate>
+							<MudSelect @bind-Value="context.Item.Type"
+													   Required
+										   Margin="Margin.Dense">
+									@foreach (var item in Enum.GetValues<DataType>())
+								{
+									<MudSelectItem Value="@item">@item</MudSelectItem>
+								}
+							</MudSelect>
+						</EditTemplate>
+					</PropertyColumn>
+				}
+				else if (Group == "Medications")
+				{
+					<PropertyColumn Property="x => x.MedicationUnit" Title="Unit" />
+				}
 			</Columns>
 		</MudDataGrid>
 	</DialogContent>
 
 	<DialogActions>
-		<MudButton Color="Color.Secondary" OnClick="New">New category...</MudButton>
+		<MudButton Color="Color.Secondary" OnClick="New">New @(Group == "Medications" ? "medication" : "category")...</MudButton>
 
 		<MudButton Color="Color.Primary" OnClick="Submit">Save changes</MudButton>
 	</DialogActions>
@@ -40,15 +49,21 @@
 @code {
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
+	[Parameter]
+	public string Group { get; set; }
+
 	async Task New()
 	{
-		var result = await DialogService.Show<NewCategory>("New category").Result;
+		var parameters = new DialogParameters { { nameof(NewCategoryDialog.Group), Group } };
+		var result = await DialogService.Show<NewCategoryDialog>($"New {(Group == "Medications" ? "medication" : "category")}", parameters).Result;
 
 		if (result.Canceled)
 			return;
 
 		var newCategory = (DataPointCategory)result.Data;
-		newCategory.Index = db.Categories.Max(x => x.Index) + 1;
+		var groupCategories = db.Categories.Where(x => x.Group == Group);
+		if (groupCategories.Any())
+			newCategory.Index = groupCategories.Max(x => x.Index) + 1;
 
 		db.Categories.Add(newCategory);
 		await db.SaveChangesAsync();

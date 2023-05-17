@@ -15,6 +15,10 @@ public class DataPointCategory
 
     public DataType Type { get; set; }
 
+    public decimal? MedicationDose { get; set; }
+
+    public string MedicationUnit { get; set; }
+
     public virtual HashSet<DataPoint> DataPoints { get; set; } = new();
 
     public override string ToString() => $"{string.Join("|", Group, Name)} #{Index}";
@@ -41,6 +45,7 @@ public class DataPoint
     public bool? Bool { get; set; }
     public double? Number { get; set; }
     public string Text { get; set; }
+    public decimal? Dose { get; set; }
 
     public override string ToString() => $"{DataType} ({Category})";
 
