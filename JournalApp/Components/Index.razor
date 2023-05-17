@@ -56,7 +56,14 @@
 			{
 				<MudDivider />
 
-				<MudText Typo="Typo.h5">@group.Key</MudText>
+				@if (group.Key == "Notes")
+				{
+					<MudText Typo="Typo.h5">Today's notes</MudText>
+				}
+				else if (group.Key == "Medications")
+				{
+					<MudText Typo="Typo.h5">Medications taken</MudText>
+				}
 			}
 
 			@foreach (var category in group.Where(x => x.Enabled).OrderBy(x => x.Index))
@@ -78,8 +85,7 @@
 			{
 				<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote">New note</MudButton>
 			}
-
-			@if (group.Key == "Medications")
+			else if (group.Key == "Medications")
 			{
 				<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Medication" OnClick="ManageMedications">Manage medications</MudButton>
 			}
