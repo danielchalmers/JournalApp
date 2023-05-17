@@ -20,6 +20,8 @@
 					<MudNumericField @bind-Value="MedicationDose" HideSpinButtons="true" Label="Dose" />
 
 					<MudTextField @bind-Value="MedicationUnit" Label="Unit" />
+
+					<MudSwitch @bind-Checked="MedicationEveryDay" Label="Every day" />
 				</div>
 			}
 		</MudForm>
@@ -49,6 +51,8 @@
 
 	public string MedicationUnit { get; set; } = "mg";
 
+	public bool MedicationEveryDay { get; set; } = true;
+
 	public DataPointCategory Category { get; set; }
 
 	void Cancel()
@@ -59,13 +63,13 @@
 	void Submit()
 	{
 		Category = new()
-		{
-			Group = Group,
-			Name = Name,
-			Type = Group == "Medications" ? DataType.Medication : SelectedType,
-			MedicationDose = MedicationDose,
-			MedicationUnit = MedicationUnit,
-		};
+			{
+				Group = Group,
+				Name = Name,
+				Type = Group == "Medications" ? DataType.Medication : SelectedType,
+				MedicationDose = MedicationDose,
+				MedicationUnit = MedicationUnit,
+			};
 
 		MudDialog.Close(DialogResult.Ok(Category));
 	}

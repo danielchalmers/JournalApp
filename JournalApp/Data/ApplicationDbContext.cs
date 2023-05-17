@@ -125,6 +125,9 @@ public class ApplicationDbContext : DbContext
                     Text = category.MedicationUnit,
                 };
 
+                if (category.MedicationEveryDay)
+                    dataPoint.Bool = true;
+
                 category.DataPoints.Add(dataPoint);
                 anyDataPointsAdded = true;
             }

@@ -19,6 +19,8 @@ public class DataPointCategory
 
     public string MedicationUnit { get; set; }
 
+    public bool MedicationEveryDay { get; set; }
+
     public virtual HashSet<DataPoint> DataPoints { get; set; } = new();
 
     public override string ToString() => $"{string.Join("|", Group, Name)} #{Index}";
