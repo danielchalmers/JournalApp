@@ -55,6 +55,18 @@ public class ApplicationDbContext : DbContext
             Group = "Notes",
             Type = DataType.Note,
         });
+        SeedCategory(new()
+        {
+            Guid = new Guid("01A8F325-3002-40C4-B076-234E26172E82"),
+            Group = "Medications",
+            Name = "Vitamin D",
+            Type = DataType.Medication,
+            Index = 0,
+            MedicationDose = 2000,
+            MedicationUnit = "IU",
+            MedicationEveryDay = true,
+            Enabled = false,
+        });
     }
 
     private void SeedCategory(DataPointCategory category)
