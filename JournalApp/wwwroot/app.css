@@ -54,11 +54,16 @@
 	justify-content: space-between;
 }
 
+.data-point-header {
+	width: 7em;
+}
+
 .data-point-view {
 	min-height: 3em;
 	display: flex;
 	align-items: center;
-	gap: 16px;
+	gap: 12px;
+	margin: -2px 0px;
 }
 
 #blazor-error-ui {

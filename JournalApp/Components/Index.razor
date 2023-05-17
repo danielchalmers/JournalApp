@@ -66,7 +66,7 @@
 					<div class="data-point-view">
 						@if (!string.IsNullOrEmpty(category.Name))
 						{
-							<MudText Style="width:7em" Align="Align.Right">@category.Name:</MudText>
+							<MudText Class="data-point-header" Align="Align.Right">@category.Name:</MudText>
 						}
 
 						<DataPointView DataPoint="point" />
