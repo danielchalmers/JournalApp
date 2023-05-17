@@ -57,4 +57,5 @@ public enum DataType
     Number,
     Text,
     Note,
+    Medication,
 }

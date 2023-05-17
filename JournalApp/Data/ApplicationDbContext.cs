@@ -5,6 +5,7 @@ public class ApplicationDbContext : DbContext
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
+        Database.EnsureDeleted();
         Database.EnsureCreated();
 
         SeedCategory(new()
@@ -54,6 +55,12 @@ public class ApplicationDbContext : DbContext
             Guid = new Guid("BF394F35-2228-4933-BF38-AF5B1B97AEF7"),
             Group = "Notes",
             Type = DataType.Note,
+        });
+        SeedCategory(new()
+        {
+            Guid = new Guid("1315C1D8-D489-4E8F-A3C2-C7517B7EF89D"),
+            Group = "Medications",
+            Type = DataType.Medication,
         });
     }
 

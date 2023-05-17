@@ -1,0 +1,49 @@
+﻿@namespace JournalApp
+@inject IDialogService DialogService
+
+<MudDialog>
+	<DialogContent>
+		<div class="d-flex flex-column flex-grow-1 gap-2">
+			<MudTextField @bind-Value="DataPoint.Category.Name" Label="Name" />
+
+			<div class="d-flex flex-row flex-grow-1 gap-2">
+				<MudNumericField @ref="_doseField" @bind-Value="DataPoint.Number" HideSpinButtons="true" Label="Dose" />
+
+				<MudTextField @bind-Value="DataPoint.Text" Label="Unit" />
+			</div>
+		</div>
+	</DialogContent>
+
+	<DialogActions>
+		<MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(DataPoint.Category.Name == null)">Save changes</MudButton>
+	</DialogActions>
+</MudDialog>
+
+@code {
+	MudNumericField<double?> _doseField;
+
+	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+	[Parameter]
+	public DataPoint DataPoint { get; set; }
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			await _doseField.FocusAsync();
+		}
+	}
+
+	void Submit()
+	{
+		MudDialog.Close(DialogResult.Ok(true));
+	}
+
+	public static async Task ShowDialog(IDialogService dialogService, DataPoint dataPoint)
+	{
+		var parameters = new DialogParameters { { nameof(EditMedicationDialog.DataPoint), dataPoint } };
+
+		await dialogService.Show<EditMedicationDialog>("Edit medication", parameters).Result;
+	}
+}
