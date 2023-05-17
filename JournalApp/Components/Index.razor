@@ -156,13 +156,13 @@
 
 	async Task ManageCategories()
 	{
-		await DialogService.Show<ManageCategories>("Manage categories").Result;
+		await DialogService.Show<ManageCategoriesDialog>("Manage categories").Result;
 	}
 
 	async Task ManageMedications()
 	{
-		var parameters = new DialogParameters { { nameof(JournalApp.ManageCategories.Group), "Medications" } };
-		await DialogService.Show<ManageCategories>("Manage medications", parameters).Result;
+		var parameters = new DialogParameters { { nameof(ManageCategoriesDialog.Group), "Medications" } };
+		await DialogService.Show<ManageCategoriesDialog>("Manage medications", parameters).Result;
 	}
 
 	async Task NewNote()
