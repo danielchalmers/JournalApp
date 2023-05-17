@@ -55,7 +55,13 @@
 }
 
 .data-point-header {
-	width: 7em;
+	width: 6em;
+	word-wrap: anywhere;
+}
+
+.data-point-header-medication {
+	width: 10em;
+	word-wrap: anywhere;
 }
 
 .data-point-view {
