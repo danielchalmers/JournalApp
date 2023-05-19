@@ -4,7 +4,7 @@
 <MudDialog>
 	<DialogContent>
 		<MudForm @ref="form" @bind-IsValid="@success">
-			<MudTextField Label="@("Name of " + (Group == "Medications" ? "medication" : "category"))" @bind-Value="Name" Required="true" Immediate="true" />
+			<MudTextField Label="Name" @bind-Value="Name" Required="true" Immediate="true" />
 
 			@if (Group == null)
 			{
@@ -17,12 +17,12 @@
 			else if (Group == "Medications")
 			{
 				<div class="d-flex flex-row flex-grow-1 gap-2">
-					<MudNumericField @bind-Value="MedicationDose" HideSpinButtons="true" Label="Dose" />
+					<MudNumericField @bind-Value="MedicationDose" HideSpinButtons="true" Label="Dose" MaxLength="5" />
 
-					<MudTextField @bind-Value="MedicationUnit" Label="Unit" />
-
-					<MudSwitch @bind-Checked="MedicationEveryDay" Label="Every day" Color="Color.Primary" />
+					<MudTextField @bind-Value="MedicationUnit" Label="Unit" MaxLength="4" />
 				</div>
+
+				<MudSwitch @bind-Checked="MedicationEveryDay" Label="Every day" Color="Color.Primary" />
 			}
 		</MudForm>
 	</DialogContent>

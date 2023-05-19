@@ -54,22 +54,31 @@
 	justify-content: space-between;
 }
 
-.data-point-header {
-	width: 7em;
-	word-wrap: anywhere;
+.data-point-container {
+	min-height: 2em;
+	display: flex;
+	flex-wrap: wrap;
+	flex-grow: 1;
+	align-items: center;
+	column-gap: 3%;
 }
 
-.data-point-header-medication {
-	width: 10em;
+.data-point-header {
+	min-width: 32%;
+	justify-self: start;
 	word-wrap: anywhere;
 }
 
 .data-point-view {
-	min-height: 3em;
 	display: flex;
-	align-items: center;
-	gap: 12px;
-	margin: -2px 0px;
+	width: 65%;
+	flex-grow: 1;
+}
+
+.day-title {
+	display: flex;
+	justify-content: center;
+	width: 50vw;
 }
 
 #blazor-error-ui {

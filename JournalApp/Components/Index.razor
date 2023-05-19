@@ -34,15 +34,17 @@
 		<div class="d-flex justify-center align-center pa-1">
 			<MudIconButton Icon="@Icons.Material.Outlined.ArrowBack" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
 
-			<MudMenu @ref="datePickerMenu" AnchorOrigin="Origin.BottomLeft">
-				<ActivatorContent>
-					<MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false" Style="width:7em">@_day.Date.ToString("ddd, MMM d")</MudText>
-				</ActivatorContent>
+			<div class="day-title">
+				<MudMenu @ref="datePickerMenu" AnchorOrigin="Origin.BottomLeft">
+					<ActivatorContent>
+						<MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false">@_day.Date.ToString("ddd, MMM d")</MudText>
+					</ActivatorContent>
 
-				<ChildContent>
-					<MudDatePicker PickerVariant="PickerVariant.Static" DateChanged="OnDaySelected" DisableToolbar="true" IsDateDisabledFunc="@(dt => dt > DateTime.Now)" />
-				</ChildContent>
-			</MudMenu>
+					<ChildContent>
+						<MudDatePicker PickerVariant="PickerVariant.Static" DateChanged="OnDaySelected" DisableToolbar="true" IsDateDisabledFunc="@(dt => dt > DateTime.Now)" />
+					</ChildContent>
+				</MudMenu>
+			</div>
 
 			<MudIconButton Icon="@Icons.Material.Outlined.ArrowForward" OnClick="NextDay" Disabled="@(_day.Date > DateOnly.FromDateTime(DateTime.Now))" />
 		</div>
@@ -70,13 +72,15 @@
 			{
 				@foreach (var point in category.DataPoints.Where(x => x.Day == _day && !x.IsDeleted))
 				{
-					<div class="data-point-view">
+					<div class="data-point-container">
 						@if (!string.IsNullOrEmpty(category.Name))
 						{
-							<MudText Class="@(group.Key == "Medications" ? "data-point-header-medication" : "data-point-header")" Align="Align.Right">@category.Name:</MudText>
+							<MudText Class="data-point-header" Align="Align.Right">@category.Name</MudText>
 						}
 
-						<DataPointView DataPoint="point" />
+						<div class="data-point-view">
+							<DataPointView DataPoint="point" />
+						</div>
 					</div>
 				}
 			}
