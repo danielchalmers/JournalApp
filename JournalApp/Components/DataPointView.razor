@@ -52,7 +52,7 @@ else if (DataPoint.DataType == DataType.Note)
 else if (DataPoint.DataType == DataType.Medication)
 {
 	<div class="d-flex flex-row flex-wrap flex-grow-1 align-center justify-center gap-3">
-		<MudText>@($"{DataPoint.Dose:0}{DataPoint.Text}")</MudText>
+		<MudText Style="min-width:4em" Align="Align.Center">@($"{DataPoint.Dose:0}{DataPoint.Text}")</MudText>
 
 		<ButtonGroupCheckBox @bind-SelectedValue="DataPoint.Bool" />
 	</div>

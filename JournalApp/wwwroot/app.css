@@ -12,7 +12,7 @@
 }
 
 #loading-text {
-	margin-top: 40vh;
+	margin-top: 45vh;
 	font-family: sans-serif;
 	font-size: 8vw;
 }
@@ -33,12 +33,12 @@
 	flex-grow: 1;
 	max-width: 800px;
 	margin: 1em;
-	margin-bottom: 25em;
+	margin-bottom: 15em;
 }
 
 .mud-divider {
-	margin-top: 1em !important;
-	margin-bottom: 1em !important;
+	margin-top: 1.5em !important;
+	margin-bottom: 1.5em !important;
 }
 
 .mud-dialog-title {
@@ -61,6 +61,7 @@
 	flex-grow: 1;
 	align-items: center;
 	column-gap: 3%;
+	row-gap: 0.5em;
 }
 
 .data-point-header {
