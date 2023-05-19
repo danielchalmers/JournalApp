@@ -56,3 +56,4 @@ jobs:
         packageName: com.danielchalmers.journalapp
         releaseFiles: "publish/*-Signed.aab"
         track: internal
+        status: draft
