@@ -1,5 +1,6 @@
 ﻿@namespace JournalApp
 @page "/"
+@using System.Diagnostics;
 @inherits LayoutComponentBase
 @inject ApplicationDbContext db
 @inject ISnackbar SnackbarService
@@ -125,6 +126,16 @@
 		await base.OnInitializedAsync();
 
 		_day = await db.GetDay(DateTime.Now);
+
+		var window = App.Current.Windows.Single();
+		window.Deactivated += Window_Deactivated;
+		window.Destroying += Window_Deactivated;
+	}
+
+	private void Window_Deactivated(object sender, EventArgs e)
+	{
+		Debug.WriteLine("Window was deactivated or is being destroyed; Saving database...");
+		db.SaveChanges();
 	}
 
 	async Task OnDaySelected(DateTime? dateTime)
@@ -183,6 +194,8 @@
 
 		note.Category.DataPoints.Add(note);
 
+		Debug.WriteLine(db.ChangeTracker.DebugView.ShortView);
 		await db.SaveChangesAsync();
+		Debug.WriteLine(db.ChangeTracker.DebugView.ShortView);
 	}
 }
