@@ -48,6 +48,7 @@ public class DataPoint
     public double? Number { get; set; }
     public string Text { get; set; }
     public decimal? Dose { get; set; }
+    public string Unit { get; set; }
 
     public override string ToString() => $"{DataType} ({Category})";
 

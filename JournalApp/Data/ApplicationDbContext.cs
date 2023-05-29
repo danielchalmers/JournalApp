@@ -140,7 +140,7 @@ public class ApplicationDbContext : DbContext
                     CreatedAt = DateTimeOffset.Now,
                     DataType = category.Type,
                     Dose = category.MedicationDose,
-                    Text = category.MedicationUnit,
+                    Unit = category.MedicationUnit,
                 };
 
                 if (category.MedicationEveryDay)

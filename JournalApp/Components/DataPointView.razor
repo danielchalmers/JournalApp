@@ -35,11 +35,11 @@ else if (DataPoint.DataType == DataType.Bool)
 }
 else if (DataPoint.DataType == DataType.Number)
 {
-	<MudNumericField @bind-Value="DataPoint.Number" HideSpinButtons="true" Class="mt-n4" MaxLength="10" Immediate="true" />
+	<MudNumericField @bind-Value="DataPoint.Number" Class="mt-n4" Immediate="true" HideSpinButtons="true" MaxLength="10" />
 }
 else if (DataPoint.DataType == DataType.Text)
 {
-	<MudTextField @bind-Value="DataPoint.Text" Immediate="true" />
+	<MudTextField @bind-Value="DataPoint.Text" Class="mt-n4" Immediate="true" />
 }
 else if (DataPoint.DataType == DataType.Note)
 {
@@ -52,7 +52,7 @@ else if (DataPoint.DataType == DataType.Note)
 else if (DataPoint.DataType == DataType.Medication)
 {
 	<div class="d-flex flex-row flex-wrap flex-grow-1 align-center justify-center gap-3">
-		<MudText Style="min-width:4em" Align="Align.Center">@($"{DataPoint.Dose:0}{DataPoint.Text}")</MudText>
+		<MudText Style="min-width:4em" Align="Align.Center">@($"{DataPoint.Dose:0}{DataPoint.Unit}")</MudText>
 
 		<ButtonGroupCheckBox @bind-SelectedValue="DataPoint.Bool" />
 	</div>
