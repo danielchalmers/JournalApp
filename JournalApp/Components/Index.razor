@@ -17,7 +17,7 @@
 				   Position="DialogPosition.TopCenter" />
 <MudSnackbarProvider />
 
-<div id="main-header">
+<div id="main-header" @ref="mainHeader">
 	<MudAppBar Color="Color.Primary" Fixed="false" Dense="true">
 		<MudText Typo="Typo.h5">🙂 @ThisAssembly.AssemblyTitle</MudText>
 
@@ -102,6 +102,7 @@
 	Day _day;
 	bool _isDarkMode;
 	MudThemeProvider _mudThemeProvider;
+	ElementReference mainHeader;
 	MudMenu datePickerMenu;
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -147,6 +148,7 @@
 	async Task SetDay(Day day)
 	{
 		_day = day;
+		await mainHeader.FocusAsync();
 		await ScrollManager.ScrollToTopAsync("main-body");
 	}
 
