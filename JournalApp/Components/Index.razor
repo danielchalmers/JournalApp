@@ -36,7 +36,7 @@
 			<MudIconButton Icon="@Icons.Material.Outlined.ArrowBack" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
 
 			<div class="day-title">
-				<MudMenu @ref="datePickerMenu" AnchorOrigin="Origin.BottomLeft">
+				<MudMenu @ref="datePickerMenu" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.BottomCenter">
 					<ActivatorContent>
 						<MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false">@_day.Date.ToString("ddd, MMM d")</MudText>
 					</ActivatorContent>
