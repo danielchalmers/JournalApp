@@ -40,7 +40,7 @@
 					</ActivatorContent>
 
 					<ChildContent>
-						<MudDatePicker PickerVariant="PickerVariant.Static" DateChanged="OnDaySelected" DisableToolbar="true" IsDateDisabledFunc="@(dt => dt > DateTime.Now)" />
+						<MudDatePicker PickerVariant="PickerVariant.Static" DateChanged="OnDaySelected" DisableToolbar="true" IsDateDisabledFunc="@(d => d > DateTime.Now)" />
 					</ChildContent>
 				</MudMenu>
 			</div>
@@ -57,13 +57,13 @@
 			{
 				<MudDivider />
 
-				@if (group.Key == "Notes")
-				{
-					<MudText Typo="Typo.h5">Today's notes</MudText>
-				}
-				else if (group.Key == "Medications")
+				@if (group.Key == "Medications")
 				{
 					<MudText Typo="Typo.h5">Medications taken</MudText>
+				}
+				else if (group.Key == "Notes")
+				{
+					<MudText Typo="Typo.h5">Today's notes</MudText>
 				}
 			}
 
@@ -84,13 +84,13 @@
 				}
 			}
 
-			@if (group.Key == "Notes")
-			{
-				<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote">New note</MudButton>
-			}
-			else if (group.Key == "Medications")
+			@if (group.Key == "Medications")
 			{
 				<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Medication" OnClick="ManageMedications">Manage medications</MudButton>
+			}
+			else if (group.Key == "Notes")
+			{
+				<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote">New note</MudButton>
 			}
 		}
 	</MudStack>
@@ -140,6 +140,7 @@
 	async Task OnDaySelected(DateTime? dateTime)
 	{
 		datePickerMenu.CloseMenu();
+
 		await SetDay(await db.GetDay(dateTime.Value));
 	}
 

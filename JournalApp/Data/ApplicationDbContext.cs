@@ -9,7 +9,7 @@ public class ApplicationDbContext : DbContext
         {
             Database.EnsureCreated();
         }
-        catch (Microsoft.Data.Sqlite.SqliteException ex) when (ex.Message == "SQLite Error 14: 'unable to open database file'.")
+        catch (Microsoft.Data.Sqlite.SqliteException ex) when (ex.SqliteErrorCode == 14)
         {
             // https://stackoverflow.com/a/38562947.
         }
