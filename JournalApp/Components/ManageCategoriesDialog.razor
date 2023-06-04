@@ -23,7 +23,7 @@
 							<MudSelect @bind-Value="context.Item.Type" Required Margin="Margin.Dense">
 									@foreach (var item in Enum.GetValues<DataType>())
 								{
-									<MudSelectItem Value="@item">@item</MudSelectItem>
+									<MudSelectItem Value="@item">@item.GetFriendlyName()</MudSelectItem>
 								}
 							</MudSelect>
 						</EditTemplate>
