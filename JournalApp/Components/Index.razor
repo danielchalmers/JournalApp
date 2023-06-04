@@ -164,12 +164,16 @@
 	async Task ManageCategories()
 	{
 		await DialogService.Show<ManageCategoriesDialog>("Manage categories").Result;
+
+		db.AddMissingDataPoints(_day);
 	}
 
 	async Task ManageMedications()
 	{
 		var parameters = new DialogParameters { { nameof(ManageCategoriesDialog.Group), "Medications" } };
 		await DialogService.Show<ManageCategoriesDialog>("Manage medications", parameters).Result;
+
+		db.AddMissingDataPoints(_day);
 	}
 
 	async Task NewNote()

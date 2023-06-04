@@ -117,7 +117,7 @@ public class ApplicationDbContext : DbContext
         return day;
     }
 
-    private bool AddMissingDataPoints(Day day)
+    public bool AddMissingDataPoints(Day day)
     {
         var anyDataPointsAdded = false;
         foreach (var category in Categories)
