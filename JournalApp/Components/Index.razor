@@ -24,7 +24,6 @@
 		<MudSpacer />
 
 		<MudMenu Icon="@Icons.Material.Filled.MoreVert">
-			<MudMenuItem OnClick="ResetDatabase">Reset database...</MudMenuItem>
 			<MudMenuItem OnClick="ManageCategories">Manage categories...</MudMenuItem>
 			<MudMenuItem OnClick="ManageMedications">Manage medications...</MudMenuItem>
 			<MudMenuItem OnClick="@(() => AppInfo.Current.ShowSettingsUI())">System settings...</MudMenuItem>
@@ -160,21 +159,6 @@
 	async Task NextDay()
 	{
 		await SetDay(await db.GetNextDay(_day));
-	}
-
-	async Task ResetDatabase()
-	{
-		var result = await DialogService.ShowMessageBox(
-			"Reset database",
-			"This will reset the database and close the app. Are you sure you want to continue?",
-			yesText: "Delete everything",
-			cancelText: "Cancel");
-
-		if (result != true)
-			return;
-
-		await db.Database.EnsureDeletedAsync();
-		Application.Current.Quit();
 	}
 
 	async Task ManageCategories()
