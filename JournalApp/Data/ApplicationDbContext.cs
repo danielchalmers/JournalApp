@@ -30,31 +30,24 @@ public class ApplicationDbContext : DbContext
         });
         SeedCategory(new()
         {
-            Guid = new Guid("74B8FFBF-2251-4029-A655-7D37F69F47CD"),
-            Name = "Happiness",
+            Guid = new Guid("40B5AF7B-4F4E-4E77-BD6B-F7855CF773AB"),
+            Name = "Productivity",
             Type = DataType.Scale,
             Index = 3,
         });
         SeedCategory(new()
         {
-            Guid = new Guid("40B5AF7B-4F4E-4E77-BD6B-F7855CF773AB"),
-            Name = "Productivity",
-            Type = DataType.Scale,
-            Index = 4,
-        });
-        SeedCategory(new()
-        {
-            Guid = new Guid("B764A259-8BBC-4578-AE7B-83B2CFB92FF3"),
-            Name = "Updated JournalApp",
+            Guid = new Guid("DE394B38-9007-4349-AE31-429541AAB947"),
+            Name = "Exercised",
             Type = DataType.Bool,
-            Index = 5,
+            Index = 4,
         });
         SeedCategory(new()
         {
             Guid = new Guid("480DC07D-1330-486F-9B30-EC83A3D4E6F0"),
             Name = "Weight",
             Type = DataType.Number,
-            Index = 6,
+            Index = 5,
         });
         SeedCategory(new()
         {
