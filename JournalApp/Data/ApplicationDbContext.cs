@@ -5,7 +5,14 @@ public class ApplicationDbContext : DbContext
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)
     {
-        Database.EnsureCreated();
+        try
+        {
+            Database.EnsureCreated();
+        }
+        catch (Microsoft.Data.Sqlite.SqliteException ex) when (ex.Message == "SQLite Error 14: 'unable to open database file'.")
+        {
+            // https://stackoverflow.com/a/38562947.
+        }
 
         SeedCategory(new()
         {
