@@ -48,6 +48,11 @@
 	background-color: var(--mud-palette-surface);
 }
 
+.mud-button-close {
+	top: 0px !important;
+	right: 0px !important;
+}
+
 .mud-dialog-content {
 	padding: 4px 16px !important;
 }
