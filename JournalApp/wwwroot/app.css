@@ -49,6 +49,12 @@
 	padding: 4px 16px !important;
 }
 
+.mud-dialog-actions {
+	position: sticky;
+	bottom: 0;
+	background-color: var(--mud-palette-surface);
+}
+
 .mud-rating-root {
 	flex-grow: 1;
 	justify-content: space-between;
