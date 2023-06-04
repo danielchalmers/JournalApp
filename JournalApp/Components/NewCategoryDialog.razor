@@ -9,10 +9,10 @@
 			@if (Group == null)
 			{
 				<MudSelect Label="Type of data" @bind-Value="SelectedType">
-					@foreach (var item in Enum.GetValues<DataType>())
-					{
-						<MudSelectItem Value="@item">@item.GetFriendlyName()</MudSelectItem>
-					}
+					<MudSelectItem Value="DataType.Scale">1-5 scale</MudSelectItem>
+					<MudSelectItem Value="DataType.Bool">Yes or no</MudSelectItem>
+					<MudSelectItem Value="DataType.Number">Number</MudSelectItem>
+					<MudSelectItem Value="DataType.Text">Text</MudSelectItem>
 				</MudSelect>
 			}
 			else if (Group == "Medications")
