@@ -43,6 +43,9 @@
 
 .mud-dialog-title {
 	padding: 8px 16px !important;
+	position: sticky;
+	top: 0;
+	background-color: var(--mud-palette-surface);
 }
 
 .mud-dialog-content {
