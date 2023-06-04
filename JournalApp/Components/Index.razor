@@ -183,8 +183,6 @@
 
 		note.Category.DataPoints.Add(note);
 
-		Debug.WriteLine(db.ChangeTracker.DebugView.ShortView);
 		await db.SaveChangesAsync();
-		Debug.WriteLine(db.ChangeTracker.DebugView.ShortView);
 	}
 }
