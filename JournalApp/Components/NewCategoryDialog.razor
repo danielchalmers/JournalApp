@@ -3,7 +3,7 @@
 
 <MudDialog>
 	<DialogContent>
-		<MudForm @ref="form" @bind-IsValid="@success" Class="d-flex flex-column gap-3">
+		<MudForm @ref="form" @bind-IsValid="@success" Class="d-flex flex-column" Style="gap:1em">
 			<MudTextField Label="Name" @bind-Value="Name" Required="true" Immediate="true" />
 
 			@if (Group == null)
@@ -17,7 +17,7 @@
 			}
 			else if (Group == "Medications")
 			{
-				<div class="d-flex flex-row flex-grow-1 gap-2">
+				<div class="d-flex flex-row flex-grow-1" style="gap:1em">
 					<MudNumericField @bind-Value="MedicationDose" HideSpinButtons="true" Label="Dose" MaxLength="5" Required="true" Immediate="true" />
 
 					<MudTextField @bind-Value="MedicationUnit" Label="Unit" MaxLength="4" Required="true" Immediate="true" />

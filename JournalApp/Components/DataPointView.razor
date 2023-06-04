@@ -20,7 +20,7 @@
 }
 else if (DataPoint.DataType == DataType.Sleep)
 {
-	<div class="d-flex align-center flex-grow-1 gap-4">
+	<div class="d-flex align-center flex-grow-1" style="gap:1em">
 		<MudSlider @bind-Value="DataPoint.SleepHours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" Size="Size.Large" Immediate="true" />
 		<MudText Typo="Typo.caption">@((DataPoint.SleepHours ?? 0).ToString("00.0"))</MudText>
 	</div>
@@ -43,7 +43,7 @@ else if (DataPoint.DataType == DataType.Text)
 }
 else if (DataPoint.DataType == DataType.Note)
 {
-	<div class="d-flex flex-column flex-grow-1 gap-2">
+	<div class="d-flex flex-column flex-grow-1">
 		<MudTextField @bind-Value="DataPoint.Text" Lines="4" Placeholder="What's on your mind?" Label="@(DataPoint.CreatedAt.ToString(DateOnly.FromDateTime(DataPoint.CreatedAt.Date) == DataPoint.Day.Date ? "h:mm tt" : "M/d/yy h:mm tt"))" Immediate="true" />
 
 		<MudLink OnClick="EditTextInDialog">Edit note...</MudLink>
@@ -51,7 +51,7 @@ else if (DataPoint.DataType == DataType.Note)
 }
 else if (DataPoint.DataType == DataType.Medication)
 {
-	<div class="d-flex flex-row flex-wrap flex-grow-1 align-center justify-center gap-3">
+	<div class="d-flex flex-row flex-wrap flex-grow-1 align-center justify-center" style="gap:1em">
 		<MudText Style="min-width:4em" Align="Align.Center">@($"{DataPoint.Dose:0}{DataPoint.Unit}")</MudText>
 
 		<ButtonGroupCheckBox @bind-SelectedValue="DataPoint.Bool" />
