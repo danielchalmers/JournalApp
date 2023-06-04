@@ -2,7 +2,7 @@
 @inject ApplicationDbContext db
 @inject IDialogService DialogService
 
-<MudDialog>
+<MudDialog OnBackdropClick="Submit">
 	<DialogContent>
 		<MudDataGrid Items="db.Categories.Where(c => c.Group == Group)" SortMode="SortMode.None" ReadOnly="false" EditMode="DataGridEditMode.Cell" Dense="true" Elevation="0">
 			<Columns>
