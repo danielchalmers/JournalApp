@@ -23,7 +23,7 @@
 
 		<MudSpacer />
 
-		<MudMenu Icon="@Icons.Material.Filled.MoreVert">
+		<MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
 			<MudMenuItem OnClick="ManageCategories">Manage categories...</MudMenuItem>
 			<MudMenuItem OnClick="ManageMedications">Manage medications...</MudMenuItem>
 			<MudMenuItem OnClick="@(() => AppInfo.Current.ShowSettingsUI())">System settings...</MudMenuItem>
