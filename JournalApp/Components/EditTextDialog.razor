@@ -15,6 +15,13 @@
 	[Parameter]
 	public DataPoint DataPoint { get; set; }
 
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+
+		MudDialog.CloseIcon = Icons.Material.Outlined.Check;
+	}
+
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
 		if (firstRender)
