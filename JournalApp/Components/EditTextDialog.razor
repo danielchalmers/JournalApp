@@ -1,15 +1,13 @@
 ﻿@namespace JournalApp
 @inject IDialogService DialogService
 
-<MudDialog>
+<MudDialog DefaultFocus="DefaultFocus.FirstChild">
 	<DialogContent>
-		<MudTextField @ref="_textField" @bind-Value="DataPoint.Text" Lines="12" Class="mt-n6" DisableUnderLine="true" />
+		<MudTextField @bind-Value="DataPoint.Text" Lines="12" Class="mt-n6" DisableUnderLine="true" />
 	</DialogContent>
 </MudDialog>
 
 @code {
-	MudTextField<string> _textField;
-
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
 	[Parameter]
@@ -20,14 +18,6 @@
 		await base.OnInitializedAsync();
 
 		MudDialog.CloseIcon = Icons.Material.Outlined.Check;
-	}
-
-	protected override async Task OnAfterRenderAsync(bool firstRender)
-	{
-		if (firstRender)
-		{
-			await _textField.FocusAsync();
-		}
 	}
 
 	void Submit()
