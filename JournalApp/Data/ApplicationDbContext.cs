@@ -17,14 +17,14 @@ public class ApplicationDbContext : DbContext
         SeedCategory(new()
         {
             Guid = new Guid("D90D89FB-F5B9-47CF-AE4E-3EC0D635E783"),
-            Name = "Mood",
+            Name = "Overall mood",
             Type = DataType.Mood,
             Index = 1,
         });
         SeedCategory(new()
         {
             Guid = new Guid("D8657B36-F3A0-486F-BF80-0CF057919C7D"),
-            Name = "Sleep",
+            Name = "Last night's sleep",
             Type = DataType.Sleep,
             Index = 2,
         });
@@ -38,7 +38,7 @@ public class ApplicationDbContext : DbContext
         SeedCategory(new()
         {
             Guid = new Guid("DE394B38-9007-4349-AE31-429541AAB947"),
-            Name = "Exercised",
+            Name = "Exercised or was active",
             Type = DataType.Bool,
             Index = 4,
         });
