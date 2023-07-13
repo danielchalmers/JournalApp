@@ -31,7 +31,7 @@
 		</MudAppBar>
 
 		<div class="d-flex justify-center align-center pa-1">
-			<MudIconButton Icon="@Icons.Material.Outlined.ArrowBack" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
+			<MudIconButton Icon="@Icons.Material.Outlined.ArrowBackIos" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
 
 			<div class="day-title">
 				<MudMenu @ref="datePickerMenu" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.BottomCenter">
@@ -45,7 +45,7 @@
 				</MudMenu>
 			</div>
 
-			<MudIconButton Icon="@Icons.Material.Outlined.ArrowForward" OnClick="NextDay" Disabled="@(_day.Date > DateOnly.FromDateTime(DateTime.Now))" />
+			<MudIconButton Icon="@Icons.Material.Outlined.ArrowForwardIos" OnClick="NextDay" Disabled="@(_day.Date > DateOnly.FromDateTime(DateTime.Now))" />
 		</div>
 	</div>
 

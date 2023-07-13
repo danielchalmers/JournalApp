@@ -24,7 +24,7 @@ else if (DataPoint.DataType == DataType.Sleep)
 		<MudIconButton Icon="@Icons.Material.Outlined.Remove" OnClick="() => DataPoint.SleepHours -= 0.5m" />
 		<MudSlider @bind-Value="DataPoint.SleepHours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" Size="Size.Large" Immediate="true" />
 		<MudText Typo="Typo.caption">@((DataPoint.SleepHours ?? 0).ToString("00.0"))</MudText>
-		<MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="() => DataPoint.SleepHours += 0.5m" />
+		<MudIconButton Icon="@Icons.Material.Outlined.Add" OnClick="() => DataPoint.SleepHours += 0.5m" />
 	</div>
 }
 else if (DataPoint.DataType == DataType.Scale)
