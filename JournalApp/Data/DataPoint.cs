@@ -52,7 +52,7 @@ public class DataPoint
 
     public override string ToString() => $"{DataType} ({Category})";
 
-    public static IReadOnlyList<string> Moods { get; } = new[] { "😁", "😀", "🙂", "😐", "🙁", "😢", "😭", };
+    public static IReadOnlyList<string> Moods { get; } = new[] { "🤔", "😁", "😀", "🙂", "😐", "🙁", "😢", "😭", };
 }
 
 public enum DataType
