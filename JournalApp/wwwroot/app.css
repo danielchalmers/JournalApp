@@ -34,6 +34,7 @@
 	max-width: 800px;
 	margin: 1em;
 	margin-bottom: 15em;
+	row-gap: 1.5em;
 }
 
 .mud-divider {
@@ -69,24 +70,19 @@
 }
 
 .data-point-container {
-	min-height: 2em;
 	display: flex;
-	flex-wrap: wrap;
-	flex-grow: 1;
-	align-items: center;
-	column-gap: 3%;
-	row-gap: 0.5em;
+	flex-direction: column;
 }
 
 .data-point-header {
-	min-width: 32%;
-	justify-self: start;
+	align-self: start;
 	word-wrap: anywhere;
+	font-weight: bold;
 }
 
 .data-point-view {
+	min-height: 2em;
 	display: flex;
-	width: 65%;
 	flex-grow: 1;
 }
 
