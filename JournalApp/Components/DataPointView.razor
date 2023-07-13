@@ -21,10 +21,10 @@
 else if (DataPoint.DataType == DataType.Sleep)
 {
 	<div class="d-flex align-center flex-grow-1" style="gap:1em">
-		<MudIconButton Icon="@Icons.Material.Outlined.Remove" OnClick="() => DataPoint.SleepHours -= 0.5m" />
+		<MudIconButton Icon="@Icons.Material.Outlined.Remove" OnClick="DecrementSleep" Disabled="@(DataPoint.SleepHours <= 0)" />
 		<MudSlider @bind-Value="DataPoint.SleepHours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" Size="Size.Large" Immediate="true" />
 		<MudText Typo="Typo.caption">@((DataPoint.SleepHours ?? 0).ToString("00.0"))</MudText>
-		<MudIconButton Icon="@Icons.Material.Outlined.Add" OnClick="() => DataPoint.SleepHours += 0.5m" />
+		<MudIconButton Icon="@Icons.Material.Outlined.Add" OnClick="IncrementSleep" Disabled="@(DataPoint.SleepHours >= 24)" />
 	</div>
 }
 else if (DataPoint.DataType == DataType.Scale)
@@ -63,6 +63,16 @@ else if (DataPoint.DataType == DataType.Medication)
 @code {
 	[Parameter]
 	public DataPoint DataPoint { get; set; }
+
+	void DecrementSleep()
+	{
+		DataPoint.SleepHours = Math.Max(0m, (DataPoint.SleepHours ?? 0) - 0.5m);
+	}
+
+	void IncrementSleep()
+	{
+		DataPoint.SleepHours = Math.Min(24m, (DataPoint.SleepHours ?? 24) + 0.5m);
+	}
 
 	async Task EditTextInDialog()
 	{
