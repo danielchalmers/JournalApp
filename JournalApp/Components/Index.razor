@@ -7,7 +7,7 @@
 @inject IDialogService DialogService
 @inject IScrollManager ScrollManager
 
-<MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" />
+<MudThemeProvider IsDarkMode="true" />
 <MudDialogProvider FullWidth="true"
 				   MaxWidth="MaxWidth.Large"
 				   NoHeader="false"
@@ -98,27 +98,8 @@
 
 @code {
 	Day _day;
-	bool _isDarkMode;
-	MudThemeProvider _mudThemeProvider;
 	ElementReference mainHeader;
 	MudMenu datePickerMenu;
-
-	protected override async Task OnAfterRenderAsync(bool firstRender)
-	{
-		if (firstRender)
-		{
-			_isDarkMode = await _mudThemeProvider.GetSystemPreference();
-			await _mudThemeProvider.WatchSystemPreference(OnSystemPreferenceChanged);
-			StateHasChanged();
-		}
-	}
-
-	private Task OnSystemPreferenceChanged(bool newValue)
-	{
-		_isDarkMode = newValue;
-		StateHasChanged();
-		return Task.CompletedTask;
-	}
 
 	protected override async Task OnInitializedAsync()
 	{
