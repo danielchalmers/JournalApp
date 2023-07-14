@@ -4,10 +4,11 @@
 <MudDialog>
 	<DialogContent>
 		<MudForm @ref="form" @bind-IsValid="@success" Class="d-flex flex-column" Style="gap:1em">
-			<MudTextField Label="Name" @bind-Value="Name" Required="true" Immediate="true" />
 
 			@if (Group == null)
 			{
+				<MudTextField Label="Name" @bind-Value="Name" Required="true" Immediate="true" />
+
 				<MudSelect Label="Type of data" @bind-Value="SelectedType">
 					<MudSelectItem Value="DataType.Scale">1-5 scale</MudSelectItem>
 					<MudSelectItem Value="DataType.Bool">Yes or no</MudSelectItem>
@@ -17,6 +18,8 @@
 			}
 			else if (Group == "Medications")
 			{
+				<MudAutocomplete Label="Name" @bind-Text="Name" Required="true" Immediate="true" SearchFunc="FindMedications" />
+
 				<div class="d-flex flex-row flex-grow-1" style="gap:1em">
 					<MudNumericField @bind-Value="MedicationDose" HideSpinButtons="true" Label="Dose" MaxLength="5" Required="true" Immediate="true" />
 
@@ -73,5 +76,13 @@
 			};
 
 		MudDialog.Close(DialogResult.Ok(Category));
+	}
+
+	Task<IEnumerable<string>> FindMedications(string s)
+	{
+		if (string.IsNullOrEmpty(s))
+			return Task.FromResult(Enumerable.Empty<string>());
+
+		return Task.FromResult(DataPoint.Medications.Where(x => x.Contains(s)));
 	}
 }
