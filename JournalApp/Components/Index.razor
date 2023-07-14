@@ -51,7 +51,7 @@
 
 	<div id="main-body">
 		<MudStack id="main-timeline">
-			@foreach (var group in db.Categories.AsEnumerable().GroupBy(x => x.Group))
+			@foreach (var group in db.Categories.GroupBy(x => x.Group))
 		{
 			@if (!string.IsNullOrEmpty(group.Key))
 			{
