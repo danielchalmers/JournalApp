@@ -30,7 +30,7 @@ jobs:
 
     - name: Build for Android
       run: >
-        dotnet publish -c:Debug -o "publish"
+        dotnet publish -c:Release -o "publish"
         -f:net8.0-android
         -p:AndroidKeyStore=True
         -p:AndroidSigningKeyStore="${{ steps.create_keystore.outputs.filePath }}"
