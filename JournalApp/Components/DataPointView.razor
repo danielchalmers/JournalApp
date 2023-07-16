@@ -71,7 +71,7 @@ else if (DataPoint.DataType == DataType.Medication)
 
 	void IncrementSleep()
 	{
-		DataPoint.SleepHours = Math.Min(24m, (DataPoint.SleepHours ?? 24) + 0.5m);
+		DataPoint.SleepHours = Math.Min(24m, (DataPoint.SleepHours ?? 0) + 0.5m);
 	}
 
 	async Task EditTextInDialog()
