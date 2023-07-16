@@ -22,26 +22,6 @@
 	color: white;
 }
 
-#main-header {
-	top: 0;
-	position: sticky;
-	background-color: var(--mud-palette-primary-lighten);
-	z-index: 1000;
-}
-
-#main-body {
-	display: flex;
-	justify-content: center;
-}
-
-#main-timeline {
-	flex-grow: 1;
-	max-width: 800px;
-	margin: 1em;
-	margin-bottom: 15em;
-	row-gap: 1.5em;
-}
-
 .mud-divider {
 	margin-top: 1.5em !important;
 	margin-bottom: 1.5em !important;
@@ -74,6 +54,38 @@
 	width: 0;
 }
 
+#main-header {
+	top: 0;
+	position: sticky;
+	background-color: var(--mud-palette-primary-lighten);
+	z-index: 1000;
+}
+
+#day-title {
+	display: flex;
+	justify-content: center;
+	width: 50vw;
+}
+
+#main-body {
+	display: flex;
+	justify-content: center;
+}
+
+#main-timeline {
+	flex-grow: 1;
+	max-width: 800px;
+	margin: 1.5em;
+	margin-bottom: 15em;
+	gap: 3em;
+}
+
+.data-point-group {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5em;
+}
+
 .data-point-container {
 	display: flex;
 	flex-direction: row;
@@ -86,20 +98,12 @@
 .data-point-header {
 	align-self: center;
 	justify-self: start;
-	word-wrap: anywhere;
-	font-weight: bold;
 }
 
 .data-point-view {
-	min-height: 2em;
 	display: flex;
 	flex-grow: 1;
-}
-
-.day-title {
-	display: flex;
-	justify-content: center;
-	width: 50vw;
+	min-height: 2em;
 }
 
 #blazor-error-ui {

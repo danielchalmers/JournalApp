@@ -33,7 +33,7 @@
 		<div class="d-flex justify-center align-center pa-1">
 			<MudIconButton Icon="@Icons.Material.Outlined.ArrowBackIos" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
 
-			<div class="day-title">
+			<div id="day-title">
 				<MudMenu @ref="datePickerMenu" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.BottomCenter">
 					<ActivatorContent>
 						<MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false">@_day.Date.ToString("ddd, MMM d")</MudText>
@@ -53,50 +53,57 @@
 		<MudStack id="main-timeline">
 			@foreach (var group in db.Categories.GroupBy(x => x.Group))
 		{
-			@if (!string.IsNullOrEmpty(group.Key))
-			{
-				<MudDivider />
-
-				@if (group.Key == "Medications")
+			<div class="data-point-group">
+				@if (!string.IsNullOrEmpty(group.Key))
 				{
-					<MudText Typo="Typo.h5">Medications taken</MudText>
-				}
-				else if (group.Key == "Notes")
-				{
-					<MudText Typo="Typo.h5">Today's notes</MudText>
-				}
-			}
-
-			@foreach (var category in group.Where(x => x.Enabled).OrderBy(x => x.Index).ThenBy(x => x.Name))
-			{
-				@foreach (var point in category.DataPoints.Where(x => x.Day == _day && !x.IsDeleted))
-				{
-					<div class="data-point-container">
-						@if (!string.IsNullOrEmpty(category.Name))
+					<div class="data-point-group-header">
+						@if (group.Key == "Medications")
 						{
-							<MudText Class="data-point-header" Align="Align.Right">@category.Name:</MudText>
+							<MudText Typo="Typo.h5">Medications taken</MudText>
 						}
-
-						@if (!category.SingleLine)
+						else if (group.Key == "Notes")
 						{
-							<div class="break-column" />
+							<MudText Typo="Typo.h5">Today's notes</MudText>
 						}
-
-						<div class="data-point-view">
-							<DataPointView DataPoint="point" />
-						</div>
 					</div>
 				}
-			}
 
-			@if (group.Key == "Medications")
-			{
-				<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Medication" OnClick="ManageMedications">Manage medications</MudButton>
-			}
-			else if (group.Key == "Notes")
-			{
-				<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote">New note</MudButton>
-			}
+				@foreach (var category in group.Where(x => x.Enabled).OrderBy(x => x.Index).ThenBy(x => x.Name))
+				{
+					@foreach (var point in category.DataPoints.Where(x => x.Day == _day && !x.IsDeleted))
+					{
+						<div class="data-point-container">
+							@if (!string.IsNullOrEmpty(category.Name))
+							{
+								<MudText Class="data-point-header" Align="Align.Right">@category.Name:</MudText>
+							}
+
+							@if (!category.SingleLine)
+							{
+								<div class="break-column" />
+							}
+
+							<div class="data-point-view">
+								<DataPointView DataPoint="point" />
+							</div>
+						</div>
+					}
+				}
+
+				@if (!string.IsNullOrEmpty(group.Key))
+				{
+					<div class="data-point-group-footer">
+						@if (group.Key == "Medications")
+						{
+							<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Medication" OnClick="ManageMedications" FullWidth>Manage medications</MudButton>
+						}
+						else if (group.Key == "Notes")
+						{
+							<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote" FullWidth>New note</MudButton>
+						}
+					</div>
+				}
+			</div>
 		}
 	</MudStack>
 </div>

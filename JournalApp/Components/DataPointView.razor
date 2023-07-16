@@ -24,8 +24,8 @@ else if (DataPoint.DataType == DataType.Sleep)
 		<MudIconButton Icon="@Icons.Material.Outlined.Remove" OnClick="DecrementSleep" Disabled="@(DataPoint.SleepHours <= 0)" />
 		<MudSlider @bind-Value="DataPoint.SleepHours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" Size="Size.Large" Immediate="true" />
 		<MudText Typo="Typo.caption">@((DataPoint.SleepHours ?? 0).ToString("00.0"))</MudText>
-		<MudIconButton Icon="@Icons.Material.Outlined.Add" OnClick="IncrementSleep" Disabled="@(DataPoint.SleepHours >= 24)" />
-	</div>
+			<MudIconButton Icon="@Icons.Material.Outlined.Add" OnClick="IncrementSleep" Disabled="@(DataPoint.SleepHours >= 24)" />
+		</div>
 }
 else if (DataPoint.DataType == DataType.Scale)
 {
@@ -53,8 +53,8 @@ else if (DataPoint.DataType == DataType.Note)
 }
 else if (DataPoint.DataType == DataType.Medication)
 {
-	<div class="d-flex flex-row flex-wrap flex-grow-1 align-center justify-center" style="gap:1em">
-		<MudText Style="min-width:4em" Align="Align.Center">@($"{DataPoint.Dose:0}{DataPoint.Unit}")</MudText>
+	<div class="d-flex flex-row flex-grow-1 align-center">
+		<MudText Style="width:6em" Align="Align.Left">@($"{DataPoint.Dose:0}{DataPoint.Unit}")</MudText>
 
 			<ButtonGroupCheckBox @bind-SelectedValue="DataPoint.Bool" />
 		</div>
