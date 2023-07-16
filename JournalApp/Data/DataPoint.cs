@@ -23,6 +23,8 @@ public class DataPointCategory
 
     public virtual HashSet<DataPoint> DataPoints { get; set; } = new();
 
+    public bool SingleLine => Type is DataType.Mood or DataType.Number;
+
     public override string ToString() => $"{string.Join("|", Group, Name)} #{Index}";
 }
 

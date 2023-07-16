@@ -69,13 +69,23 @@
 	background-color: var(--mud-palette-surface);
 }
 
+.break-column {
+	flex-basis: 100%;
+	width: 0;
+}
+
 .data-point-container {
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-items: center;
+	column-gap: 0.5em;
 }
 
 .data-point-header {
-	align-self: start;
+	align-self: center;
+	justify-self: start;
 	word-wrap: anywhere;
 	font-weight: bold;
 }

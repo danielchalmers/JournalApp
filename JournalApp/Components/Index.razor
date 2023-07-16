@@ -77,6 +77,11 @@
 							<MudText Class="data-point-header" Align="Align.Right">@category.Name:</MudText>
 						}
 
+						@if (!category.SingleLine)
+						{
+							<div class="break-column" />
+						}
+
 						<div class="data-point-view">
 							<DataPointView DataPoint="point" />
 						</div>
