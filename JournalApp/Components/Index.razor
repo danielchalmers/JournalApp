@@ -23,6 +23,7 @@
 		<MudSpacer />
 
 		<MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
+			<MudMenuItem OnClick="ShowMoodGrid">Show mood grid...</MudMenuItem>
 			<MudMenuItem OnClick="ManageCategories">Manage categories...</MudMenuItem>
 			<MudMenuItem OnClick="ManageMedications">Manage medications...</MudMenuItem>
 			<MudMenuItem OnClick="@(() => AppInfo.Current.ShowSettingsUI())">System settings...</MudMenuItem>
@@ -152,6 +153,13 @@
 	async Task NextDay()
 	{
 		await SetDay(await db.GetNextDay(_day));
+	}
+
+	async Task ShowMoodGrid()
+	{
+		var options = new DialogOptions { FullScreen = true, CloseButton = true, };
+
+		await DialogService.Show<MoodGridDialog>("Mood grid", options).Result;
 	}
 
 	async Task ManageCategories()

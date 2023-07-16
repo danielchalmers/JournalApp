@@ -1,0 +1,18 @@
+﻿@namespace JournalApp
+@inject ApplicationDbContext db
+@inject IDialogService DialogService
+
+<MudDialog>
+	<DialogContent>
+		<div>
+			@foreach (var dataPoint in db.Categories.First(x => x.Type == DataType.Mood).DataPoints.OrderBy(x => x.Day.Date).Where(x => x.Day.Date.Year == DateTime.Now.Year))
+			{
+				<MudText Typo="Typo.h4">@dataPoint.Day.Date.DayOfYear: @(dataPoint.Mood ?? "🤔")</MudText>
+			}
+		</div>
+	</DialogContent>
+</MudDialog>
+
+@code {
+	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
+}
