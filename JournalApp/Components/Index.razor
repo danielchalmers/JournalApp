@@ -22,8 +22,9 @@
 
 		<MudSpacer />
 
+		<MudIconButton Icon="@Icons.Material.Filled.Apps" OnClick="ShowMoodGrid" />
+
 		<MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
-			<MudMenuItem OnClick="ShowMoodGrid">Show mood grid...</MudMenuItem>
 			<MudMenuItem OnClick="ManageCategories">Manage categories...</MudMenuItem>
 			<MudMenuItem OnClick="ManageMedications">Manage medications...</MudMenuItem>
 			<MudMenuItem OnClick="@(() => AppInfo.Current.ShowSettingsUI())">System settings...</MudMenuItem>
@@ -157,7 +158,7 @@
 	{
 		var options = new DialogOptions { FullScreen = true, CloseButton = true, };
 
-		await DialogService.Show<MoodGridDialog>("Mood grid", options).Result;
+		await DialogService.Show<MoodGridDialog>("Mood Grid", options).Result;
 	}
 
 	async Task ManageCategories()
