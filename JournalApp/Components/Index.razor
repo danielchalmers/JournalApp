@@ -18,7 +18,9 @@
 
 <div id="main-header">
 	<MudAppBar Color="Color.Primary" Fixed="false" Dense="true">
-		<MudText Typo="Typo.h6">🙂 @ThisAssembly.AssemblyTitle</MudText>
+		<MudButton OnClick="ScrollToTop" DisableRipple Variant="Variant.Text">
+			<MudText Typo="Typo.h6">🙂 @ThisAssembly.AssemblyTitle</MudText>
+		</MudButton>
 
 		<MudSpacer />
 
@@ -138,11 +140,13 @@
 		await SetDay(await db.GetDay(dateTime.Value));
 	}
 
+	async Task ScrollToTop() => await ScrollManager.ScrollToTopAsync("main-body");
+
 	async Task SetDay(Day day)
 	{
 		_day = day;
 
-		await ScrollManager.ScrollToTopAsync("main-body");
+		await ScrollToTop();
 	}
 
 	async Task PreviousDay()
