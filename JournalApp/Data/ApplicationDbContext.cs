@@ -139,8 +139,8 @@ public class ApplicationDbContext : DbContext
                     Category = category,
                     CreatedAt = DateTimeOffset.Now,
                     DataType = category.Type,
-                    Dose = category.MedicationDose,
-                    Unit = category.MedicationUnit,
+                    MedicationDose = category.MedicationDose,
+                    MedicationUnit = category.MedicationUnit,
                 };
 
                 if (category.MedicationEveryDay)
