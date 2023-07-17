@@ -1,17 +1,27 @@
 ﻿@namespace JournalApp
+@using System.Globalization;
 @inject ApplicationDbContext db
 @inject IDialogService DialogService
 
 <MudDialog>
 	<DialogContent>
-		<div class="d-flex flex-row flex-wrap">
-			@foreach (var day in DaysInRange)
+		<MudContainer Style="max-height:90vh;overflow-y: scroll">
+			<MudText Typo="Typo.h3">@StartDate.Year</MudText>
+
+			@foreach (var group in DaysInRange.GroupBy(x => x.Date.Month))
 			{
-				<div style="width:3em;height:3em;background-color:@day.Color;">
-					<b>@day.Date.DayOfYear</b>
+				<MudText Typo="Typo.h4">@(CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(group.Key))</MudText>
+
+				<div class="d-flex flex-row flex-wrap">
+					@foreach (var day in group)
+					{
+						<div style="width:3em;height:3em;background-color:@day.Color;">
+							<b>@day.Date.Day</b>
+						</div>
+					}
 				</div>
 			}
-		</div>
+		</MudContainer>
 	</DialogContent>
 </MudDialog>
 
@@ -32,23 +42,26 @@
 
 		for (DateOnly date = StartDate; date <= EndDate; date = date.AddDays(1))
 		{
-			var emoji = moodCategory?.DataPoints?.FirstOrDefault(x => x.Day.Date == date)?.Mood;
-			var color = emoji switch
-			{
-				// https://www.colorhexa.com/0091ea-to-ff6d00
-				"😁" => "#0091ea",
-				"😀" => "#2b8bc3",
-				"🙂" => "#55859c",
-				"😐" => "#807f75",
-				"🙁" => "#aa794e",
-				"😢" => "#d47327",
-				"😭" => "#ff6d00",
-				_ => "transparent"
-			};
+			var moodDataPoint = moodCategory?.DataPoints?.FirstOrDefault(x => x.Day.Date == date);
+			var emoji = moodDataPoint?.Mood;
+			var color = GetMoodColor(emoji);
 
-		DaysInRange.Add(new(date, emoji, color));
+			DaysInRange.Add(new(date, emoji, color));
 		}
 	}
+
+	string GetMoodColor(string emoji) => emoji switch
+	{
+		// https://www.colorhexa.com/0091ea-to-ff6d00
+		"😁" => "#0091ea",
+		"😀" => "#2b8bc3",
+		"🙂" => "#55859c",
+		"😐" => "#807f75",
+		"🙁" => "#aa794e",
+		"😢" => "#d47327",
+		"😭" => "#ff6d00",
+		_ => "transparent"
+	};
 
 	private record DayGridItem(DateOnly Date, string Emoji, string Color);
 }
