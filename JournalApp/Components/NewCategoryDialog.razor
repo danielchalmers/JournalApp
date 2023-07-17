@@ -3,7 +3,7 @@
 
 <MudDialog>
 	<DialogContent>
-		<MudForm @ref="form" @bind-IsValid="@success" Class="d-flex flex-column" Style="gap:1em">
+		<MudForm @ref="form" @bind-IsValid="@success">
 			<MudTextField Label="Name" @bind-Value="Name" Required="true" Immediate="true" />
 
 			@if (Group == null)

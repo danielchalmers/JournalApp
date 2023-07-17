@@ -56,9 +56,10 @@
 	overflow-y: auto !important;
 }
 
-.break-column {
-	flex-basis: 100%;
-	width: 0;
+.mud-form {
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
 }
 
 #main-header {
@@ -124,6 +125,11 @@
 	height: 3em;
 	margin: 1px;
 	/* outline: 1px solid black; */
+}
+
+.break-flex-column {
+	flex-basis: 100%;
+	width: 0;
 }
 
 #blazor-error-ui {
