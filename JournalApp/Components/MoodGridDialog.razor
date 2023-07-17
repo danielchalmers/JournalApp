@@ -5,7 +5,7 @@
 
 <MudDialog>
 	<DialogContent>
-		<MudContainer Style="max-height:90vh;overflow-y: scroll">
+		<div class="mood-grid">
 			<MudText Typo="Typo.h3">@StartDate.Year</MudText>
 
 			@foreach (var group in DaysInRange.GroupBy(x => x.Date.Month))
@@ -15,14 +15,14 @@
 				<div class="d-flex flex-row flex-wrap">
 					@foreach (var day in group)
 					{
-						<div style="width:3em;height:3em;background-color:@day.Color;">
+						<div class="mood-block" style="background-color:@day.Color;">
 							<b>@day.Date.Day</b>
 							@day.Emoji
 						</div>
 					}
 				</div>
 			}
-		</MudContainer>
+		</div>
 	</DialogContent>
 </MudDialog>
 

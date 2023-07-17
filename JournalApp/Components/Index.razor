@@ -156,9 +156,9 @@
 
 	async Task ShowMoodGrid()
 	{
-		var options = new DialogOptions { FullScreen = true, CloseButton = true, };
+		var options = new DialogOptions { CloseButton = true, FullScreen = true, };
 
-		await DialogService.Show<MoodGridDialog>("Mood Grid", options).Result;
+		await DialogService.Show<MoodGridDialog>(string.Empty, options).Result;
 	}
 
 	async Task ManageCategories()
