@@ -62,10 +62,6 @@
 	gap: 1em;
 }
 
-.mud-table-cell {
-	padding: 1em !important;
-}
-
 #main-header {
 	top: 0;
 	position: sticky;
