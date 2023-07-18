@@ -37,17 +37,65 @@ public class ApplicationDbContext : DbContext
         });
         SeedCategory(new()
         {
+            Guid = new Guid("7330B995-0B56-46FF-9DD6-9CFC550FF5C8"),
+            Name = "Depression",
+            Type = DataType.Scale,
+            Index = 4,
+            Enabled = false,
+        });
+        SeedCategory(new()
+        {
+            Guid = new Guid("4955EB49-0BCF-433B-873E-2092F292CC6B"),
+            Name = "Mania",
+            Type = DataType.Scale,
+            Index = 5,
+            Enabled = false,
+        });
+        SeedCategory(new()
+        {
+            Guid = new Guid("E9B7E4BE-FD17-4171-B1D4-D38B6009FDA0"),
+            Name = "Irritability",
+            Type = DataType.Scale,
+            Index = 6,
+            Enabled = false,
+        });
+        SeedCategory(new()
+        {
+            Guid = new Guid("0FB54AFF-9ECC-4C17-BAB5-B908B794CEA9"),
+            Name = "Anxiety",
+            Type = DataType.Scale,
+            Index = 7,
+            Enabled = false,
+        });
+        SeedCategory(new()
+        {
             Guid = new Guid("DE394B38-9007-4349-AE31-429541AAB947"),
             Name = "Exercised or was active",
             Type = DataType.Bool,
-            Index = 4,
+            Index = 8,
+        });
+        SeedCategory(new()
+        {
+            Guid = new Guid("EE8DE4D0-3A87-4CA4-B384-81BD7508A19F"),
+            Name = "Menstruating",
+            Type = DataType.Bool,
+            Index = 9,
+            Enabled = false,
+        });
+        SeedCategory(new()
+        {
+            Guid = new Guid("C871C9F7-1A6E-4EA2-ACC9-94A256C9E2CC"),
+            Name = "Did therapy today",
+            Type = DataType.Bool,
+            Index = 10,
+            Enabled = false,
         });
         SeedCategory(new()
         {
             Guid = new Guid("480DC07D-1330-486F-9B30-EC83A3D4E6F0"),
             Name = "Weight",
             Type = DataType.Number,
-            Index = 5,
+            Index = 11,
         });
         SeedCategory(new()
         {
