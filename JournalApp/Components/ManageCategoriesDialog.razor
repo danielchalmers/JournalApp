@@ -2,7 +2,7 @@
 @inject ApplicationDbContext db
 @inject IDialogService DialogService
 
-<MudDialog OnBackdropClick="Submit">
+<MudDialog DefaultFocus="DefaultFocus.Element" OnBackdropClick="Submit">
 	<TitleContent>
 		<div class="page-header">
 			<MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" OnClick="Submit" />
