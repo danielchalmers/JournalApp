@@ -8,29 +8,28 @@
 @inject IScrollManager ScrollManager
 
 <MudThemeProvider IsDarkMode="true" />
-<MudDialogProvider FullWidth="true"
-				   MaxWidth="MaxWidth.Large"
+<MudDialogProvider MaxWidth="MaxWidth.Large"
 				   NoHeader="false"
 				   CloseButton="false"
-				   CloseOnEscapeKey="false"
+				   CloseOnEscapeKey="true"
 				   Position="DialogPosition.Center" />
 <MudSnackbarProvider />
 
 <div id="main-header">
 	<MudAppBar Color="Color.Primary" Fixed="false" Dense="true">
 		<MudButton OnClick="ScrollToTop" DisableRipple Variant="Variant.Text">
-			<MudText Typo="Typo.h6">🙂 @ThisAssembly.AssemblyTitle</MudText>
-		</MudButton>
+				<MudText Typo="Typo.h6">🙂 @ThisAssembly.AssemblyTitle</MudText>
+			</MudButton>
 
-		<MudSpacer />
+			<MudSpacer />
 
-		<MudIconButton Icon="@Icons.Material.Filled.Apps" OnClick="ShowMoodGrid" />
+			<MudIconButton Icon="@Icons.Material.Filled.Apps" OnClick="ShowMoodGrid" />
 
-		<MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
-			<MudMenuItem OnClick="ManageCategories">Manage categories...</MudMenuItem>
-			<MudMenuItem OnClick="ManageMedications">Manage medications...</MudMenuItem>
-			<MudMenuItem OnClick="@(() => AppInfo.Current.ShowSettingsUI())">System settings...</MudMenuItem>
-			<MudMenuItem Disabled="true">v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
+			<MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
+				<MudMenuItem OnClick="ManageCategories">Manage categories...</MudMenuItem>
+				<MudMenuItem OnClick="ManageMedications">Manage medications...</MudMenuItem>
+				<MudMenuItem OnClick="@(() => AppInfo.Current.ShowSettingsUI())">System settings...</MudMenuItem>
+				<MudMenuItem Disabled="true">v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
 			</MudMenu>
 		</MudAppBar>
 
@@ -169,16 +168,19 @@
 
 	async Task ManageCategories()
 	{
-		await DialogService.Show<ManageCategoriesDialog>("Manage categories").Result;
+		var options = new DialogOptions { FullScreen = true, };
+
+		await DialogService.Show<ManageCategoriesDialog>("Manage categories", options).Result;
 
 		db.AddMissingDataPoints(_day);
 	}
 
 	async Task ManageMedications()
 	{
+		var options = new DialogOptions { FullScreen = true, };
 		var parameters = new DialogParameters<ManageCategoriesDialog> { { x => x.Group, "Medications" } };
 
-		await DialogService.Show<ManageCategoriesDialog>("Manage medications", parameters).Result;
+		await DialogService.Show<ManageCategoriesDialog>("Manage medications", parameters, options).Result;
 
 		db.AddMissingDataPoints(_day);
 	}

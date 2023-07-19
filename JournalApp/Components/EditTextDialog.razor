@@ -28,7 +28,7 @@
 	public static async Task ShowDialog(IDialogService dialogService, DataPoint dataPoint)
 	{
 		var parameters = new DialogParameters { { nameof(EditTextDialog.DataPoint), dataPoint } };
-		var options = new DialogOptions { CloseButton = true };
+		var options = new DialogOptions { CloseButton = true, FullWidth = true, };
 
 		await dialogService.Show<EditTextDialog>(dataPoint.CreatedAt.ToString("ddd, MMM d h:mm tt"), parameters, options).Result;
 

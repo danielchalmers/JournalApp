@@ -4,34 +4,26 @@
 
 <MudDialog OnBackdropClick="Submit">
 	<DialogContent>
-		<MudStack>
+		<MudStack Class="mh-n8" Style="min-height:100vh">
 			@foreach (var c in db.Categories.Where(c => c.Group == Group).OrderBy(c => c.Index))
 			{
-				<div class="d-flex align-center" style="gap:1.5em;">
-					<MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" OnClick="async () => await MoveUp(c)" />
+				<div class="d-flex align-center" style="gap:0.1em;">
+					<MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" OnClick="async () => await MoveUp(c)" Edge="Edge.Start" Disabled="c.Index <= 1" />
 
 					<MudSwitch @bind-Checked="c.Enabled" Color="Color.Primary" Class="mr-n2" />
 
 					<MudTextField T="string" Label="Name" @bind-Text="c.Name" />
 
-
-					@if (Group == "Medications")
-					{
-						<MudTextField T="string" Label="Dose Unit" @bind-Text="c.MedicationUnit" />
-
-						<MudSwitch Label="Every day" @bind-Checked="c.MedicationEveryDay" Color="Color.Primary" />
-					}
-
-					<MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="async () => await Edit(c)" />
+					<MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="async () => await Edit(c)" Edge="Edge.End" />
 				</div>
 			}
 		</MudStack>
 	</DialogContent>
 
 	<DialogActions>
-		<MudButton Color="Color.Secondary" OnClick="New">New...</MudButton>
+		<MudButton Color="Color.Secondary" OnClick="New">New @(Group == "Medications" ? "medication" : "category")...</MudButton>
 
-		<MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+		<MudButton Color="Color.Primary" OnClick="Submit">Close</MudButton>
 	</DialogActions>
 </MudDialog>
 
@@ -78,7 +70,7 @@
 			return;
 
 		var newCategory = (DataPointCategory)result.Data;
-		var groupCategories = db.Categories.Where(x => x.Group == Group);
+		var groupCategories = db.Categories.Where(x => x.Group == Group).ToList();
 		if (groupCategories.Any())
 			newCategory.Index = groupCategories.Max(x => x.Index) + 1;
 
