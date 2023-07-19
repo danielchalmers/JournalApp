@@ -4,43 +4,28 @@
 
 <MudDialog OnBackdropClick="Submit">
 	<DialogContent>
-		<MudDataGrid Items="db.Categories.Where(c => c.Group == Group)" SortMode="SortMode.None" ReadOnly="false" EditMode="DataGridEditMode.Cell" Dense="true" Elevation="0">
-			<Columns>
-				<PropertyColumn Property="x => x.Name" />
+		<MudStack>
+			@foreach (var c in db.Categories.Where(c => c.Group == Group).OrderBy(c => c.Index))
+			{
+				<div class="d-flex align-center" style="gap:1.5em;">
+					<MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" OnClick="async () => await MoveUp(c)" />
 
-				<PropertyColumn Property="x => x.Index" />
+					<MudSwitch @bind-Checked="c.Enabled" Color="Color.Primary" Class="mr-n2" />
 
-				<PropertyColumn Property="x => x.Enabled">
-					<EditTemplate>
-						<MudSwitch @bind-Checked="context.Item.Enabled" Color="Color.Primary" />
-					</EditTemplate>
-				</PropertyColumn>
+					<MudTextField T="string" Label="Name" @bind-Text="c.Name" />
 
-				@if (Group == null)
-				{
-					<PropertyColumn Property="x => x.Type">
-						<EditTemplate>
-							<MudSelect @bind-Value="context.Item.Type" Required Margin="Margin.Dense">
-									@foreach (var item in Enum.GetValues<DataType>())
-								{
-									<MudSelectItem Value="@item">@item.GetFriendlyName()</MudSelectItem>
-								}
-							</MudSelect>
-						</EditTemplate>
-					</PropertyColumn>
-				}
-				else if (Group == "Medications")
-				{
-					<PropertyColumn Property="x => x.MedicationUnit" Title="Unit" />
 
-					<PropertyColumn Property="x => x.MedicationEveryDay" Title="Every day">
-						<EditTemplate>
-							<MudSwitch @bind-Checked="context.Item.MedicationEveryDay" Color="Color.Primary" />
-						</EditTemplate>
-					</PropertyColumn>
-				}
-			</Columns>
-		</MudDataGrid>
+					@if (Group == "Medications")
+					{
+						<MudTextField T="string" Label="Dose Unit" @bind-Text="c.MedicationUnit" />
+
+						<MudSwitch Label="Every day" @bind-Checked="c.MedicationEveryDay" Color="Color.Primary" />
+					}
+
+					<MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="async () => await Edit(c)" />
+				</div>
+			}
+		</MudStack>
 	</DialogContent>
 
 	<DialogActions>
@@ -56,10 +41,38 @@
 	[Parameter]
 	public string Group { get; set; }
 
+	async Task MoveUp(DataPointCategory category)
+	{
+		var anyAbove = false;
+		foreach (var replaced in db.Categories.Where(x => x.Index == category.Index - 1))
+		{
+			anyAbove = true;
+			replaced.Index++;
+			await db.SaveChangesAsync();
+		}
+
+		if (anyAbove)
+			category.Index--;
+
+		await db.SaveChangesAsync();
+	}
+
+	async Task Edit(DataPointCategory category)
+	{
+		var parameters = new DialogParameters<EditCategoryDialog> { { x => x.Group, Group }, { x => x.Category, category } };
+		var result = await DialogService.Show<EditCategoryDialog>($"Edit {(Group == "Medications" ? "medication" : "category")}", parameters).Result;
+
+		if (result.Canceled)
+			return;
+
+		category = (DataPointCategory)result.Data;
+		await db.SaveChangesAsync();
+	}
+
 	async Task New()
 	{
-		var parameters = new DialogParameters { { nameof(NewCategoryDialog.Group), Group } };
-		var result = await DialogService.Show<NewCategoryDialog>($"New {(Group == "Medications" ? "medication" : "category")}", parameters).Result;
+		var parameters = new DialogParameters<EditCategoryDialog> { { x => x.Group, Group } };
+		var result = await DialogService.Show<EditCategoryDialog>($"New {(Group == "Medications" ? "medication" : "category")}", parameters).Result;
 
 		if (result.Canceled)
 			return;

@@ -63,14 +63,12 @@
 
 	void Submit()
 	{
-		Category = new()
-			{
-				Group = Group,
-				Name = Name,
-				Type = Group == "Medications" ? DataType.Medication : SelectedType,
-				MedicationDose = MedicationDose,
-				MedicationUnit = MedicationUnit,
-			};
+		Category ??= new();
+		Category.Group = Group;
+		Category.Name = Name;
+		Category.Type = Group == "Medications" ? DataType.Medication : SelectedType;
+		Category.MedicationDose = MedicationDose;
+		Category.MedicationUnit = MedicationUnit;
 
 		MudDialog.Close(DialogResult.Ok(Category));
 	}
