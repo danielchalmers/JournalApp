@@ -7,7 +7,7 @@
 @inject IDialogService DialogService
 @inject IScrollManager ScrollManager
 
-<MudThemeProvider IsDarkMode="true" />
+<MudThemeProvider Theme="AppTheme" IsDarkMode="true" />
 <MudDialogProvider MaxWidth="MaxWidth.Large"
 				   NoHeader="false"
 				   CloseButton="false"
@@ -116,6 +116,11 @@
 @code {
 	Day _day;
 	MudMenu datePickerMenu;
+
+	MudTheme AppTheme { get; } = new()
+		{
+			PaletteDark = new PaletteDark() { TextDisabled = "#ffffff7f" },
+		};
 
 	protected override async Task OnInitializedAsync()
 	{
