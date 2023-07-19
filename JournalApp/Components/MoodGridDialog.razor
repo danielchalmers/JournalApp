@@ -4,6 +4,16 @@
 @inject IDialogService DialogService
 
 <MudDialog>
+	<TitleContent>
+		<div class="page-header">
+			<MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" OnClick="Close" />
+
+			@* <MudButton OnClick="@(async () => await ScrollManager.ScrollToTopAsync(".page-header"))" DisableRipple Variant="Variant.Text"> *@
+			<MudText Typo="Typo.h6">Mood Grid</MudText>
+			@* </MudButton> *@
+		</div>
+	</TitleContent>
+
 	<DialogContent>
 		<div class="mood-grid">
 			<MudText Typo="Typo.h3">@StartDate.Year</MudText>
@@ -65,4 +75,9 @@
 	};
 
 	private record DayGridItem(DateOnly Date, string Emoji, string Color);
+
+	void Close()
+	{
+		MudDialog.Close(DialogResult.Ok(true));
+	}
 }

@@ -31,26 +31,25 @@ button {
 	margin-bottom: 1.5em !important;
 }
 
+.page-header {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 0.5em;
+	background-color: var(--mud-palette-primary);
+	height: calc(var(--mud-appbar-height) - var(--mud-appbar-height) / 4);
+	box-shadow: none;
+}
+
 .mud-dialog-title {
-	padding: 8px 16px !important;
+	padding: 0px !important;
 	position: sticky;
 	top: 0;
 	background-color: var(--mud-palette-surface);
 }
 
-.mud-button-close {
-	top: 0px !important;
-	right: 0px !important;
-}
-
 .mud-dialog-content {
-	padding: 4px 16px !important;
-}
-
-.mud-dialog-actions {
-	position: sticky;
-	bottom: 0;
-	background-color: var(--mud-palette-surface);
+	padding: 1.5em !important;
 }
 
 .mud-dialog-fullscreen {

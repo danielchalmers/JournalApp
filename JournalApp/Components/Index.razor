@@ -167,16 +167,16 @@
 
 	async Task ShowMoodGrid()
 	{
-		var options = new DialogOptions { CloseButton = true, FullScreen = true, };
+		var options = new DialogOptions { FullScreen = true, };
 
-		await DialogService.Show<MoodGridDialog>(string.Empty, options).Result;
+		await DialogService.Show<MoodGridDialog>(options).Result;
 	}
 
 	async Task ManageCategories()
 	{
 		var options = new DialogOptions { FullScreen = true, };
 
-		await DialogService.Show<ManageCategoriesDialog>("Manage categories", options).Result;
+		await DialogService.Show<ManageCategoriesDialog>(options).Result;
 
 		db.AddMissingDataPoints(_day);
 	}
@@ -186,7 +186,7 @@
 		var options = new DialogOptions { FullScreen = true, };
 		var parameters = new DialogParameters<ManageCategoriesDialog> { { x => x.Group, "Medications" } };
 
-		await DialogService.Show<ManageCategoriesDialog>("Manage medications", parameters, options).Result;
+		await DialogService.Show<ManageCategoriesDialog>(parameters, options).Result;
 
 		db.AddMissingDataPoints(_day);
 	}

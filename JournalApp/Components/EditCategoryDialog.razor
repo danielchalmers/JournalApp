@@ -2,11 +2,23 @@
 @inject IDialogService DialogService
 
 <MudDialog>
-	<DialogContent>
-		<MudForm @ref="form" @bind-IsValid="@success" ValidationDelay="0">
-			<MudTextField Label="Name" @bind-Value="Name" Required="true" Immediate="true" />
+	<TitleContent>
+		<div class="page-header">
+			<MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" OnClick="Cancel" />
 
-			@if (Group == null)
+			<MudText Typo="Typo.h6">@(Category == null ? "New" : "Edit") @(Group == "Medications" ? "medication" : "category")</MudText>
+
+				<MudSpacer />
+
+				<MudIconButton Icon="@Icons.Material.Filled.Check" OnClick="Submit" />
+			</div>
+		</TitleContent>
+
+		<DialogContent>
+			<MudForm @ref="form" @bind-IsValid="@success" ValidationDelay="0">
+				<MudTextField Label="Name" @bind-Value="Name" Required="true" Immediate="true" />
+
+				@if (Group == null)
 			{
 				<MudSelect Label="Type of data" @bind-Value="SelectedType">
 					<MudSelectItem Value="DataType.Scale">1-5 scale</MudSelectItem>
@@ -27,12 +39,6 @@
 			}
 		</MudForm>
 	</DialogContent>
-
-	<DialogActions>
-		<MudButton OnClick="Cancel">Cancel</MudButton>
-
-		<MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(!success)">Accept</MudButton>
-	</DialogActions>
 </MudDialog>
 
 @code {
@@ -61,11 +67,7 @@
 	{
 		await base.OnInitializedAsync();
 
-		if (Category == null)
-		{
-			Category = new();
-		}
-		else
+		if (Category != null)
 		{
 			Group = Category.Group;
 			Name = Category.Name;
@@ -82,6 +84,13 @@
 
 	void Submit()
 	{
+		if (!success)
+		{
+			MudDialog.Close(DialogResult.Cancel());
+			return;
+		}
+
+		Category ??= new();
 		Category.Group = Group;
 		Category.Name = Name;
 		Category.Type = Group == "Medications" ? DataType.Medication : SelectedType;
