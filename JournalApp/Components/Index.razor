@@ -94,19 +94,20 @@
 					}
 				}
 
-				@if (!string.IsNullOrEmpty(group.Key))
-				{
-					<div class="data-point-group-footer">
-						@if (group.Key == "Medications")
-						{
-							<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Medication" OnClick="ManageMedications" FullWidth>Manage medications</MudButton>
-						}
-						else if (group.Key == "Notes")
-						{
-							<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote" FullWidth>New note</MudButton>
-						}
-					</div>
-				}
+				<div class="data-point-group-footer">
+					@if (group.Key == null)
+					{
+						<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Category" OnClick="ManageCategories" FullWidth>Manage categories</MudButton>
+					}
+					else if (group.Key == "Medications")
+					{
+						<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Medication" OnClick="ManageMedications" FullWidth>Manage medications</MudButton>
+					}
+					else if (group.Key == "Notes")
+					{
+						<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote" FullWidth>New note</MudButton>
+					}
+				</div>
 			</div>
 		}
 	</MudStack>
