@@ -12,9 +12,9 @@
 
 					<MudSwitch @bind-Checked="c.Enabled" Color="Color.Primary" Class="mr-n2" />
 
-					<MudTextField T="string" Label="Name" @bind-Text="c.Name" />
+					<MudTextField T="string" Label="Name" @bind-Text="c.Name" Disabled="c.ReadOnly" />
 
-					<MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="async () => await Edit(c)" Edge="Edge.End" />
+					<MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="async () => await Edit(c)" Edge="Edge.End" Disabled="c.ReadOnly" />
 				</div>
 			}
 		</MudStack>

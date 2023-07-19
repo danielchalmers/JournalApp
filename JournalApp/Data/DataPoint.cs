@@ -11,6 +11,8 @@ public class DataPointCategory
 
     public int Index { get; set; }
 
+    public bool ReadOnly { get; set; }
+
     public bool Enabled { get; set; } = true;
 
     public DataType Type { get; set; }

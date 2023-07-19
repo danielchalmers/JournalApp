@@ -20,6 +20,7 @@ public class ApplicationDbContext : DbContext
             Name = "Overall mood",
             Type = DataType.Mood,
             Index = 1,
+            ReadOnly = true,
         });
         SeedCategory(new()
         {
@@ -27,6 +28,7 @@ public class ApplicationDbContext : DbContext
             Name = "Last night's sleep",
             Type = DataType.Sleep,
             Index = 2,
+            ReadOnly = true,
         });
         SeedCategory(new()
         {
@@ -34,6 +36,7 @@ public class ApplicationDbContext : DbContext
             Name = "Productivity",
             Type = DataType.Scale,
             Index = 3,
+            ReadOnly = true,
         });
         SeedCategory(new()
         {
@@ -41,6 +44,7 @@ public class ApplicationDbContext : DbContext
             Name = "Depression",
             Type = DataType.Scale,
             Index = 4,
+            ReadOnly = true,
             Enabled = false,
         });
         SeedCategory(new()
@@ -49,6 +53,7 @@ public class ApplicationDbContext : DbContext
             Name = "Mania",
             Type = DataType.Scale,
             Index = 5,
+            ReadOnly = true,
             Enabled = false,
         });
         SeedCategory(new()
@@ -57,6 +62,7 @@ public class ApplicationDbContext : DbContext
             Name = "Irritability",
             Type = DataType.Scale,
             Index = 6,
+            ReadOnly = true,
             Enabled = false,
         });
         SeedCategory(new()
@@ -65,6 +71,7 @@ public class ApplicationDbContext : DbContext
             Name = "Anxiety",
             Type = DataType.Scale,
             Index = 7,
+            ReadOnly = true,
             Enabled = false,
         });
         SeedCategory(new()
@@ -73,6 +80,7 @@ public class ApplicationDbContext : DbContext
             Name = "Exercised or was active",
             Type = DataType.Bool,
             Index = 8,
+            ReadOnly = true,
         });
         SeedCategory(new()
         {
@@ -80,6 +88,7 @@ public class ApplicationDbContext : DbContext
             Name = "Menstruating",
             Type = DataType.Bool,
             Index = 9,
+            ReadOnly = true,
             Enabled = false,
         });
         SeedCategory(new()
@@ -88,6 +97,7 @@ public class ApplicationDbContext : DbContext
             Name = "Did therapy today",
             Type = DataType.Bool,
             Index = 10,
+            ReadOnly = true,
             Enabled = false,
         });
         SeedCategory(new()
@@ -96,12 +106,14 @@ public class ApplicationDbContext : DbContext
             Name = "Weight",
             Type = DataType.Number,
             Index = 11,
+            ReadOnly = true,
         });
         SeedCategory(new()
         {
             Guid = new Guid("BF394F35-2228-4933-BF38-AF5B1B97AEF7"),
             Group = "Notes",
             Type = DataType.Note,
+            ReadOnly = true,
         });
         SeedCategory(new()
         {
@@ -113,6 +125,7 @@ public class ApplicationDbContext : DbContext
             MedicationDose = 2000,
             MedicationUnit = "IU",
             MedicationEveryDay = true,
+            ReadOnly = true,
             Enabled = false,
         });
     }
