@@ -4,7 +4,7 @@
 
 <MudDialog OnBackdropClick="Submit">
 	<DialogContent>
-		<MudStack Class="mh-n8" Style="min-height:100vh">
+		<MudStack Class="mh-n8" Style="min-height:100vh;padding-bottom:15em;">
 			@foreach (var c in db.Categories.Where(c => c.Group == Group).OrderBy(c => c.Index))
 			{
 				<div class="d-flex align-center" style="gap:0.1em;">
