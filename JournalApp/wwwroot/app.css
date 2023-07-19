@@ -22,6 +22,10 @@
 	color: white;
 }
 
+button {
+	text-transform: none !important;
+}
+
 .mud-divider {
 	margin-top: 1.5em !important;
 	margin-bottom: 1.5em !important;
