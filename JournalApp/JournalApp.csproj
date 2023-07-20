@@ -20,7 +20,7 @@
     <MauiIcon Include="Resources\AppIcon\appicon.svg" />
 
     <!-- Splash Screen -->
-		<MauiSplashScreen Include="Resources\AppIcon\appicon.svg" Color="#776be7"  />
+		<MauiSplashScreen Include="Resources\AppIcon\appicon.svg" Color="#776be7" />
 
     <!-- Images -->
     <MauiImage Include="Resources\Images\*" />
@@ -35,6 +35,7 @@
   <ItemGroup>
     <Using Include="Microsoft.EntityFrameworkCore" />
     <Using Include="Microsoft.Extensions.Logging" />
+    <Using Include="MudBlazor" />
     <Using Include="System.ComponentModel" />
     <Using Include="System.ComponentModel.DataAnnotations" />
     <Using Include="System.ComponentModel.DataAnnotations.Schema" />
