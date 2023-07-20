@@ -8,6 +8,7 @@
 
 #splash-screen {
 	display: flex;
+	align-items: center;
 	justify-content: center;
 	background-color: #776be7;
 	position: fixed;
@@ -16,7 +17,6 @@
 }
 
 #loading-text {
-	margin-top: 45vh;
 	font-family: sans-serif;
 	font-size: 8vw;
 	color: white;
