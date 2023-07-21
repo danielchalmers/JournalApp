@@ -6,8 +6,8 @@
 	<span tabindex="0" class="@ButtonClassname">
 		<span class="mud-radio-button d-flex flex-grow-1">
 			<input tabindex="-1" @attributes="UserAttributes" aria-checked="@(Checked.ToString().ToLower())" aria-disabled="@(IsDisabled.ToString().ToLower())" role="radio" type="radio" class="mud-radio-input" name="@MudRadioButtonGroup?.Name" disabled="@IsDisabled" @onclick="OnClick" />
-			
-			<MudButton Color="Color" Class="flex-grow-1" Variant="@(Checked ? Variant.Filled : Variant.Outlined)" OnClick="OnClick" Disabled="IsDisabled">
+
+			<MudButton Class="flex-grow-1" Variant="@(Checked ? Variant.Filled : Variant.Outlined)" OnClick="OnClick" Disabled="IsDisabled" Color="Color" DisableRipple="@DisableRipple" Size="Size">
 				@if (ChildContent != null)
 				{
 					<span class="@ChildSpanClassName">@ChildContent</span>

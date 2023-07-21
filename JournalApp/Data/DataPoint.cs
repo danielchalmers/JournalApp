@@ -73,6 +73,12 @@ public enum DataType
     [Description("1-5 scale")]
     Scale,
 
+    [Description("Low to high")]
+    LowToHigh,
+
+    [Description("Mild to severe")]
+    MildToSevere,
+
     [Description("Yes or no")]
     Bool,
 

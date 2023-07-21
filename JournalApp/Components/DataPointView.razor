@@ -31,6 +31,24 @@ else if (DataPoint.DataType == DataType.Scale)
 {
 	<MudRating @bind-SelectedValue="DataPoint.ScaleIndex" Size="Size.Large" FullIcon="@Icons.Material.Filled.Circle" EmptyIcon="@Icons.Material.Outlined.Circle" Color="Color.Primary" />
 }
+else if (DataPoint.DataType == DataType.LowToHigh)
+{
+	<MudRadioButtonGroup @bind-SelectedOption="DataPoint.ScaleIndex">
+		<MudRadioButton Color="Color.Primary" Option="0">None</MudRadioButton>
+		<MudRadioButton Color="Color.Primary" Option="1">Low</MudRadioButton>
+		<MudRadioButton Color="Color.Primary" Option="3">Medium</MudRadioButton>
+		<MudRadioButton Color="Color.Primary" Option="5">High</MudRadioButton>
+	</MudRadioButtonGroup>
+}
+else if (DataPoint.DataType == DataType.MildToSevere)
+{
+	<MudRadioButtonGroup @bind-SelectedOption="DataPoint.ScaleIndex">
+		<MudRadioButton Color="Color.Primary" Option="0">None</MudRadioButton>
+		<MudRadioButton Color="Color.Primary" Option="1">Mild</MudRadioButton>
+		<MudRadioButton Color="Color.Primary" Option="3">Moderate</MudRadioButton>
+		<MudRadioButton Color="Color.Primary" Option="5">Severe</MudRadioButton>
+	</MudRadioButtonGroup>
+}
 else if (DataPoint.DataType == DataType.Bool)
 {
 	<ButtonGroupCheckBox @bind-SelectedValue="DataPoint.Bool" />
