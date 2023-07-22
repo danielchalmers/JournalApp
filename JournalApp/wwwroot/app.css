@@ -123,10 +123,27 @@ button {
 	gap: 1em;
 }
 
+.mood-grid-month {
+	display: flex;
+	flex-direction: column;
+}
+
+.mood-grid-week {
+	display: flex;
+	flex-direction: row;
+}
+
+.mood-block-container {
+	display: flex;
+	flex: 1 1 0;
+}
+
 .mood-block {
-	width: 3em;
-	height: 3em;
+	display: flex;
+	width: 100%;
+	aspect-ratio: 1 / 1;
 	margin: 1px;
+	padding: 0.25em;
 	/* outline: 1px solid black; */
 }
 
