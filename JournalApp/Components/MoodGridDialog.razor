@@ -41,7 +41,7 @@
 								var dayOfWeek = (DayOfWeek)(i % 7);
 
 								<div class="mood-block-container">
-									<b>@(((DayOfWeek)dayOfWeek).ToString()[0])</b>
+									<b>@(((DayOfWeek)dayOfWeek).ToString()[0..2])</b>
 								</div>
 							}
 						</div>
