@@ -33,7 +33,7 @@
 				<div class="d-flex flex-row flex-wrap">
 					@foreach (var day in group)
 					{
-						<div class="mood-block" style="background-color:@day.Color;">
+						<div class="mood-block" style="background-color:@day.Color;" onclick="@(() => Close(day.Date))">
 							<b>@day.Date.Day</b>
 							@day.Emoji
 						</div>
@@ -106,5 +106,10 @@
 	void Close()
 	{
 		MudDialog.Close(DialogResult.Ok(true));
+	}
+
+	void Close(DateOnly date)
+	{
+		MudDialog.Close(DialogResult.Ok(date));
 	}
 }

@@ -169,7 +169,10 @@
 	{
 		var options = new DialogOptions { FullScreen = true, };
 
-		await DialogService.Show<MoodGridDialog>(options).Result;
+		var result = await DialogService.Show<MoodGridDialog>(options).Result;
+
+		if (result.Data is DateOnly date)
+			await SetDay(await db.GetDay(date));
 	}
 
 	async Task ManageCategories()
