@@ -125,12 +125,14 @@ button {
 
 .mood-grid-month {
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
+	flex: 1 1 0;
 }
 
-.mood-grid-week {
+.mood-grid-column {
 	display: flex;
-	flex-direction: row;
+	flex-direction: column;
+	flex: 1 1 0;
 }
 
 .mood-block-container {
