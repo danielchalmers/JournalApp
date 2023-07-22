@@ -148,11 +148,11 @@
 
 	async Task ScrollToTop() => await ScrollManager.ScrollToTopAsync("main-body");
 
-	async Task SetDay(Day day)
+	Task SetDay(Day day)
 	{
 		_day = day;
 
-		await ScrollToTop();
+		return Task.CompletedTask;
 	}
 
 	async Task PreviousDay()
