@@ -78,7 +78,7 @@
 						<div class="data-point-container">
 							@if (!string.IsNullOrEmpty(category.Name))
 							{
-								var header = category.Name + (point.DataType == DataType.Medication ? $" {point.MedicationDose:0}{point.MedicationUnit}" : string.Empty);
+								var header = category.Name + (point.DataType == DataType.Medication ? $" {point.MedicationDose:0.##}{point.MedicationUnit}" : string.Empty);
 								<MudText Class="data-point-header" Align="Align.Right">@header:</MudText>
 							}
 
