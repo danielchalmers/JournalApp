@@ -47,10 +47,10 @@
 							<div class="mood-grid-week">
 								@foreach (var day in row.Select(x => daysInMonth.SingleOrDefault(y => y.Date.Day == x)))
 								{
-									<div class="mood-block-container">
+									<div class="mood-block-container" style="background-color:@(day?.Color ?? "transparent");">
 										@if (day != null)
 										{
-											<div class="mood-block" style="background-color:@day.Color;" onclick="@(() => Close(day.Date))">
+											<div class="mood-block" onclick="@(() => Close(day.Date))">
 												<b>@day.Date.Day</b>
 												<MudSpacer />
 												@day.Emoji
