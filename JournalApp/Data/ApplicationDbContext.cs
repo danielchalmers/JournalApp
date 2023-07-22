@@ -32,27 +32,19 @@ public class ApplicationDbContext : DbContext
         });
         SeedCategory(new()
         {
-            Guid = new Guid("40B5AF7B-4F4E-4E77-BD6B-F7855CF773AB"),
-            Name = "Productivity",
-            Type = DataType.LowToHigh,
-            Index = 3,
-            ReadOnly = true,
-        });
-        SeedCategory(new()
-        {
             Guid = new Guid("7330B995-0B56-46FF-9DD6-9CFC550FF5C8"),
-            Name = "Depression",
+            Name = "Most depressed mood",
             Type = DataType.MildToSevere,
-            Index = 4,
+            Index = 3,
             ReadOnly = true,
             Enabled = false,
         });
         SeedCategory(new()
         {
             Guid = new Guid("4955EB49-0BCF-433B-873E-2092F292CC6B"),
-            Name = "Mania",
+            Name = "Most elevated mood",
             Type = DataType.MildToSevere,
-            Index = 5,
+            Index = 4,
             ReadOnly = true,
             Enabled = false,
         });
@@ -61,7 +53,7 @@ public class ApplicationDbContext : DbContext
             Guid = new Guid("E9B7E4BE-FD17-4171-B1D4-D38B6009FDA0"),
             Name = "Irritability",
             Type = DataType.MildToSevere,
-            Index = 6,
+            Index = 5,
             ReadOnly = true,
             Enabled = false,
         });
@@ -70,9 +62,17 @@ public class ApplicationDbContext : DbContext
             Guid = new Guid("0FB54AFF-9ECC-4C17-BAB5-B908B794CEA9"),
             Name = "Anxiety",
             Type = DataType.MildToSevere,
-            Index = 7,
+            Index = 6,
             ReadOnly = true,
             Enabled = false,
+        });
+        SeedCategory(new()
+        {
+            Guid = new Guid("40B5AF7B-4F4E-4E77-BD6B-F7855CF773AB"),
+            Name = "Productivity",
+            Type = DataType.LowToHigh,
+            Index = 7,
+            ReadOnly = true,
         });
         SeedCategory(new()
         {
