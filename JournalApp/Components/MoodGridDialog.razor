@@ -16,7 +16,15 @@
 
 	<DialogContent>
 		<div class="mood-grid">
-			<MudText Typo="Typo.h3">@StartDate.Year</MudText>
+			<div class="d-flex">
+				<MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" OnClick="() => SelectedYear--" />
+
+				<MudButton OnClick="() => SelectedYear = DateTime.Now.Year">
+					<MudText Typo="Typo.h3">@StartDate.Year</MudText>
+				</MudButton>
+
+				<MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" OnClick="() => SelectedYear++" />
+			</div>
 
 			@foreach (var group in DaysInRange.GroupBy(x => x.Date.Month))
 			{
@@ -37,18 +45,37 @@
 </MudDialog>
 
 @code {
+	int _selectedYear;
+
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
-	DateOnly StartDate { get; set; } = new(DateTime.Now.Year, 1, 1);
-	DateOnly EndDate { get; set; } = new(DateTime.Now.Year, 12, 31);
+	int SelectedYear
+	{
+		get => _selectedYear;
+		set
+		{
+			_selectedYear = value;
+			UpdateGrid();
+		}
+	}
+
+	DateOnly StartDate { get; set; }
+	DateOnly EndDate { get; set; }
 	List<DayGridItem> DaysInRange { get; set; }
 
 	protected override void OnInitialized()
 	{
 		base.OnInitialized();
 
+		SelectedYear = DateTime.Now.Year;
+	}
+
+	void UpdateGrid()
+	{
 		var moodCategory = db.Categories.FirstOrDefault(x => x.Enabled && x.Type == DataType.Mood);
 
+		StartDate = new(SelectedYear, 1, 1);
+		EndDate = new(SelectedYear, 12, 31);
 		DaysInRange = new();
 
 		for (DateOnly date = StartDate; date <= EndDate; date = date.AddDays(1))
