@@ -152,6 +152,9 @@
 
 	void Close(DateOnly date)
 	{
+		if (date > DateOnly.FromDateTime(DateTime.Now))
+			return;
+
 		MudDialog.Close(DialogResult.Ok(date));
 	}
 }
