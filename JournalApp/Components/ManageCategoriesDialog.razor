@@ -5,7 +5,7 @@
 <MudDialog DefaultFocus="DefaultFocus.Element" OnBackdropClick="Submit">
 	<TitleContent>
 		<div class="page-header">
-			<MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" OnClick="Submit" />
+			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="Submit" />
 
 			@* <MudButton OnClick="@(async () => await ScrollManager.ScrollToTopAsync(".page-header"))" DisableRipple Variant="Variant.Text"> *@
 			<MudText Typo="Typo.h6">Manage @(Group == "Medications" ? "medications" : "categories")</MudText>
