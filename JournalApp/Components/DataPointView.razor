@@ -29,24 +29,24 @@ else if (DataPoint.DataType == DataType.Sleep)
 }
 else if (DataPoint.DataType == DataType.Scale)
 {
-	<MudRating @bind-SelectedValue="DataPoint.ScaleIndex" Size="Size.Large" FullIcon="@Icons.Material.Filled.Circle" EmptyIcon="@Icons.Material.Outlined.Circle" Color="Color.Primary" />
+	<MudRating @bind-SelectedValue="DataPoint.ScaleIndex" FullIcon="@Icons.Material.Filled.Circle" EmptyIcon="@Icons.Material.Outlined.Circle" Color="Color.Primary" Size="Size.Small" />
 }
 else if (DataPoint.DataType == DataType.LowToHigh)
 {
 	<MudRadioButtonGroup @bind-SelectedOption="DataPoint.ScaleIndex">
-		<MudRadioButton Color="Color.Primary" Option="0">None</MudRadioButton>
-		<MudRadioButton Color="Color.Primary" Option="1">Low</MudRadioButton>
-		<MudRadioButton Color="Color.Primary" Option="3">Medium</MudRadioButton>
-		<MudRadioButton Color="Color.Primary" Option="5">High</MudRadioButton>
+		<MudRadioButton Color="Color.Primary" Size="Size.Small" Option="0"><MudText Typo="Typo.subtitle2">None</MudText></MudRadioButton>
+		<MudRadioButton Color="Color.Primary" Size="Size.Small" Option="1"><MudText Typo="Typo.subtitle2">Low</MudText></MudRadioButton>
+		<MudRadioButton Color="Color.Primary" Size="Size.Small" Option="3"><MudText Typo="Typo.subtitle2">Medium</MudText></MudRadioButton>
+		<MudRadioButton Color="Color.Primary" Size="Size.Small" Option="5"><MudText Typo="Typo.subtitle2">High</MudText></MudRadioButton>
 	</MudRadioButtonGroup>
 }
 else if (DataPoint.DataType == DataType.MildToSevere)
 {
 	<MudRadioButtonGroup @bind-SelectedOption="DataPoint.ScaleIndex">
-		<MudRadioButton Color="Color.Primary" Option="0">None</MudRadioButton>
-		<MudRadioButton Color="Color.Primary" Option="1">Mild</MudRadioButton>
-		<MudRadioButton Color="Color.Primary" Option="3">Moderate</MudRadioButton>
-		<MudRadioButton Color="Color.Primary" Option="5">Severe</MudRadioButton>
+		<MudRadioButton Color="Color.Primary" Size="Size.Small" Option="0"><MudText Typo="Typo.subtitle2">None</MudText></MudRadioButton>
+		<MudRadioButton Color="Color.Primary" Size="Size.Small" Option="1"><MudText Typo="Typo.subtitle2">Mild</MudText></MudRadioButton>
+		<MudRadioButton Color="Color.Primary" Size="Size.Small" Option="3"><MudText Typo="Typo.subtitle2">Moderate</MudText></MudRadioButton>
+		<MudRadioButton Color="Color.Primary" Size="Size.Small" Option="5"><MudText Typo="Typo.subtitle2">Severe</MudText></MudRadioButton>
 	</MudRadioButtonGroup>
 }
 else if (DataPoint.DataType == DataType.Bool)
