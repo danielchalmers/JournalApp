@@ -121,7 +121,7 @@ public class ApplicationDbContext : DbContext
             Group = "Medications",
             Name = "Vitamin D",
             Type = DataType.Medication,
-            Index = 0,
+            Index = 1,
             MedicationDose = 2000,
             MedicationUnit = "IU",
             MedicationEveryDay = true,
