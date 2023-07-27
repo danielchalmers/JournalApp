@@ -144,6 +144,7 @@
 		datePickerMenu.CloseMenu();
 
 		await SetDay(await db.GetDay(dateTime.Value));
+		await ScrollToTop();
 	}
 
 	async Task ScrollToTop() => await ScrollManager.ScrollToTopAsync("main-body");
@@ -172,7 +173,10 @@
 		var result = await DialogService.Show<MoodGridDialog>(options).Result;
 
 		if (result.Data is DateOnly date)
+		{
 			await SetDay(await db.GetDay(date));
+			await ScrollToTop();
+		}
 	}
 
 	async Task ManageCategories()
