@@ -44,7 +44,7 @@
 	async Task MoveUp(DataPointCategory category)
 	{
 		var anyAbove = false;
-		foreach (var replaced in db.Categories.Where(x => x.Index == category.Index - 1))
+		foreach (var replaced in db.Categories.Where(x => x.Group == Group && x.Index == category.Index - 1))
 		{
 			anyAbove = true;
 			replaced.Index++;
