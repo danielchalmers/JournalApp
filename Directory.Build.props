@@ -4,8 +4,11 @@
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
     <Deterministic>true</Deterministic>
+
+    <!-- https://github.com/dotnet/aspnetcore/issues/48829#issuecomment-1607597833 -->
+    <AndroidEnableMarshalMethods>false</AndroidEnableMarshalMethods>
   </PropertyGroup>
-  
+
   <!-- Platform -->
   <PropertyGroup>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">33</SupportedOSPlatformVersion>
