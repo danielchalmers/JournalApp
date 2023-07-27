@@ -84,8 +84,9 @@
 		MudDialog.Close(DialogResult.Cancel());
 	}
 
-	void Submit()
+	async Task Submit()
 	{
+		await form.Validate();
 		if (!success)
 		{
 			MudDialog.Close(DialogResult.Cancel());
