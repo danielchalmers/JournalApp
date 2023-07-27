@@ -71,30 +71,31 @@
 					</div>
 				}
 
-				@foreach (var category in group.Where(x => x.Enabled).OrderBy(x => x.Index).ThenBy(x => x.Name))
-				{
-					@foreach (var point in category.DataPoints.Where(x => x.Day == _day && !x.IsDeleted))
+				<div class="data-point-group-content">
+
+					@foreach (var category in group.Where(x => x.Enabled).OrderBy(x => x.Index).ThenBy(x => x.Name))
 					{
-						<div class="data-point-container">
-							@if (!string.IsNullOrEmpty(category.Name))
-							{
-								var header = category.Name + (point.DataType == DataType.Medication ? $" {point.MedicationDose:0.##}{point.MedicationUnit}" : string.Empty);
-								<MudText Class="data-point-header" Align="Align.Right">@header:</MudText>
-							}
+						@foreach (var point in category.DataPoints.Where(x => x.Day == _day && !x.IsDeleted))
+						{
+							<div class="data-point-container">
+								@if (!string.IsNullOrEmpty(category.Name))
+								{
+									var header = category.Name + (point.DataType == DataType.Medication ? $" {point.MedicationDose:0.##}{point.MedicationUnit}" : string.Empty);
+									<MudText Class="data-point-header" Align="Align.Right">@header:</MudText>
+								}
 
-							@if (!category.SingleLine)
-							{
-								<div class="break-flex-column" />
-							}
+								@if (!category.SingleLine)
+								{
+									<div class="break-flex-column" />
+								}
 
-							<div class="data-point-view">
-								<DataPointView DataPoint="point" />
+								<div class="data-point-view">
+									<DataPointView DataPoint="point" />
+								</div>
 							</div>
-						</div>
+						}
 					}
-				}
 
-				<div class="data-point-group-footer">
 					@if (group.Key == null)
 					{
 						<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Category" OnClick="ManageCategories" FullWidth>Manage categories</MudButton>

@@ -94,6 +94,11 @@ button {
 .data-point-group {
 	display: flex;
 	flex-direction: column;
+}
+
+.data-point-group-content {
+	display: flex;
+	flex-direction: column;
 	gap: 1.5em;
 }
 
