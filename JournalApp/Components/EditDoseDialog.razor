@@ -11,9 +11,9 @@
 	</TitleContent>
 
 	<DialogContent>
-		<div class="d-flex align-center" style="gap:1em;">
-			<MudText>@DataPoint.Category.Name:</MudText>
+		<MudText>@DataPoint.Category.Name:</MudText>
 
+		<div class="d-flex align-center" style="gap:1em;">
 			<MudNumericField @bind-Value="DataPoint.MedicationDose" HideSpinButtons="true" Label="Dose" MaxLength="5" Required="true" Immediate="true" />
 
 			<MudText>@DataPoint.MedicationUnit</MudText>

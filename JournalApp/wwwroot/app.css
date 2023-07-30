@@ -99,7 +99,6 @@ button {
 
 .data-point-container {
 	display: flex;
-	flex-direction: row;
 	flex-wrap: wrap;
 	flex-grow: 1;
 	align-items: center;
@@ -109,6 +108,7 @@ button {
 
 .data-point-header {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
 }
 
