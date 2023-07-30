@@ -78,15 +78,21 @@
 						<div class="data-point-container">
 							@if (!string.IsNullOrEmpty(category.Name))
 							{
-								var header = category.Name;
-								if (point.DataType == DataType.Medication)
-								{
-									header += $" {category.MedicationDose:0.##}{category.MedicationUnit}";
+								<div class="data-point-header">
+									<MudText>@category.Name</MudText>
 
-									if (category.MedicationDose != point.MedicationDose || category.MedicationDose != point.MedicationDose)
-										header += $" - {point.MedicationDose:0.##}{point.MedicationUnit}";
-								}
-								<MudText Class="data-point-header" Align="Align.Right">@header:</MudText>
+									@if (point.DataType == DataType.Medication)
+									{
+										<MudText>&NonBreakingSpace;@($"{category.MedicationDose:0.##}{category.MedicationUnit}")</MudText>
+
+										if (point.MedicationDose != category.MedicationDose || point.MedicationDose != category.MedicationDose)
+										{
+											<MudText>&NonBreakingSpace;@($"- {point.MedicationDose:0.##}{point.MedicationUnit}")</MudText>
+										}
+									}
+
+									<MudText>:</MudText>
+								</div>
 							}
 
 							@if (!category.SingleLine)

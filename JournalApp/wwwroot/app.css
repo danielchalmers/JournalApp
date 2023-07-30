@@ -101,14 +101,15 @@ button {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
+	flex-grow: 1;
 	align-items: center;
 	justify-items: center;
 	column-gap: 0.5em;
 }
 
 .data-point-header {
-	align-self: center;
-	justify-self: start;
+	display: flex;
+	align-items: center;
 }
 
 .data-point-view {
