@@ -85,7 +85,7 @@
 									{
 										<MudText>&NonBreakingSpace;@($"{category.MedicationDose:0.##}{category.MedicationUnit}")</MudText>
 
-										if (point.MedicationDose != category.MedicationDose || point.MedicationDose != category.MedicationDose)
+										if ((point.MedicationDose != category.MedicationDose || point.MedicationUnit != category.MedicationUnit) && point.MedicationDose != null && point.MedicationUnit != null)
 										{
 											<MudText>&NonBreakingSpace;@($"- {point.MedicationDose:0.##}{point.MedicationUnit}")</MudText>
 										}
