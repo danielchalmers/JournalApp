@@ -1,6 +1,5 @@
 ﻿@namespace JournalApp
 @page "/"
-@using System.Diagnostics;
 @inherits LayoutComponentBase
 @inject ApplicationDbContext db
 @inject ISnackbar SnackbarService
@@ -16,7 +15,7 @@
 <MudSnackbarProvider />
 
 <div id="main-header">
-	<MudAppBar Color="Color.Primary" Fixed="false" Dense="true">
+	<MudAppBar Color="Color.Primary" Fixed="false" Dense>
 		<MudButton OnClick="ScrollToTop" DisableRipple Variant="Variant.Text">
 				<MudText Typo="Typo.h6">🙂 @ThisAssembly.AssemblyTitle BETA</MudText>
 			</MudButton>
@@ -43,7 +42,7 @@
 					</ActivatorContent>
 
 					<ChildContent>
-						<MudDatePicker PickerVariant="PickerVariant.Static" DateChanged="OnDaySelected" DisableToolbar="true" IsDateDisabledFunc="@(d => d > DateTime.Now)" />
+						<MudDatePicker PickerVariant="PickerVariant.Static" DateChanged="OnDaySelected" DisableToolbar IsDateDisabledFunc="@(d => d > DateTime.Now)" />
 					</ChildContent>
 				</MudMenu>
 			</div>

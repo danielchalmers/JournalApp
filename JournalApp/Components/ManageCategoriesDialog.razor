@@ -7,9 +7,7 @@
 		<div class="page-header">
 			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="Submit" />
 
-			@* <MudButton OnClick="@(async () => await ScrollManager.ScrollToTopAsync(".page-header"))" DisableRipple Variant="Variant.Text"> *@
 			<MudText Typo="Typo.h6">Manage @(Group == "Medications" ? "medications" : "categories")</MudText>
-				@* </MudButton> *@
 
 				<MudSpacer />
 
@@ -48,7 +46,6 @@
 		{
 			anyAbove = true;
 			replaced.Index++;
-			await db.SaveChangesAsync();
 		}
 
 		if (anyAbove)
@@ -60,19 +57,18 @@
 	async Task Edit(DataPointCategory category)
 	{
 		var parameters = new DialogParameters<EditCategoryDialog> { { x => x.Group, Group }, { x => x.Category, category } };
-		var result = await DialogService.Show<EditCategoryDialog>($"Edit {(Group == "Medications" ? "medication" : "category")}", parameters).Result;
+		var result = await DialogService.Show<EditCategoryDialog>(parameters).Result;
 
 		if (result.Canceled)
 			return;
 
-		category = (DataPointCategory)result.Data;
 		await db.SaveChangesAsync();
 	}
 
 	async Task New()
 	{
 		var parameters = new DialogParameters<EditCategoryDialog> { { x => x.Group, Group } };
-		var result = await DialogService.Show<EditCategoryDialog>($"New {(Group == "Medications" ? "medication" : "category")}", parameters).Result;
+		var result = await DialogService.Show<EditCategoryDialog>(parameters).Result;
 
 		if (result.Canceled)
 			return;

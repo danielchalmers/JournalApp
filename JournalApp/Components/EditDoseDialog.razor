@@ -7,6 +7,10 @@
 			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="Submit" />
 
 			<MudText Typo="Typo.h6">Change day's dose</MudText>
+
+			<MudSpacer />
+
+			<MudIconButton Icon="@Icons.Material.Filled.Check" OnClick="Submit" />
 		</div>
 	</TitleContent>
 
@@ -14,7 +18,7 @@
 		<MudText>@DataPoint.Category.Name:</MudText>
 
 		<div class="d-flex align-center" style="gap:1em;">
-			<MudNumericField @bind-Value="DataPoint.MedicationDose" HideSpinButtons="true" Label="Dose" MaxLength="5" />
+			<MudNumericField @bind-Value="DataPoint.MedicationDose" HideSpinButtons Label="Dose" MaxLength="5" />
 
 			<MudText>@DataPoint.MedicationUnit</MudText>
 		</div>
@@ -27,13 +31,6 @@
 	[Parameter]
 	public DataPoint DataPoint { get; set; }
 
-	protected override async Task OnInitializedAsync()
-	{
-		await base.OnInitializedAsync();
-
-		MudDialog.CloseIcon = Icons.Material.Filled.Check;
-	}
-
 	void Submit()
 	{
 		MudDialog.Close(DialogResult.Ok(true));
@@ -42,8 +39,9 @@
 	public static async Task ShowDialog(IDialogService dialogService, DataPoint dataPoint)
 	{
 		var parameters = new DialogParameters { { nameof(EditDoseDialog.DataPoint), dataPoint } };
-		var options = new DialogOptions { FullWidth = true, };
 
-		await dialogService.Show<EditDoseDialog>(parameters, options).Result;
+		await dialogService.Show<EditDoseDialog>(parameters).Result;
+
+		dataPoint.Bool = dataPoint.MedicationDose != null;
 	}
 }

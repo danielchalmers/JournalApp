@@ -15,8 +15,8 @@
 		</TitleContent>
 
 		<DialogContent>
-			<MudForm @ref="form" @bind-IsValid="@success" ValidationDelay="0">
-				<MudTextField Label="Name" @bind-Value="Name" Required="true" Immediate="true" />
+			<MudForm @ref="_form" ValidationDelay="0">
+				<MudTextField Label="Name" @bind-Value="Name" Required Immediate />
 
 				@if (Group == null)
 			{
@@ -32,9 +32,9 @@
 			else if (Group == "Medications")
 			{
 				<div class="d-flex flex-row flex-grow-1" style="gap:1em">
-					<MudNumericField @bind-Value="MedicationDose" HideSpinButtons="true" Label="Dose" MaxLength="5" Required="true" Immediate="true" />
+					<MudNumericField @bind-Value="MedicationDose" HideSpinButtons Label="Dose" MaxLength="5" Required Immediate />
 
-					<MudTextField @bind-Value="MedicationUnit" Label="Unit" MaxLength="4" Required="true" Immediate="true" />
+					<MudTextField @bind-Value="MedicationUnit" Label="Unit" MaxLength="4" Required Immediate />
 				</div>
 
 				<MudSwitch @bind-Checked="MedicationEveryDay" Label="Taken every day" Color="Color.Primary" />
@@ -44,8 +44,7 @@
 </MudDialog>
 
 @code {
-	MudForm form;
-	bool success;
+	MudForm _form;
 
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
@@ -87,10 +86,10 @@
 
 	async Task Submit()
 	{
-		await form.Validate();
-		if (!success)
+		await _form.Validate();
+		if (!_form.IsValid)
 		{
-			MudDialog.Close(DialogResult.Cancel());
+			Cancel();
 			return;
 		}
 

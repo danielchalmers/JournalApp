@@ -33,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Using Include="System.Diagnostics" />
     <Using Include="Microsoft.EntityFrameworkCore" />
     <Using Include="Microsoft.Extensions.Logging" />
     <Using Include="MudBlazor" />

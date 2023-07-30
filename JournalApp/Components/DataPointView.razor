@@ -22,7 +22,7 @@ else if (DataPoint.DataType == DataType.Sleep)
 {
 	<div class="d-flex align-center flex-grow-1" style="gap:1em">
 		<MudIconButton Icon="@Icons.Material.Filled.Remove" OnClick="DecrementSleep" Disabled="@(DataPoint.SleepHours <= 0)" Size="Size.Small" />
-		<MudSlider @bind-Value="DataPoint.SleepHours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" Size="Size.Large" Immediate="true" />
+		<MudSlider @bind-Value="DataPoint.SleepHours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" Size="Size.Large" Immediate />
 		<MudText Typo="Typo.caption">@((DataPoint.SleepHours ?? 0).ToString("00.0"))</MudText>
 			<MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="IncrementSleep" Disabled="@(DataPoint.SleepHours >= 24)" Size="Size.Small" />
 		</div>
@@ -55,16 +55,16 @@ else if (DataPoint.DataType == DataType.Bool)
 }
 else if (DataPoint.DataType == DataType.Number)
 {
-	<MudNumericField @bind-Value="DataPoint.Number" Class="mt-n4" Immediate="true" HideSpinButtons="true" MaxLength="9" />
+	<MudNumericField @bind-Value="DataPoint.Number" Class="mt-n4" Immediate HideSpinButtons MaxLength="9" />
 }
 else if (DataPoint.DataType == DataType.Text)
 {
-	<MudTextField @bind-Value="DataPoint.Text" Class="mt-n4" Immediate="true" />
+	<MudTextField @bind-Value="DataPoint.Text" Class="mt-n4" Immediate />
 }
 else if (DataPoint.DataType == DataType.Note)
 {
 	<div class="d-flex flex-column flex-grow-1">
-		<MudTextField @bind-Value="DataPoint.Text" Lines="4" Placeholder="What's on your mind?" Label="@(DataPoint.CreatedAt.ToString(DateOnly.FromDateTime(DataPoint.CreatedAt.Date) == DataPoint.Day.Date ? "h:mm tt" : "M/d/yy h:mm tt"))" Immediate="true" />
+		<MudTextField @bind-Value="DataPoint.Text" Lines="4" Placeholder="What's on your mind?" Label="@(DataPoint.CreatedAt.ToString(DateOnly.FromDateTime(DataPoint.CreatedAt.Date) == DataPoint.Day.Date ? "h:mm tt" : "M/d/yy h:mm tt"))" Immediate />
 
 		<MudLink OnClick="EditTextInDialog">Edit note...</MudLink>
 	</div>
@@ -100,6 +100,5 @@ else if (DataPoint.DataType == DataType.Medication)
 	async Task EditDose()
 	{
 		await EditDoseDialog.ShowDialog(DialogService, DataPoint);
-		DataPoint.Bool = DataPoint.MedicationDose != null;
 	}
 }

@@ -1,5 +1,4 @@
-﻿using MudBlazor;
-using MudBlazor.Services;
+﻿using MudBlazor.Services;
 
 namespace JournalApp;
 

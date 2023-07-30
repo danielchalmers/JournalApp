@@ -155,6 +155,10 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<DataPointCategory> Categories { get; set; } = default!;
 
+    public Task<Day> GetNextDay(Day day) => GetDay(day.Date.GetNextDate());
+
+    public Task<Day> GetPreviousDay(Day day) => GetDay(day.Date.GetPreviousDate());
+
     public Task<Day> GetDay(DateTime dateTime) => GetDay(DateOnly.FromDateTime(dateTime));
 
     public async Task<Day> GetDay(DateOnly date)
@@ -180,11 +184,13 @@ public class ApplicationDbContext : DbContext
 
     public bool AddMissingDataPoints(Day day)
     {
-        var anyDataPointsAdded = false;
+        var anyAdded = false;
+
         foreach (var category in Categories)
         {
             if (category.Group == "Notes")
             {
+                // First-launch example note.
                 if (category.DataPoints.Count == 0)
                 {
                     var note = CreateNote(day);
@@ -194,41 +200,24 @@ public class ApplicationDbContext : DbContext
             }
             else if (!category.DataPoints.Where(x => x.Day == day).Any(x => x.Category.Guid == category.Guid))
             {
-                var dataPoint = new DataPoint()
-                {
-                    Day = day,
-                    Category = category,
-                    CreatedAt = DateTimeOffset.Now,
-                    DataType = category.Type,
-                    MedicationDose = category.MedicationDose,
-                    MedicationUnit = category.MedicationUnit,
-                };
+                var dataPoint = DataPoint.Create(day, category);
 
+                // Automatically mark medications as taken.
                 if (category.Enabled && category.MedicationEveryDaySince != null && day.Date >= DateOnly.FromDateTime(category.MedicationEveryDaySince.Value.Date))
                     dataPoint.Bool = true;
 
-                category.DataPoints.Add(dataPoint);
-                anyDataPointsAdded = true;
+                // Add to the database.
+                if (category.DataPoints.Add(dataPoint))
+                    anyAdded = true;
             }
         }
 
-        return anyDataPointsAdded;
+        return anyAdded;
     }
-
-    public Task<Day> GetNextDay(Day day) => GetDay(day.Date.GetNextDate());
-
-    public Task<Day> GetPreviousDay(Day day) => GetDay(day.Date.GetPreviousDate());
 
     public DataPoint CreateNote(Day day)
     {
         var notes = Categories.Single(x => x.Group == "Notes");
-
-        return new()
-        {
-            Day = day,
-            Category = notes,
-            CreatedAt = DateTimeOffset.Now,
-            DataType = DataType.Note,
-        };
+        return DataPoint.Create(day, notes);
     }
 }

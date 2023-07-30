@@ -7,11 +7,15 @@
 			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="Submit" />
 
 			<MudText Typo="Typo.h6">@DataPoint.CreatedAt.ToString("ddd, MMM d h:mm tt")</MudText>
+
+			<MudSpacer />
+
+			<MudIconButton Icon="@Icons.Material.Filled.Check" OnClick="Submit" />
 		</div>
 	</TitleContent>
 
 	<DialogContent>
-		<MudTextField @bind-Value="DataPoint.Text" Lines="12" Class="mt-n6" DisableUnderLine="true" />
+		<MudTextField @bind-Value="DataPoint.Text" Lines="12" Class="mt-n6" DisableUnderLine />
 	</DialogContent>
 </MudDialog>
 
@@ -20,13 +24,6 @@
 
 	[Parameter]
 	public DataPoint DataPoint { get; set; }
-
-	protected override async Task OnInitializedAsync()
-	{
-		await base.OnInitializedAsync();
-
-		MudDialog.CloseIcon = Icons.Material.Filled.Check;
-	}
 
 	void Submit()
 	{

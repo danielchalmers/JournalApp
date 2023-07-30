@@ -1,4 +1,6 @@
-﻿namespace JournalApp;
+﻿using System.Text;
+
+namespace JournalApp;
 
 public class DataPointCategory
 {
@@ -27,7 +29,23 @@ public class DataPointCategory
 
     public bool SingleLine => Type is DataType.Mood or DataType.Number;
 
-    public override string ToString() => $"{string.Join("|", Group, Name)} #{Index}";
+    public override string ToString()
+    {
+        var stringBuilder = new StringBuilder();
+
+        if (Group != null)
+        {
+            stringBuilder.Append(Group);
+            stringBuilder.Append('|');
+        }
+
+        stringBuilder.Append(Name);
+        stringBuilder.Append(' ');
+        stringBuilder.Append('#');
+        stringBuilder.Append(Index);
+
+        return stringBuilder.ToString();
+    }
 }
 
 public class DataPoint
@@ -54,9 +72,22 @@ public class DataPoint
     public decimal? MedicationDose { get; set; }
     public string MedicationUnit { get; set; }
 
-    public override string ToString() => $"{DataType} ({Category})";
+    public override string ToString() => $"{DataType} - {Category}";
 
     public static IReadOnlyList<string> Moods { get; } = new[] { "🤔", "😄", "😀", "🙂", "😐", "🙁", "😧", "😢", };
+
+    public static DataPoint Create(Day day, DataPointCategory category)
+    {
+        return new()
+        {
+            Day = day,
+            Category = category,
+            CreatedAt = DateTimeOffset.Now,
+            DataType = category.Type,
+            MedicationDose = category.MedicationDose,
+            MedicationUnit = category.MedicationUnit,
+        };
+    }
 }
 
 public enum DataType
