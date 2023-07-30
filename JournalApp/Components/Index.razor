@@ -142,6 +142,7 @@
 
 		await SetDay(await db.GetDay(DateTime.Now));
 
+		// https://learn.microsoft.com/en-us/dotnet/maui/fundamentals/app-lifecycle
 		var window = App.Current.Windows.Single();
 		window.Deactivated += Window_Deactivated;
 		window.Destroying += Window_Deactivated;
@@ -164,7 +165,8 @@
 	private async void Window_Resumed(object sender, EventArgs e)
 	{
 		// Go to current day if user returns after a certain amount of time.
-		if (DateTimeOffset.Now - _stoppedDate > TimeSpan.FromHours(1))
+		// But not on Windows, because Resumed can occur without a corresponding Stopped for some ungodly reason.
+		if (DeviceInfo.Current.Platform != DevicePlatform.WinUI && DateTimeOffset.Now - _stoppedDate > TimeSpan.FromHours(1))
 		{
 			Debug.WriteLine($"Switching to current day after user was gone for a while");
 			await SetDay(await db.GetDay(DateTime.Now), scrollToTop: true);
