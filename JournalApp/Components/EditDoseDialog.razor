@@ -1,7 +1,7 @@
 ﻿@namespace JournalApp
 @inject IDialogService DialogService
 
-<MudDialog DefaultFocus="DefaultFocus.FirstChild">
+<MudDialog DefaultFocus="DefaultFocus.FirstChild" OnBackdropClick="Submit">
 	<TitleContent>
 		<div class="page-header">
 			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="Submit" />

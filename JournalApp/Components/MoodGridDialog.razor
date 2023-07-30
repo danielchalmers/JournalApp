@@ -4,7 +4,7 @@
 @inject IDialogService DialogService
 @inject IScrollManager ScrollManager
 
-<MudDialog DefaultFocus="DefaultFocus.Element">
+<MudDialog DefaultFocus="DefaultFocus.Element" OnBackdropClick="Close">
 	<TitleContent>
 		<div class="page-header">
 			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="Close" />
