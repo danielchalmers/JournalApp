@@ -78,23 +78,19 @@
 							@if (!string.IsNullOrEmpty(category.Name))
 							{
 								<div class="data-point-header">
-									@{
-										var headerBuilder = new System.Text.StringBuilder();
-										headerBuilder.Append(category.Name);
-										headerBuilder.Append(':');
-									}
+									<MudText>@category.Name</MudText>
 
 									@if (point.DataType == DataType.Medication)
 									{
-										headerBuilder.Append($" {category.MedicationDose:0.##}{category.MedicationUnit}");
+										<MudText>&NonBreakingSpace;@($"{category.MedicationDose:0.##}{category.MedicationUnit}")</MudText>
 
 										if ((point.MedicationDose != category.MedicationDose || point.MedicationUnit != category.MedicationUnit) && point.MedicationDose != null && point.MedicationUnit != null)
 										{
-											headerBuilder.Append($" - {point.MedicationDose:0.##}{point.MedicationUnit}");
+											<MudText>&NonBreakingSpace;@($"- {point.MedicationDose:0.##}{point.MedicationUnit}")</MudText>
 										}
 									}
 
-									<MudText>@headerBuilder.ToString()</MudText>
+									<MudText>:</MudText>
 								</div>
 							}
 
