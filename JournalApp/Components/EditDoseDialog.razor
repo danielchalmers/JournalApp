@@ -1,0 +1,49 @@
+﻿@namespace JournalApp
+@inject IDialogService DialogService
+
+<MudDialog DefaultFocus="DefaultFocus.FirstChild">
+	<TitleContent>
+		<div class="page-header">
+			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="Submit" />
+
+			<MudText Typo="Typo.h6">Change day's dose</MudText>
+		</div>
+	</TitleContent>
+
+	<DialogContent>
+		<div class="d-flex align-center" style="gap:1em;">
+			<MudText>@DataPoint.Category.Name:</MudText>
+
+			<MudNumericField @bind-Value="DataPoint.MedicationDose" HideSpinButtons="true" Label="Dose" MaxLength="5" Required="true" Immediate="true" />
+
+			<MudText>@DataPoint.MedicationUnit</MudText>
+		</div>
+	</DialogContent>
+</MudDialog>
+
+@code {
+	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+	[Parameter]
+	public DataPoint DataPoint { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+
+		MudDialog.CloseIcon = Icons.Material.Filled.Check;
+	}
+
+	void Submit()
+	{
+		MudDialog.Close(DialogResult.Ok(true));
+	}
+
+	public static async Task ShowDialog(IDialogService dialogService, DataPoint dataPoint)
+	{
+		var parameters = new DialogParameters { { nameof(EditDoseDialog.DataPoint), dataPoint } };
+		var options = new DialogOptions { FullWidth = true, };
+
+		await dialogService.Show<EditDoseDialog>(parameters, options).Result;
+	}
+}

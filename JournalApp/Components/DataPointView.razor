@@ -71,7 +71,11 @@ else if (DataPoint.DataType == DataType.Note)
 }
 else if (DataPoint.DataType == DataType.Medication)
 {
-	<ButtonGroupCheckBox @bind-SelectedValue="DataPoint.Bool" />
+	<div class="d-flex flex-grow-1 justify-space-between align-center" style="gap:1em;">
+		<ButtonGroupCheckBox @bind-SelectedValue="DataPoint.Bool" />
+
+		<MudLink OnClick="EditDose">Edit</MudLink>
+	</div>
 }
 
 @code {
@@ -91,5 +95,11 @@ else if (DataPoint.DataType == DataType.Medication)
 	async Task EditTextInDialog()
 	{
 		await EditTextDialog.ShowDialog(DialogService, DataPoint);
+	}
+
+	async Task EditDose()
+	{
+		await EditDoseDialog.ShowDialog(DialogService, DataPoint);
+		DataPoint.Bool = true;
 	}
 }
