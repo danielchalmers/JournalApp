@@ -65,7 +65,7 @@ public class DataPoint
 
     public string Mood { get; set; }
     public decimal? SleepHours { get; set; }
-    public int ScaleIndex { get; set; }
+    public int? ScaleIndex { get; set; }
     public bool? Bool { get; set; }
     public double? Number { get; set; }
     public string Text { get; set; }

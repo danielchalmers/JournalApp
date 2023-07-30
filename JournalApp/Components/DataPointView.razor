@@ -6,10 +6,10 @@
 	<MudMenu>
 		<ActivatorContent>
 			<MudText Typo="Typo.h4">@(DataPoint.Mood ?? "🤔")</MudText>
-			</ActivatorContent>
+		</ActivatorContent>
 
-			<ChildContent>
-				@foreach (var mood in DataPoint.Moods)
+		<ChildContent>
+			@foreach (var mood in DataPoint.Moods)
 			{
 				<MudMenuItem OnClick="@(() => DataPoint.Mood = mood)">
 					<MudText Typo="Typo.h4">@mood</MudText>
@@ -24,29 +24,29 @@ else if (DataPoint.DataType == DataType.Sleep)
 		<MudIconButton Icon="@Icons.Material.Filled.Remove" OnClick="DecrementSleep" Disabled="@(DataPoint.SleepHours <= 0)" Size="Size.Small" />
 		<MudSlider @bind-Value="DataPoint.SleepHours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" Size="Size.Large" Immediate />
 		<MudText Typo="Typo.caption">@((DataPoint.SleepHours ?? 0).ToString("00.0"))</MudText>
-			<MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="IncrementSleep" Disabled="@(DataPoint.SleepHours >= 24)" Size="Size.Small" />
-		</div>
+		<MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="IncrementSleep" Disabled="@(DataPoint.SleepHours >= 24)" Size="Size.Small" />
+	</div>
 }
 else if (DataPoint.DataType == DataType.Scale)
 {
-	<MudRating @bind-SelectedValue="DataPoint.ScaleIndex" FullIcon="@Icons.Material.Filled.Circle" EmptyIcon="@Icons.Material.Outlined.Circle" Color="Color.Primary" Size="Size.Small" />
+	<MudRating @bind-SelectedValue="ScaleIndexForMudRating" FullIcon="@Icons.Material.Filled.Circle" EmptyIcon="@Icons.Material.Outlined.Circle" Color="Color.Primary" />
 }
 else if (DataPoint.DataType == DataType.LowToHigh)
 {
 	<MudRadioButtonGroup @bind-SelectedOption="DataPoint.ScaleIndex">
-		<MudRadioButton Color="Color.Primary" Size="Size.Small" Option="0"><MudText Typo="Typo.subtitle2">None</MudText></MudRadioButton>
-		<MudRadioButton Color="Color.Primary" Size="Size.Small" Option="1"><MudText Typo="Typo.subtitle2">Low</MudText></MudRadioButton>
-		<MudRadioButton Color="Color.Primary" Size="Size.Small" Option="3"><MudText Typo="Typo.subtitle2">Medium</MudText></MudRadioButton>
-		<MudRadioButton Color="Color.Primary" Size="Size.Small" Option="5"><MudText Typo="Typo.subtitle2">High</MudText></MudRadioButton>
+		<MudRadioButton T="Nullable<Int32>" Color="Color.Primary" Size="Size.Small" Option="0"><MudText Typo="Typo.subtitle2">None</MudText></MudRadioButton>
+		<MudRadioButton T="Nullable<Int32>" Color="Color.Primary" Size="Size.Small" Option="1"><MudText Typo="Typo.subtitle2">Low</MudText></MudRadioButton>
+		<MudRadioButton T="Nullable<Int32>" Color="Color.Primary" Size="Size.Small" Option="3"><MudText Typo="Typo.subtitle2">Medium</MudText></MudRadioButton>
+		<MudRadioButton T="Nullable<Int32>" Color="Color.Primary" Size="Size.Small" Option="5"><MudText Typo="Typo.subtitle2">High</MudText></MudRadioButton>
 	</MudRadioButtonGroup>
 }
 else if (DataPoint.DataType == DataType.MildToSevere)
 {
 	<MudRadioButtonGroup @bind-SelectedOption="DataPoint.ScaleIndex">
-		<MudRadioButton Color="Color.Primary" Size="Size.Small" Option="0"><MudText Typo="Typo.subtitle2">None</MudText></MudRadioButton>
-		<MudRadioButton Color="Color.Primary" Size="Size.Small" Option="1"><MudText Typo="Typo.subtitle2">Mild</MudText></MudRadioButton>
-		<MudRadioButton Color="Color.Primary" Size="Size.Small" Option="3"><MudText Typo="Typo.subtitle2">Moderate</MudText></MudRadioButton>
-		<MudRadioButton Color="Color.Primary" Size="Size.Small" Option="5"><MudText Typo="Typo.subtitle2">Severe</MudText></MudRadioButton>
+		<MudRadioButton T="Nullable<Int32>" Color="Color.Primary" Size="Size.Small" Option="0"><MudText Typo="Typo.subtitle2">None</MudText></MudRadioButton>
+		<MudRadioButton T="Nullable<Int32>" Color="Color.Primary" Size="Size.Small" Option="1"><MudText Typo="Typo.subtitle2">Mild</MudText></MudRadioButton>
+		<MudRadioButton T="Nullable<Int32>" Color="Color.Primary" Size="Size.Small" Option="3"><MudText Typo="Typo.subtitle2">Moderate</MudText></MudRadioButton>
+		<MudRadioButton T="Nullable<Int32>" Color="Color.Primary" Size="Size.Small" Option="5"><MudText Typo="Typo.subtitle2">Severe</MudText></MudRadioButton>
 	</MudRadioButtonGroup>
 }
 else if (DataPoint.DataType == DataType.Bool)
@@ -81,6 +81,12 @@ else if (DataPoint.DataType == DataType.Medication)
 @code {
 	[Parameter]
 	public DataPoint DataPoint { get; set; }
+
+	public int ScaleIndexForMudRating
+	{
+		get => DataPoint.ScaleIndex ?? 0;
+		set => DataPoint.ScaleIndex = value == 0 ? null : value;
+	}
 
 	void DecrementSleep()
 	{
