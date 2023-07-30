@@ -21,7 +21,7 @@ public class DataPointCategory
 
     public string MedicationUnit { get; set; }
 
-    public bool MedicationEveryDay { get; set; }
+    public DateTimeOffset? MedicationEveryDaySince { get; set; }
 
     public virtual HashSet<DataPoint> DataPoints { get; set; } = new();
 

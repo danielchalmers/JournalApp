@@ -124,7 +124,7 @@ public class ApplicationDbContext : DbContext
             Index = 1,
             MedicationDose = 2000,
             MedicationUnit = "IU",
-            MedicationEveryDay = true,
+            MedicationEveryDaySince = DateTimeOffset.Now,
             ReadOnly = true,
             Enabled = false,
         });
@@ -204,7 +204,7 @@ public class ApplicationDbContext : DbContext
                     MedicationUnit = category.MedicationUnit,
                 };
 
-                if (category.MedicationEveryDay)
+                if (category.Enabled && category.MedicationEveryDaySince != null && day.Date >= DateOnly.FromDateTime(category.MedicationEveryDaySince.Value.Date))
                     dataPoint.Bool = true;
 
                 category.DataPoints.Add(dataPoint);
