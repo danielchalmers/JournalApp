@@ -115,6 +115,7 @@
 
 @code {
 	Day _day;
+	DateTimeOffset _stoppedDate;
 	MudMenu datePickerMenu;
 
 	MudTheme AppTheme { get; } = new()
@@ -126,34 +127,47 @@
 	{
 		await base.OnInitializedAsync();
 
-		_day = await db.GetDay(DateTime.Now);
+		await SetDay(await db.GetDay(DateTime.Now));
 
 		var window = App.Current.Windows.Single();
 		window.Deactivated += Window_Deactivated;
 		window.Destroying += Window_Deactivated;
+		window.Stopped += Window_Stopped;
+		window.Resumed += Window_Resumed;
 	}
 
 	private void Window_Deactivated(object sender, EventArgs e)
 	{
-		Debug.WriteLine("Window was deactivated or is being destroyed; Saving database...");
+		Debug.WriteLine("Window deactivated or destroying; Saving database");
 		db.SaveChanges();
 	}
 
-	async Task OnDaySelected(DateTime? dateTime)
+	private void Window_Stopped(object sender, EventArgs e)
 	{
-		datePickerMenu.CloseMenu();
+		_stoppedDate = DateTimeOffset.Now;
+		Debug.WriteLine($"Window was stopped at {_stoppedDate}");
+	}
 
-		await SetDay(await db.GetDay(dateTime.Value));
-		await ScrollToTop();
+	private async void Window_Resumed(object sender, EventArgs e)
+	{
+		// Go to current day if user returns after a certain amount of time.
+		if (DateTimeOffset.Now - _stoppedDate > TimeSpan.FromHours(1))
+		{
+			Debug.WriteLine($"Switching to current day after user was gone for a while");
+			await SetDay(await db.GetDay(DateTime.Now), scrollToTop: true);
+		}
 	}
 
 	async Task ScrollToTop() => await ScrollManager.ScrollToTopAsync("main-body");
 
-	Task SetDay(Day day)
+	async Task SetDay(Day day, bool scrollToTop = false)
 	{
 		_day = day;
 
-		return Task.CompletedTask;
+		if (scrollToTop)
+			await ScrollToTop();
+
+		StateHasChanged();
 	}
 
 	async Task PreviousDay()
@@ -166,6 +180,13 @@
 		await SetDay(await db.GetNextDay(_day));
 	}
 
+	async Task OnDaySelected(DateTime? dateTime)
+	{
+		datePickerMenu.CloseMenu();
+
+		await SetDay(await db.GetDay(dateTime.Value), scrollToTop: true);
+	}
+
 	async Task ShowMoodGrid()
 	{
 		var options = new DialogOptions { FullScreen = true, };
@@ -174,8 +195,7 @@
 
 		if (result.Data is DateOnly date)
 		{
-			await SetDay(await db.GetDay(date));
-			await ScrollToTop();
+			await SetDay(await db.GetDay(date), scrollToTop: true);
 		}
 	}
 
