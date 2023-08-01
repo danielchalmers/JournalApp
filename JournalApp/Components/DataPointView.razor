@@ -6,10 +6,10 @@
 	<MudMenu>
 		<ActivatorContent>
 			<MudText Typo="Typo.h4">@(DataPoint.Mood ?? "🤔")</MudText>
-		</ActivatorContent>
+			</ActivatorContent>
 
-		<ChildContent>
-			@foreach (var mood in DataPoint.Moods)
+			<ChildContent>
+				@foreach (var mood in DataPoint.Moods)
 			{
 				<MudMenuItem OnClick="@(() => DataPoint.Mood = mood)">
 					<MudText Typo="Typo.h4">@mood</MudText>
@@ -23,9 +23,9 @@ else if (DataPoint.DataType == DataType.Sleep)
 	<div class="d-flex align-center flex-grow-1" style="gap:1em">
 		<MudIconButton Icon="@Icons.Material.Filled.Remove" OnClick="DecrementSleep" Disabled="@(DataPoint.SleepHours <= 0)" Size="Size.Small" />
 		<MudSlider @bind-Value="DataPoint.SleepHours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" Size="Size.Large" Immediate />
-		<MudText Typo="Typo.caption">@((DataPoint.SleepHours ?? 0).ToString("00.0"))</MudText>
-		<MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="IncrementSleep" Disabled="@(DataPoint.SleepHours >= 24)" Size="Size.Small" />
-	</div>
+			<MudText Typo="Typo.caption">@((DataPoint.SleepHours ?? 0).ToString("00.0"))</MudText>
+			<MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="IncrementSleep" Disabled="@(DataPoint.SleepHours >= 24)" Size="Size.Small" />
+		</div>
 }
 else if (DataPoint.DataType == DataType.Scale)
 {
@@ -66,8 +66,8 @@ else if (DataPoint.DataType == DataType.Note)
 	<div class="d-flex flex-column flex-grow-1">
 		<MudTextField @bind-Value="DataPoint.Text" Lines="4" Placeholder="What's on your mind?" Label="@(DataPoint.CreatedAt.ToString(DateOnly.FromDateTime(DataPoint.CreatedAt.Date) == DataPoint.Day.Date ? "h:mm tt" : "M/d/yy h:mm tt"))" Immediate />
 
-		<MudLink OnClick="EditTextInDialog">Edit note...</MudLink>
-	</div>
+			<MudLink OnClick="EditTextInDialog">Edit note...</MudLink>
+		</div>
 }
 else if (DataPoint.DataType == DataType.Medication)
 {
@@ -81,6 +81,9 @@ else if (DataPoint.DataType == DataType.Medication)
 @code {
 	[Parameter]
 	public DataPoint DataPoint { get; set; }
+
+	[Parameter]
+	public EventCallback DialogClosed { get; set; }
 
 	public int ScaleIndexForMudRating
 	{
@@ -101,10 +104,12 @@ else if (DataPoint.DataType == DataType.Medication)
 	async Task EditTextInDialog()
 	{
 		await EditTextDialog.ShowDialog(DialogService, DataPoint);
+		await DialogClosed.InvokeAsync();
 	}
 
 	async Task EditDose()
 	{
 		await EditDoseDialog.ShowDialog(DialogService, DataPoint);
+		await DialogClosed.InvokeAsync();
 	}
 }
