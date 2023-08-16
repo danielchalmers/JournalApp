@@ -128,6 +128,10 @@ public class ApplicationDbContext : DbContext
             ReadOnly = true,
             Enabled = false,
         });
+
+#if DEBUG
+        SeedDays().GetAwaiter().GetResult();
+#endif
     }
 
     private void SeedCategory(DataPointCategory category)
@@ -135,6 +139,17 @@ public class ApplicationDbContext : DbContext
         if (!Categories.Any(x => x.Guid == category.Guid))
         {
             Categories.Add(category);
+        }
+    }
+
+    private async Task SeedDays()
+    {
+        var startDate = DateTime.Now - TimeSpan.FromDays(180);
+        var endDate = DateTime.Now + TimeSpan.FromDays(30);
+
+        for (var date = startDate; date <= endDate; date = date.AddDays(1))
+        {
+            await GetDay(date, true);
         }
     }
 
@@ -159,9 +174,9 @@ public class ApplicationDbContext : DbContext
 
     public Task<Day> GetPreviousDay(Day day) => GetDay(day.Date.GetPreviousDate());
 
-    public Task<Day> GetDay(DateTime dateTime) => GetDay(DateOnly.FromDateTime(dateTime));
+    public Task<Day> GetDay(DateTime dateTime, bool createRandom = false) => GetDay(DateOnly.FromDateTime(dateTime), createRandom);
 
-    public async Task<Day> GetDay(DateOnly date)
+    public async Task<Day> GetDay(DateOnly date, bool createRandom = false)
     {
         var day = await Days.SingleOrDefaultAsync(x => x.Date == date);
 
@@ -176,13 +191,13 @@ public class ApplicationDbContext : DbContext
             await SaveChangesAsync();
         }
 
-        if (AddMissingDataPoints(day))
+        if (AddMissingDataPoints(day, createRandom))
             await SaveChangesAsync();
 
         return day;
     }
 
-    public bool AddMissingDataPoints(Day day)
+    public bool AddMissingDataPoints(Day day, bool random = false)
     {
         var anyAdded = false;
 
@@ -201,6 +216,15 @@ public class ApplicationDbContext : DbContext
             else if (!category.DataPoints.Where(x => x.Day == day).Any(x => x.Category.Guid == category.Guid))
             {
                 var dataPoint = DataPoint.Create(day, category);
+
+                if (random)
+                {
+                    dataPoint.Mood = DataPoint.Moods[Random.Shared.Next(0, DataPoint.Moods.Count)];
+                    dataPoint.SleepHours = Random.Shared.Next(0, 49) / 2.0m;
+                    dataPoint.ScaleIndex = Random.Shared.Next(0, 6);
+                    dataPoint.Bool = Convert.ToBoolean(Random.Shared.Next(0, 2));
+                    dataPoint.Number = Random.Shared.Next(0, 1000);
+                }
 
                 // Automatically mark medications as taken.
                 if (category.Enabled && category.MedicationEveryDaySince != null && day.Date >= DateOnly.FromDateTime(category.MedicationEveryDaySince.Value.Date))
