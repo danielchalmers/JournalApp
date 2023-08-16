@@ -126,14 +126,31 @@ button {
 	gap: 1em;
 }
 
+.mood-grid-switcher {
+	display: flex;
+	justify-content: center;
+}
+
+.mood-grid-month-header {
+	display: flex;
+	justify-content: center;
+}
+
 .mood-grid-month {
 	display: flex;
 	flex-direction: column;
 }
 
-.mood-grid-week {
+.mood-blocks-month {
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 0;
+}
+
+.mood-blocks-week {
 	display: flex;
 	flex-direction: row;
+	justify-content: center;
 	flex: 1 1 0;
 }
 
@@ -142,6 +159,8 @@ button {
 	flex: 1 1 0;
 	margin: 1px;
 	padding: 0.25em;
+	min-width: 3em;
+	max-width: 6em;
 }
 
 .mood-block {
