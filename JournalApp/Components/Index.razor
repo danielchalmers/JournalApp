@@ -120,7 +120,6 @@
 @code {
 	Day _day;
 	DateTimeOffset _stoppedDate;
-	MudMenu datePickerMenu;
 
 	MudTheme AppTheme { get; } = new()
 		{
@@ -184,13 +183,6 @@
 	async Task NextDay()
 	{
 		await SetDay(await db.GetNextDay(_day));
-	}
-
-	async Task OnDaySelected(DateTime? dateTime)
-	{
-		datePickerMenu.CloseMenu();
-
-		await SetDay(await db.GetDay(dateTime.Value), scrollToTop: true);
 	}
 
 	async Task ShowMoodGrid()
