@@ -48,7 +48,7 @@
 							}
 						</div>
 
-						@foreach (var row in Enumerable.Range(1 - (daysInMonth.First().Date.DayOfWeek - format.FirstDayOfWeek), 35).Chunk(7))
+						@foreach (var row in Enumerable.Range(1 - (7 - (format.FirstDayOfWeek - daysInMonth.First().Date.DayOfWeek) % 7) % 7, 42).Chunk(7))
 						{
 							<div class="mood-blocks-week">
 								@foreach (var day in row.Select(x => daysInMonth.SingleOrDefault(y => y.Date.Day == x)))
