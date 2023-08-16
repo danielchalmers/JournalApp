@@ -22,8 +22,6 @@
 
 			<MudSpacer />
 
-			<MudIconButton Icon="@Icons.Material.Filled.Apps" OnClick="ShowMoodGrid" />
-
 			<MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
 				<MudMenuItem OnClick="ManageCategories">Manage categories...</MudMenuItem>
 				<MudMenuItem OnClick="ManageMedications">Manage medications...</MudMenuItem>
@@ -36,15 +34,9 @@
 			<MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
 
 			<div id="day-title">
-				<MudMenu @ref="datePickerMenu" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.BottomCenter">
-					<ActivatorContent>
-						<MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false">@_day.Date.ToString("ddd, MMM d")</MudText>
-					</ActivatorContent>
-
-					<ChildContent>
-						<MudDatePicker PickerVariant="PickerVariant.Static" DateChanged="OnDaySelected" DisableToolbar IsDateDisabledFunc="@(d => d > DateTime.Now)" />
-					</ChildContent>
-				</MudMenu>
+				<MudButton OnClick="ShowMoodGrid">
+					<MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false">@_day.Date.ToString("ddd, MMM d")</MudText>
+				</MudButton>
 			</div>
 
 			<MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" OnClick="NextDay" Disabled="@(_day.Date > DateOnly.FromDateTime(DateTime.Now))" />
