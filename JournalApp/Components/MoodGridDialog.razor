@@ -81,7 +81,7 @@
 			_selectedYear = value;
 
 			var moodCategory = db.Categories.Single(x => x.Type == DataType.Mood);
-			_gridYear = new GridYear(SelectedYear, moodCategory);
+			_gridYear = new GridYear(value, moodCategory);
 		}
 	}
 
@@ -157,12 +157,13 @@
 
 		IEnumerable<GridDay> GetGridDays()
 		{
+			var firstDate = Dates.First();
 			// If the first day of the month is Thu, but the culture starts the week on Mon, the grid will have 3 preceding blank spaces, making the first index -2.
-			var firstIndex = 1 - (7 - (_dateTimeFormat.FirstDayOfWeek - Dates.First().DayOfWeek) % 7) % 7;
+			var firstIndex = 1 - (7 - (_dateTimeFormat.FirstDayOfWeek - firstDate.DayOfWeek) % 7) % 7;
 
 			foreach (var gridIndex in Enumerable.Range(firstIndex, 42))
 			{
-				var moodDataPoint = MoodCategory?.DataPoints?.FirstOrDefault(x => x.Day.Date.Day == gridIndex);
+				var moodDataPoint = MoodCategory?.DataPoints?.FirstOrDefault(x => x.Day.Date.Year == firstDate.Year && x.Day.Date.Month == firstDate.Month && x.Day.Date.Day == gridIndex);
 				var emoji = moodDataPoint?.Mood;
 				var color = GetMoodColor(emoji);
 
