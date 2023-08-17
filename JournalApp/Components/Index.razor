@@ -130,7 +130,7 @@
 	{
 		await base.OnInitializedAsync();
 
-		await SetDay(await db.GetDay(DateTime.Now));
+		await SetDay(await db.GetDayOrCreate(DateTime.Now));
 
 		// https://learn.microsoft.com/en-us/dotnet/maui/fundamentals/app-lifecycle
 		var window = App.Current.Windows.Single();
@@ -159,7 +159,7 @@
 		if (DeviceInfo.Current.Platform != DevicePlatform.WinUI && DateTimeOffset.Now - _stoppedDate > TimeSpan.FromHours(1))
 		{
 			Debug.WriteLine($"Switching to current day after user was gone for a while");
-			await SetDay(await db.GetDay(DateTime.Now), scrollToTop: true);
+			await SetDay(await db.GetDayOrCreate(DateTime.Now), scrollToTop: true);
 		}
 	}
 
@@ -177,12 +177,12 @@
 
 	async Task PreviousDay()
 	{
-		await SetDay(await db.GetPreviousDay(_day));
+		await SetDay(await db.GetPreviousDayOrCreate(_day));
 	}
 
 	async Task NextDay()
 	{
-		await SetDay(await db.GetNextDay(_day));
+		await SetDay(await db.GetNextDayOrCreate(_day));
 	}
 
 	async Task ShowMoodGrid()
@@ -193,7 +193,7 @@
 
 		if (result.Data is DateOnly date)
 		{
-			await SetDay(await db.GetDay(date), scrollToTop: true);
+			await SetDay(await db.GetDayOrCreate(date), scrollToTop: true);
 		}
 	}
 

@@ -149,7 +149,7 @@ public class ApplicationDbContext : DbContext
 
         for (var date = startDate; date <= endDate; date = date.AddDays(1))
         {
-            await GetDay(date, true);
+            await GetDayOrCreate(date, true);
         }
     }
 
@@ -170,13 +170,13 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<DataPointCategory> Categories { get; set; } = default!;
 
-    public Task<Day> GetNextDay(Day day) => GetDay(day.Date.GetNextDate());
+    public Task<Day> GetNextDayOrCreate(Day day) => GetDayOrCreate(day.Date.GetNextDate());
 
-    public Task<Day> GetPreviousDay(Day day) => GetDay(day.Date.GetPreviousDate());
+    public Task<Day> GetPreviousDayOrCreate(Day day) => GetDayOrCreate(day.Date.GetPreviousDate());
 
-    public Task<Day> GetDay(DateTime dateTime, bool createRandom = false) => GetDay(DateOnly.FromDateTime(dateTime), createRandom);
+    public Task<Day> GetDayOrCreate(DateTime dateTime, bool createRandom = false) => GetDayOrCreate(DateOnly.FromDateTime(dateTime), createRandom);
 
-    public async Task<Day> GetDay(DateOnly date, bool createRandom = false)
+    public async Task<Day> GetDayOrCreate(DateOnly date, bool createRandom = false)
     {
         var day = await Days.SingleOrDefaultAsync(x => x.Date == date);
 
