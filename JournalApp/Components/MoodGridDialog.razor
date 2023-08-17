@@ -80,7 +80,7 @@
 		{
 			_selectedYear = value;
 
-			var moodCategory = db.Categories.FirstOrDefault(x => x.Enabled && x.Type == DataType.Mood);
+			var moodCategory = db.Categories.Single(x => x.Type == DataType.Mood);
 			_gridYear = new GridYear(SelectedYear, moodCategory);
 		}
 	}
