@@ -9,9 +9,7 @@
 		<div class="page-header">
 			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="Close" />
 
-			@* <MudButton OnClick="@(async () => await ScrollManager.ScrollToTopAsync(".page-header"))" DisableRipple Variant="Variant.Text"> *@
 			<MudText Typo="Typo.h6">Mood Grid</MudText>
-			@* </MudButton> *@
 		</div>
 	</TitleContent>
 
@@ -21,43 +19,39 @@
 				<MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" OnClick="() => SelectedYear--" />
 
 				<MudButton OnClick="() => SelectedYear = DateTime.Now.Year">
-					<MudText Typo="Typo.h3">@StartDate.Year</MudText>
+					<MudText Typo="Typo.h3">@SelectedYear</MudText>
 				</MudButton>
 
 				<MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" OnClick="() => SelectedYear++" />
 			</div>
 
-			@foreach (var daysInMonth in DaysInRange.GroupBy(x => x.Date.Month))
+			@foreach (var month in _gridYear.GridMonths)
 			{
-				var format = CultureInfo.CurrentCulture.DateTimeFormat;
-
-				<div class="mood-grid-month mood-grid-month-@(daysInMonth.Key)">
+				<div class="mood-grid-month mood-grid-month-@(month.Month)">
 					<div class="mood-grid-month-header">
-						<MudText Typo="Typo.h4">@(format.GetMonthName(daysInMonth.Key))</MudText>
-						</div>
+						<MudText Typo="Typo.h4">@(month.Name)</MudText>
+					</div>
 
-						<div class="mood-blocks-month">
-							<div class="mood-blocks-week">
-								@foreach (var i in Enumerable.Range((int)format.FirstDayOfWeek, 7))
+					<div class="mood-blocks-month">
+						<div class="mood-blocks-week">
+							@foreach (var day in month.DaysOfWeek)
 							{
-								var dayOfWeek = (DayOfWeek)(i % 7);
-
 								<div class="mood-block-container">
-									<b>@(((DayOfWeek)dayOfWeek).ToString()[0..2])</b>
+									<b>@(day.ToString()[0..2])</b>
 								</div>
 							}
 						</div>
 
-						@foreach (var row in Enumerable.Range(1 - (7 - (format.FirstDayOfWeek - daysInMonth.First().Date.DayOfWeek) % 7) % 7, 42).Chunk(7))
+						@foreach (var row in month.GridDays.Chunk(7))
 						{
 							<div class="mood-blocks-week">
-								@foreach (var day in row.Select(x => daysInMonth.SingleOrDefault(y => y.Date.Day == x)))
+								@foreach (var day in row)
 								{
 									<div class="mood-block-container" style="background-color:@(day?.Color ?? "transparent");">
-										@if (day != null)
+										@if (day.Date != null)
 										{
-											<div class="mood-block" onclick="@(() => Close(day.Date))">
-												<b>@day.Date.Day</b>
+											<div class="mood-block" onclick="@(() => Close(day.Date.Value))">
+												<b>@day.Date.Value.Day</b>
 												<MudSpacer />
 												@day.Emoji
 											</div>
@@ -75,6 +69,7 @@
 
 @code {
 	int _selectedYear;
+	GridYear _gridYear;
 
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
@@ -84,13 +79,11 @@
 		set
 		{
 			_selectedYear = value;
-			UpdateGrid();
+
+			var moodCategory = db.Categories.FirstOrDefault(x => x.Enabled && x.Type == DataType.Mood);
+			_gridYear = new GridYear(SelectedYear, moodCategory);
 		}
 	}
-
-	DateOnly StartDate { get; set; }
-	DateOnly EndDate { get; set; }
-	List<DayGridItem> DaysInRange { get; set; }
 
 	protected override void OnInitialized()
 	{
@@ -99,7 +92,6 @@
 		SelectedYear = DateTime.Now.Year;
 	}
 
-
 	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
 		await base.OnAfterRenderAsync(firstRender);
@@ -107,45 +99,12 @@
 		if (firstRender)
 		{
 			// Wait for full render before scrolling.
-			// TODO: Remove possibility of race condition.
+			// TODO: Possible race condition.
 			await Task.Yield();
 			await Task.Delay(300);
 			await ScrollManager.ScrollIntoViewAsync($".mood-grid-month-{DateTime.Now.Month}", ScrollBehavior.Smooth);
 		}
 	}
-
-	void UpdateGrid()
-	{
-		var moodCategory = db.Categories.FirstOrDefault(x => x.Enabled && x.Type == DataType.Mood);
-
-		StartDate = new(SelectedYear, 1, 1);
-		EndDate = new(SelectedYear, 12, 31);
-		DaysInRange = new();
-
-		for (DateOnly date = StartDate; date <= EndDate; date = date.AddDays(1))
-		{
-			var moodDataPoint = moodCategory?.DataPoints?.FirstOrDefault(x => x.Day.Date == date);
-			var emoji = moodDataPoint?.Mood;
-			var color = GetMoodColor(emoji);
-
-			DaysInRange.Add(new(date, emoji, color));
-		}
-	}
-
-	string GetMoodColor(string emoji) => emoji switch
-	{
-		// https://www.colorhexa.com/0091ea-to-ff6d00
-		"😄" => "#0091ea",
-		"😀" => "#2b8bc3",
-		"🙂" => "#55859c",
-		"😐" => "#807f75",
-		"🙁" => "#aa794e",
-		"😧" => "#d47327",
-		"😢" => "#ff6d00",
-		_ => "transparent"
-	};
-
-	private record DayGridItem(DateOnly Date, string Emoji, string Color);
 
 	void Close()
 	{
@@ -158,5 +117,87 @@
 			return;
 
 		MudDialog.Close(DialogResult.Ok(date));
+	}
+
+	protected record GridDay(int Index, DateOnly? Date, string Emoji, string Color);
+
+	protected class GridMonth
+	{
+		DateTimeFormatInfo _dateTimeFormat = CultureInfo.CurrentCulture.DateTimeFormat;
+
+		public GridMonth(int month, DataPointCategory moodCategory, IEnumerable<DateOnly> dates)
+		{
+			Month = month;
+			Name = _dateTimeFormat.GetMonthName(Month);
+			MoodCategory = moodCategory;
+			Dates = dates.ToList();
+			GridDays = GetGridDays().ToList();
+			DaysOfWeek = GetDaysOfWeek().ToList();
+		}
+
+		public int Month { get; set; }
+		public string Name { get; set; }
+		public DataPointCategory MoodCategory { get; set; }
+		public IReadOnlyList<DateOnly> Dates { get; set; }
+		public IReadOnlyList<GridDay> GridDays { get; set; }
+		public IReadOnlyList<DayOfWeek> DaysOfWeek { get; set; }
+
+		string GetMoodColor(string emoji) => emoji switch
+		{
+			// https://www.colorhexa.com/0091ea-to-ff6d00
+			"😄" => "#0091ea",
+			"😀" => "#2b8bc3",
+			"🙂" => "#55859c",
+			"😐" => "#807f75",
+			"🙁" => "#aa794e",
+			"😧" => "#d47327",
+			"😢" => "#ff6d00",
+			_ => "transparent"
+		};
+
+		IEnumerable<GridDay> GetGridDays()
+		{
+			// If the first day of the month is Thu, but the culture starts the week on Mon, the grid will have 3 preceding blank spaces, making the first index -2.
+			var firstIndex = 1 - (7 - (_dateTimeFormat.FirstDayOfWeek - Dates.First().DayOfWeek) % 7) % 7;
+
+			foreach (var gridIndex in Enumerable.Range(firstIndex, 42))
+			{
+				var moodDataPoint = MoodCategory?.DataPoints?.FirstOrDefault(x => x.Day.Date.Day == gridIndex);
+				var emoji = moodDataPoint?.Mood;
+				var color = GetMoodColor(emoji);
+
+				yield return new GridDay(gridIndex, moodDataPoint?.Day?.Date, emoji, color);
+			}
+		}
+
+		IEnumerable<DayOfWeek> GetDaysOfWeek()
+		{
+			foreach (var i in Enumerable.Range((int)_dateTimeFormat.FirstDayOfWeek, 7))
+				yield return (DayOfWeek)(i % 7);
+		}
+	}
+
+	protected class GridYear
+	{
+		public GridYear(int year, DataPointCategory moodCategory)
+		{
+			Year = year;
+			MoodCategory = moodCategory;
+			GridMonths = GetGridMonths().ToList();
+		}
+
+		IEnumerable<GridMonth> GetGridMonths()
+		{
+			var startDate = new DateOnly(Year, 1, 1);
+			var endDate = new DateOnly(Year, 12, 31);
+			var dates = startDate.GetDatesTo(endDate);
+
+			for (int i = 1; i <= 12; i++)
+				yield return new GridMonth(i, MoodCategory, dates.Where(x => x.Month == i));
+		}
+
+		public int Year { get; set; }
+		public DataPointCategory MoodCategory { get; set; }
+		public IReadOnlyList<GridMonth> GridMonths { get; set; }
 	}
 }
