@@ -110,7 +110,7 @@
 
 	void Close(DateOnly? date)
 	{
-		if (date == null || date > DateOnly.FromDateTime(DateTime.Now))
+		if (date == null)
 			return;
 
 		MudDialog.Close(DialogResult.Ok(date));
@@ -154,6 +154,7 @@
 
 		IEnumerable<GridDay> GetGridDays()
 		{
+			var tomorrow = DateOnly.FromDateTime(DateTime.Now).AddDays(1);
 			var firstDate = Dates.First();
 			// If the first day of the month is Thu, but the culture starts the week on Mon, the grid will have 3 preceding blank spaces, making the first index -2.
 			var firstIndex = 1 - (7 - (_dateTimeFormat.FirstDayOfWeek - firstDate.DayOfWeek) % 7) % 7;
@@ -168,7 +169,7 @@
 				{
 					var date = p.Day.Date;
 					return (p, date);
-				}).SingleOrDefault(x => x.date.Month == firstDate.Month && x.date.Day == gridIndex);
+				}).SingleOrDefault(x => x.date.Month == firstDate.Month && x.date.Day == gridIndex && x.date <= tomorrow);
 
 				// Make next search easier by removing uniquely dated point.
 				if (match != null)
