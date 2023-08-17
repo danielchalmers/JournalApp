@@ -152,6 +152,7 @@
 			_ => "transparent"
 		};
 
+		record DataPointLookup(DataPoint Point, DateOnly Date);
 		IEnumerable<GridDay> GetGridDays()
 		{
 			var tomorrow = DateOnly.FromDateTime(DateTime.Now).AddDays(1);
@@ -165,20 +166,20 @@
 				var day = gridIndex >= 1 && gridIndex <= daysInMonth ? gridIndex : (int?)null;
 
 				// Bundle date during search to avoid additional DB lookups (thru DataPoint.Day).
-				(DataPoint Point, DateOnly Date)? match = DataPoints.Select(p =>
+				var lookup = DataPoints.Select(p =>
 				{
 					var date = p.Day.Date;
-					return (p, date);
-				}).SingleOrDefault(x => x.date.Month == firstDate.Month && x.date.Day == gridIndex && x.date <= tomorrow);
+					return new DataPointLookup(p, date);
+				}).SingleOrDefault(l => l.Date.Month == firstDate.Month && l.Date.Day == gridIndex && l.Date <= tomorrow);
 
 				// Make next search easier by removing uniquely dated point.
-				if (match != null)
-					DataPoints.Remove(match.Value.Point);
+				if (lookup != null)
+					DataPoints.Remove(lookup.Point);
 
-				var emoji = match?.Point?.Mood;
+				var emoji = lookup?.Point?.Mood;
 				var color = GetMoodColor(emoji);
 
-				yield return new GridDay(day, gridIndex, match?.Date, emoji, color);
+				yield return new GridDay(day, gridIndex, lookup?.Date, emoji, color);
 			}
 		}
 
