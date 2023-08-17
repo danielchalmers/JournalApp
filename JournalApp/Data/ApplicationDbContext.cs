@@ -179,6 +179,7 @@ public class ApplicationDbContext : DbContext
 
     public async Task<Day> GetDayOrCreate(DateOnly date, bool createRandom = false)
     {
+        var save = false;
         var day = await Days.SingleOrDefaultAsync(x => x.Date == date);
 
         if (day == null)
@@ -189,10 +190,13 @@ public class ApplicationDbContext : DbContext
             };
 
             await Days.AddAsync(day);
-            await SaveChangesAsync();
+            save = true;
         }
 
         if (AddMissingDataPoints(day, createRandom))
+            save = true;
+
+        if (save)
             await SaveChangesAsync();
 
         return day;

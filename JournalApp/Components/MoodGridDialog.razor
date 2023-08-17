@@ -47,8 +47,8 @@
 							<div class="mood-blocks-week">
 								@foreach (var day in row)
 								{
-									<div class="mood-block-container" style="background-color:@(day?.Color ?? "transparent");">
-										<div class="mood-block" onclick="@(() => Close(day.Date.HasValue ? day.Date : null))">
+									<div class="mood-block-container" style="background-color:@(day.Color ?? "transparent");">
+										<div class="mood-block" onclick="@(() => Close(day.Date))">
 											<b>@day.Day</b>
 											<MudSpacer />
 											@day.Emoji
@@ -77,7 +77,7 @@
 		{
 			_selectedYear = value;
 
-			var moodCategory = db.Categories.Single(x => x.Type == DataType.Mood);
+			var moodCategory = db.Categories.Single(x => x.Type == DataType.Mood).DataPoints.Where(x => x.Day.Date.Year == value).ToHashSet();
 			_gridYear = new GridYear(value, moodCategory);
 		}
 	}
@@ -116,28 +116,28 @@
 		MudDialog.Close(DialogResult.Ok(date));
 	}
 
-	protected record GridDay(int? Day, int Index, DateOnly? Date, string Emoji, string Color);
+	protected readonly record struct GridDay(int? Day, int Index, DateOnly? Date, string Emoji, string Color);
 
-	protected class GridMonth
+	protected readonly struct GridMonth
 	{
-		DateTimeFormatInfo _dateTimeFormat = CultureInfo.CurrentCulture.DateTimeFormat;
+		readonly DateTimeFormatInfo _dateTimeFormat = CultureInfo.CurrentCulture.DateTimeFormat;
 
-		public GridMonth(int month, DataPointCategory moodCategory, IEnumerable<DateOnly> dates)
+		public GridMonth(int month, HashSet<DataPoint> dataPoints, IEnumerable<DateOnly> dates)
 		{
 			Month = month;
 			Name = _dateTimeFormat.GetMonthName(Month);
-			MoodCategory = moodCategory;
+			DataPoints = dataPoints;
 			Dates = dates.ToList();
 			GridDays = GetGridDays().ToList();
 			DaysOfWeek = GetDaysOfWeek().ToList();
 		}
 
-		public int Month { get; set; }
-		public string Name { get; set; }
-		public DataPointCategory MoodCategory { get; set; }
-		public IReadOnlyList<DateOnly> Dates { get; set; }
-		public IReadOnlyList<GridDay> GridDays { get; set; }
-		public IReadOnlyList<DayOfWeek> DaysOfWeek { get; set; }
+		public int Month { get; }
+		public string Name { get; }
+		public HashSet<DataPoint> DataPoints { get; }
+		public IReadOnlyList<DateOnly> Dates { get; }
+		public IReadOnlyList<GridDay> GridDays { get; }
+		public IReadOnlyList<DayOfWeek> DaysOfWeek { get; }
 
 		string GetMoodColor(string emoji) => emoji switch
 		{
@@ -157,15 +157,27 @@
 			var firstDate = Dates.First();
 			// If the first day of the month is Thu, but the culture starts the week on Mon, the grid will have 3 preceding blank spaces, making the first index -2.
 			var firstIndex = 1 - (7 - (_dateTimeFormat.FirstDayOfWeek - firstDate.DayOfWeek) % 7) % 7;
+			var daysInMonth = DateTime.DaysInMonth(firstDate.Year, firstDate.Month);
 
-			foreach (var gridIndex in Enumerable.Range(firstIndex, 42))
+			foreach (var gridIndex in Enumerable.Range(firstIndex, 7 * 6))
 			{
-				var day = gridIndex >= 1 && gridIndex <= DateTime.DaysInMonth(firstDate.Year, firstDate.Month) ? gridIndex : (int?)null;
-				var moodDataPoint = MoodCategory?.DataPoints?.FirstOrDefault(x => x.Day.Date.Year == firstDate.Year && x.Day.Date.Month == firstDate.Month && x.Day.Date.Day == gridIndex);
-				var emoji = moodDataPoint?.Mood;
+				var day = gridIndex >= 1 && gridIndex <= daysInMonth ? gridIndex : (int?)null;
+
+				// Bundle date during search to avoid additional DB lookups (thru DataPoint.Day).
+				(DataPoint Point, DateOnly Date)? match = DataPoints.Select(p =>
+				{
+					var date = p.Day.Date;
+					return (p, date);
+				}).SingleOrDefault(x => x.date.Month == firstDate.Month && x.date.Day == gridIndex);
+
+				// Make next search easier by removing uniquely dated point.
+				if (match != null)
+					DataPoints.Remove(match.Value.Point);
+
+				var emoji = match?.Point?.Mood;
 				var color = GetMoodColor(emoji);
 
-				yield return new GridDay(day, gridIndex, moodDataPoint?.Day?.Date, emoji, color);
+				yield return new GridDay(day, gridIndex, match?.Date, emoji, color);
 			}
 		}
 
@@ -176,12 +188,12 @@
 		}
 	}
 
-	protected class GridYear
+	protected readonly struct GridYear
 	{
-		public GridYear(int year, DataPointCategory moodCategory)
+		public GridYear(int year, HashSet<DataPoint> dataPoints)
 		{
 			Year = year;
-			MoodCategory = moodCategory;
+			DataPoints = dataPoints;
 			GridMonths = GetGridMonths().ToList();
 		}
 
@@ -189,14 +201,14 @@
 		{
 			var startDate = new DateOnly(Year, 1, 1);
 			var endDate = new DateOnly(Year, 12, 31);
-			var dates = startDate.GetDatesTo(endDate);
+			var dates = startDate.GetDatesTo(endDate).ToList();
 
 			for (int i = 1; i <= 12; i++)
-				yield return new GridMonth(i, MoodCategory, dates.Where(x => x.Month == i));
+				yield return new GridMonth(i, DataPoints, dates.Where(x => x.Month == i));
 		}
 
-		public int Year { get; set; }
-		public DataPointCategory MoodCategory { get; set; }
-		public IReadOnlyList<GridMonth> GridMonths { get; set; }
+		public int Year { get; }
+		public HashSet<DataPoint> DataPoints { get; }
+		public IReadOnlyList<GridMonth> GridMonths { get; }
 	}
 }
