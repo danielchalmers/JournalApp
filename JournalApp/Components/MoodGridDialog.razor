@@ -48,14 +48,11 @@
 								@foreach (var day in row)
 								{
 									<div class="mood-block-container" style="background-color:@(day?.Color ?? "transparent");">
-										@if (day.Date != null)
-										{
-											<div class="mood-block" onclick="@(() => Close(day.Date.Value))">
-												<b>@day.Date.Value.Day</b>
-												<MudSpacer />
-												@day.Emoji
-											</div>
-										}
+										<div class="mood-block" onclick="@(() => Close(day.Date.HasValue ? day.Date : null))">
+											<b>@day.Day</b>
+											<MudSpacer />
+											@day.Emoji
+										</div>
 									</div>
 								}
 							</div>
@@ -111,15 +108,15 @@
 		MudDialog.Close(DialogResult.Ok(true));
 	}
 
-	void Close(DateOnly date)
+	void Close(DateOnly? date)
 	{
-		if (date > DateOnly.FromDateTime(DateTime.Now))
+		if (date == null || date > DateOnly.FromDateTime(DateTime.Now))
 			return;
 
 		MudDialog.Close(DialogResult.Ok(date));
 	}
 
-	protected record GridDay(int Index, DateOnly? Date, string Emoji, string Color);
+	protected record GridDay(int? Day, int Index, DateOnly? Date, string Emoji, string Color);
 
 	protected class GridMonth
 	{
@@ -163,11 +160,12 @@
 
 			foreach (var gridIndex in Enumerable.Range(firstIndex, 42))
 			{
+				var day = gridIndex >= 1 && gridIndex <= DateTime.DaysInMonth(firstDate.Year, firstDate.Month) ? gridIndex : (int?)null;
 				var moodDataPoint = MoodCategory?.DataPoints?.FirstOrDefault(x => x.Day.Date.Year == firstDate.Year && x.Day.Date.Month == firstDate.Month && x.Day.Date.Day == gridIndex);
 				var emoji = moodDataPoint?.Mood;
 				var color = GetMoodColor(emoji);
 
-				yield return new GridDay(gridIndex, moodDataPoint?.Day?.Date, emoji, color);
+				yield return new GridDay(day, gridIndex, moodDataPoint?.Day?.Date, emoji, color);
 			}
 		}
 

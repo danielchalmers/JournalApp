@@ -149,7 +149,8 @@ public class ApplicationDbContext : DbContext
 
         for (var date = startDate; date <= endDate; date = date.AddDays(1))
         {
-            await GetDayOrCreate(date, true);
+            if (Random.Shared.Next(0, 10) > 0)
+                await GetDayOrCreate(date, true);
         }
     }
 
