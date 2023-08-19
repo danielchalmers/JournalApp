@@ -208,17 +208,19 @@ public class ApplicationDbContext : DbContext
 
         foreach (var category in Categories)
         {
+            var dataPoints = category.DataPoints;
+
             if (category.Group == "Notes")
             {
                 // First-launch example note.
-                if (category.DataPoints.Count == 0)
+                if (dataPoints.Count == 0)
                 {
                     var note = CreateNote(day);
                     note.Text = "I just started using JournalApp! 😎";
-                    category.DataPoints.Add(note);
+                    dataPoints.Add(note);
                 }
             }
-            else if (!category.DataPoints.Where(x => x.Day == day).Any(x => x.Category.Guid == category.Guid))
+            else if (!dataPoints.Where(x => x.Day == day).Any(x => x.Category.Guid == category.Guid))
             {
                 var dataPoint = DataPoint.Create(day, category);
 
@@ -236,7 +238,7 @@ public class ApplicationDbContext : DbContext
                     dataPoint.Bool = true;
 
                 // Add to the database.
-                if (category.DataPoints.Add(dataPoint))
+                if (dataPoints.Add(dataPoint))
                     anyAdded = true;
             }
         }
