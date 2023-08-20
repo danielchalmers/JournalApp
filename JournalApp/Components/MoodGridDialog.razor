@@ -77,8 +77,14 @@
 		{
 			_selectedYear = value;
 
+			var stopwatch = new Stopwatch();
+			stopwatch.Start();
+
 			var moodCategory = db.Categories.Single(x => x.Type == DataType.Mood).DataPoints.Where(x => x.Day.Date.Year == value).ToHashSet();
 			_gridYear = new GridYear(value, moodCategory);
+
+			stopwatch.Stop();
+			Debug.WriteLine($"Went to year {value} in the Mood Grid in {stopwatch.ElapsedMilliseconds:0}ms");
 		}
 	}
 

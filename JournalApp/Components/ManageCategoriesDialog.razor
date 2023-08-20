@@ -53,6 +53,8 @@
 		if (anyAbove)
 			category.Index--;
 
+		Debug.WriteLine($"Moved category up: {category}, {category.Guid}");
+
 		await db.SaveChangesAsync();
 	}
 
@@ -63,6 +65,8 @@
 
 		if (result.Canceled)
 			return;
+
+		Debug.WriteLine($"Edited category: {category}, {category.Guid}");
 
 		await db.SaveChangesAsync();
 	}
@@ -83,6 +87,7 @@
 			newCategory.Index = groupCategories.Max(x => x.Index) + 1;
 
 		await db.Categories.AddAsync(newCategory);
+		Debug.WriteLine($"Adding new category: {newCategory}, {newCategory.Guid}");
 		await db.SaveChangesAsync();
 	}
 
