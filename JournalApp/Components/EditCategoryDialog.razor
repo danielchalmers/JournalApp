@@ -8,15 +8,15 @@
 
 			<MudText Typo="Typo.h6">@(Category == null ? "New" : "Edit") @(Group == "Medications" ? "medication" : "category")</MudText>
 
-				<MudSpacer />
+			<MudSpacer />
 
-				<MudIconButton Icon="@Icons.Material.Filled.Check" OnClick="Submit" />
-			</div>
-		</TitleContent>
+			<MudIconButton Icon="@Icons.Material.Filled.Check" OnClick="Submit" />
+		</div>
+	</TitleContent>
 
-		<DialogContent>
-			<MudForm @ref="_form" ValidationDelay="0">
-				<MudTextField Label="Name" @bind-Value="Name" Required Immediate />
+	<DialogContent>
+		<MudForm @ref="_form" ValidationDelay="0">
+			<MudTextField Label="Name" @bind-Value="Name" Immediate />
 
 				@if (Group == null)
 			{
@@ -34,8 +34,8 @@
 				<div class="d-flex flex-row flex-grow-1" style="gap:1em">
 					<MudNumericField @bind-Value="MedicationDose" HideSpinButtons Label="Dose" MaxLength="5" Required Immediate />
 
-					<MudTextField @bind-Value="MedicationUnit" Label="Unit" MaxLength="4" Required Immediate />
-				</div>
+						<MudTextField @bind-Value="MedicationUnit" Label="Unit" MaxLength="4" Required Immediate />
+					</div>
 
 				<MudSwitch @bind-Checked="MedicationEveryDay" Label="Taken every day" Color="Color.Primary" />
 			}
@@ -54,7 +54,7 @@
 	[Parameter]
 	public DataPointCategory Category { get; set; }
 
-	public string Name { get; set; }
+	public string Name { get; set; } = string.Empty;
 
 	public DataType SelectedType { get; set; } = DataType.LowToHigh;
 
