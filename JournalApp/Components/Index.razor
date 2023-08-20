@@ -191,8 +191,9 @@
 	{
 		Debug.WriteLine("Opening Mood Grid");
 		var options = new DialogOptions { FullScreen = true, };
+		var parameters = new DialogParameters<MoodGrid.MoodGridDialog> { { x => x.OpenToDate, _day.Date} };
 
-		var result = await DialogService.Show<MoodGrid.MoodGridDialog>(options).Result;
+		var result = await DialogService.Show<MoodGrid.MoodGridDialog>(parameters, options).Result;
 
 		if (result.Data is DateOnly date)
 		{

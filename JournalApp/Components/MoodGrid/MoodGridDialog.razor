@@ -11,7 +11,7 @@
 			<MudText Typo="Typo.h6">Mood Grid</MudText>
 		</div>
 
-		<MoodGridSwitcher YearChanged="OnYearChanged" />
+		<MoodGridSwitcher @bind-SelectedYear="SelectedYear" />
 	</TitleContent>
 
 	<DialogContent>
@@ -59,16 +59,39 @@
 </MudDialog>
 
 @code {
+	int _selectedYear;
 	GridYear? _gridYear;
 	HashSet<DataPoint> _moodDataPoints;
 
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+	[Parameter]
+	public DateOnly OpenToDate { get; set; }
+
+	public int SelectedYear
+	{
+		get => _selectedYear;
+		set
+		{
+			_selectedYear = value;
+
+			var sw = Stopwatch.StartNew();
+
+			_gridYear = new GridYear(value, _moodDataPoints);
+
+			sw.Stop();
+			Debug.WriteLine($"Loaded year {value} in the Mood Grid in {sw.ElapsedMilliseconds:0}ms");
+		}
+	}
 
 	protected override void OnInitialized()
 	{
 		base.OnInitialized();
 
 		_moodDataPoints = db.Categories.Single(x => x.Type == DataType.Mood).DataPoints;
+
+		Debug.WriteLine($"Opened Mood Grid to {OpenToDate}");
+		SelectedYear = OpenToDate.Year;
 	}
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -81,18 +104,9 @@
 			// TODO: Possible race condition.
 			await Task.Yield();
 			await Task.Delay(300);
-			await ScrollManager.ScrollIntoViewAsync($".mood-grid-month-{DateTime.Now.Month}", ScrollBehavior.Smooth);
+
+			await ScrollManager.ScrollIntoViewAsync($".mood-grid-month-{OpenToDate.Month}", ScrollBehavior.Smooth);
 		}
-	}
-
-	void OnYearChanged(int value)
-	{
-		var sw = Stopwatch.StartNew();
-
-		_gridYear = new GridYear(value, _moodDataPoints);
-
-		sw.Stop();
-		Debug.WriteLine($"Loaded year {value} in the Mood Grid in {sw.ElapsedMilliseconds:0}ms");
 	}
 
 	void Close()

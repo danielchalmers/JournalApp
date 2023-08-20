@@ -169,6 +169,15 @@ public class ApplicationDbContext : DbContext
             if (Random.Shared.Next(0, 10) > 0)
                 await GetOrCreateDay(date, true);
         }
+
+        // A few additional days to test multi-year features.
+        await GetOrCreateDay(startDate.AddMonths(-12), true);
+        await GetOrCreateDay(startDate.AddMonths(-18), true);
+        await GetOrCreateDay(startDate.AddMonths(-24), true);
+        await GetOrCreateDay(startDate.AddMonths(-30), true);
+        await GetOrCreateDay(startDate.AddMonths(-36), true);
+        await GetOrCreateDay(startDate.AddMonths(-42), true);
+        await GetOrCreateDay(startDate.AddMonths(-48), true);
     }
 
     public Task<Day> GetOrCreateToday() => GetOrCreateDay(DateOnly.FromDateTime(DateTime.Now));

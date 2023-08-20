@@ -21,17 +21,10 @@
         set
         {
             _selectedYear = value;
-            YearChanged.InvokeAsync(value);
+            SelectedYearChanged.InvokeAsync(value);
         }
     }
 
     [Parameter]
-    public EventCallback<int> YearChanged { get; set; }
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-
-        SelectedYear = DateTime.Now.Year;
-    }
+    public EventCallback<int> SelectedYearChanged { get; set; }
 }
