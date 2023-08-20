@@ -118,74 +118,74 @@
 </div>
 
 @code {
-	Day _day;
-	DateTimeOffset _stoppedDate;
+    Day _day;
+    DateTimeOffset _stoppedDate;
 
-	MudTheme AppTheme { get; } = new()
+    MudTheme AppTheme { get; } = new()
 		{
 			PaletteDark = new PaletteDark() { TextDisabled = "#ffffffb2" },
 		};
 
-	protected override async Task OnInitializedAsync()
-	{
-		await base.OnInitializedAsync();
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
 
-		await SetDay(await db.GetOrCreateToday());
+        await SetDay(await db.GetOrCreateToday());
 
-		// https://learn.microsoft.com/en-us/dotnet/maui/fundamentals/app-lifecycle
-		var window = App.Current.Windows.Single();
-		window.Deactivated += Window_Deactivated;
-		window.Destroying += Window_Deactivated;
-		window.Stopped += Window_Stopped;
-		window.Resumed += Window_Resumed;
-	}
+        // https://learn.microsoft.com/en-us/dotnet/maui/fundamentals/app-lifecycle
+        var window = App.Current.Windows.Single();
+        window.Deactivated += Window_Deactivated;
+        window.Destroying += Window_Deactivated;
+        window.Stopped += Window_Stopped;
+        window.Resumed += Window_Resumed;
+    }
 
-	private void Window_Deactivated(object sender, EventArgs e)
-	{
-		Debug.WriteLine("Window deactivated or destroying; Saving database");
-		db.SaveChanges();
-	}
+    private void Window_Deactivated(object sender, EventArgs e)
+    {
+        Debug.WriteLine("Window deactivated or destroying; Saving database");
+        db.SaveChanges();
+    }
 
-	private void Window_Stopped(object sender, EventArgs e)
-	{
-		_stoppedDate = DateTimeOffset.Now;
-		Debug.WriteLine($"Window was stopped at {_stoppedDate}");
-	}
+    private void Window_Stopped(object sender, EventArgs e)
+    {
+        _stoppedDate = DateTimeOffset.Now;
+        Debug.WriteLine($"Window was stopped at {_stoppedDate}");
+    }
 
-	private async void Window_Resumed(object sender, EventArgs e)
-	{
-		// Go to current day if user returns after a certain amount of time.
-		// But not on Windows, because Resumed can occur without a corresponding Stopped for some ungodly reason.
-		if (DeviceInfo.Current.Platform != DevicePlatform.WinUI && DateTimeOffset.Now - _stoppedDate > TimeSpan.FromHours(1))
-		{
-			Debug.WriteLine($"Switching to current day after user was gone for a while");
-			await SetDay(await db.GetOrCreateToday(), scrollToTop: true);
-		}
-	}
+    private async void Window_Resumed(object sender, EventArgs e)
+    {
+        // Go to current day if user returns after a certain amount of time.
+        // But not on Windows, because Resumed can occur without a corresponding Stopped for some ungodly reason.
+        if (DeviceInfo.Current.Platform != DevicePlatform.WinUI && DateTimeOffset.Now - _stoppedDate > TimeSpan.FromHours(1))
+        {
+            Debug.WriteLine($"Switching to current day after user was gone for a while");
+            await SetDay(await db.GetOrCreateToday(), scrollToTop: true);
+        }
+    }
 
-	async Task ScrollToTop() => await ScrollManager.ScrollToTopAsync("main-body");
+    async Task ScrollToTop() => await ScrollManager.ScrollToTopAsync("main-body");
 
-	async Task SetDay(Day day, bool scrollToTop = false)
-	{
-		Debug.WriteLine($"Going to day {day.Date} and {(scrollToTop ? "" : "not ")}scrolling to top");
-		_day = day;
+    async Task SetDay(Day day, bool scrollToTop = false)
+    {
+        Debug.WriteLine($"Going to day {day.Date} and {(scrollToTop ? "" : "not ")}scrolling to top");
+        _day = day;
 
-		if (scrollToTop)
-			await ScrollToTop();
+        if (scrollToTop)
+            await ScrollToTop();
 
-		StateHasChanged();
-	}
+        StateHasChanged();
+    }
 
-	async Task PreviousDay() => await SetDay(await db.GetOrCreatePreviousDay(_day));
+    async Task PreviousDay() => await SetDay(await db.GetOrCreatePreviousDay(_day));
 
-	async Task NextDay() => await SetDay(await db.GetOrCreateNextDay(_day));
+    async Task NextDay() => await SetDay(await db.GetOrCreateNextDay(_day));
 
-	async Task OpenMoodGrid()
-	{
-		Debug.WriteLine("Opening Mood Grid");
-		var options = new DialogOptions { FullScreen = true, };
+    async Task OpenMoodGrid()
+    {
+        Debug.WriteLine("Opening Mood Grid");
+        var options = new DialogOptions { FullScreen = true, };
 
-		var result = await DialogService.Show<MoodGridDialog>(options).Result;
+        var result = await DialogService.Show<MoodGrid.MoodGridDialog>(options).Result;
 
 		if (result.Data is DateOnly date)
 		{
