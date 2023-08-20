@@ -1,0 +1,44 @@
+﻿@namespace JournalApp
+@inject IDialogService DialogService
+
+<MudDialog DefaultFocus="DefaultFocus.None" OnBackdropClick="Submit">
+	<TitleContent>
+		<div class="page-header">
+			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="Submit" />
+
+			<MudText Typo="Typo.h6">My Safety Plan</MudText>
+
+			<MudSpacer />
+
+			<MudIconButton Icon="@Icons.Material.Filled.Check" OnClick="Submit" />
+		</div>
+	</TitleContent>
+
+	<DialogContent>
+		<MudTextField T="string" @bind-Text="SafetyPlan.WarningSigns" Lines="5" HelperText="Warning signs that a crisis may be developing" Placeholder="thoughts, images, mood, situation, behavior" />
+
+		<MudTextField T="string" @bind-Text="SafetyPlan.CopingStrategies" Lines="5" HelperText="Ways to distract myself without contacting another person" Placeholder="relaxation technique, physical activity" />
+
+		<MudTextField T="string" @bind-Text="SafetyPlan.SocialDistractions" Lines="3" HelperText="People and social settings that provide distraction" />
+
+		<MudTextField T="string" @bind-Text="SafetyPlan.SocialContacts" Lines="3" HelperText="People whom I can ask for help" />
+
+		<MudTextField T="string" @bind-Text="SafetyPlan.ProfessionalContacts" Lines="5" HelperText="Professionals or agencies I can contact during a crisis" />
+
+		<MudTextField T="string" @bind-Text="SafetyPlan.EnvironmentChanges" Lines="3" HelperText="Ways to make the environment safer" />
+
+		<MudTextField T="string" @bind-Text="SafetyPlan.Purpose" Lines="3" HelperText="Things that are most important to me and worth living for" />
+	</DialogContent>
+</MudDialog>
+
+@code {
+	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+	[Parameter]
+	public SafetyPlan SafetyPlan { get; set; }
+
+	void Submit()
+	{
+		MudDialog.Close(DialogResult.Ok(true));
+	}
+}
