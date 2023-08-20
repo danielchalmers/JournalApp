@@ -20,12 +20,12 @@
 		<div class="d-flex align-center" style="gap:1em;">
 			<MudNumericField @bind-Value="DataPoint.MedicationDose" HideSpinButtons Label="Dose" MaxLength="5" />
 
-			<MudText>@DataPoint.MedicationUnit</MudText>
-		</div>
-	</DialogContent>
-</MudDialog>
+				<MudText>@DataPoint.MedicationUnit</MudText>
+			</div>
+		</DialogContent>
+	</MudDialog>
 
-@code {
+	@code {
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
 	[Parameter]
@@ -38,7 +38,7 @@
 
 	public static async Task ShowDialog(IDialogService dialogService, DataPoint dataPoint)
 	{
-		var parameters = new DialogParameters { { nameof(EditDoseDialog.DataPoint), dataPoint } };
+		var parameters = new DialogParameters<EditDoseDialog> { { x => x.DataPoint, dataPoint } };
 
 		await dialogService.Show<EditDoseDialog>(parameters).Result;
 

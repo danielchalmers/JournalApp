@@ -16,10 +16,10 @@
 
 	<DialogContent>
 		<MudTextField @bind-Value="DataPoint.Text" Lines="12" Class="mt-n6" DisableUnderLine />
-	</DialogContent>
-</MudDialog>
+		</DialogContent>
+	</MudDialog>
 
-@code {
+	@code {
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
 	[Parameter]
@@ -32,7 +32,7 @@
 
 	public static async Task ShowDialog(IDialogService dialogService, DataPoint dataPoint)
 	{
-		var parameters = new DialogParameters { { nameof(EditTextDialog.DataPoint), dataPoint } };
+		var parameters = new DialogParameters<EditTextDialog> { { x => x.DataPoint, dataPoint } };
 		var options = new DialogOptions { FullWidth = true, };
 
 		await dialogService.Show<EditTextDialog>(parameters, options).Result;

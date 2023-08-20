@@ -6,10 +6,10 @@
 	<MudMenu>
 		<ActivatorContent>
 			<MudText Typo="Typo.h4">@(DataPoint.Mood ?? "🤔")</MudText>
-			</ActivatorContent>
+		</ActivatorContent>
 
-			<ChildContent>
-				@foreach (var mood in DataPoint.Moods)
+		<ChildContent>
+			@foreach (var mood in DataPoint.Moods)
 			{
 				<MudMenuItem OnClick="@(() => DataPoint.Mood = mood)">
 					<MudText Typo="Typo.h4">@mood</MudText>

@@ -203,7 +203,7 @@
 		{
 			var startDate = new DateOnly(Year, 1, 1);
 			var endDate = new DateOnly(Year, 12, 31);
-			var dates = startDate.GetDatesTo(endDate).ToList();
+			var dates = startDate.DatesTo(endDate).ToList();
 
 			for (int i = 1; i <= 12; i++)
 				yield return new GridMonth(i, DataPoints, dates.Where(x => x.Month == i));

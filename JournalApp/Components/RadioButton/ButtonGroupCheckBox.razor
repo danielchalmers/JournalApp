@@ -1,6 +1,6 @@
 ﻿@namespace JournalApp
 
-<MudStack Row="true" Spacing="0" Class="d-flex flex-grow-1">
+<MudStack Row Spacing="0" Class="d-flex flex-grow-1">
 	@foreach (var option in options)
 	{
 		<MudButton Color="Color.Primary" Size="Size.Small" Class="flex-grow-1" Variant="@(option.Value == SelectedValue ? Variant.Filled : Variant.Outlined)" OnClick="@(() => OnClick(option.Value))"><MudText Typo="Typo.subtitle2">@option.Key</MudText></MudButton>

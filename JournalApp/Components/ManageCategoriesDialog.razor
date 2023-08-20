@@ -9,15 +9,15 @@
 
 			<MudText Typo="Typo.h6">Manage @(Group == "Medications" ? "medications" : "categories")</MudText>
 
-				<MudSpacer />
+			<MudSpacer />
 
-				<MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="New" />
-			</div>
-		</TitleContent>
+			<MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="New" />
+		</div>
+	</TitleContent>
 
-		<DialogContent>
-			<MudStack Class="mh-n12" Style="min-height:100vh;padding-bottom:15em;">
-				@foreach (var c in db.Categories.Where(c => c.Group == Group).OrderBy(c => c.Index))
+	<DialogContent>
+		<MudStack Class="mh-n12" Style="min-height:100vh;padding-bottom:15em;">
+			@foreach (var c in db.Categories.Where(c => c.Group == Group).OrderBy(c => c.Index))
 			{
 				<div class="d-flex align-center" style="gap:0.1em;">
 					<MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" OnClick="async () => await MoveUp(c)" Edge="Edge.Start" Disabled="c.Index <= 1" />
@@ -42,6 +42,8 @@
 	async Task MoveUp(DataPointCategory category)
 	{
 		var anyAbove = false;
+
+		// Shift other categories in the same group.
 		foreach (var replaced in db.Categories.Where(x => x.Group == Group && x.Index == category.Index - 1))
 		{
 			anyAbove = true;
@@ -74,11 +76,13 @@
 			return;
 
 		var newCategory = (DataPointCategory)result.Data;
+
+		// Set index to the end of the last category in the same group.
 		var groupCategories = db.Categories.Where(x => x.Group == Group).ToList();
 		if (groupCategories.Any())
 			newCategory.Index = groupCategories.Max(x => x.Index) + 1;
 
-		db.Categories.Add(newCategory);
+		await db.Categories.AddAsync(newCategory);
 		await db.SaveChangesAsync();
 	}
 
