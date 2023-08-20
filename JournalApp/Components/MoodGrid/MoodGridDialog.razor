@@ -87,14 +87,12 @@
 
 	void OnYearChanged(int value)
 	{
-		var stopwatch = new Stopwatch();
-		stopwatch.Start();
+		var sw = Stopwatch.StartNew();
 
-		var moodCategory = _moodDataPoints.Where(x => x.Day.Date.Year == value).ToHashSet();
-		_gridYear = new GridYear(value, moodCategory);
+		_gridYear = new GridYear(value, _moodDataPoints);
 
-		stopwatch.Stop();
-		Debug.WriteLine($"Loaded year {value} in the Mood Grid in {stopwatch.ElapsedMilliseconds:0}ms");
+		sw.Stop();
+		Debug.WriteLine($"Loaded year {value} in the Mood Grid in {sw.ElapsedMilliseconds:0}ms");
 	}
 
 	void Close()
