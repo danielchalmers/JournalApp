@@ -7,6 +7,8 @@
 
     <!-- https://github.com/dotnet/aspnetcore/issues/48829#issuecomment-1607597833 -->
     <AndroidEnableMarshalMethods>false</AndroidEnableMarshalMethods>
+
+    <NoWarn>BL0007</NoWarn>
   </PropertyGroup>
 
   <!-- Platform -->
