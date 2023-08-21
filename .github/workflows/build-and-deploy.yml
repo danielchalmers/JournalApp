@@ -15,7 +15,7 @@ jobs:
 
     - name: Create keystore
       id: create_keystore
-      uses: timheuer/base64-to-file@v1.1
+      uses: timheuer/base64-to-file@v1.2
       with:
         fileName: 'release.keystore'
         encodedString: "${{ secrets.RELEASE_KEYSTORE_BASE64 }}"
