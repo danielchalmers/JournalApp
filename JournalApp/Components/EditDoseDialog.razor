@@ -4,7 +4,7 @@
 <MudDialog DefaultFocus="DefaultFocus.FirstChild" OnBackdropClick="Submit">
 	<TitleContent>
 		<div class="page-header">
-			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="Submit" />
+			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="Cancel" />
 
 			<MudText Typo="Typo.h6">Change day's dose</MudText>
 
@@ -18,7 +18,7 @@
 		<MudText>@DataPoint.Category.Name:</MudText>
 
 		<div class="d-flex align-center" style="gap:1em;">
-			<MudNumericField @bind-Value="DataPoint.MedicationDose" HideSpinButtons Label="Dose" MaxLength="6" />
+			<MudNumericField @bind-Value="Dose" HideSpinButtons Label="Dose" MaxLength="6" />
 
 				<MudText>@DataPoint.MedicationUnit</MudText>
 			</div>
@@ -26,24 +26,42 @@
 	</MudDialog>
 
 	@code {
+	DataPoint _dataPoint;
+
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
 	[Parameter]
-	public DataPoint DataPoint { get; set; }
+	public DataPoint DataPoint
+	{
+		get => _dataPoint;
+		set
+		{
+			_dataPoint = value;
+			Dose = value?.MedicationDose;
+		}
+	}
+
+	public decimal? Dose { get; set; }
+
+	void Cancel()
+	{
+		MudDialog.Close(DialogResult.Cancel());
+	}
 
 	void Submit()
 	{
+		if (Dose == decimal.Zero)
+			Dose = null;
+
+		DataPoint.MedicationDose = Dose;
+		DataPoint.Bool = Dose != null;
+
 		MudDialog.Close(DialogResult.Ok(true));
 	}
 
 	public static async Task ShowDialog(IDialogService dialogService, DataPoint dataPoint)
 	{
 		var parameters = new DialogParameters<EditDoseDialog> { { x => x.DataPoint, dataPoint } };
-
 		await dialogService.Show<EditDoseDialog>(parameters).Result;
-
-		if (dataPoint.MedicationDose == decimal.Zero)
-			dataPoint.MedicationDose = null;
-		dataPoint.Bool = dataPoint.MedicationDose != null;
 	}
 }
