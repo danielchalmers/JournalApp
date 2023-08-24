@@ -42,6 +42,8 @@
 
 		await dialogService.Show<EditDoseDialog>(parameters).Result;
 
+		if (dataPoint.MedicationDose == decimal.Zero)
+			dataPoint.MedicationDose = null;
 		dataPoint.Bool = dataPoint.MedicationDose != null;
 	}
 }
