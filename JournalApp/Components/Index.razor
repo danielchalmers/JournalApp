@@ -29,9 +29,9 @@
 
 				@* Show Safety Plan if the Depression category is enabled *@
 				@if (db.Categories.Single(x => x.Guid == new Guid("7330B995-0B56-46FF-9DD6-9CFC550FF5C8")).Enabled)
-				{
-					<MudMenuItem OnClick="OpenSafetyPlan">View Safety Plan...</MudMenuItem>
-				}
+			{
+				<MudMenuItem OnClick="OpenSafetyPlan">View Safety Plan...</MudMenuItem>
+			}
 
 			<MudMenuItem OnClick="@(_ => AppInfo.Current.ShowSettingsUI())">System settings...</MudMenuItem>
 			<MudMenuItem Disabled>v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
@@ -192,7 +192,7 @@
 	{
 		Debug.WriteLine("Opening Mood Grid");
 		var options = new DialogOptions { FullScreen = true, };
-		var parameters = new DialogParameters<MoodGrid.MoodGridDialog> { { x => x.OpenToDate, _day.Date} };
+		var parameters = new DialogParameters<MoodGrid.MoodGridDialog> { { x => x.OpenToDate, _day.Date } };
 
 		var result = await DialogService.Show<MoodGrid.MoodGridDialog>(parameters, options).Result;
 
@@ -241,12 +241,15 @@
 	async Task NewNote()
 	{
 		Debug.WriteLine("Creating new note");
+
 		var note = db.CreateNote(_day);
 
 		await EditTextDialog.ShowDialog(DialogService, note);
 
-		note.Category.DataPoints.Add(note);
+		if (string.IsNullOrWhiteSpace(note.Text))
+			return;
 
+		note.Category.DataPoints.Add(note);
 		await db.SaveChangesAsync();
 	}
 }

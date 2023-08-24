@@ -4,7 +4,7 @@
 <MudDialog DefaultFocus="DefaultFocus.FirstChild" OnBackdropClick="Submit">
 	<TitleContent>
 		<div class="page-header">
-			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="Submit" />
+			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="Cancel" />
 
 			<MudText Typo="Typo.h6">@DataPoint.CreatedAt.ToString("MMM d h:mm tt")</MudText>
 
@@ -15,18 +15,40 @@
 	</TitleContent>
 
 	<DialogContent>
-		<MudTextField @bind-Value="DataPoint.Text" Lines="12" Class="mt-n6" DisableUnderLine />
+		<MudTextField @bind-Value="Text" Lines="12" Class="mt-n6" DisableUnderLine />
 		</DialogContent>
 	</MudDialog>
 
 	@code {
+	DataPoint _dataPoint;
+
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
 	[Parameter]
-	public DataPoint DataPoint { get; set; }
+	public DataPoint DataPoint
+	{
+		get => _dataPoint;
+		set
+		{
+			_dataPoint = value;
+			Text = value?.Text;
+		}
+	}
+
+	public string Text { get; set; }
+
+	void Cancel()
+	{
+		MudDialog.Close(DialogResult.Cancel());
+	}
 
 	void Submit()
 	{
+		DataPoint.Text = Text;
+
+		if (string.IsNullOrWhiteSpace(Text))
+			DataPoint.IsDeleted = true;
+
 		MudDialog.Close(DialogResult.Ok(true));
 	}
 
@@ -36,8 +58,5 @@
 		var options = new DialogOptions { FullWidth = true, };
 
 		await dialogService.Show<EditTextDialog>(parameters, options).Result;
-
-		if (string.IsNullOrWhiteSpace(dataPoint.Text))
-			dataPoint.IsDeleted = true;
 	}
 }
