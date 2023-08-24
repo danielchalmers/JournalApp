@@ -25,6 +25,7 @@
 			<MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
 				<MudMenuItem OnClick="ManageCategories">Manage categories...</MudMenuItem>
 				<MudMenuItem OnClick="ManageMedications">Manage medications...</MudMenuItem>
+				<MudMenuItem OnClick="NewNote">New note...</MudMenuItem>
 
 				@* Show Safety Plan if the Depression category is enabled *@
 				@if (db.Categories.Single(x => x.Guid == new Guid("7330B995-0B56-46FF-9DD6-9CFC550FF5C8")).Enabled)
