@@ -2,7 +2,7 @@
 
 namespace JournalApp.MoodGrid;
 
-public readonly record struct GridDay(int? Day, int Index, DateOnly? Date, string Emoji, string Color);
+public readonly record struct GridDay(int Index, DateOnly? Date, string Emoji, string Color);
 
 public readonly struct GridMonth
 {
@@ -48,8 +48,6 @@ public readonly struct GridMonth
 
         foreach (var gridIndex in Enumerable.Range(firstIndex, 7 * 6))
         {
-            var day = gridIndex >= 1 && gridIndex <= daysInMonth ? gridIndex : (int?)null;
-
             // Bundle date during search to avoid additional DB lookups (thru DataPoint.Day).
             var lookup = points.Select(p => new DataPointLookup(p, p.Day.Date)).SingleOrDefault(l => l.Date.Day == gridIndex);
 
@@ -60,10 +58,11 @@ public readonly struct GridMonth
                 points.Remove(lookup.Point);
             }
 
+            var date = gridIndex >= 1 && gridIndex <= daysInMonth ? new(firstDate.Year, firstDate.Month, gridIndex) : (DateOnly?)null;
             var emoji = lookup?.Point?.Mood;
             var color = GetMoodColor(emoji);
 
-            yield return new GridDay(day, gridIndex, lookup?.Date, emoji, color);
+            yield return new GridDay(gridIndex, date, emoji, color);
         }
     }
 

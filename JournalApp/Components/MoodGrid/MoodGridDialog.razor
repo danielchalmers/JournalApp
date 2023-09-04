@@ -42,9 +42,12 @@
 									{
 										<div class="mood-block-container" style="background-color:@(day.Color ?? "transparent");">
 											<div class="mood-block" onclick="@(() => Close(day.Date))">
-												<b>@day.Day</b>
-												<MudSpacer />
-												@day.Emoji
+												@if (day.Date != null)
+												{
+													<b>@day.Date.Value.Day</b>
+													<MudSpacer />
+													@day.Emoji
+												}
 											</div>
 										</div>
 									}
@@ -116,7 +119,7 @@
 
 	void Close(DateOnly? date)
 	{
-		if (date == null)
+		if (date == null || date > DateOnly.FromDateTime(DateTime.Now).Next())
 			return;
 
 		MudDialog.Close(DialogResult.Ok(date));
