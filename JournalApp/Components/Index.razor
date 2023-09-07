@@ -235,6 +235,8 @@
 		if (result.Canceled)
 			return;
 
+		Debug.WriteLine("Updating Safety Plan");
+		plan = (SafetyPlan)result.Data;
 		Preferences.Default.SetJson("safety_plan", plan);
 	}
 

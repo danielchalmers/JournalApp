@@ -1,6 +1,6 @@
 ﻿namespace JournalApp;
 
-public class SafetyPlan
+public record SafetyPlan
 {
     public string WarningSigns { get; set; }
     public string CopingStrategies { get; set; }
