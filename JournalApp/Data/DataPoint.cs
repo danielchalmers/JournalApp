@@ -43,6 +43,9 @@ public class DataPointCategory
         stringBuilder.Append(' ');
         stringBuilder.Append('#');
         stringBuilder.Append(Index);
+        stringBuilder.Append(',');
+        stringBuilder.Append(' ');
+        stringBuilder.Append(Guid);
 
         return stringBuilder.ToString();
     }

@@ -55,7 +55,10 @@
 		DataPoint.Text = Text;
 
 		if (string.IsNullOrWhiteSpace(Text))
+		{
+			Debug.WriteLine("Discarding data point with empty text");
 			DataPoint.IsDeleted = true;
+		}
 
 		MudDialog.Close(DialogResult.Ok(true));
 	}

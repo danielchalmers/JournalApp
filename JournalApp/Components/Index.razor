@@ -137,18 +137,19 @@
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
+		Debug.WriteLine($"Initializing at {DateTimeOffset.Now}");
 
 		await SetDay(await db.GetOrCreateToday());
 
 		// https://learn.microsoft.com/en-us/dotnet/maui/fundamentals/app-lifecycle
 		var window = App.Current.Windows.Single();
-		window.Deactivated += Window_Deactivated;
-		window.Destroying += Window_Deactivated;
+		window.Deactivated += Window_DeactivatedOrDestroying;
+		window.Destroying += Window_DeactivatedOrDestroying;
 		window.Stopped += Window_Stopped;
 		window.Resumed += Window_Resumed;
 	}
 
-	private void Window_Deactivated(object sender, EventArgs e)
+	private void Window_DeactivatedOrDestroying(object sender, EventArgs e)
 	{
 		Debug.WriteLine("Window deactivated or destroying; Saving database");
 		db.SaveChanges();
@@ -162,20 +163,24 @@
 
 	private async void Window_Resumed(object sender, EventArgs e)
 	{
-		// Go to current day if user returns after a certain amount of time.
-		// But not on Windows, because Resumed can occur without a corresponding Stopped for some ungodly reason.
+		// Go to current day if user returns after a certain amount of time,
+		// but not on Windows because Resumed can occur without a corresponding Stopped for some reason.
 		if (DeviceInfo.Current.Platform != DevicePlatform.WinUI && DateTimeOffset.Now - _stoppedDate > TimeSpan.FromHours(1))
 		{
-			Debug.WriteLine($"Switching to current day after user was gone for a while");
-			await SetDay(await db.GetOrCreateToday(), scrollToTop: true);
+			var today = await db.GetOrCreateToday();
+			Debug.WriteLine($"Switching to current day <{today}> after user was gone for a while");
+			await SetDay(today, scrollToTop: true);
 		}
 	}
 
-	async Task ScrollToTop() => await ScrollManager.ScrollToTopAsync("main-body");
+	async Task ScrollToTop()
+	{
+		Debug.WriteLine($"Scrolling to the top");
+		await ScrollManager.ScrollToTopAsync("main-body");
+	}
 
 	async Task SetDay(Day day, bool scrollToTop = false)
 	{
-		Debug.WriteLine($"Going to day {day.Date} and {(scrollToTop ? "" : "not ")}scrolling to top");
 		_day = day;
 
 		if (scrollToTop)
@@ -184,9 +189,19 @@
 		StateHasChanged();
 	}
 
-	async Task PreviousDay() => await SetDay(await db.GetOrCreatePreviousDay(_day));
+	async Task PreviousDay()
+	{
+		var previous = await db.GetOrCreatePreviousDay(_day);
+		Debug.WriteLine($"Going to the previous day <{previous}>");
+		await SetDay(previous);
+	}
 
-	async Task NextDay() => await SetDay(await db.GetOrCreateNextDay(_day));
+	async Task NextDay()
+	{
+		var next = await db.GetOrCreateNextDay(_day);
+		Debug.WriteLine($"Going to the next day <{next}>");
+		await SetDay(next);
+	}
 
 	async Task OpenMoodGrid()
 	{
@@ -198,6 +213,7 @@
 
 		if (result.Data is DateOnly date)
 		{
+			Debug.WriteLine($"Selected {date} from the Mood Grid");
 			await SetDay(await db.GetOrCreateDay(date), scrollToTop: true);
 		}
 	}
@@ -209,7 +225,8 @@
 
 		await DialogService.Show<ManageCategoriesDialog>(options).Result;
 
-		db.AddMissingDataPoints(_day);
+		if (db.AddMissingDataPoints(_day))
+			Debug.WriteLine($"Added missing data points for {_day}");
 	}
 
 	async Task ManageMedications()
@@ -220,7 +237,8 @@
 
 		await DialogService.Show<ManageCategoriesDialog>(parameters, options).Result;
 
-		db.AddMissingDataPoints(_day);
+		if (db.AddMissingDataPoints(_day))
+			Debug.WriteLine($"Added missing data points for {_day}");
 	}
 
 	async Task OpenSafetyPlan()
@@ -235,6 +253,7 @@
 		if (result.Canceled)
 			return;
 
+		Debug.WriteLine("Saving Safety Plan");
 		Preferences.Default.SetJson("safety_plan", plan);
 	}
 
@@ -246,9 +265,10 @@
 
 		await EditTextDialog.ShowDialog(DialogService, note);
 
-		if (string.IsNullOrWhiteSpace(note.Text))
+		if (note.IsDeleted)
 			return;
 
+		Debug.WriteLine("Saving new note");
 		note.Category.DataPoints.Add(note);
 		await db.SaveChangesAsync();
 	}

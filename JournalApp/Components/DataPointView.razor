@@ -103,12 +103,14 @@ else if (DataPoint.DataType == DataType.Medication)
 
 	async Task EditTextInDialog()
 	{
+		Debug.WriteLine("Editing text in dialog");
 		await EditTextDialog.ShowDialog(DialogService, DataPoint);
 		await DialogClosed.InvokeAsync();
 	}
 
 	async Task EditDose()
 	{
+		Debug.WriteLine("Editing dose in dialog");
 		await EditDoseDialog.ShowDialog(DialogService, DataPoint);
 		await DialogClosed.InvokeAsync();
 	}

@@ -27,8 +27,8 @@
 
 					<MudTextField T="string" Label="Name" @bind-Text="c.Name" Disabled />
 
-					<MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="async () => await Edit(c)" Edge="Edge.End" Disabled="c.ReadOnly" />
-				</div>
+						<MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="async () => await Edit(c)" Edge="Edge.End" Disabled="c.ReadOnly" />
+					</div>
 			}
 		</MudStack>
 	</DialogContent>
@@ -47,8 +47,8 @@
 		KeycodeService.SubscribeOnceToBackButtonPressed(async () => await Submit());
 	}
 
-    async Task MoveUp(DataPointCategory category)
-    {
+	async Task MoveUp(DataPointCategory category)
+	{
 		var anyAbove = false;
 
 		// Shift other categories in the same group.
@@ -104,15 +104,14 @@
 
 		if (string.IsNullOrWhiteSpace(newCategory.Name))
 		{
-			Debug.WriteLine($"Not adding new category with empty name: {newCategory.Guid}");
+			Debug.WriteLine($"Not adding new category with empty name");
 		}
 		else
 		{
-			Debug.WriteLine($"Adding new category: {newCategory}, {newCategory.Guid}");
 			await db.Categories.AddAsync(newCategory);
+			await db.SaveChangesAsync();
+			Debug.WriteLine($"Added new category <{newCategory}>");
 		}
-
-		await db.SaveChangesAsync();
 	}
 
 	async Task Submit()
