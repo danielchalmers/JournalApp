@@ -157,7 +157,7 @@ button {
 .mood-block-container {
 	display: flex;
 	flex: 1 1 0;
-	margin: 1px;
+	margin: 2px;
 	padding: 0.25em;
 	min-width: 3em;
 	max-width: 6em;
