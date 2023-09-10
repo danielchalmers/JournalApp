@@ -25,13 +25,14 @@ public readonly struct GridMonth
 
     private static string GetMoodColor(string emoji) => emoji switch
     {
-        // https://www.colorhexa.com/0091ea-to-ff6d00
+        // https://colordesigner.io/gradient-generator - RGB Mode.
+        // https://materialui.co/colors/ - Light Blue A700 to Orange A700.
         "😄" => "#0091ea",
         "😀" => "#2b8bc3",
         "🙂" => "#55859c",
         "😐" => "#807f75",
         "🙁" => "#aa794e",
-        "😧" => "#d47327",
+        "😧" => "#d57327",
         "😢" => "#ff6d00",
         _ => "transparent"
     };
