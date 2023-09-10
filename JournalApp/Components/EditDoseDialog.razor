@@ -1,5 +1,6 @@
 ﻿@namespace JournalApp
 @inject IDialogService DialogService
+@inject KeycodeService KeycodeService
 
 <MudDialog DefaultFocus="DefaultFocus.FirstChild" OnBackdropClick="Submit">
 	<TitleContent>
@@ -42,6 +43,13 @@
 	}
 
 	public decimal? Dose { get; set; }
+
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+
+		KeycodeService.SubscribeOnceToBackButtonPressed(() => Cancel());
+	}
 
 	void Cancel()
 	{

@@ -1,5 +1,6 @@
 ﻿@namespace JournalApp
 @inject IDialogService DialogService
+@inject KeycodeService KeycodeService
 
 <MudDialog DefaultFocus="DefaultFocus.None" OnBackdropClick="Submit">
 	<TitleContent>
@@ -41,6 +42,13 @@
 	{
 		get => _plan;
 		set => _plan = value with { }; // Clone so we can make changes and cancel them later.
+	}
+
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+
+		KeycodeService.SubscribeOnceToBackButtonPressed(() => Cancel());
 	}
 
 	void Cancel()

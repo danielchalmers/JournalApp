@@ -1,6 +1,7 @@
 ﻿@namespace JournalApp
 @inject ApplicationDbContext db
 @inject IDialogService DialogService
+@inject KeycodeService KeycodeService
 
 <MudDialog DefaultFocus="DefaultFocus.Element" OnBackdropClick="Submit">
 	<TitleContent>
@@ -39,8 +40,15 @@
 	[Parameter]
 	public string Group { get; set; }
 
-	async Task MoveUp(DataPointCategory category)
+	protected override void OnInitialized()
 	{
+		base.OnInitialized();
+
+		KeycodeService.SubscribeOnceToBackButtonPressed(async () => await Submit());
+	}
+
+    async Task MoveUp(DataPointCategory category)
+    {
 		var anyAbove = false;
 
 		// Shift other categories in the same group.

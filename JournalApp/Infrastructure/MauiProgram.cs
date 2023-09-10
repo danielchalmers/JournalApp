@@ -17,6 +17,8 @@ public static class MauiProgram
         builder.Services.AddBlazorWebViewDeveloperTools();
 #endif
 
+        builder.Services.AddSingleton<KeycodeService>();
+
         builder.Services.AddMudServices(c =>
         {
             c.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomCenter;

@@ -2,6 +2,7 @@
 @inject ApplicationDbContext db
 @inject IDialogService DialogService
 @inject IScrollManager ScrollManager
+@inject KeycodeService KeycodeService
 
 <MudDialog DefaultFocus="DefaultFocus.Element" OnBackdropClick="Close">
 	<TitleContent>
@@ -95,6 +96,8 @@
 
 		Debug.WriteLine($"Opened Mood Grid to {OpenToDate}");
 		SelectedYear = OpenToDate.Year;
+
+		KeycodeService.SubscribeOnceToBackButtonPressed(() => Close());
 	}
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)

@@ -1,5 +1,6 @@
 ﻿@namespace JournalApp
 @inject IDialogService DialogService
+@inject KeycodeService KeycodeService
 
 <MudDialog DefaultFocus="DefaultFocus.FirstChild" OnBackdropClick="Submit">
 	<TitleContent>
@@ -77,6 +78,8 @@
 			MedicationUnit = Category.MedicationUnit;
 			MedicationEveryDay = Category.MedicationEveryDaySince != null;
 		}
+
+		KeycodeService.SubscribeOnceToBackButtonPressed(() => Cancel());
 	}
 
 	void Cancel()
