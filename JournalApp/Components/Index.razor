@@ -228,15 +228,13 @@
 		Debug.WriteLine("Opening Safety Plan");
 		var options = new DialogOptions { FullScreen = true, };
 		var plan = Preferences.Default.GetJson<SafetyPlan>("safety_plan") ?? new();
-		var parameters = new DialogParameters<SafetyPlanDialog> { { x => x.SafetyPlan, plan } };
+		var parameters = new DialogParameters<SafetyPlanDialog> { { x => x.Plan, plan } };
 
 		var result = await DialogService.Show<SafetyPlanDialog>(parameters, options).Result;
 
 		if (result.Canceled)
 			return;
 
-		Debug.WriteLine("Updating Safety Plan");
-		plan = (SafetyPlan)result.Data;
 		Preferences.Default.SetJson("safety_plan", plan);
 	}
 

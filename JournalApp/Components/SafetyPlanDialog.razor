@@ -5,59 +5,44 @@
 <MudDialog DefaultFocus="DefaultFocus.None" OnBackdropClick="Submit">
 	<TitleContent>
 		<div class="page-header">
-			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="Cancel" />
+			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="Submit" />
 
 			<MudText Typo="Typo.h6">My Safety Plan</MudText>
-
-			<MudSpacer />
-
-			<MudIconButton Icon="@Icons.Material.Filled.Check" OnClick="Submit" />
 		</div>
 	</TitleContent>
 
 	<DialogContent>
-		<MudTextField T="string" @bind-Text="_plan.WarningSigns" Lines="5" HelperText="Warning signs that a crisis may be developing" Placeholder="thoughts, images, mood, situation, behavior" />
+		<MudTextField T="string" @bind-Text="Plan.WarningSigns" Lines="5" HelperText="Warning signs that a crisis may be developing" Placeholder="thoughts, images, mood, situation, behavior" />
 
-		<MudTextField T="string" @bind-Text="_plan.CopingStrategies" Lines="5" HelperText="Ways to distract myself without contacting another person" Placeholder="relaxation technique, physical activity" />
+		<MudTextField T="string" @bind-Text="Plan.CopingStrategies" Lines="5" HelperText="Ways to distract myself without contacting another person" Placeholder="relaxation technique, physical activity" />
 
-		<MudTextField T="string" @bind-Text="_plan.SocialDistractions" Lines="3" HelperText="People and social settings that provide distraction" />
+		<MudTextField T="string" @bind-Text="Plan.SocialDistractions" Lines="3" HelperText="People and social settings that provide distraction" />
 
-		<MudTextField T="string" @bind-Text="_plan.SocialContacts" Lines="3" HelperText="People whom I can ask for help" />
+		<MudTextField T="string" @bind-Text="Plan.SocialContacts" Lines="3" HelperText="People whom I can ask for help" />
 
-		<MudTextField T="string" @bind-Text="_plan.ProfessionalContacts" Lines="5" HelperText="Professionals or agencies I can contact during a crisis" />
+		<MudTextField T="string" @bind-Text="Plan.ProfessionalContacts" Lines="5" HelperText="Professionals or agencies I can contact during a crisis" />
 
-		<MudTextField T="string" @bind-Text="_plan.EnvironmentChanges" Lines="3" HelperText="Ways to make the environment safer" />
+		<MudTextField T="string" @bind-Text="Plan.EnvironmentChanges" Lines="3" HelperText="Ways to make the environment safer" />
 
-		<MudTextField T="string" @bind-Text="_plan.Purpose" Lines="3" HelperText="Things that are most important to me and worth living for" />
+		<MudTextField T="string" @bind-Text="Plan.Purpose" Lines="3" HelperText="Things that are most important to me and worth living for" />
 	</DialogContent>
 </MudDialog>
 
 @code {
-	SafetyPlan _plan = new();
-
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
 	[Parameter]
-	public SafetyPlan SafetyPlan
-	{
-		get => _plan;
-		set => _plan = value with { }; // Clone so we can make changes and cancel them later.
-	}
+	public SafetyPlan Plan { get; set; }
 
 	protected override void OnInitialized()
 	{
 		base.OnInitialized();
 
-		KeycodeService.SubscribeOnceToBackButtonPressed(() => Cancel());
-	}
-
-	void Cancel()
-	{
-		MudDialog.Cancel();
+		KeycodeService.SubscribeOnceToBackButtonPressed(() => Submit());
 	}
 
 	void Submit()
 	{
-		MudDialog.Close(DialogResult.Ok(_plan));
+		MudDialog.Close(DialogResult.Ok(true));
 	}
 }
