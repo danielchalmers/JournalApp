@@ -8,6 +8,9 @@
     <!-- https://github.com/dotnet/aspnetcore/issues/48829#issuecomment-1607597833 -->
     <AndroidEnableMarshalMethods>false</AndroidEnableMarshalMethods>
 
+    <!-- https://github.com/dotnet/maui/issues/17330#issuecomment-1716418161 -->
+    <UseRidGraph>true</UseRidGraph>
+
     <NoWarn>BL0007</NoWarn>
   </PropertyGroup>
 
