@@ -157,6 +157,8 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<DataPointCategory> Categories { get; set; } = default!;
 
+    public DbSet<DataPoint> DataPoints { get; set; } = default!;
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<DataPointCategory>()
