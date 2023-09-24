@@ -81,7 +81,7 @@
 
 			var sw = Stopwatch.StartNew();
 
-			_gridYear = new GridYear(value, _moodDataPoints);
+			_gridYear = new GridYear(value, System.Globalization.CultureInfo.CurrentCulture, _moodDataPoints);
 
 			sw.Stop();
 			Debug.WriteLine($"Loaded year {value} on the Mood Grid in {sw.ElapsedMilliseconds:0}ms");
