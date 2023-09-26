@@ -1,30 +1,7 @@
 ﻿namespace JournalApp;
 
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base(options)
-    {
-        var sw = Stopwatch.StartNew();
-        bool? databaseWasCreated = null;
-        try
-        {
-#if DEBUG
-            //Database.EnsureDeleted();
-#endif
-            databaseWasCreated = Database.EnsureCreated();
-        }
-        catch (Microsoft.Data.Sqlite.SqliteException ex) when (ex.SqliteErrorCode == 14)
-        {
-            // https://stackoverflow.com/a/38562947.
-        }
-
-        sw.Stop();
-        Debug.WriteLine($"Ensured database was created in {sw.ElapsedMilliseconds:0}ms; Was created: {databaseWasCreated}");
-
-        new ApplicationDbSeedData(this).SeedAsync().GetAwaiter().GetResult();
-    }
-
     protected DbSet<Day> Days { get; set; } = default!;
 
     public DbSet<DataPointCategory> Categories { get; set; } = default!;

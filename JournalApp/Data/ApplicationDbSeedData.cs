@@ -1,27 +1,42 @@
 ﻿namespace JournalApp;
 
-public class ApplicationDbSeedData(ApplicationDbContext dbContext)
+public static class ApplicationDbSeedData
 {
-    private readonly ApplicationDbContext db = dbContext;
-
-    public async Task SeedAsync()
+    public static async Task SeedAsync(ApplicationDbContext db)
     {
         var sw = Stopwatch.StartNew();
-        await SeedCategories();
+        bool? databaseWasCreated = null;
+        try
+        {
+#if DEBUG
+            //db.Database.EnsureDeleted();
+#endif
+            databaseWasCreated = db.Database.EnsureCreated();
+        }
+        catch (Microsoft.Data.Sqlite.SqliteException ex) when (ex.SqliteErrorCode == 14)
+        {
+            // https://stackoverflow.com/a/38562947.
+        }
+
+        sw.Stop();
+        Debug.WriteLine($"Ensured database was created in {sw.ElapsedMilliseconds:0}ms; Was created: {databaseWasCreated}");
+
+        sw.Restart();
+        await SeedCategories(db);
         await db.SaveChangesAsync();
         sw.Stop();
         Debug.WriteLine($"Seeded categories in {sw.ElapsedMilliseconds:0}ms");
 
 #if DEBUG
         sw.Restart();
-        await SeedDays();
+        await SeedDays(db);
         await db.SaveChangesAsync();
         sw.Stop();
         Debug.WriteLine($"Seeded days in {sw.ElapsedMilliseconds:0}ms");
 #endif
     }
 
-    private async Task SeedCategories()
+    private static async Task SeedCategories(ApplicationDbContext db)
     {
         // Speed up seeding a little by batching the GUID lookups.
         var existingCategoryGuids = db.Categories.Select(c => c.Guid).ToHashSet();
@@ -148,7 +163,7 @@ public class ApplicationDbSeedData(ApplicationDbContext dbContext)
         });
     }
 
-    private async Task SeedDays()
+    private static async Task SeedDays(ApplicationDbContext db)
     {
         var startDate = DateOnly.FromDateTime(DateTime.Now - TimeSpan.FromDays(180));
         var endDate = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(30));
