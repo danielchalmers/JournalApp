@@ -263,9 +263,9 @@
 
 		var note = db.CreateNote(_day);
 
-		await EditTextDialog.ShowDialog(DialogService, note);
+		var dialogSubmitted = await EditTextDialog.ShowDialog(DialogService, note);
 
-		if (note.IsDeleted)
+		if (!dialogSubmitted || note.IsDeleted)
 			return;
 
 		Debug.WriteLine("Saving new note");

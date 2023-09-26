@@ -63,11 +63,13 @@
 		MudDialog.Close(DialogResult.Ok(true));
 	}
 
-	public static async Task ShowDialog(IDialogService dialogService, DataPoint dataPoint)
+	public static async Task<bool> ShowDialog(IDialogService dialogService, DataPoint dataPoint)
 	{
 		var parameters = new DialogParameters<EditTextDialog> { { x => x.DataPoint, dataPoint } };
 		var options = new DialogOptions { FullWidth = true, };
 
-		await dialogService.Show<EditTextDialog>(parameters, options).Result;
+		var result = await dialogService.Show<EditTextDialog>(parameters, options).Result;
+
+		return !result.Canceled;
 	}
 }
