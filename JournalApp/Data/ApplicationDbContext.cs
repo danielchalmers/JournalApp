@@ -39,7 +39,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
                 Date = date,
             };
 
-            await Days.AddAsync(day);
+            Days.Add(day);
             changesMade = true;
         }
 
@@ -54,46 +54,50 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     public bool AddMissingDataPoints(Day day, Random random = null)
     {
-        var anyAdded = false;
+        var dayPoints = DataPoints.Where(x => x.Day.Guid == day.Guid).ToHashSet();
+        var newPoints = new HashSet<DataPoint>();
 
         foreach (var category in Categories)
         {
-            var dataPoints = category.DataPoints;
-
             if (category.Group == "Notes")
             {
                 // First-launch example note.
-                if (dataPoints.Count == 0)
+                if (category.DataPoints.Count == 0)
                 {
                     var note = CreateNote(day);
                     note.Text = "I just started using JournalApp! 😎";
-                    dataPoints.Add(note);
+                    newPoints.Add(note);
                 }
             }
-            else if (!dataPoints.Where(x => x.Day == day).Any(x => x.Category.Guid == category.Guid))
+            else
             {
-                var dataPoint = DataPoint.Create(day, category);
-
-                if (random != null)
+                // Create a new data point for this category if it doesn't have one already.
+                if (!dayPoints.Any(x => x.Category.Guid == category.Guid))
                 {
-                    dataPoint.Mood = DataPoint.Moods[random.Next(1, DataPoint.Moods.Count)];
-                    dataPoint.SleepHours = random.Next(0, 49) / 2.0m;
-                    dataPoint.ScaleIndex = random.Next(0, 6);
-                    dataPoint.Bool = Convert.ToBoolean(random.Next(0, 2));
-                    dataPoint.Number = random.Next(0, 1000);
+                    var dataPoint = DataPoint.Create(day, category);
+
+                    if (random != null)
+                    {
+                        dataPoint.Mood = DataPoint.Moods[random.Next(1, DataPoint.Moods.Count)];
+                        dataPoint.SleepHours = random.Next(0, 49) / 2.0m;
+                        dataPoint.ScaleIndex = random.Next(0, 6);
+                        dataPoint.Bool = Convert.ToBoolean(random.Next(0, 2));
+                        dataPoint.Number = random.Next(0, 1000);
+                    }
+
+                    // Automatically mark daily medications as taken.
+                    if (category.Enabled && category.MedicationEveryDaySince != null && day.Date >= DateOnly.FromDateTime(category.MedicationEveryDaySince.Value.Date))
+                        dataPoint.Bool = true;
+
+                    // Add to the database.
+                    newPoints.Add(dataPoint);
                 }
-
-                // Automatically mark daily medications as taken.
-                if (category.Enabled && category.MedicationEveryDaySince != null && day.Date >= DateOnly.FromDateTime(category.MedicationEveryDaySince.Value.Date))
-                    dataPoint.Bool = true;
-
-                // Add to the database.
-                if (dataPoints.Add(dataPoint))
-                    anyAdded = true;
             }
         }
 
-        return anyAdded;
+        DataPoints.AddRange(newPoints);
+
+        return newPoints.Count > 0;
     }
 
     public DataPoint CreateNote(Day day)
