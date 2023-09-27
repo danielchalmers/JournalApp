@@ -165,8 +165,8 @@ public static class ApplicationDbSeedData
 
     private static async Task SeedDays(ApplicationDbContext db)
     {
-        var startDate = DateOnly.FromDateTime(DateTime.Now - TimeSpan.FromDays(180));
-        var endDate = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(30));
+        var startDate = DateOnly.FromDateTime(DateTime.Now - TimeSpan.FromDays(120));
+        var endDate = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(7));
 
         foreach (var dates in startDate.DatesTo(endDate).Chunk(3))
         {
