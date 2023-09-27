@@ -33,13 +33,11 @@ public static class MauiProgram
             .UseSqlite($"Data Source = {DbFilename}")
             .EnableSensitiveDataLogging());
 
-        var app = builder.Build();
-
         // Seed database.
-        using (var scope = app.Services.CreateScope())
-        using (var context = scope.ServiceProvider.GetService<ApplicationDbContext>())
-            ApplicationDbSeedData.SeedAsync(context).GetAwaiter().GetResult();
+        using (var serviceProvider = builder.Services.BuildServiceProvider())
+        using (var dbContext = serviceProvider.GetRequiredService<ApplicationDbContext>())
+            ApplicationDbSeedData.SeedAsync(dbContext).GetAwaiter().GetResult();
 
-        return app;
+        return builder.Build();
     }
 }

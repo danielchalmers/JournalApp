@@ -27,9 +27,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     public Task<Day> GetOrCreatePreviousDay(Day day) => GetOrCreateDay(day.Date.Previous());
 
-    public async Task<Day> GetOrCreateDay(DateOnly date, bool saveOnChange = true, Random random = null)
+    public async Task<Day> GetOrCreateDay(DateOnly date, bool saveChanges = true, Random random = null)
     {
-        var shouldSave = false;
+        var changesMade = false;
         var day = await Days.SingleOrDefaultAsync(x => x.Date == date);
 
         if (day == null)
@@ -40,13 +40,13 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             };
 
             await Days.AddAsync(day);
-            shouldSave = true;
+            changesMade = true;
         }
 
         if (AddMissingDataPoints(day, random))
-            shouldSave = true;
+            changesMade = true;
 
-        if (shouldSave && saveOnChange)
+        if (changesMade && saveChanges)
             await SaveChangesAsync();
 
         return day;
