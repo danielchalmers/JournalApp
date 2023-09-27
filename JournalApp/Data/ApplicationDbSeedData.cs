@@ -19,20 +19,20 @@ public static class ApplicationDbSeedData
         }
 
         sw.Stop();
-        Debug.WriteLine($"Ensured database was created in {sw.ElapsedMilliseconds:0}ms; Was created: {databaseWasCreated}");
+        Debug.WriteLine($"Ensured database was created in {sw.ElapsedMilliseconds}ms; Was created: {databaseWasCreated}");
 
         sw.Restart();
         await SeedCategories(db);
         await db.SaveChangesAsync();
         sw.Stop();
-        Debug.WriteLine($"Seeded categories in {sw.ElapsedMilliseconds:0}ms");
+        Debug.WriteLine($"Seeded categories in {sw.ElapsedMilliseconds}ms");
 
 #if DEBUG
         sw.Restart();
         await SeedDays(db);
         await db.SaveChangesAsync();
         sw.Stop();
-        Debug.WriteLine($"Seeded days in {sw.ElapsedMilliseconds:0}ms");
+        Debug.WriteLine($"Seeded days in {sw.ElapsedMilliseconds}ms");
 #endif
     }
 

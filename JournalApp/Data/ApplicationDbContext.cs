@@ -21,12 +21,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .HasOne(e => e.Day);
     }
 
-    public Task<Day> GetOrCreateToday() => GetOrCreateDay(DateOnly.FromDateTime(DateTime.Now));
-
-    public Task<Day> GetOrCreateNextDay(Day day) => GetOrCreateDay(day.Date.Next());
-
-    public Task<Day> GetOrCreatePreviousDay(Day day) => GetOrCreateDay(day.Date.Previous());
-
     public async Task<Day> GetOrCreateDay(DateOnly date, bool saveChanges = true, Random random = null)
     {
         var changesMade = false;

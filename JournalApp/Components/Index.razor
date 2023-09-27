@@ -139,7 +139,7 @@
 		await base.OnInitializedAsync();
 		Debug.WriteLine($"Initializing at {DateTimeOffset.Now}");
 
-		await SetDay(await db.GetOrCreateToday());
+		await GoToDay(DateOnly.FromDateTime(DateTime.Now));
 
 		// https://learn.microsoft.com/en-us/dotnet/maui/fundamentals/app-lifecycle
 		var window = App.Current.Windows.Single();
@@ -167,9 +167,8 @@
 		// but not on Windows because Resumed can occur without a corresponding Stopped for some reason.
 		if (DeviceInfo.Current.Platform != DevicePlatform.WinUI && DateTimeOffset.Now - _stoppedDate > TimeSpan.FromHours(1))
 		{
-			var today = await db.GetOrCreateToday();
-			Debug.WriteLine($"Switching to current day <{today}> after user was gone for a while");
-			await SetDay(today, scrollToTop: true);
+			Debug.WriteLine($"Switching from {_day} to current day after user was gone since {_stoppedDate}");
+			await GoToDay(DateOnly.FromDateTime(DateTime.Now));
 		}
 	}
 
@@ -179,9 +178,12 @@
 		await ScrollManager.ScrollToTopAsync("main-body");
 	}
 
-	async Task SetDay(Day day, bool scrollToTop = false)
+	async Task GoToDay(DateOnly date, bool scrollToTop = false)
 	{
-		_day = day;
+		var sw = Stopwatch.StartNew();
+		_day = await db.GetOrCreateDay(date);
+		sw.Stop();
+		Debug.WriteLine($"Went to {_day} in {sw.ElapsedTicks} ticks");
 
 		if (scrollToTop)
 			await ScrollToTop();
@@ -191,16 +193,14 @@
 
 	async Task PreviousDay()
 	{
-		var previous = await db.GetOrCreatePreviousDay(_day);
-		Debug.WriteLine($"Going to the previous day <{previous}>");
-		await SetDay(previous);
+		Debug.WriteLine($"Going to the previous day from {_day}");
+		await GoToDay(_day.Date.Previous());
 	}
 
 	async Task NextDay()
 	{
-		var next = await db.GetOrCreateNextDay(_day);
-		Debug.WriteLine($"Going to the next day <{next}>");
-		await SetDay(next);
+		Debug.WriteLine($"Going to the next day from {_day}");
+		await GoToDay(_day.Date.Next());
 	}
 
 	async Task OpenMoodGrid()
@@ -214,7 +214,7 @@
 		if (result.Data is DateOnly date)
 		{
 			Debug.WriteLine($"Selected {date} from the Mood Grid");
-			await SetDay(await db.GetOrCreateDay(date), scrollToTop: true);
+			await GoToDay(date, scrollToTop: true);
 		}
 	}
 
