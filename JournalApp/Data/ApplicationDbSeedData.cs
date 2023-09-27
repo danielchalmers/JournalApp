@@ -22,7 +22,7 @@ public static class ApplicationDbSeedData
         Debug.WriteLine($"Ensured database was created in {sw.ElapsedMilliseconds}ms; Was created: {databaseWasCreated}");
 
         sw.Restart();
-        await SeedCategories(db);
+        SeedCategories(db);
         await db.SaveChangesAsync();
         sw.Stop();
         Debug.WriteLine($"Seeded categories in {sw.ElapsedMilliseconds}ms");
@@ -36,18 +36,18 @@ public static class ApplicationDbSeedData
 #endif
     }
 
-    private static async Task SeedCategories(ApplicationDbContext db)
+    private static void SeedCategories(ApplicationDbContext db)
     {
         // Speed up seeding a little by batching the GUID lookups.
         var existingCategoryGuids = db.Categories.Select(c => c.Guid).ToHashSet();
 
-        async Task SeedCategory(DataPointCategory newCategory)
+        void SeedCategory(DataPointCategory newCategory)
         {
             if (!existingCategoryGuids.Contains(newCategory.Guid))
-                await db.Categories.AddAsync(newCategory);
+                db.Categories.Add(newCategory);
         }
 
-        await SeedCategory(new()
+        SeedCategory(new()
         {
             Guid = new("D90D89FB-F5B9-47CF-AE4E-3EC0D635E783"),
             Name = "Overall mood",
@@ -55,7 +55,7 @@ public static class ApplicationDbSeedData
             Index = 1,
             ReadOnly = true,
         });
-        await SeedCategory(new()
+        SeedCategory(new()
         {
             Guid = new("D8657B36-F3A0-486F-BF80-0CF057919C7D"),
             Name = "Last night's sleep",
@@ -63,7 +63,7 @@ public static class ApplicationDbSeedData
             Index = 2,
             ReadOnly = true,
         });
-        await SeedCategory(new()
+        SeedCategory(new()
         {
             Guid = new("7330B995-0B56-46FF-9DD6-9CFC550FF5C8"),
             Name = "Most depressed mood",
@@ -72,7 +72,7 @@ public static class ApplicationDbSeedData
             ReadOnly = true,
             Enabled = false,
         });
-        await SeedCategory(new()
+        SeedCategory(new()
         {
             Guid = new("4955EB49-0BCF-433B-873E-2092F292CC6B"),
             Name = "Most elevated mood",
@@ -81,7 +81,7 @@ public static class ApplicationDbSeedData
             ReadOnly = true,
             Enabled = false,
         });
-        await SeedCategory(new()
+        SeedCategory(new()
         {
             Guid = new("E9B7E4BE-FD17-4171-B1D4-D38B6009FDA0"),
             Name = "Irritability",
@@ -90,7 +90,7 @@ public static class ApplicationDbSeedData
             ReadOnly = true,
             Enabled = false,
         });
-        await SeedCategory(new()
+        SeedCategory(new()
         {
             Guid = new("0FB54AFF-9ECC-4C17-BAB5-B908B794CEA9"),
             Name = "Anxiety",
@@ -99,7 +99,7 @@ public static class ApplicationDbSeedData
             ReadOnly = true,
             Enabled = false,
         });
-        await SeedCategory(new()
+        SeedCategory(new()
         {
             Guid = new("40B5AF7B-4F4E-4E77-BD6B-F7855CF773AB"),
             Name = "Productivity",
@@ -107,7 +107,7 @@ public static class ApplicationDbSeedData
             Index = 7,
             ReadOnly = true,
         });
-        await SeedCategory(new()
+        SeedCategory(new()
         {
             Guid = new("DE394B38-9007-4349-AE31-429541AAB947"),
             Name = "Exercised or was active",
@@ -115,7 +115,7 @@ public static class ApplicationDbSeedData
             Index = 8,
             ReadOnly = true,
         });
-        await SeedCategory(new()
+        SeedCategory(new()
         {
             Guid = new("EE8DE4D0-3A87-4CA4-B384-81BD7508A19F"),
             Name = "Menstruating",
@@ -124,7 +124,7 @@ public static class ApplicationDbSeedData
             ReadOnly = true,
             Enabled = false,
         });
-        await SeedCategory(new()
+        SeedCategory(new()
         {
             Guid = new("C871C9F7-1A6E-4EA2-ACC9-94A256C9E2CC"),
             Name = "Did therapy today",
@@ -133,7 +133,7 @@ public static class ApplicationDbSeedData
             ReadOnly = true,
             Enabled = false,
         });
-        await SeedCategory(new()
+        SeedCategory(new()
         {
             Guid = new("480DC07D-1330-486F-9B30-EC83A3D4E6F0"),
             Name = "Weight",
@@ -141,14 +141,14 @@ public static class ApplicationDbSeedData
             Index = 11,
             ReadOnly = true,
         });
-        await SeedCategory(new()
+        SeedCategory(new()
         {
             Guid = new("BF394F35-2228-4933-BF38-AF5B1B97AEF7"),
             Group = "Notes",
             Type = DataType.Note,
             ReadOnly = true,
         });
-        await SeedCategory(new()
+        SeedCategory(new()
         {
             Guid = new("01A8F325-3002-40C4-B076-234E26172E82"),
             Group = "Medications",
