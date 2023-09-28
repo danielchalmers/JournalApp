@@ -19,6 +19,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
         modelBuilder.Entity<DataPoint>()
             .HasOne(e => e.Day);
+
+        modelBuilder.Entity<Day>()
+            .HasMany(e => e.DataPoints);
     }
 
     public async Task<Day> GetOrCreateDay(DateOnly date, bool saveChanges = true, Random random = null)
@@ -48,7 +51,6 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     public bool AddMissingDataPoints(Day day, Random random = null)
     {
-        var dayPoints = DataPoints.Where(x => x.Day == day).ToHashSet();
         var newPoints = new HashSet<DataPoint>();
 
         foreach (var category in Categories)
@@ -66,7 +68,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             else
             {
                 // Create a new data point for this category if it doesn't have one already.
-                if (!dayPoints.Any(x => x.Category == category))
+                if (!day.DataPoints.Any(x => x.Category == category))
                 {
                     var dataPoint = DataPoint.Create(day, category);
 
