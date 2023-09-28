@@ -113,11 +113,6 @@
 
 		if (firstRender)
 		{
-			// Wait for full render before scrolling.
-			// TODO: Possible race condition.
-			await Task.Yield();
-			await Task.Delay(300);
-
 			await ScrollManager.ScrollIntoViewAsync($".mood-grid-month-{OpenToDate.Month}", ScrollBehavior.Smooth);
 		}
 	}
