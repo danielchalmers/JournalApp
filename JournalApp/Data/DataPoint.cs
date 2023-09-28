@@ -36,16 +36,16 @@ public class DataPointCategory
         if (Group != null)
         {
             stringBuilder.Append(Group);
-            stringBuilder.Append('|');
+            if (Name != null)
+                stringBuilder.Append('|');
         }
 
         stringBuilder.Append(Name);
+
+        stringBuilder.Append(',');
         stringBuilder.Append(' ');
         stringBuilder.Append('#');
         stringBuilder.Append(Index);
-        stringBuilder.Append(',');
-        stringBuilder.Append(' ');
-        stringBuilder.Append(Guid);
 
         return stringBuilder.ToString();
     }
@@ -75,7 +75,7 @@ public class DataPoint
     public decimal? MedicationDose { get; set; }
     public string MedicationUnit { get; set; }
 
-    public override string ToString() => $"{DataType} - {Category}";
+    public override string ToString() => $"{DataType}, {Day}, {Category}";
 
     public static IReadOnlyList<string> Moods { get; } = new[] { "🤔", "😄", "😀", "🙂", "😐", "🙁", "😧", "😢", };
 
