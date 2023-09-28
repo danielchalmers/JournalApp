@@ -51,6 +51,10 @@
 	</div>
 </div>
 
+@{
+	var dayPoints = db.DataPoints.Where(x => x.Day == _day && !x.IsDeleted).ToHashSet();
+}
+
 <div id="main-body">
 	<MudStack id="main-timeline">
 		@foreach (var group in db.Categories.GroupBy(x => x.Group))
@@ -72,7 +76,7 @@
 
 				@foreach (var category in group.Where(x => x.Enabled).OrderBy(x => x.Index).ThenBy(x => x.Name))
 				{
-					@foreach (var point in category.DataPoints.Where(x => x.Day == _day && !x.IsDeleted))
+					@foreach (var point in dayPoints.Where(x => x.Category == category))
 					{
 						<div class="data-point-container">
 							@if (!string.IsNullOrEmpty(category.Name))
