@@ -65,7 +65,7 @@
 @code {
 	int _selectedYear;
 	GridYear? _gridYear;
-	HashSet<DataPoint> _moodDataPoints;
+	DataPointCategory _moodCategory;
 
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
@@ -81,7 +81,15 @@
 
 			var sw = Stopwatch.StartNew();
 
-			_gridYear = new GridYear(value, System.Globalization.CultureInfo.CurrentCulture, _moodDataPoints);
+			var tomorrow = DateOnly.FromDateTime(DateTime.Now).Next();
+
+			// Link a single data point from the Mood category to its date.
+			var moodPointsByDate = db.Days
+				.Select(x => new { Date = x.Date, DataPoints = x.DataPoints })
+				.Where(x => x.Date.Year == value && x.Date < tomorrow)
+				.ToDictionary(x => x.Date, x => x.DataPoints.Where(x => x.Category == _moodCategory).Single());
+
+			_gridYear = new GridYear(value, System.Globalization.CultureInfo.CurrentCulture, moodPointsByDate);
 
 			sw.Stop();
 			Debug.WriteLine($"Loaded year {value} on the Mood Grid in {sw.ElapsedMilliseconds}ms");
@@ -92,12 +100,11 @@
 	{
 		base.OnInitialized();
 
-		_moodDataPoints = db.Categories.Single(x => x.Type == DataType.Mood).DataPoints;
+		_moodCategory = db.Categories.Single(x => x.Guid == new Guid("D90D89FB-F5B9-47CF-AE4E-3EC0D635E783"));
+		KeycodeService.SubscribeOnceToBackButtonPressed(() => Close());
 
 		Debug.WriteLine($"Opened Mood Grid to {OpenToDate}");
 		SelectedYear = OpenToDate.Year;
-
-		KeycodeService.SubscribeOnceToBackButtonPressed(() => Close());
 	}
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)

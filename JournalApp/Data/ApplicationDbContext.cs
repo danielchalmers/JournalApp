@@ -2,7 +2,7 @@
 
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
 {
-    protected DbSet<Day> Days { get; set; } = default!;
+    public DbSet<Day> Days { get; set; } = default!;
 
     public DbSet<DataPointCategory> Categories { get; set; } = default!;
 
