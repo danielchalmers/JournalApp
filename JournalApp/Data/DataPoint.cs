@@ -77,7 +77,7 @@ public class DataPoint
 
     public override string ToString() => $"{DataType}, {Day}, {Category}";
 
-    public static IReadOnlyList<string> Moods { get; } = new[] { "🤔", "😄", "😀", "🙂", "😐", "🙁", "😧", "😢", };
+    public static IReadOnlyList<string> Moods { get; } = new[] { "🤔", "🤩", "😀", "🙂", "😐", "😕", "😢", "😭", };
 
     public static DataPoint Create(Day day, DataPointCategory category)
     {

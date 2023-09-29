@@ -28,13 +28,13 @@ public readonly struct GridMonth
     {
         // http://colorsafe.co/ - #373740.
         // https://colordesigner.io/gradient-generator - RGB Mode.
-        "😄" => "#00baff",
+        "🤩" => "#00baff",
         "😀" => "#2ba7d5",
         "🙂" => "#5593aa",
         "😐" => "#808080",
-        "🙁" => "#aa6c55",
-        "😧" => "#d5592b",
-        "😢" => "#ff4500",
+        "😕" => "#aa6c55",
+        "😢" => "#d5592b",
+        "😭" => "#ff4500",
         _ => "transparent"
     };
 
