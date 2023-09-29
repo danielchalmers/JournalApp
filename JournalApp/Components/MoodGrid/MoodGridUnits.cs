@@ -8,7 +8,7 @@ public readonly struct GridMonth
 {
     private readonly CultureInfo _culture;
 
-    public GridMonth(int month, CultureInfo culture, IDictionary<DateOnly, DataPoint> moodPoints, IEnumerable<DateOnly> dates)
+    public GridMonth(int month, CultureInfo culture, Dictionary<DateOnly, DataPoint> moodPoints, IEnumerable<DateOnly> dates)
     {
         Month = month;
         _culture = culture;
@@ -38,7 +38,7 @@ public readonly struct GridMonth
         _ => "transparent"
     };
 
-    private IEnumerable<GridDay> GetGridDays(IDictionary<DateOnly, DataPoint> moodPoints)
+    private IEnumerable<GridDay> GetGridDays(Dictionary<DateOnly, DataPoint> moodPoints)
     {
         var firstDate = Dates[0];
         var daysInMonth = DateTime.DaysInMonth(firstDate.Year, firstDate.Month);
@@ -51,8 +51,7 @@ public readonly struct GridMonth
         {
             // Bundle date during search to avoid additional DB lookups (thru DataPoint.Day).
             var date = i >= 1 && i <= daysInMonth ? new(firstDate.Year, firstDate.Month, i) : (DateOnly?)null;
-            DataPoint point = null;
-            _ = date.HasValue && moodPoints.TryGetValue(date.Value, out point);
+            var point = date.HasValue ? moodPoints.GetValueOrDefault(date.Value) : null;
             var emoji = point?.Mood;
             var color = GetMoodColor(emoji);
 
@@ -71,14 +70,14 @@ public readonly struct GridYear
 {
     private readonly CultureInfo _culture;
 
-    public GridYear(int year, CultureInfo culture, IDictionary<DateOnly, DataPoint> moodPoints)
+    public GridYear(int year, CultureInfo culture, Dictionary<DateOnly, DataPoint> moodPoints)
     {
         Year = year;
         _culture = culture;
         GridMonths = GetGridMonths(moodPoints).ToList();
     }
 
-    private IEnumerable<GridMonth> GetGridMonths(IDictionary<DateOnly, DataPoint> moodPoints)
+    private IEnumerable<GridMonth> GetGridMonths(Dictionary<DateOnly, DataPoint> moodPoints)
     {
         var startDate = new DateOnly(Year, 1, 1);
         var endDate = new DateOnly(Year, 12, 31);
