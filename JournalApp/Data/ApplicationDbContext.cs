@@ -96,6 +96,37 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         return newPoints.Count > 0;
     }
 
+    public async Task AddCategory(DataPointCategory category)
+    {
+        // Set index to the end of the last category in the same group.
+        if (category.Index == default)
+        {
+            var groupCategories = Categories.Where(x => x.Group == category.Group).ToHashSet();
+            category.Index = groupCategories.Count > 0 ? groupCategories.Max(x => x.Index) + 1 : 1;
+        }
+
+        Categories.Add(category);
+
+        await SaveChangesAsync();
+    }
+
+    public async Task MoveCategoryUp(DataPointCategory category)
+    {
+        var anyAbove = false;
+
+        // Shift other categories in the same group.
+        foreach (var replaced in Categories.Where(x => x.Group == category.Group && x.Index == category.Index - 1))
+        {
+            anyAbove = true;
+            replaced.Index++;
+        }
+
+        if (anyAbove)
+            category.Index--;
+
+        await SaveChangesAsync();
+    }
+
     public DataPoint CreateNote(Day day)
     {
         var notes = Categories.Single(x => x.Group == "Notes");

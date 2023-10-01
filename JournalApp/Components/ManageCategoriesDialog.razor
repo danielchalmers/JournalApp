@@ -49,21 +49,8 @@
 
 	async Task MoveUp(DataPointCategory category)
 	{
-		var anyAbove = false;
-
-		// Shift other categories in the same group.
-		foreach (var replaced in db.Categories.Where(x => x.Group == Group && x.Index == category.Index - 1))
-		{
-			anyAbove = true;
-			replaced.Index++;
-		}
-
-		if (anyAbove)
-			category.Index--;
-
+		await db.MoveCategoryUp(category);
 		Debug.WriteLine($"Moved category up: {category}, {category.Guid}");
-
-		await db.SaveChangesAsync();
 	}
 
 	async Task Edit(DataPointCategory category)
@@ -97,19 +84,13 @@
 
 		var newCategory = (DataPointCategory)result.Data;
 
-		// Set index to the end of the last category in the same group.
-		var groupCategories = db.Categories.Where(x => x.Group == Group).ToList();
-		if (groupCategories.Any())
-			newCategory.Index = groupCategories.Max(x => x.Index) + 1;
-
 		if (string.IsNullOrWhiteSpace(newCategory.Name))
 		{
 			Debug.WriteLine($"Not adding new category with empty name");
 		}
 		else
 		{
-			await db.Categories.AddAsync(newCategory);
-			await db.SaveChangesAsync();
+			await db.AddCategory(newCategory);
 			Debug.WriteLine($"Added new category <{newCategory}>");
 		}
 	}
