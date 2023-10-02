@@ -12,10 +12,7 @@
 
 	@if (!string.IsNullOrEmpty(Worksheet.SourceUri))
 	{
-		<div>
-			<MudText Typo="Typo.caption">Source: </MudText>
-			<MudLink Href="@Worksheet.SourceUri" Typo="Typo.caption" Color="Color.Default" Style="word-wrap: anywhere">@Worksheet.SourceUri</MudLink>
-		</div>
+		<MudLink Href="@Worksheet.SourceUri" Typo="Typo.caption" Color="Color.Default" Style="word-wrap: anywhere">@Worksheet.SourceUri</MudLink>
 	}
 </div>
 
