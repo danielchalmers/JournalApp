@@ -86,7 +86,7 @@
 			// Link a single data point from the Mood category to its date.
 			var moodPointsByDate = db.Days
 				.Select(x => new { Date = x.Date, DataPoints = x.DataPoints })
-				.Where(x => x.Date.Year == value && x.Date < tomorrow)
+				.Where(x => x.Date.Year == value && x.Date <= tomorrow)
 				.ToDictionary(x => x.Date, x => x.DataPoints.Where(x => x.Category == _moodCategory).Single());
 
 			_gridYear = new GridYear(value, System.Globalization.CultureInfo.CurrentCulture, moodPointsByDate);
