@@ -1,0 +1,45 @@
+﻿@namespace JournalApp
+@inject IDialogService DialogService
+@inject KeycodeService KeycodeService
+
+<MudDialog DefaultFocus="DefaultFocus.None" OnBackdropClick="Submit">
+	<TitleContent>
+		<div class="page-header">
+			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="Submit" />
+
+			<MudText Typo="Typo.h6">Worksheets</MudText>
+		</div>
+	</TitleContent>
+
+	<DialogContent>
+		<div class="worksheet-group-list">
+			@foreach (var group in Worksheets.Collection.GroupBy(x => x.Category))
+			{
+				<div class="worksheet-group">
+					<MudText Typo="Typo.h4">@group.Key</MudText>
+
+					@foreach (var ws in group)
+					{
+						<WorksheetView Worksheet="ws" />
+					}
+				</div>
+			}
+		</div>
+	</DialogContent>
+</MudDialog>
+
+@code {
+	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+
+		KeycodeService.SubscribeOnceToBackButtonPressed(() => Submit());
+	}
+
+	void Submit()
+	{
+		MudDialog.Close(DialogResult.Ok(true));
+	}
+}

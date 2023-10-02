@@ -33,6 +33,8 @@
 				<MudMenuItem OnClick="OpenSafetyPlan">View Safety Plan...</MudMenuItem>
 			}
 
+			<MudMenuItem OnClick="OpenWorksheets">View worksheets...</MudMenuItem>
+
 			<MudMenuItem OnClick="@(_ => AppInfo.Current.ShowSettingsUI())">System settings...</MudMenuItem>
 			<MudMenuItem Disabled>v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
 		</MudMenu>
@@ -255,6 +257,13 @@
 
 		Debug.WriteLine("Saving Safety Plan");
 		Preferences.Default.SetJson("safety_plan", plan);
+	}
+
+	async Task OpenWorksheets()
+	{
+		Debug.WriteLine("Opening worksheets dialog");
+		var options = new DialogOptions { FullScreen = true, };
+		var result = await DialogService.Show<WorksheetsDialog>(options).Result;
 	}
 
 	async Task NewNote()

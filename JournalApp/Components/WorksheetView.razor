@@ -1,0 +1,22 @@
+﻿@namespace JournalApp
+
+<div class="worksheet-view">
+	<MudButton OnClick="OnResourceClick" StartIcon="@Icons.Material.Outlined.OpenInBrowser" Color="Color.Primary">
+		<MudText Typo="Typo.h5">@Worksheet.Title</MudText>
+	</MudButton>
+
+	<div>
+		<MudText Typo="Typo.caption">Source: </MudText>
+		<MudLink Href="@Worksheet.SourceUri" Typo="Typo.caption" Color="Color.Default" Style="word-wrap: anywhere">@Worksheet.SourceUri</MudLink>
+	</div>
+</div>
+
+@code {
+	[Parameter]
+	public Worksheet Worksheet { get; set; }
+
+	async Task OnResourceClick()
+	{
+		await Browser.Default.OpenAsync(Worksheet.Uri);
+	}
+}
