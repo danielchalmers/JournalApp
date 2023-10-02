@@ -79,6 +79,13 @@
 		{
 			_selectedYear = value;
 
+			// The category may have been deleted from the database or not seeded in the first place.
+			if (_moodCategory == null)
+			{
+				Debug.WriteLine($"Not loading year {value} because mood category isn't present");
+				return;
+			}
+
 			var sw = Stopwatch.StartNew();
 
 			var tomorrow = DateOnly.FromDateTime(DateTime.Now).Next();
@@ -100,7 +107,7 @@
 	{
 		base.OnInitialized();
 
-		_moodCategory = db.Categories.Single(x => x.Guid == new Guid("D90D89FB-F5B9-47CF-AE4E-3EC0D635E783"));
+		_moodCategory = db.Categories.SingleOrDefault(x => x.Guid == new Guid("D90D89FB-F5B9-47CF-AE4E-3EC0D635E783"));
 		KeycodeService.SubscribeOnceToBackButtonPressed(() => Close());
 
 		Debug.WriteLine($"Opened Mood Grid to {OpenToDate}");
