@@ -187,6 +187,7 @@ button {
 .worksheet-view {
 	display: flex;
 	flex-direction: column;
+	align-items: start;
 }
 
 .break-flex-column {

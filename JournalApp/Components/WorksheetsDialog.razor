@@ -16,7 +16,10 @@
 			@foreach (var group in Worksheets.Collection.GroupBy(x => x.Category))
 			{
 				<div class="worksheet-group">
-					<MudText Typo="Typo.h4">@group.Key</MudText>
+					@if (!string.IsNullOrEmpty(group.Key))
+					{
+						<MudText Typo="Typo.h4">@group.Key</MudText>
+					}
 
 					@foreach (var ws in group)
 					{
