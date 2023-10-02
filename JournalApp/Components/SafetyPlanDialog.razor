@@ -7,24 +7,47 @@
 		<div class="page-header">
 			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="Submit" />
 
-			<MudText Typo="Typo.h6">My Safety Plan</MudText>
+			<MudText Typo="Typo.h6">Safety Plan</MudText>
 		</div>
 	</TitleContent>
 
 	<DialogContent>
-		<MudTextField T="string" @bind-Text="Plan.WarningSigns" Lines="5" HelperText="Warning signs that a crisis may be developing" Placeholder="thoughts, images, mood, situation, behavior" />
+		<div style="display:flex; flex-direction:column; gap:1.5em;">
+			<div>
+				<MudText Typo="Typo.h5">Warning Signs</MudText>
+				<MudTextField T="string" @bind-Text="Plan.WarningSigns" Lines="5" HelperText="Warning signs that a crisis may be developing" Placeholder="thoughts, images, mood, situation, behavior" />
+			</div>
 
-		<MudTextField T="string" @bind-Text="Plan.CopingStrategies" Lines="5" HelperText="Ways to distract myself without contacting another person" Placeholder="relaxation technique, physical activity" />
+			<div>
+				<MudText Typo="Typo.h5">Coping Strategies</MudText>
+				<MudTextField T="string" @bind-Text="Plan.CopingStrategies" Lines="5" HelperText="Ways to distract myself without contacting another person" Placeholder="relaxation technique, physical activity" />
+			</div>
 
-		<MudTextField T="string" @bind-Text="Plan.SocialDistractions" Lines="3" HelperText="People and social settings that provide distraction" />
+			<div>
+				<MudText Typo="Typo.h5">Social Distractions</MudText>
+				<MudTextField T="string" @bind-Text="Plan.SocialDistractions" Lines="3" HelperText="People and social settings that provide distraction" />
+			</div>
 
-		<MudTextField T="string" @bind-Text="Plan.SocialContacts" Lines="3" HelperText="People whom I can ask for help" />
+			<div>
+				<MudText Typo="Typo.h5">Social Contacts</MudText>
+				<MudTextField T="string" @bind-Text="Plan.SocialContacts" Lines="3" HelperText="People whom I can ask for help" />
+			</div>
 
-		<MudTextField T="string" @bind-Text="Plan.ProfessionalContacts" Lines="5" HelperText="Professionals or agencies I can contact during a crisis" />
+			<div>
+				<MudText Typo="Typo.h5">Professional Contacts</MudText>
+				<MudTextField T="string" @bind-Text="Plan.ProfessionalContacts" Lines="5" HelperText="Professionals or agencies I can contact during a crisis" />
+			</div>
 
-		<MudTextField T="string" @bind-Text="Plan.EnvironmentChanges" Lines="3" HelperText="Ways to make the environment safer" />
+			<div>
+				<MudText Typo="Typo.h5">Environment Changes</MudText>
+				<MudTextField T="string" @bind-Text="Plan.EnvironmentChanges" Lines="3" HelperText="Ways to make the environment safer" />
+			</div>
 
-		<MudTextField T="string" @bind-Text="Plan.Purpose" Lines="3" HelperText="Things that are most important to me and worth living for" />
+			<div>
+				<MudText Typo="Typo.h5">Purpose</MudText>
+				<MudTextField T="string" @bind-Text="Plan.Purpose" Lines="3" HelperText="Things that are most important to me and worth living for" />
+			</div>
+		</div>
 	</DialogContent>
 </MudDialog>
 
