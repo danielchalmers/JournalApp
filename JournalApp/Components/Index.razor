@@ -23,19 +23,19 @@
 			<MudSpacer />
 
 			<MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
-				<MudMenuItem OnClick="ManageCategories">Manage categories...</MudMenuItem>
-				<MudMenuItem OnClick="ManageMedications">Manage medications...</MudMenuItem>
-				<MudMenuItem OnClick="NewNote">New note...</MudMenuItem>
+				<MudMenuItem OnClick="ManageCategories">Categories</MudMenuItem>
+				<MudMenuItem OnClick="ManageMedications">Medications</MudMenuItem>
+				<MudMenuItem OnClick="NewNote">New note</MudMenuItem>
 
 				@* Show Safety Plan if the Depression category is enabled *@
 				@if (db.Categories.Single(x => x.Guid == new Guid("7330B995-0B56-46FF-9DD6-9CFC550FF5C8")).Enabled)
 			{
-				<MudMenuItem OnClick="OpenSafetyPlan">View Safety Plan...</MudMenuItem>
+				<MudMenuItem OnClick="OpenSafetyPlan">Safety Plan</MudMenuItem>
 			}
 
-			<MudMenuItem OnClick="OpenWorksheets">View worksheets...</MudMenuItem>
+			<MudMenuItem OnClick="OpenWorksheets">Worksheets</MudMenuItem>
 
-			<MudMenuItem OnClick="@(_ => AppInfo.Current.ShowSettingsUI())">System settings...</MudMenuItem>
+			<MudMenuItem OnClick="@(_ => AppInfo.Current.ShowSettingsUI())">System settings</MudMenuItem>
 			<MudMenuItem Disabled>v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
 		</MudMenu>
 	</MudAppBar>
