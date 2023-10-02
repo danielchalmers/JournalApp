@@ -138,7 +138,8 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		await base.OnInitializedAsync();
+		await ApplicationDbSeedData.SeedAsync(db);
+
 		Debug.WriteLine($"Initializing at {DateTimeOffset.Now}");
 
 		await GoToDay(DateOnly.FromDateTime(DateTime.Now));
@@ -151,10 +152,10 @@
 		window.Resumed += Window_Resumed;
 	}
 
-	private void Window_DeactivatedOrDestroying(object sender, EventArgs e)
+	private async void Window_DeactivatedOrDestroying(object sender, EventArgs e)
 	{
 		Debug.WriteLine("Window deactivated or destroying; Saving database");
-		db.SaveChanges();
+		await db.SaveChangesAsync();
 	}
 
 	private void Window_Stopped(object sender, EventArgs e)

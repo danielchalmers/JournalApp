@@ -34,11 +34,6 @@ public static class MauiProgram
             .LogTo(message => Debug.WriteLine(message), LogLevel.Information)
             .EnableSensitiveDataLogging());
 
-        // Seed database.
-        using (var serviceProvider = builder.Services.BuildServiceProvider())
-        using (var dbContext = serviceProvider.GetRequiredService<ApplicationDbContext>())
-            ApplicationDbSeedData.SeedAsync(dbContext).GetAwaiter().GetResult();
-
         return builder.Build();
     }
 }
