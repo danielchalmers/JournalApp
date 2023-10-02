@@ -19,7 +19,7 @@ public static class MauiProgram
 
         builder.Services.AddLogging(c =>
         {
-            c.SetMinimumLevel(LogLevel.Debug);
+            c.SetMinimumLevel(LogLevel.Information);
             c.AddDebug();
             c.AddConsole();
         });
