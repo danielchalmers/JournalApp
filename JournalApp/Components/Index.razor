@@ -2,6 +2,7 @@
 @page "/"
 @inherits LayoutComponentBase
 @inject ApplicationDbContext db
+@inject ILogger<Index> logger
 @inject ISnackbar SnackbarService
 @inject IDialogService DialogService
 @inject IScrollManager ScrollManager
@@ -138,9 +139,9 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		await ApplicationDbSeedData.SeedAsync(db);
+		await ApplicationDbSeedData.SeedAsync(db, logger);
 
-		Debug.WriteLine($"Initializing at {DateTimeOffset.Now}");
+		logger.LogInformation($"Initializing at {DateTimeOffset.Now}");
 
 		await GoToDay(DateOnly.FromDateTime(DateTime.Now));
 
@@ -154,14 +155,14 @@
 
 	private async void Window_DeactivatedOrDestroying(object sender, EventArgs e)
 	{
-		Debug.WriteLine("Window deactivated or destroying; Saving database");
+		logger.LogInformation("Window deactivated or destroying; Saving database");
 		await db.SaveChangesAsync();
 	}
 
 	private void Window_Stopped(object sender, EventArgs e)
 	{
 		_stoppedDate = DateTimeOffset.Now;
-		Debug.WriteLine($"Window was stopped at {_stoppedDate}");
+		logger.LogInformation($"Window was stopped at {_stoppedDate}");
 	}
 
 	private async void Window_Resumed(object sender, EventArgs e)
@@ -170,14 +171,14 @@
 		// but not on Windows because Resumed can occur without a corresponding Stopped for some reason.
 		if (DeviceInfo.Current.Platform != DevicePlatform.WinUI && DateTimeOffset.Now - _stoppedDate > TimeSpan.FromHours(1))
 		{
-			Debug.WriteLine($"Switching from {_day} to current day after user was gone since {_stoppedDate}");
+			logger.LogInformation($"Switching from {_day} to current day after user was gone since {_stoppedDate}");
 			await GoToDay(DateOnly.FromDateTime(DateTime.Now));
 		}
 	}
 
 	async Task ScrollToTop()
 	{
-		Debug.WriteLine($"Scrolling to the top");
+		logger.LogInformation($"Scrolling to the top");
 		await ScrollManager.ScrollToTopAsync("main-body");
 	}
 
@@ -186,7 +187,7 @@
 		var sw = Stopwatch.StartNew();
 		_day = await db.GetOrCreateDay(date);
 		sw.Stop();
-		Debug.WriteLine($"Went to {_day} in {sw.ElapsedTicks} ticks");
+		logger.LogInformation($"Went to {_day} in {sw.ElapsedTicks} ticks");
 
 		if (scrollToTop)
 			await ScrollToTop();
@@ -196,19 +197,19 @@
 
 	async Task PreviousDay()
 	{
-		Debug.WriteLine($"Going to the previous day from {_day}");
+		logger.LogInformation($"Going to the previous day from {_day}");
 		await GoToDay(_day.Date.Previous());
 	}
 
 	async Task NextDay()
 	{
-		Debug.WriteLine($"Going to the next day from {_day}");
+		logger.LogInformation($"Going to the next day from {_day}");
 		await GoToDay(_day.Date.Next());
 	}
 
 	async Task OpenMoodGrid()
 	{
-		Debug.WriteLine("Opening Mood Grid");
+		logger.LogInformation("Opening Mood Grid");
 		var options = new DialogOptions { FullScreen = true, };
 		var parameters = new DialogParameters<MoodGrid.MoodGridDialog> { { x => x.OpenToDate, _day.Date } };
 
@@ -216,37 +217,37 @@
 
 		if (result.Data is DateOnly date)
 		{
-			Debug.WriteLine($"Selected {date} from the Mood Grid");
+			logger.LogInformation($"Selected {date} from the Mood Grid");
 			await GoToDay(date, scrollToTop: true);
 		}
 	}
 
 	async Task ManageCategories()
 	{
-		Debug.WriteLine("Managing categories");
+		logger.LogInformation("Managing categories");
 		var options = new DialogOptions { FullScreen = true, };
 
 		await DialogService.Show<ManageCategoriesDialog>(options).Result;
 
 		if (db.AddMissingDataPoints(_day))
-			Debug.WriteLine($"Added missing data points for {_day}");
+			logger.LogInformation($"Added missing data points for {_day}");
 	}
 
 	async Task ManageMedications()
 	{
-		Debug.WriteLine("Managing medications");
+		logger.LogInformation("Managing medications");
 		var options = new DialogOptions { FullScreen = true, };
 		var parameters = new DialogParameters<ManageCategoriesDialog> { { x => x.Group, "Medications" } };
 
 		await DialogService.Show<ManageCategoriesDialog>(parameters, options).Result;
 
 		if (db.AddMissingDataPoints(_day))
-			Debug.WriteLine($"Added missing data points for {_day}");
+			logger.LogInformation($"Added missing data points for {_day}");
 	}
 
 	async Task OpenSafetyPlan()
 	{
-		Debug.WriteLine("Opening Safety Plan");
+		logger.LogInformation("Opening Safety Plan");
 		var options = new DialogOptions { FullScreen = true, };
 		var plan = Preferences.Default.GetJson<SafetyPlan>("safety_plan") ?? new();
 		var parameters = new DialogParameters<SafetyPlanDialog> { { x => x.Plan, plan } };
@@ -256,20 +257,20 @@
 		if (result.Canceled)
 			return;
 
-		Debug.WriteLine("Saving Safety Plan");
+		logger.LogInformation("Saving Safety Plan");
 		Preferences.Default.SetJson("safety_plan", plan);
 	}
 
 	async Task OpenWorksheets()
 	{
-		Debug.WriteLine("Opening worksheets dialog");
+		logger.LogInformation("Opening worksheets dialog");
 		var options = new DialogOptions { FullScreen = true, };
 		var result = await DialogService.Show<WorksheetsDialog>(options).Result;
 	}
 
 	async Task NewNote()
 	{
-		Debug.WriteLine("Creating new note");
+		logger.LogInformation("Creating new note");
 
 		var note = db.CreateNote(_day);
 
@@ -278,7 +279,7 @@
 		if (!dialogSubmitted || note.IsDeleted)
 			return;
 
-		Debug.WriteLine("Saving new note");
+		logger.LogInformation("Saving new note");
 		note.Category.DataPoints.Add(note);
 		await db.SaveChangesAsync();
 	}

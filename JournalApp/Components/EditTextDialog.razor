@@ -1,4 +1,5 @@
 ﻿@namespace JournalApp
+@inject ILogger<EditTextDialog> logger
 @inject IDialogService DialogService
 @inject KeycodeService KeycodeService
 
@@ -56,7 +57,7 @@
 
 		if (string.IsNullOrWhiteSpace(Text))
 		{
-			Debug.WriteLine("Discarding data point with empty text");
+			logger.LogInformation("Discarding data point with empty text");
 			DataPoint.IsDeleted = true;
 		}
 

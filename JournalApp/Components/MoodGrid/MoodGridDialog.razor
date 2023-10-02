@@ -1,5 +1,6 @@
 ﻿@namespace JournalApp.MoodGrid
 @inject ApplicationDbContext db
+@inject ILogger<MoodGridDialog> logger
 @inject IDialogService DialogService
 @inject IScrollManager ScrollManager
 @inject KeycodeService KeycodeService
@@ -82,7 +83,7 @@
 			// The category may have been deleted from the database or not seeded in the first place.
 			if (_moodCategory == null)
 			{
-				Debug.WriteLine($"Not loading year {value} because mood category isn't present");
+				logger.LogInformation($"Not loading year {value} because mood category isn't present");
 				return;
 			}
 
@@ -99,7 +100,7 @@
 			_gridYear = new GridYear(value, System.Globalization.CultureInfo.CurrentCulture, moodPointsByDate);
 
 			sw.Stop();
-			Debug.WriteLine($"Loaded year {value} on the Mood Grid in {sw.ElapsedMilliseconds}ms");
+			logger.LogInformation($"Loaded year {value} in {sw.ElapsedMilliseconds}ms");
 		}
 	}
 
@@ -110,7 +111,7 @@
 		_moodCategory = db.Categories.SingleOrDefault(x => x.Guid == new Guid("D90D89FB-F5B9-47CF-AE4E-3EC0D635E783"));
 		KeycodeService.SubscribeOnceToBackButtonPressed(() => Close());
 
-		Debug.WriteLine($"Opened Mood Grid to {OpenToDate}");
+		logger.LogInformation($"Opened to {OpenToDate}");
 		SelectedYear = OpenToDate.Year;
 	}
 

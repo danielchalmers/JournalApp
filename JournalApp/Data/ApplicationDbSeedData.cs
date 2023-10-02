@@ -2,7 +2,7 @@
 
 public static class ApplicationDbSeedData
 {
-    public static async Task SeedAsync(ApplicationDbContext db)
+    public static async Task SeedAsync(ApplicationDbContext db, ILogger logger)
     {
         var sw = Stopwatch.StartNew();
         bool? databaseWasCreated = null;
@@ -19,18 +19,18 @@ public static class ApplicationDbSeedData
         }
 
         sw.Stop();
-        Debug.WriteLine($"Ensured database was created in {sw.ElapsedMilliseconds}ms; Was created: {databaseWasCreated}");
+        logger.LogInformation($"Ensured database was created in {sw.ElapsedMilliseconds}ms; Was created: {databaseWasCreated}");
 
         sw.Restart();
         await SeedCategories(db);
         sw.Stop();
-        Debug.WriteLine($"Seeded categories in {sw.ElapsedMilliseconds}ms");
+        logger.LogInformation($"Seeded categories in {sw.ElapsedMilliseconds}ms");
 
 #if DEBUG
         sw.Restart();
         await SeedDays(db);
         sw.Stop();
-        Debug.WriteLine($"Seeded days in {sw.ElapsedMilliseconds}ms");
+        logger.LogInformation($"Seeded days in {sw.ElapsedMilliseconds}ms");
 #endif
     }
 

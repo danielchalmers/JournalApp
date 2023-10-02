@@ -1,5 +1,6 @@
 ﻿@namespace JournalApp
 @inject ApplicationDbContext db
+@inject ILogger<ManageCategoriesDialog> logger
 @inject IDialogService DialogService
 @inject KeycodeService KeycodeService
 
@@ -50,7 +51,7 @@
 	async Task MoveUp(DataPointCategory category)
 	{
 		await db.MoveCategoryUp(category);
-		Debug.WriteLine($"Moved category up: {category}, {category.Guid}");
+		logger.LogInformation($"Moved category up: {category}, {category.Guid}");
 	}
 
 	async Task Edit(DataPointCategory category)
@@ -63,12 +64,12 @@
 
 		if (string.IsNullOrWhiteSpace(category.Name))
 		{
-			Debug.WriteLine($"Deleting category: {category}, {category.Guid}");
+			logger.LogInformation($"Deleting category: {category}, {category.Guid}");
 			db.Categories.Remove(category);
 		}
 		else
 		{
-			Debug.WriteLine($"Edited category: {category}, {category.Guid}");
+			logger.LogInformation($"Edited category: {category}, {category.Guid}");
 		}
 
 		await db.SaveChangesAsync();
@@ -86,12 +87,12 @@
 
 		if (string.IsNullOrWhiteSpace(newCategory.Name))
 		{
-			Debug.WriteLine($"Not adding new category with empty name");
+			logger.LogInformation($"Not adding new category with empty name");
 		}
 		else
 		{
 			await db.AddCategory(newCategory);
-			Debug.WriteLine($"Added new category <{newCategory}>");
+			logger.LogInformation($"Added new category <{newCategory}>");
 		}
 	}
 

@@ -17,6 +17,13 @@ public static class MauiProgram
         builder.Services.AddBlazorWebViewDeveloperTools();
 #endif
 
+        builder.Services.AddLogging(c =>
+        {
+            c.SetMinimumLevel(LogLevel.Debug);
+            c.AddDebug();
+            c.AddConsole();
+        });
+
         builder.Services.AddSingleton<KeycodeService>();
 
         builder.Services.AddMudServices(c =>
@@ -31,8 +38,8 @@ public static class MauiProgram
         builder.Services.AddDbContextFactory<ApplicationDbContext>(options => options
             .UseLazyLoadingProxies()
             .UseSqlite($"Data Source = {DbFilename}")
-            .LogTo(message => Debug.WriteLine(message), LogLevel.Information)
-            .EnableSensitiveDataLogging());
+            .EnableSensitiveDataLogging()
+            .EnableDetailedErrors());
 
         return builder.Build();
     }
