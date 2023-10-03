@@ -15,129 +15,118 @@
 					   Position="DialogPosition.Center" />
 	<MudSnackbarProvider />
 
-	<ErrorBoundary>
-		<ChildContent>
-			<div id="main-header">
-				<MudAppBar Color="Color.Primary" Fixed="false" Dense>
-				<MudButton OnClick="ScrollToTop" DisableRipple Variant="Variant.Text">
-						<MudText Typo="Typo.h6">🙂 @ThisAssembly.AssemblyTitle BETA</MudText>
-					</MudButton>
+	<div id="main-header">
+		<MudAppBar Color="Color.Primary" Fixed="false" Dense>
+		<MudButton OnClick="ScrollToTop" DisableRipple Variant="Variant.Text">
+				<MudText Typo="Typo.h6">🙂 @ThisAssembly.AssemblyTitle BETA</MudText>
+			</MudButton>
 
-					<MudSpacer />
+			<MudSpacer />
 
-					<MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
-						<MudMenuItem OnClick="ManageCategories">Categories</MudMenuItem>
-						<MudMenuItem OnClick="ManageMedications">Medications</MudMenuItem>
-						<MudMenuItem OnClick="NewNote">New note</MudMenuItem>
+			<MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
+				<MudMenuItem OnClick="ManageCategories">Categories</MudMenuItem>
+				<MudMenuItem OnClick="ManageMedications">Medications</MudMenuItem>
+				<MudMenuItem OnClick="NewNote">New note</MudMenuItem>
 
-						@* Show Safety Plan if the Depression category is enabled *@
-						@if (db.Categories.SingleOrDefault(x => x.Guid == new Guid("7330B995-0B56-46FF-9DD6-9CFC550FF5C8"))?.Enabled == true)
-					{
-						<MudMenuItem OnClick="OpenSafetyPlan">Safety Plan</MudMenuItem>
-					}
+				@* Show Safety Plan if the Depression category is enabled *@
+				@if (db.Categories.SingleOrDefault(x => x.Guid == new Guid("7330B995-0B56-46FF-9DD6-9CFC550FF5C8"))?.Enabled == true)
+			{
+				<MudMenuItem OnClick="OpenSafetyPlan">Safety Plan</MudMenuItem>
+			}
 
-					<MudMenuItem OnClick="OpenWorksheets">Worksheets</MudMenuItem>
+			<MudMenuItem OnClick="OpenWorksheets">Worksheets</MudMenuItem>
 
-					<MudMenuItem OnClick="@(_ => AppInfo.Current.ShowSettingsUI())">System settings</MudMenuItem>
-					<MudMenuItem Disabled>v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
-				</MudMenu>
-			</MudAppBar>
+			<MudMenuItem OnClick="@(_ => AppInfo.Current.ShowSettingsUI())">System settings</MudMenuItem>
+			<MudMenuItem Disabled>v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
+		</MudMenu>
+	</MudAppBar>
 
-			<div class="d-flex justify-center align-center">
-				<MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
+	<div class="d-flex justify-center align-center">
+		<MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
 
-				<div id="day-title">
-					<MudButton OnClick="OpenMoodGrid">
-						<MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false">@_day.Date.ToString("ddd, MMM d")</MudText>
-					</MudButton>
-				</div>
-
-				<MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" OnClick="NextDay" Disabled="@(_day.Date > DateOnly.FromDateTime(DateTime.Now))" />
-			</div>
+		<div id="day-title">
+			<MudButton OnClick="OpenMoodGrid">
+				<MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false">@_day.Date.ToString("ddd, MMM d")</MudText>
+			</MudButton>
 		</div>
 
-		<div id="main-body">
-			<MudStack id="main-timeline">
-				@foreach (var group in db.Categories.GroupBy(x => x.Group))
+		<MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" OnClick="NextDay" Disabled="@(_day.Date > DateOnly.FromDateTime(DateTime.Now))" />
+	</div>
+</div>
+
+<div id="main-body">
+	<MudStack id="main-timeline">
+		@foreach (var group in db.Categories.GroupBy(x => x.Group))
+		{
+			<div class="data-point-group">
+				@if (!string.IsNullOrEmpty(group.Key))
 				{
-					<div class="data-point-group">
-						@if (!string.IsNullOrEmpty(group.Key))
+					<div class="data-point-group-header">
+						@if (group.Key == "Medications")
 						{
-							<div class="data-point-group-header">
-								@if (group.Key == "Medications")
-								{
-									<MudText Typo="Typo.h5">Medications taken</MudText>
-								}
-								else if (group.Key == "Notes")
-								{
-									<MudText Typo="Typo.h5">Today's notes</MudText>
-								}
-							</div>
+							<MudText Typo="Typo.h5">Medications taken</MudText>
 						}
-
-						@foreach (var category in group.Where(x => x.Enabled).OrderBy(x => x.Index).ThenBy(x => x.Name))
+						else if (group.Key == "Notes")
 						{
-							@foreach (var point in _day.DataPoints.Where(x => !x.IsDeleted && x.Category == category))
-							{
-								<div class="data-point-container">
-									@if (!string.IsNullOrEmpty(category.Name))
-									{
-										<div class="data-point-header">
-											<MudText>@category.Name</MudText>
-
-											@if (point.DataType == DataType.Medication)
-											{
-												<MudText>&NonBreakingSpace;@($"{category.MedicationDose:0.##}{category.MedicationUnit}")</MudText>
-
-												if ((point.MedicationDose != category.MedicationDose || point.MedicationUnit != category.MedicationUnit) && point.MedicationDose != null && point.MedicationUnit != null)
-												{
-													<MudText>&NonBreakingSpace;@($"- {point.MedicationDose:0.##}{point.MedicationUnit}")</MudText>
-												}
-											}
-
-											<MudText>:</MudText>
-										</div>
-									}
-
-									@if (!category.SingleLine)
-									{
-										<div class="break-flex-column" />
-									}
-
-									<div class="data-point-view">
-										<DataPointView DataPoint="point" DialogClosed="_ => StateHasChanged()" />
-									</div>
-								</div>
-							}
+							<MudText Typo="Typo.h5">Today's notes</MudText>
 						}
-
-						<div class="data-point-group-footer">
-							@if (group.Key == null)
-							{
-								<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Category" OnClick="ManageCategories" FullWidth>Manage categories</MudButton>
-							}
-							else if (group.Key == "Medications")
-							{
-								<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Medication" OnClick="ManageMedications" FullWidth>Manage medications</MudButton>
-							}
-							else if (group.Key == "Notes")
-							{
-								<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote" FullWidth>New note</MudButton>
-							}
-						</div>
 					</div>
 				}
-			</MudStack>
-		</div>
-	</ChildContent>
 
-	<ErrorContent Context="ex">
-		<div id="blazor-error-ui">
-			<b>An error occurred with the app: @ex.ToString().</b>
-			<a href="" class="reload">Reload</a>
-		</div>
-	</ErrorContent>
-</ErrorBoundary>
+				@foreach (var category in group.Where(x => x.Enabled).OrderBy(x => x.Index).ThenBy(x => x.Name))
+				{
+					@foreach (var point in _day.DataPoints.Where(x => !x.IsDeleted && x.Category == category))
+					{
+						<div class="data-point-container">
+							@if (!string.IsNullOrEmpty(category.Name))
+							{
+								<div class="data-point-header">
+									<MudText>@category.Name</MudText>
+
+									@if (point.DataType == DataType.Medication)
+									{
+										<MudText>&NonBreakingSpace;@($"{category.MedicationDose:0.##}{category.MedicationUnit}")</MudText>
+
+										if ((point.MedicationDose != category.MedicationDose || point.MedicationUnit != category.MedicationUnit) && point.MedicationDose != null && point.MedicationUnit != null)
+										{
+											<MudText>&NonBreakingSpace;@($"- {point.MedicationDose:0.##}{point.MedicationUnit}")</MudText>
+										}
+									}
+
+									<MudText>:</MudText>
+								</div>
+							}
+
+							@if (!category.SingleLine)
+							{
+								<div class="break-flex-column" />
+							}
+
+							<div class="data-point-view">
+								<DataPointView DataPoint="point" DialogClosed="_ => StateHasChanged()" />
+							</div>
+						</div>
+					}
+				}
+
+				<div class="data-point-group-footer">
+					@if (group.Key == null)
+					{
+						<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Category" OnClick="ManageCategories" FullWidth>Manage categories</MudButton>
+					}
+					else if (group.Key == "Medications")
+					{
+						<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Medication" OnClick="ManageMedications" FullWidth>Manage medications</MudButton>
+					}
+					else if (group.Key == "Notes")
+					{
+						<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote" FullWidth>New note</MudButton>
+					}
+				</div>
+			</div>
+		}
+	</MudStack>
+</div>
 
 @code {
 	Day _day;
@@ -150,9 +139,9 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		await ApplicationDbSeedData.SeedAsync(db, logger);
+		logger.LogInformation($"Initializing asynchronously");
 
-		logger.LogInformation($"Initializing at {DateTimeOffset.Now}");
+		await ApplicationDbSeedData.SeedAsync(db, logger);
 
 		await GoToDay(DateOnly.FromDateTime(DateTime.Now));
 
