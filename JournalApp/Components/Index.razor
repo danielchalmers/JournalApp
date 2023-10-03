@@ -2,6 +2,7 @@
 @page "/"
 @inherits LayoutComponentBase
 @inject ApplicationDbContext db
+@inject ApplicationDbSeeder dbSeeder
 @inject ILogger<Index> logger
 @inject ISnackbar SnackbarService
 @inject IDialogService DialogService
@@ -139,10 +140,13 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		logger.LogInformation($"Initializing asynchronously");
+		logger.LogInformation("Initializing asynchronously");
+		await base.OnInitializedAsync();
 
-		await ApplicationDbSeedData.SeedAsync(db, logger);
+		logger.LogInformation("Seeding database");
+		await dbSeeder.SeedAsync();
 
+		logger.LogInformation("Going to the current day");
 		await GoToDay(DateOnly.FromDateTime(DateTime.Now));
 
 		// https://learn.microsoft.com/en-us/dotnet/maui/fundamentals/app-lifecycle

@@ -1,8 +1,17 @@
 ﻿namespace JournalApp;
 
-public static class ApplicationDbSeedData
+public class ApplicationDbSeeder
 {
-    public static async Task SeedAsync(ApplicationDbContext db, ILogger logger)
+    private readonly ApplicationDbContext db;
+    private readonly ILogger<ApplicationDbSeeder> _logger;
+
+    public ApplicationDbSeeder(ApplicationDbContext dbContext, ILogger<ApplicationDbSeeder> logger)
+    {
+        db = dbContext;
+        _logger = logger;
+    }
+
+    public async Task SeedAsync()
     {
         var sw = Stopwatch.StartNew();
         bool? databaseWasCreated = null;
@@ -19,22 +28,22 @@ public static class ApplicationDbSeedData
         }
 
         sw.Stop();
-        logger.LogInformation($"Ensured database was created in {sw.ElapsedMilliseconds}ms; Was created: {databaseWasCreated}");
+        _logger.LogInformation($"Ensured database was created in {sw.ElapsedMilliseconds}ms; Was created: {databaseWasCreated}");
 
         sw.Restart();
-        await SeedCategories(db);
+        await SeedCategories();
         sw.Stop();
-        logger.LogInformation($"Seeded categories in {sw.ElapsedMilliseconds}ms");
+        _logger.LogInformation($"Seeded categories in {sw.ElapsedMilliseconds}ms");
 
 #if DEBUG
         sw.Restart();
-        await SeedDays(db);
+        await SeedDays();
         sw.Stop();
-        logger.LogInformation($"Seeded days in {sw.ElapsedMilliseconds}ms");
+        _logger.LogInformation($"Seeded days in {sw.ElapsedMilliseconds}ms");
 #endif
     }
 
-    private static async Task SeedCategories(ApplicationDbContext db)
+    private async Task SeedCategories()
     {
         var existingCategoryGuids = db.Categories.Select(c => c.Guid).ToHashSet();
 
@@ -122,7 +131,7 @@ public static class ApplicationDbSeedData
         await TryAdd(new()
         {
             Guid = new("C871C9F7-1A6E-4EA2-ACC9-94A256C9E2CC"),
-            Name = "Did therapy today",
+            Name = "Therapy",
             Type = DataType.Bool,
             ReadOnly = true,
             Enabled = false,
@@ -149,7 +158,7 @@ public static class ApplicationDbSeedData
         });
     }
 
-    private static async Task SeedDays(ApplicationDbContext db)
+    private async Task SeedDays()
     {
         var startDate = DateOnly.FromDateTime(DateTime.Now - TimeSpan.FromDays(120));
         var endDate = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(7));

@@ -14,14 +14,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .HasMany(e => e.DataPoints)
             .WithOne(e => e.Category);
 
-        modelBuilder.Entity<DataPoint>()
-            .HasOne(e => e.Category);
-
-        modelBuilder.Entity<DataPoint>()
-            .HasOne(e => e.Day);
-
         modelBuilder.Entity<Day>()
-            .HasMany(e => e.DataPoints);
+            .HasMany(e => e.DataPoints)
+            .WithOne(e => e.Day);
     }
 
     public async Task<Day> GetOrCreateDay(DateOnly date, bool saveChanges = true, Random random = null)
