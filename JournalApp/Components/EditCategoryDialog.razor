@@ -2,7 +2,7 @@
 @inject IDialogService DialogService
 @inject KeycodeService KeycodeService
 
-<MudDialog DefaultFocus="DefaultFocus.FirstChild" OnBackdropClick="Submit">
+<MudDialog DefaultFocus="DefaultFocus.FirstChild" OnBackdropClick="SubmitOrCancel">
 	<TitleContent>
 		<div class="page-header">
 			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="Cancel" />
@@ -87,11 +87,11 @@
 		MudDialog.Close(DialogResult.Cancel());
 	}
 
-	async Task Submit()
+	async Task<bool> Submit()
 	{
 		await _form.Validate();
 		if (!_form.IsValid)
-			return;
+			return false;
 
 		Category ??= new();
 		Category.Group = Group;
@@ -102,5 +102,12 @@
 		Category.MedicationEveryDaySince = MedicationEveryDay ? DateTimeOffset.Now : null;
 
 		MudDialog.Close(DialogResult.Ok(Category));
+		return true;
+	}
+
+	async Task SubmitOrCancel()
+	{
+		if (!await Submit())
+			Cancel();
 	}
 }
