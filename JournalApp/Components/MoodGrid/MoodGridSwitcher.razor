@@ -1,30 +1,31 @@
 ﻿@namespace JournalApp.MoodGrid
-@using System.Globalization
 
-<div class="mood-grid-switcher">
+<div class="switcher">
 	<MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" OnClick="() => SelectedYear--" />
 
-	<MudButton OnClick="() => SelectedYear = DateTime.Now.Year">
-		<MudText Typo="Typo.h3">@SelectedYear</MudText>
-	</MudButton>
+	<div class="switcher-header">
+		<MudButton OnClick="() => SelectedYear = DateTime.Now.Year">
+			<MudText Typo="Typo.h3">@SelectedYear</MudText>
+		</MudButton>
+	</div>
 
 	<MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" OnClick="() => SelectedYear++" Disabled="@(SelectedYear >= DateTime.Now.Year)" />
 </div>
 
 @code {
-    int _selectedYear;
+	int _selectedYear;
 
-    [Parameter]
-    public int SelectedYear
-    {
-        get => _selectedYear;
-        set
-        {
-            _selectedYear = value;
-            SelectedYearChanged.InvokeAsync(value);
-        }
-    }
+	[Parameter]
+	public int SelectedYear
+	{
+		get => _selectedYear;
+		set
+		{
+			_selectedYear = value;
+			SelectedYearChanged.InvokeAsync(value);
+		}
+	}
 
-    [Parameter]
-    public EventCallback<int> SelectedYearChanged { get; set; }
+	[Parameter]
+	public EventCallback<int> SelectedYearChanged { get; set; }
 }

@@ -1,0 +1,45 @@
+﻿@namespace JournalApp
+
+<div class="switcher">
+	<MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" OnClick="GoPrevious" />
+
+	<div class="switcher-header">
+		<MudButton OnClick="() => SelectedDate = NowDate">
+			<MudText Typo="Typo.h4">@SelectedDate.ToString("MMM yyyy")</MudText>
+		</MudButton>
+	</div>
+
+	<MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" OnClick="GoNext" Disabled="@(NextMonth > NowDate)" />
+</div>
+
+@code {
+	DateOnly _selectedDate;
+
+	public DateOnly NowDate => DateOnly.FromDateTime(DateTime.Now);
+	public DateOnly PreviousMonth => SelectedDate.AddMonths(-1);
+	public DateOnly NextMonth => SelectedDate.AddMonths(1);
+
+	[Parameter]
+	public DateOnly SelectedDate
+	{
+		get => _selectedDate;
+		set
+		{
+			_selectedDate = value;
+			SelectedDateChanged.InvokeAsync(value);
+		}
+	}
+
+	void GoPrevious()
+	{
+		SelectedDate = PreviousMonth;
+	}
+
+	void GoNext()
+	{
+		SelectedDate = NextMonth;
+	}
+
+	[Parameter]
+	public EventCallback<DateOnly> SelectedDateChanged { get; set; }
+}
