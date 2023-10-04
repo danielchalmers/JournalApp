@@ -43,10 +43,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="8.0.0-rc.1.23419.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.0-rc.1.23419.6" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+    <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
     <PackageReference Include="MudBlazor" Version="6.10.0" />
     <PackageReference Include="Nerdbank.GitVersioning" Version="3.6.133" PrivateAssets="All" />
   </ItemGroup>
