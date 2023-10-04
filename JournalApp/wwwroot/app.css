@@ -224,17 +224,18 @@ button {
 	width: 0;
 }
 
-.mud-input-control {
-	margin: 0 !important;
-}
-
 .mud-input {
 	margin: 0 !important;
 }
 
-.mud-input-label-inputcontrol {
-	transform: translate(0,-0.5em) scale(.75) !important;
+.mud-input-control-input-container {
+	margin: 0 !important;
 }
+
+	.mud-input-control-input-container:has(.mud-input-label) {
+		padding: 12px 0 0 0 !important;
+		margin: 6px 0 0 0 !important;
+	}
 
 #blazor-error-ui {
 	background: darkorange;

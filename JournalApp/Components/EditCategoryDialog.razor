@@ -32,7 +32,7 @@
 			}
 			else if (Group == "Medications")
 			{
-				<div class="d-flex flex-row flex-grow-1" style="gap:1em">
+				<div class="d-flex flex-row flex-grow-1" style="gap: 1em">
 					<MudNumericField @bind-Value="MedicationDose" HideSpinButtons Label="Dose" MaxLength="5" Required Immediate />
 
 						<MudTextField @bind-Value="MedicationUnit" Label="Unit" MaxLength="8" Required Immediate />
@@ -91,10 +91,7 @@
 	{
 		await _form.Validate();
 		if (!_form.IsValid)
-		{
-			Cancel();
 			return;
-		}
 
 		Category ??= new();
 		Category.Group = Group;

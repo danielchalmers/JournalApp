@@ -18,7 +18,7 @@
 	<DialogContent>
 		<MudText>@DataPoint.Category.Name:</MudText>
 
-		<div class="d-flex align-center" style="gap:1em;">
+		<div class="d-flex align-center" style="gap: 1em;">
 			<MudNumericField @bind-Value="Dose" HideSpinButtons Label="Dose" MaxLength="6" />
 
 				<MudText>@DataPoint.MedicationUnit</MudText>
@@ -62,7 +62,7 @@
 		{
 			DataPoint.MedicationDose = DataPoint.Category.MedicationDose;
 			DataPoint.Bool = false;
-		}	
+		}
 		else
 		{
 			DataPoint.MedicationDose = Dose;
