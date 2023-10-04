@@ -58,16 +58,11 @@
 
 	void Submit()
 	{
-		if (Dose == decimal.Zero)
-		{
-			DataPoint.MedicationDose = decimal.Zero;
-			DataPoint.Bool = false;
-		}
-		else if (Dose == null)
+		if (Dose == null || Dose == decimal.Zero)
 		{
 			DataPoint.MedicationDose = DataPoint.Category.MedicationDose;
 			DataPoint.Bool = false;
-		}
+		}	
 		else
 		{
 			DataPoint.MedicationDose = Dose;
