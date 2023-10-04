@@ -59,6 +59,7 @@ button {
 	max-height: 100% !important;
 	border-radius: 0;
 	overflow-y: auto !important;
+	padding-bottom: 15em;
 }
 
 .mud-form {
@@ -209,6 +210,13 @@ button {
 	display: flex;
 	flex-direction: column;
 	gap: 1em;
+}
+
+.category-view-compact {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 0.1em;
 }
 
 .break-flex-column {
