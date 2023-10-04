@@ -173,7 +173,7 @@ button {
 .worksheet-group-list {
 	display: flex;
 	flex-direction: column;
-	gap: 3em;
+	gap: 2em;
 }
 
 .worksheet-group {
@@ -184,7 +184,7 @@ button {
 .worksheet-group-items {
 	display: flex;
 	flex-direction: column;
-	gap: 1.5em;
+	gap: 1em;
 }
 
 .worksheet-group-toc {

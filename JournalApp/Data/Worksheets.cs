@@ -189,6 +189,22 @@ public static class Worksheets
         };
         yield return new()
         {
+            Title = "Eating Disorders: About More Than Food",
+            Description = "Information about eating disorders including who is at risk, common types of eating disorders and the symptoms of each, treatment options, and resources to find help for yourself or someone else.",
+            Uri = "https://www.nimh.nih.gov/sites/default/files/documents/health/publications/eating-disorders/eating-disorders-about-more-than-food.pdf",
+            SourceUri = "https://www.nimh.nih.gov/health/publications/eating-disorders",
+            Category = "Eating Disorders",
+        };
+        yield return new()
+        {
+            Title = "Let's Talk About Eating Disorders",
+            Description = "Facts that can help shape conversations around eating disorders.",
+            Uri = "https://www.nimh.nih.gov/sites/default/files/documents/health/publications/lets-talk-about-eating-disorders/lets-talk-about-eating-disorders_0.pdf",
+            SourceUri = "https://www.nimh.nih.gov/health/publications/lets-talk-about-eating-disorders",
+            Category = "Eating Disorders",
+        };
+        yield return new()
+        {
             Title = "Obsessive-Compulsive Disorder: When Unwanted Thoughts or Repetitive Behaviors Take Over",
             Description = "Information on obsessive-compulsive disorder (OCD) including signs and symptoms, causes, and treatment options such as psychotherapy and medication.",
             Uri = "https://www.nimh.nih.gov/sites/default/files/documents/health/publications/obsessive-compulsive-disorder-when-unwanted-thoughts-take-over/obsessive-compulsive-disorder-508.pdf",
@@ -265,22 +281,6 @@ public static class Worksheets
             Description = "Learn about disruptive mood dysregulation disorder including what it is, signs and symptoms, how it's diagnosed, treatments, and tips for parents or caregivers.",
             Uri = "https://www.nimh.nih.gov/sites/default/files/documents/health/publications/disruptive-mood-dysregulation-disorder/disruptive-mood-dysregulation-disorder-the-basics.pdf",
             SourceUri = "https://www.nimh.nih.gov/health/publications/disruptive-mood-dysregulation-disorder",
-            Category = "Other",
-        };
-        yield return new()
-        {
-            Title = "Eating Disorders: About More Than Food",
-            Description = "Information about eating disorders including who is at risk, common types of eating disorders and the symptoms of each, treatment options, and resources to find help for yourself or someone else.",
-            Uri = "https://www.nimh.nih.gov/sites/default/files/documents/health/publications/eating-disorders/eating-disorders-about-more-than-food.pdf",
-            SourceUri = "https://www.nimh.nih.gov/health/publications/eating-disorders",
-            Category = "Other",
-        };
-        yield return new()
-        {
-            Title = "\r\nLet's Talk About Eating Disorders",
-            Description = "Facts that can help shape conversations around eating disorders.",
-            Uri = "https://www.nimh.nih.gov/sites/default/files/documents/health/publications/lets-talk-about-eating-disorders/lets-talk-about-eating-disorders_0.pdf",
-            SourceUri = "https://www.nimh.nih.gov/health/publications/lets-talk-about-eating-disorders",
             Category = "Other",
         };
     }
