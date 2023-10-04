@@ -32,7 +32,7 @@
 
 			@foreach (var group in WorksheetGroups)
 			{
-				<div class="worksheet-group worksheet-group-key-@(MarkupUtil.ToClassName(group.Key))">
+				<div class="worksheet-group" id="worksheet-group-key-@(MarkupUtil.ToClassName(group.Key))">
 					@if (!string.IsNullOrEmpty(group.Key))
 					{
 						<MudText Typo="Typo.h4">@group.Key</MudText>
@@ -69,6 +69,6 @@
 
 	async Task GoToGroup(string key)
 	{
-		await ScrollManager.ScrollIntoViewAsync($".worksheet-group-key-{key}", ScrollBehavior.Smooth);
+		await ScrollManager.ScrollIntoViewAsync($"#worksheet-group-key-{key}", ScrollBehavior.Smooth);
 	}
 }

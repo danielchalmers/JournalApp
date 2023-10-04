@@ -22,7 +22,7 @@
 			{
 				@foreach (var month in _gridYear.Value.GridMonths)
 				{
-					<div class="mood-grid-month mood-grid-month-@(month.Month)">
+					<div class="mood-grid-month" id="mood-grid-month-@(month.Month)">
 						<div class="mood-grid-month-header">
 							<MudText Typo="Typo.h4">@(month.Name)</MudText>
 						</div>
@@ -121,7 +121,7 @@
 
 		if (firstRender)
 		{
-			await ScrollManager.ScrollIntoViewAsync($".mood-grid-month-{OpenToDate.Month}", ScrollBehavior.Smooth);
+			await ScrollManager.ScrollIntoViewAsync($"#mood-grid-month-{OpenToDate.Month}", ScrollBehavior.Smooth);
 		}
 	}
 
