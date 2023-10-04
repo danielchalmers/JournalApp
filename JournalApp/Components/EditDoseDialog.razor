@@ -59,10 +59,20 @@
 	void Submit()
 	{
 		if (Dose == decimal.Zero)
-			Dose = null;
-
-		DataPoint.MedicationDose = Dose;
-		DataPoint.Bool = Dose != null;
+		{
+			DataPoint.MedicationDose = decimal.Zero;
+			DataPoint.Bool = false;
+		}
+		else if (Dose == null)
+		{
+			DataPoint.MedicationDose = DataPoint.Category.MedicationDose;
+			DataPoint.Bool = false;
+		}
+		else
+		{
+			DataPoint.MedicationDose = Dose;
+			DataPoint.Bool = true;
+		}
 
 		MudDialog.Close(DialogResult.Ok(true));
 	}
