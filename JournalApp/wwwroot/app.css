@@ -205,9 +205,27 @@ button {
 	align-items: start;
 }
 
+.safety-plan-items-container {
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
+}
+
 .break-flex-column {
 	flex-basis: 100%;
 	width: 0;
+}
+
+.mud-input-control {
+	margin: 0 !important;
+}
+
+.mud-input {
+	margin: 0 !important;
+}
+
+.mud-input-label-inputcontrol {
+	transform: translate(0,-0.5em) scale(.75) !important;
 }
 
 #blazor-error-ui {
