@@ -95,36 +95,15 @@ public class DataPoint
 
 public enum DataType
 {
-    [Description("Empty")]
     None,
-
-    [Description("Mood emoji")]
     Mood,
-
-    [Description("Sleep duration")]
     Sleep,
-
-    [Description("1-5 scale")]
     Scale,
-
-    [Description("Low to high")]
     LowToHigh,
-
-    [Description("Mild to severe")]
     MildToSevere,
-
-    [Description("Yes or no")]
     Bool,
-
-    [Description("Decimal number")]
     Number,
-
-    [Description("Short text")]
     Text,
-
-    [Description("Long note")]
     Note,
-
-    [Description("Medication")]
     Medication,
 }
