@@ -162,7 +162,15 @@
 	private async void Window_DeactivatedOrDestroying(object sender, EventArgs e)
 	{
 		logger.LogInformation("Window deactivated or destroying; Saving database");
-		await db.SaveChangesAsync();
+
+		try
+		{
+			await db.SaveChangesAsync();
+		}
+		catch (ObjectDisposedException)
+		{
+			// Ignore.
+		}
 	}
 
 	private void Window_Stopped(object sender, EventArgs e)
