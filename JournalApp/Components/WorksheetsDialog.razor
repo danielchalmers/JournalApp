@@ -1,5 +1,6 @@
 ﻿@namespace JournalApp
 @inject IDialogService DialogService
+@inject IScrollManager ScrollManager
 @inject KeycodeService KeycodeService
 
 <MudDialog DefaultFocus="DefaultFocus.None" OnBackdropClick="Submit">
@@ -13,18 +14,34 @@
 
 	<DialogContent>
 		<div class="worksheet-group-list">
-			@foreach (var group in Worksheets.Collection.GroupBy(x => x.Category))
+			<div class="worksheet-group">
+				<MudText Typo="Typo.h4">Table of Contents</MudText>
+
+				<div class="worksheet-group-toc">
+					@foreach (var group in WorksheetGroups)
+					{
+						@if (!string.IsNullOrEmpty(group.Key))
+						{
+							<MudLink OnClick="async () => await GoToGroup(MarkupUtil.ToClassName(group.Key))">• @group.Key</MudLink>
+						}
+					}
+				</div>
+			</div>
+
+			@foreach (var group in WorksheetGroups)
 			{
-				<div class="worksheet-group">
+				<div class="worksheet-group worksheet-group-key-@(MarkupUtil.ToClassName(group.Key))">
 					@if (!string.IsNullOrEmpty(group.Key))
 					{
 						<MudText Typo="Typo.h4">@group.Key</MudText>
 					}
 
-					@foreach (var ws in group)
-					{
-						<WorksheetView Worksheet="ws" />
-					}
+					<div class="worksheet-group-items">
+						@foreach (var ws in group)
+						{
+							<WorksheetView Worksheet="ws" />
+						}
+					</div>
 				</div>
 			}
 		</div>
@@ -33,6 +50,8 @@
 
 @code {
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+	public IEnumerable<IGrouping<string, Worksheet>> WorksheetGroups => Worksheets.Collection.GroupBy(x => x.Category);
 
 	protected override void OnInitialized()
 	{
@@ -44,5 +63,10 @@
 	void Submit()
 	{
 		MudDialog.Close(DialogResult.Ok(true));
+	}
+
+	async Task GoToGroup(string key)
+	{
+		await ScrollManager.ScrollIntoViewAsync($".worksheet-group-key-{key}", ScrollBehavior.Smooth);
 	}
 }

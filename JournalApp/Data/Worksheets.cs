@@ -205,19 +205,19 @@ public static class Worksheets
         };
         yield return new()
         {
-            Title = "Schizophrenia",
-            Description = "Information about schizophrenia including symptoms, causes, treatment options, and how to find help for yourself or a loved one.",
-            Uri = "https://www.nimh.nih.gov/sites/default/files/documents/health/publications/schizophrenia/schizophrenia.pdf",
-            SourceUri = "https://www.nimh.nih.gov/health/publications/schizophrenia",
-            Category = "Schizophrenia & Psychosis",
-        };
-        yield return new()
-        {
             Title = "Understanding Psychosis",
             Description = "Information on psychosis including causes, signs and symptoms, treatment, and resources for help.",
             Uri = "https://www.nimh.nih.gov/sites/default/files/documents/health/publications/understanding-psychosis/23-MH-8110-Understanding-Psychosis.pdf",
             SourceUri = "https://www.nimh.nih.gov/health/publications/understanding-psychosis",
-            Category = "Schizophrenia & Psychosis",
+            Category = "Psychosis",
+        };
+        yield return new()
+        {
+            Title = "Schizophrenia",
+            Description = "Information about schizophrenia including symptoms, causes, treatment options, and how to find help for yourself or a loved one.",
+            Uri = "https://www.nimh.nih.gov/sites/default/files/documents/health/publications/schizophrenia/schizophrenia.pdf",
+            SourceUri = "https://www.nimh.nih.gov/health/publications/schizophrenia",
+            Category = "Schizophrenia",
         };
         yield return new()
         {
