@@ -90,13 +90,13 @@ button {
 	max-width: 960px;
 	margin: 1em;
 	margin-bottom: 15em;
-	gap: 3em;
+	gap: 2em;
 }
 
 .data-point-group {
 	display: flex;
 	flex-direction: column;
-	gap: 1.5em;
+	gap: 1em;
 }
 
 .data-point-container {
