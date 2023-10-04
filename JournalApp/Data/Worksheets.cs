@@ -97,7 +97,7 @@ public static class Worksheets
             Description = "Information about autism spectrum disorder (ASD) including signs and symptoms, causes and risk factors, diagnosis in young children, older children, teens, and adults, and treatments.",
             Uri = "https://www.nimh.nih.gov/sites/default/files/documents/health/publications/autism-spectrum-disorder/22-MH-8084-Autism-Spectrum-Disorder.pdf",
             SourceUri = "https://www.nimh.nih.gov/health/publications/autism-spectrum-disorder",
-            Category = "ASD",
+            Category = "Autism",
         };
         yield return new()
         {
@@ -105,7 +105,7 @@ public static class Worksheets
             Description = "Information on bipolar disorder including symptoms, causes, diagnosis, treatment options, and resources to find help for yourself or others.",
             Uri = "https://www.nimh.nih.gov/sites/default/files/health/publications/bipolar-disorder/bipolar-disorder_0.pdf",
             SourceUri = "https://www.nimh.nih.gov/health/publications/bipolar-disorder",
-            Category = "Bipolar Disorder",
+            Category = "Bipolar",
         };
         yield return new()
         {
@@ -113,7 +113,7 @@ public static class Worksheets
             Description = "Information about bipolar disorder in children and teens including causes, signs and symptoms, diagnosis, treatment options, and how to help a child or teen who has bipolar disorder.",
             Uri = "https://www.nimh.nih.gov/sites/default/files/documents/health/publications/bipolar-disorder-in-children-and-teens/bipolar-disorder-in-children-and-teens.pdf",
             SourceUri = "https://www.nimh.nih.gov/health/publications/bipolar-disorder-in-children-and-teens",
-            Category = "Bipolar Disorder",
+            Category = "Bipolar",
         };
         yield return new()
         {
@@ -121,7 +121,7 @@ public static class Worksheets
             Description = "This infographic presents common signs and symptoms of bipolar disorder in teens and young adults.",
             Uri = "https://www.nimh.nih.gov/sites/default/files/documents/health/publications/bipolar-disorder-in-children-and-teens/bipolar-disorder-in-teens-and-young-adults.pdf",
             SourceUri = "https://www.nimh.nih.gov/health/publications/bipolar-disorder-in-teens-and-young-adults-know-the-signs",
-            Category = "Bipolar Disorder",
+            Category = "Bipolar",
         };
         yield return new()
         {

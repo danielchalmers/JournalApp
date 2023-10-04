@@ -22,7 +22,9 @@
 					{
 						@if (!string.IsNullOrEmpty(group.Key))
 						{
-							<MudLink OnClick="async () => await GoToGroup(MarkupUtil.ToClassName(group.Key))">• @group.Key</MudLink>
+							<div class="worksheet-group-toc-item">
+								<MudLink OnClick="async () => await GoToGroup(MarkupUtil.ToClassName(group.Key))">• @group.Key</MudLink>
+							</div>
 						}
 					}
 				</div>

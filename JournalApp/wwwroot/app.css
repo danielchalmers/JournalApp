@@ -189,11 +189,14 @@ button {
 
 .worksheet-group-toc {
 	display: flex;
-	flex-direction: column;
+	flex-direction: row;
 	flex-wrap: wrap;
-	align-items: start;
 	gap: 0.5em;
-	max-height: 10em;
+}
+
+.worksheet-group-toc-item {
+	white-space: nowrap;
+	align-items: start;
 }
 
 .worksheet-view {
