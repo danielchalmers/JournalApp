@@ -219,6 +219,12 @@ button {
 	gap: 0.1em;
 }
 
+.new-note-fab {
+	position: fixed;
+	bottom: 2em;
+	right: 2em;
+}
+
 .break-flex-column {
 	flex-basis: 100%;
 	width: 0;

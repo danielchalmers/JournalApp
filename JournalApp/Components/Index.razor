@@ -30,7 +30,6 @@
 			<MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
 				<MudMenuItem OnClick="ManageCategories">Categories</MudMenuItem>
 				<MudMenuItem OnClick="ManageMedications">Medications</MudMenuItem>
-				<MudMenuItem OnClick="NewNote">New note</MudMenuItem>
 
 				@* Show Safety Plan if the Depression category is enabled *@
 				@if (db.Categories.SingleOrDefault(x => x.Guid == new Guid("7330B995-0B56-46FF-9DD6-9CFC550FF5C8"))?.Enabled == true)
@@ -121,14 +120,14 @@
 					{
 						<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Medication" OnClick="ManageMedications" FullWidth>Manage medications</MudButton>
 					}
-					else if (group.Key == "Notes")
-					{
-						<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote" FullWidth>New note</MudButton>
-					}
 				</div>
 			</div>
 		}
 	</MudStack>
+</div>
+
+<div class="new-note-fab">
+	<MudFab Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote" />
 </div>
 
 @code {
