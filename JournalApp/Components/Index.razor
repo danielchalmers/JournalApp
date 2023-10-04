@@ -41,6 +41,7 @@
 
 			<MudMenuItem OnClick="OpenWorksheets">Worksheets</MudMenuItem>
 			<MudMenuItem Disabled>v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
+			<MudMenuItem OnClick="OpenWebsite">© Daniel Chalmers</MudMenuItem>
 		</MudMenu>
 	</MudAppBar>
 
@@ -279,6 +280,12 @@
 	{
 		logger.LogInformation("Opening worksheets dialog");
 		var result = await DialogService.Show<WorksheetsDialog>(ComponentUtil.FullscreenDialogOptions).Result;
+	}
+
+	async Task OpenWebsite()
+	{
+		logger.LogInformation("Opening website");
+		await Browser.Default.OpenAsync("https://github.com/danielchalmers/JournalApp");
 	}
 
 	async Task NewNote()
