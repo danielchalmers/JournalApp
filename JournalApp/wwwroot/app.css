@@ -51,7 +51,7 @@ button {
 .mud-dialog-content {
 	max-width: 960px;
 	margin: 0 auto;
-	padding: 1em !important;
+	padding: 0.5em !important;
 }
 
 .mud-dialog-fullscreen {
@@ -89,7 +89,7 @@ button {
 #main-timeline {
 	flex-grow: 1;
 	max-width: 960px;
-	margin: 1em;
+	margin: 0.5em;
 	margin-bottom: 15em;
 	gap: 2em;
 }
