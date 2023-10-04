@@ -19,7 +19,10 @@
 	<div id="main-header">
 		<MudAppBar Color="Color.Primary" Fixed="false" Dense>
 		<MudButton OnClick="ScrollToTop" DisableRipple Variant="Variant.Text">
-				<MudText Typo="Typo.h6">🙂 @ThisAssembly.AssemblyTitle BETA</MudText>
+				<div class="d-flex flex-column">
+					<MudText Typo="Typo.h6">🙂 @ThisAssembly.AssemblyTitle BETA</MudText>
+					<MudText Typo="Typo.caption" Color="Color.Error">Data may be reset before release</MudText>
+				</div>
 			</MudButton>
 
 			<MudSpacer />
