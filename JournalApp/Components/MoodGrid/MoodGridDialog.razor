@@ -4,6 +4,7 @@
 @inject IDialogService DialogService
 @inject IScrollManager ScrollManager
 @inject KeycodeService KeycodeService
+@using Color = Microsoft.Maui.Graphics.Color;
 
 <MudDialog DefaultFocus="DefaultFocus.Element">
 	<TitleContent>
@@ -42,7 +43,7 @@
 								<div class="mood-blocks-week">
 									@foreach (var day in row)
 									{
-										<div class="mood-block-container" style="background-color:@(day.Color ?? "transparent");">
+										<div class="mood-block-container" style="background-color: @(GetMoodColor(day.Emoji));">
 											<div class="mood-block" onclick="@(() => Close(day.Date))">
 												@if (day.Date != null)
 												{
@@ -67,11 +68,14 @@
 	int _selectedYear;
 	GridYear? _gridYear;
 	DataPointCategory _moodCategory;
+	IReadOnlyDictionary<string, string> _moodColors;
 
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
 	[Parameter]
 	public DateOnly OpenToDate { get; set; }
+
+	public string BaseMoodColor { get; set; } = "#00baff";
 
 	public int SelectedYear
 	{
@@ -110,6 +114,7 @@
 
 		_moodCategory = db.Categories.SingleOrDefault(x => x.Guid == new Guid("D90D89FB-F5B9-47CF-AE4E-3EC0D635E783"));
 		KeycodeService.SubscribeOnceToBackButtonPressed(() => Close());
+		GenerateColors();
 
 		logger.LogInformation($"Opened to {OpenToDate}");
 		SelectedYear = OpenToDate.Year;
@@ -123,6 +128,32 @@
 		{
 			await ScrollManager.ScrollIntoViewAsync($"#mood-grid-month-{OpenToDate.Month}", ScrollBehavior.Smooth);
 		}
+	}
+
+	void GenerateColors()
+	{
+		var emojis = DataPoint.Moods.Where(x => x != "🤔").ToList();
+		var primary = Color.FromArgb(BaseMoodColor);
+		var complementary = primary.GetComplementary();
+
+		var emojiColors = new Dictionary<string, string>();
+		for (int i = 0; i < emojis.Count; i++)
+		{
+			var color = ColorUtil.GetGradientColor(primary, complementary, (double)i / emojis.Count);
+
+			emojiColors.Add(emojis[i], color.ToHex());
+		}
+		_moodColors = emojiColors;
+
+		logger.LogInformation($"Using colors: {string.Join(",", emojiColors)}");
+	}
+
+	string GetMoodColor(string emoji)
+	{
+		if (string.IsNullOrEmpty(emoji) || !_moodColors.TryGetValue(emoji, out var color))
+			return "transparent";
+		else
+			return color;
 	}
 
 	void Close()

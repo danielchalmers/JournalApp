@@ -10,19 +10,12 @@ public static class ColorUtil
         return color.WithHue((hue + 0.5f) % 1f);
     }
 
-    public static IEnumerable<Color> RgbGradientTo(this Color start, Color end, int steps)
+    public static Color GetGradientColor(Color start, Color end, double percentage)
     {
-        var rStep = (end.Red - start.Red) / (steps - 1);
-        var gStep = (end.Green - start.Green) / (steps - 1);
-        var bStep = (end.Blue - start.Blue) / (steps - 1);
+        var r = start.Red + ((end.Red - start.Red) * percentage);
+        var g = start.Green + ((end.Green - start.Green) * percentage);
+        var b = start.Blue + ((end.Blue - start.Blue) * percentage);
 
-        for (var i = 0; i < steps; i++)
-        {
-            var r = start.Red + (i * rStep);
-            var g = start.Green + (i * gStep);
-            var b = start.Blue + (i * bStep);
-
-            yield return Color.FromRgb(r, g, b);
-        }
+        return Color.FromRgb(r, g, b);
     }
 }
