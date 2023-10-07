@@ -12,6 +12,19 @@
 			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="Close" />
 
 			<MudText Typo="Typo.h6">Mood Grid</MudText>
+
+			<MudSpacer />
+
+			<MudMenu Icon="@Icons.Material.Filled.Palette" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
+				@foreach (var palette in _palettes)
+				{
+					<MudMenuItem OnClick="() => SelectPalette(palette)">
+						<div style="background-color: @(palette);">
+							<MudText>@palette</MudText>
+						</div>
+					</MudMenuItem>
+				}
+			</MudMenu>
 		</div>
 
 		<MoodGridSwitcher @bind-SelectedYear="SelectedYear" />
@@ -69,13 +82,14 @@
 	GridYear? _gridYear;
 	DataPointCategory _moodCategory;
 	IReadOnlyDictionary<string, string> _moodColors;
+	string[] _palettes = new[] { "#6bdbe7", "#776be7", "#6be777" };
 
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
 	[Parameter]
 	public DateOnly OpenToDate { get; set; }
 
-	public string BaseMoodColor { get; set; } = "#00baff";
+	public string SelectedPalette { get; set; }
 
 	public int SelectedYear
 	{
@@ -114,6 +128,7 @@
 
 		_moodCategory = db.Categories.SingleOrDefault(x => x.Guid == new Guid("D90D89FB-F5B9-47CF-AE4E-3EC0D635E783"));
 		KeycodeService.SubscribeOnceToBackButtonPressed(() => Close());
+		SelectedPalette = Preferences.Get("mood_palette", _palettes.First());
 		GenerateColors();
 
 		logger.LogInformation($"Opened to {OpenToDate}");
@@ -133,7 +148,7 @@
 	void GenerateColors()
 	{
 		var emojis = DataPoint.Moods.Where(x => x != "🤔").ToList();
-		var primary = Color.FromArgb(BaseMoodColor);
+		var primary = Color.FromArgb(SelectedPalette);
 		var complementary = primary.GetComplementary();
 
 		var emojiColors = new Dictionary<string, string>();
@@ -154,6 +169,14 @@
 			return "transparent";
 		else
 			return color;
+	}
+
+	void SelectPalette(string palette)
+	{
+		Preferences.Set("mood_palette", palette);
+		SelectedPalette = palette;
+		GenerateColors();
+		StateHasChanged();
 	}
 
 	void Close()
