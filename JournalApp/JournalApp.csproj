@@ -36,13 +36,13 @@
     <Using Include="System.Diagnostics" />
     <Using Include="Microsoft.EntityFrameworkCore" />
     <Using Include="Microsoft.Extensions.Logging" />
-    <Using Include="MudBlazor" />
     <Using Include="System.ComponentModel" />
     <Using Include="System.ComponentModel.DataAnnotations" />
     <Using Include="System.ComponentModel.DataAnnotations.Schema" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Maui" Version="6.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="8.0.0-rc.1.23419.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.0-rc.1.23419.6" />

@@ -1,4 +1,6 @@
-﻿using MudBlazor.Services;
+﻿using CommunityToolkit.Maui;
+using MudBlazor;
+using MudBlazor.Services;
 
 namespace JournalApp;
 
@@ -10,6 +12,7 @@ public static class MauiProgram
     {
         var builder = MauiApp.CreateBuilder()
             .UseMauiApp<App>()
+            .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts => fonts.AddFont("Roboto-Regular.ttf", "RobotoRegular"));
 
         builder.Services.AddMauiBlazorWebView();

@@ -1,5 +1,6 @@
 ﻿@namespace JournalApp
 @page "/"
+@using CommunityToolkit.Maui.Storage;
 @inherits LayoutComponentBase
 @inject ApplicationDbContext db
 @inject ApplicationDbSeeder dbSeeder
@@ -31,16 +32,25 @@
 				<MudMenuItem OnClick="ManageCategories">Categories</MudMenuItem>
 				<MudMenuItem OnClick="ManageMedications">Medications</MudMenuItem>
 				<MudMenuItem OnClick="NewNote">New note</MudMenuItem>
-				<MudMenuItem OnClick="OpenTrends">Trends</MudMenuItem>
 
-				@* Show Safety Plan if the Depression category is enabled *@
-				@if (db.Categories.SingleOrDefault(x => x.Guid == new Guid("7330B995-0B56-46FF-9DD6-9CFC550FF5C8"))?.Enabled == true)
+				@if (Debugger.IsAttached)
+			{
+				<MudMenuItem OnClick="OpenTrends">Trends</MudMenuItem>
+			}
+
+			@* Show Safety Plan if the Depression category is enabled *@
+			@if (db.Categories.SingleOrDefault(x => x.Guid == new Guid("7330B995-0B56-46FF-9DD6-9CFC550FF5C8"))?.Enabled == true)
 			{
 				<MudMenuItem OnClick="OpenSafetyPlan">Safety Plan</MudMenuItem>
 			}
 
 			<MudMenuItem OnClick="OpenWorksheets">Worksheets</MudMenuItem>
 			<MudMenuItem Disabled>v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
+			@if (Debugger.IsAttached)
+			{
+				<MudMenuItem OnClick="OpenImport">Import...</MudMenuItem>
+				<MudMenuItem OnClick="OpenExport">Export...</MudMenuItem>
+			}
 			<MudMenuItem OnClick="OpenWebsite">© Daniel Chalmers</MudMenuItem>
 		</MudMenu>
 	</MudAppBar>
@@ -188,6 +198,12 @@
 		{
 			logger.LogInformation($"Switching from {_day} to current day after user was gone since {_stoppedDate}");
 			await GoToDay(DateOnly.FromDateTime(DateTime.Now));
+
+			if (DateTimeOffset.Now > LastExportDate.AddDays(90))
+			{
+				logger.LogInformation($"It's also been a while since the last export.");
+				await DialogService.ShowMessageBox(string.Empty, "Keep your data backed up regularly in case something happens to your device by going to the dots menu and choosing \"Export...\"");
+			}
 		}
 	}
 
@@ -280,6 +296,32 @@
 	{
 		logger.LogInformation("Opening worksheets dialog");
 		var result = await DialogService.Show<WorksheetsDialog>(ComponentUtil.FullscreenDialogOptions).Result;
+	}
+
+	public DateTimeOffset LastExportDate => DateTimeOffset.Parse(Preferences.Get("last_export", DateTimeOffset.Now.ToString()));
+
+	async Task OpenImport()
+	{
+		if (await DialogService.ShowMessageBox(string.Empty, "Importing data will overwrite ALL existing notes, categories, medications!", yesText: "OK", cancelText: "Cancel") == null)
+			return;
+
+		// Warn if an export wasn't done in the last week.
+		if (DateTimeOffset.Now > LastExportDate.AddDays(7) && await DialogService.ShowMessageBox(string.Empty, "It's recommended to export your data first", yesText: "Continue anyway", cancelText: "Go back") == null)
+			return;
+	}
+
+	async Task OpenExport()
+	{
+		using var stream = new MemoryStream(System.Text.Encoding.Default.GetBytes("JournalApp"));
+		var fileSaverResult = await FileSaver.Default.SaveAsync($"backup-{DateTime.Now:s}.journalapp", stream, CancellationToken.None);
+		if (!fileSaverResult.IsSuccessful)
+		{
+			logger.LogInformation($"Couldn't save: {fileSaverResult}");
+			await DialogService.ShowMessageBox(string.Empty, "Was unable to save the file to your device.");
+		}
+
+		logger.LogInformation($"Saved: {fileSaverResult}");
+		Preferences.Set("last_export", DateTimeOffset.Now.ToString());
 	}
 
 	async Task OpenWebsite()
