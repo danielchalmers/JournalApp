@@ -8,6 +8,7 @@
 @inject ISnackbar SnackbarService
 @inject IDialogService DialogService
 @inject IScrollManager ScrollManager
+@inject AppDataService AppDataService
 
 <MudThemeProvider Theme="AppTheme" IsDarkMode />
 	<MudDialogProvider MaxWidth="MaxWidth.Medium"
@@ -48,8 +49,8 @@
 			<MudMenuItem Disabled>v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
 			@if (Debugger.IsAttached)
 			{
-				<MudMenuItem OnClick="OpenImport">Import...</MudMenuItem>
-				<MudMenuItem OnClick="OpenExport">Export...</MudMenuItem>
+				<MudMenuItem OnClick="AppDataService.StartImport">Import...</MudMenuItem>
+				<MudMenuItem OnClick="AppDataService.StartExport">Export...</MudMenuItem>
 			}
 			<MudMenuItem OnClick="OpenWebsite">© Daniel Chalmers</MudMenuItem>
 		</MudMenu>
@@ -199,11 +200,7 @@
 			logger.LogInformation($"Switching from {_day} to current day after user was gone since {_stoppedDate}");
 			await GoToDay(DateOnly.FromDateTime(DateTime.Now));
 
-			if (DateTimeOffset.Now > LastExportDate.AddDays(90))
-			{
-				logger.LogInformation($"It's also been a while since the last export.");
-				await DialogService.ShowMessageBox(string.Empty, "Keep your data backed up regularly in case something happens to your device by going to the dots menu and choosing \"Export...\"");
-			}
+			await AppDataService.ShowExportReminderIfDue();
 		}
 	}
 
@@ -296,32 +293,6 @@
 	{
 		logger.LogInformation("Opening worksheets dialog");
 		var result = await DialogService.Show<WorksheetsDialog>(ComponentUtil.FullscreenDialogOptions).Result;
-	}
-
-	public DateTimeOffset LastExportDate => DateTimeOffset.Parse(Preferences.Get("last_export", DateTimeOffset.Now.ToString()));
-
-	async Task OpenImport()
-	{
-		if (await DialogService.ShowMessageBox(string.Empty, "Importing data will overwrite ALL existing notes, categories, medications!", yesText: "OK", cancelText: "Cancel") == null)
-			return;
-
-		// Warn if an export wasn't done in the last week.
-		if (DateTimeOffset.Now > LastExportDate.AddDays(7) && await DialogService.ShowMessageBox(string.Empty, "It's recommended to export your data first", yesText: "Continue anyway", cancelText: "Go back") == null)
-			return;
-	}
-
-	async Task OpenExport()
-	{
-		using var stream = new MemoryStream(System.Text.Encoding.Default.GetBytes("JournalApp"));
-		var fileSaverResult = await FileSaver.Default.SaveAsync($"backup-{DateTime.Now:s}.journalapp", stream, CancellationToken.None);
-		if (!fileSaverResult.IsSuccessful)
-		{
-			logger.LogInformation($"Couldn't save: {fileSaverResult}");
-			await DialogService.ShowMessageBox(string.Empty, "Was unable to save the file to your device.");
-		}
-
-		logger.LogInformation($"Saved: {fileSaverResult}");
-		Preferences.Set("last_export", DateTimeOffset.Now.ToString());
 	}
 
 	async Task OpenWebsite()

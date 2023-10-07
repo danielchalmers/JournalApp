@@ -29,6 +29,7 @@ public static class MauiProgram
 
         builder.Services.AddSingleton<KeycodeService>();
         builder.Services.AddSingleton<ApplicationDbSeeder>();
+        builder.Services.AddSingleton<AppDataService>();
 
         builder.Services.AddMudServices(c =>
         {
