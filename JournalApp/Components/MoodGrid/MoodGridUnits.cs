@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using Color = Microsoft.Maui.Graphics.Color;
 
 namespace JournalApp.MoodGrid;
 
@@ -24,19 +25,20 @@ public readonly struct GridMonth
     public IReadOnlyList<GridDay> GridDays { get; }
     public IReadOnlyList<DayOfWeek> DaysOfWeek { get; }
 
-    private static string GetMoodColor(string emoji) => emoji switch
+    private static string GetMoodColor(string emoji)
     {
-        // http://colorsafe.co/ - #373740.
-        // https://colordesigner.io/gradient-generator - RGB Mode.
-        "🤩" => "#00baff",
-        "😀" => "#2ba7d5",
-        "🙂" => "#5593aa",
-        "😐" => "#808080",
-        "😕" => "#aa6c55",
-        "😢" => "#d5592b",
-        "😭" => "#ff4500",
-        _ => "transparent"
-    };
+        if (string.IsNullOrEmpty(emoji))
+            return "transparent";
+
+        var moods = DataPoint.Moods.Where(x => x != "🤔").ToList();
+        var moodCount = moods.Count;
+        var moodIndex = moods.IndexOf(emoji);
+        var primaryColor = Color.FromArgb("#00baff");
+        var complementaryColor = primaryColor.GetComplementary();
+        var gradients = primaryColor.RgbGradientTo(complementaryColor, moodCount).ToList();
+
+        return gradients[moodIndex].ToHex();
+    }
 
     private IEnumerable<GridDay> GetGridDays(Dictionary<DateOnly, DataPoint> moodPoints)
     {
