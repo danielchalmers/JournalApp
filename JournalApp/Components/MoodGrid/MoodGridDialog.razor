@@ -154,7 +154,8 @@
 		var emojiColors = new Dictionary<string, string>();
 		for (int i = 0; i < emojis.Count; i++)
 		{
-			var color = ColorUtil.GetGradientColor(primary, complementary, (double)i / emojis.Count);
+			var p = i / (emojis.Count - 1f);
+			var color = ColorUtil.GetGradientColor(primary, complementary, p);
 
 			emojiColors.Add(emojis[i], color.ToHex());
 		}

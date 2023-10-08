@@ -10,7 +10,7 @@ public static class ColorUtil
         return color.WithHue((hue + 0.5f) % 1f);
     }
 
-    public static Color GetGradientColor(Color start, Color end, double percentage)
+    public static Color GetGradientColor(Color start, Color end, float percentage)
     {
         var r = start.Red + ((end.Red - start.Red) * percentage);
         var g = start.Green + ((end.Green - start.Green) * percentage);
