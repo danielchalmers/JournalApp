@@ -1,4 +1,4 @@
-﻿namespace JournalApp;
+﻿namespace JournalApp.Worksheets;
 
 public record class Worksheet
 {

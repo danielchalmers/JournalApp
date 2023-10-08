@@ -1,4 +1,4 @@
-﻿@namespace JournalApp
+﻿@namespace JournalApp.Worksheets
 @inject IDialogService DialogService
 @inject IScrollManager ScrollManager
 @inject KeycodeService KeycodeService
@@ -53,7 +53,7 @@
 @code {
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
-	public IEnumerable<IGrouping<string, Worksheet>> WorksheetGroups => Worksheets.Collection.GroupBy(x => x.Category);
+	public IEnumerable<IGrouping<string, Worksheet>> WorksheetGroups => WorksheetData.AllWorksheets.GroupBy(x => x.Category);
 
 	protected override void OnInitialized()
 	{

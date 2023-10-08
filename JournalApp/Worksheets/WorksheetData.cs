@@ -1,10 +1,10 @@
-﻿namespace JournalApp;
+﻿namespace JournalApp.Worksheets;
 
-public static class Worksheets
+public static class WorksheetData
 {
     private static IReadOnlyList<Worksheet> _collection;
 
-    public static IReadOnlyList<Worksheet> Collection => _collection ??= GetAllWorksheets().ToList();
+    public static IReadOnlyList<Worksheet> AllWorksheets => _collection ??= GetAllWorksheets().ToList();
 
     private static IEnumerable<Worksheet> GetAllWorksheets()
     {
