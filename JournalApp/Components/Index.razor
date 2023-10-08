@@ -39,20 +39,22 @@
 				<MudMenuItem OnClick="OpenTrends">Trends</MudMenuItem>
 			}
 
+			<MudMenuItem OnClick="OpenWorksheets">Worksheets</MudMenuItem>
+
 			@* Show Safety Plan if the Depression category is enabled *@
 			@if (db.Categories.SingleOrDefault(x => x.Guid == new Guid("7330B995-0B56-46FF-9DD6-9CFC550FF5C8"))?.Enabled == true)
 			{
 				<MudMenuItem OnClick="OpenSafetyPlan">Safety Plan</MudMenuItem>
 			}
 
-			<MudMenuItem OnClick="OpenWorksheets">Worksheets</MudMenuItem>
-			<MudMenuItem Disabled>v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
+			<MudDivider />
+
 			@if (Debugger.IsAttached)
 			{
-				<MudMenuItem OnClick="AppDataService.StartImport">Import...</MudMenuItem>
-				<MudMenuItem OnClick="AppDataService.StartExport">Export...</MudMenuItem>
+				<MudMenuItem OnClick="AppDataService.StartImport">Import</MudMenuItem>
+				<MudMenuItem OnClick="AppDataService.StartExport">Export</MudMenuItem>
 			}
-			<MudMenuItem OnClick="OpenWebsite">© Daniel Chalmers</MudMenuItem>
+			<MudMenuItem OnClick="OpenWebsite">v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
 		</MudMenu>
 	</MudAppBar>
 
