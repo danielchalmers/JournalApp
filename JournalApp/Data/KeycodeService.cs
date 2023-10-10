@@ -2,7 +2,7 @@
 
 public class KeycodeService
 {
-    private readonly List<Action> _backButtonPressedActions = new();
+    private readonly List<Action> _backButtonPressedActions = [];
 
     public void SubscribeOnceToBackButtonPressed(Action action)
     {

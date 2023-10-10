@@ -9,7 +9,7 @@ public class MoodGridTests
     public void CalendarDates()
     {
         var year = 2023;
-        var gridYear = new GridYear(year, CultureInfo.InvariantCulture, new());
+        var gridYear = new GridYear(year, CultureInfo.InvariantCulture, []);
 
         Assert.Equal(12, gridYear.GridMonths.Count);
 
@@ -41,7 +41,7 @@ public class MoodGridTests
     [Fact]
     public void DaysOfWeekInvariantCulture()
     {
-        var gridYear = new GridYear(2023, CultureInfo.InvariantCulture, new());
+        var gridYear = new GridYear(2023, CultureInfo.InvariantCulture, []);
 
         for (var i = 0; i < gridYear.GridMonths.Count; i++)
         {

@@ -18,14 +18,10 @@ public static class MauiProgram
         builder.Services.AddMauiBlazorWebView();
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();
+        builder.Logging.AddDebug();
 #endif
 
-        builder.Services.AddLogging(c =>
-        {
-            c.SetMinimumLevel(LogLevel.Information);
-            c.AddDebug();
-            c.AddConsole();
-        });
+        builder.Logging.AddConsole();
 
         builder.Services.AddSingleton<KeycodeService>();
         builder.Services.AddSingleton<ApplicationDbSeeder>();

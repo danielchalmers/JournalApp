@@ -12,7 +12,7 @@ namespace JournalApp
 
         private MudRadioButton<T> _selectedRadio;
 
-        private readonly HashSet<MudRadioButton<T>> _radios = new();
+        private readonly HashSet<MudRadioButton<T>> _radios = [];
 
         protected string Classname =>
         new CssBuilder("mud-input-control-boolean-input")
