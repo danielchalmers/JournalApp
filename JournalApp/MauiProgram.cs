@@ -16,16 +16,11 @@ public static class MauiProgram
             .ConfigureFonts(fonts => fonts.AddFont("Roboto-Regular.ttf", "RobotoRegular"));
 
         builder.Services.AddMauiBlazorWebView();
+        builder.Logging.AddConsole();
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();
         builder.Logging.AddDebug();
 #endif
-
-        builder.Logging.AddConsole();
-
-        builder.Services.AddSingleton<KeycodeService>();
-        builder.Services.AddSingleton<ApplicationDbSeeder>();
-        builder.Services.AddSingleton<AppDataService>();
 
         builder.Services.AddMudServices(c =>
         {
@@ -41,6 +36,10 @@ public static class MauiProgram
             .UseSqlite($"Data Source = {DbFilename}")
             .EnableSensitiveDataLogging()
             .EnableDetailedErrors());
+
+        builder.Services.AddSingleton<AppDataService>();
+        builder.Services.AddSingleton<ApplicationDbSeeder>();
+        builder.Services.AddSingleton<KeycodeService>();
 
         return builder.Build();
     }
