@@ -15,30 +15,27 @@
 @inject AppDataService AppDataService
 
 <MudThemeProvider Theme="AppTheme" IsDarkMode />
-	<MudDialogProvider MaxWidth="MaxWidth.Medium"
-					   NoHeader="false"
-					   CloseButton="false"
-					   CloseOnEscapeKey="true"
-					   Position="DialogPosition.Center" />
-	<MudSnackbarProvider />
+<MudDialogProvider MaxWidth="MaxWidth.Medium"
+				   NoHeader="false"
+				   CloseButton="false"
+				   CloseOnEscapeKey="true"
+				   Position="DialogPosition.Center" />
+<MudSnackbarProvider />
 
-	<div id="main-header">
-		<MudAppBar Color="Color.Primary" Fixed="false" Dense>
+<div id="main-header">
+	<MudAppBar Color="Color.Primary" Fixed="false" Dense>
 		<MudButton OnClick="ScrollToTop" DisableRipple Variant="Variant.Text">
-				<div class="d-flex flex-column">
-					<MudText Typo="Typo.h6">🙂 @ThisAssembly.AssemblyTitle BETA</MudText>
-					<MudText Typo="Typo.caption" Color="Color.Error">Data may be reset before release</MudText>
-				</div>
-			</MudButton>
+			<MudText Typo="Typo.h6">🙂 @ThisAssembly.AssemblyTitle BETA</MudText>
+		</MudButton>
 
-			<MudSpacer />
+		<MudSpacer />
 
-			<MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
-				<MudMenuItem OnClick="ManageCategories">Categories</MudMenuItem>
-				<MudMenuItem OnClick="ManageMedications">Medications</MudMenuItem>
-				<MudMenuItem OnClick="NewNote">New note</MudMenuItem>
+		<MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
+			<MudMenuItem OnClick="ManageCategories">Categories</MudMenuItem>
+			<MudMenuItem OnClick="ManageMedications">Medications</MudMenuItem>
+			<MudMenuItem OnClick="NewNote">New note</MudMenuItem>
 
-				@if (Debugger.IsAttached)
+			@if (Debugger.IsAttached)
 			{
 				<MudMenuItem OnClick="OpenTrends">Trends</MudMenuItem>
 			}
