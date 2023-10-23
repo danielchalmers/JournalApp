@@ -1,11 +1,11 @@
 ﻿namespace JournalApp;
 
-public class ApplicationDbSeeder
+public class AppDbSeeder
 {
-    private readonly ApplicationDbContext db;
-    private readonly ILogger<ApplicationDbSeeder> _logger;
+    private readonly AppDbContext db;
+    private readonly ILogger<AppDbSeeder> _logger;
 
-    public ApplicationDbSeeder(ApplicationDbContext dbContext, ILogger<ApplicationDbSeeder> logger)
+    public AppDbSeeder(AppDbContext dbContext, ILogger<AppDbSeeder> logger)
     {
         db = dbContext;
         _logger = logger;

@@ -1,6 +1,6 @@
 ﻿namespace JournalApp;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
+public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
     public DbSet<Day> Days { get; set; } = default!;
 

@@ -31,14 +31,14 @@ public static class MauiProgram
             c.SnackbarConfiguration.SnackbarVariant = Variant.Text;
         });
 
-        builder.Services.AddDbContext<ApplicationDbContext>(options => options
+        builder.Services.AddDbContext<AppDbContext>(options => options
             .UseLazyLoadingProxies()
             .UseSqlite($"Data Source = {DbFilename}")
             .EnableSensitiveDataLogging()
             .EnableDetailedErrors());
 
         builder.Services.AddSingleton<AppDataService>();
-        builder.Services.AddSingleton<ApplicationDbSeeder>();
+        builder.Services.AddSingleton<AppDbSeeder>();
         builder.Services.AddSingleton<KeycodeService>();
 
         return builder.Build();
