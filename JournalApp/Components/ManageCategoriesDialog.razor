@@ -9,7 +9,7 @@
 		<div class="page-header">
 			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="Submit" />
 
-			<MudText Typo="Typo.h6">Manage @(Group == "Medications" ? "medications" : "categories")</MudText>
+			<MudText Typo="Typo.h6">@(Group == null ? "Categories" : Group)</MudText>
 
 			<MudSpacer />
 

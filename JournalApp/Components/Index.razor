@@ -130,11 +130,11 @@
 				<div class="data-point-group-footer">
 					@if (group.Key == null)
 					{
-						<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Category" OnClick="ManageCategories" FullWidth>Manage categories</MudButton>
+						<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Category" OnClick="ManageCategories" FullWidth>Choose categories</MudButton>
 					}
 					else if (group.Key == "Medications")
 					{
-						<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Medication" OnClick="ManageMedications" FullWidth>Manage medications</MudButton>
+						<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Medication" OnClick="ManageMedications" FullWidth>Choose medications</MudButton>
 					}
 					else if (group.Key == "Notes")
 					{
