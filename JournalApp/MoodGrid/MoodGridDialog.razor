@@ -18,7 +18,7 @@
 			<MudMenu Icon="@Icons.Material.Filled.Palette" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
 				@foreach (var palette in _palettes)
 				{
-					<MudMenuItem OnClick="() => SelectPalette(palette)">
+					<MudMenuItem OnClick="() => SelectPalette(palette)" OnTouch="() => SelectPalette(palette)">
 						<div style="background-color: @(palette);">
 							<MudText>@palette</MudText>
 						</div>

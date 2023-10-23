@@ -11,7 +11,7 @@
 		<ChildContent>
 			@foreach (var mood in DataPoint.Moods)
 			{
-				<MudMenuItem OnClick="@(() => DataPoint.Mood = mood)">
+				<MudMenuItem OnClick="@(() => DataPoint.Mood = mood)" OnTouch="@(() => DataPoint.Mood = mood)">
 					<MudText Typo="Typo.h4">@mood</MudText>
 				</MudMenuItem>
 			}
