@@ -162,7 +162,7 @@ public class AppDbSeeder
             MedicationDose = 2000,
             MedicationUnit = "IU",
             MedicationEveryDaySince = DateTimeOffset.Now,
-            ReadOnly = true,
+            ReadOnly = false,
             Enabled = false,
         });
     }
