@@ -127,7 +127,7 @@ button {
 .mood-block-container {
 	display: flex;
 	flex: 1 1 0;
-	margin: 2px;
+	margin: 0.125em;
 	padding: 0.25em;
 	min-width: 3em;
 	max-width: 6em;
@@ -137,7 +137,6 @@ button {
 	display: flex;
 	width: 100%;
 	aspect-ratio: 1 / 1;
-	/* outline: 1px solid black; */
 }
 
 .worksheet-group-list {
@@ -194,7 +193,7 @@ button {
 }
 
 .mud-dialog-title {
-	padding: 0px !important;
+	padding: 0 !important;
 	position: sticky;
 	top: 0;
 	background-color: var(--mud-palette-surface);
@@ -229,8 +228,8 @@ button {
 }
 
 	.mud-input-control-input-container:has(.mud-input-label) {
-		padding: 12px 0 0 0 !important;
-		margin: 6px 0 0 0 !important;
+		padding: 0.75em 0 0 0 !important;
+		margin: 0.375em 0 0 0 !important;
 	}
 
 #blazor-error-ui {
