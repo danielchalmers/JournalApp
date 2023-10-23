@@ -22,9 +22,18 @@ public class ApplicationDbSeeder
 #endif
             databaseWasCreated = db.Database.EnsureCreated();
         }
-        catch (Microsoft.Data.Sqlite.SqliteException ex) when (ex.SqliteErrorCode == 14)
+        catch (Exception ex)
         {
-            // https://stackoverflow.com/a/38562947.
+            _logger.LogError(ex, "Ensure database error");
+
+            if (ex is Microsoft.Data.Sqlite.SqliteException sqliteEx && sqliteEx.SqliteErrorCode == 14)
+            {
+                // https://stackoverflow.com/a/38562947.
+            }
+            else
+            {
+                throw;
+            }
         }
 
         sw.Stop();
