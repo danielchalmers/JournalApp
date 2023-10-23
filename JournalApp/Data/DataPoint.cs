@@ -25,6 +25,8 @@ public class DataPointCategory
 
     public DateTimeOffset? MedicationEveryDaySince { get; set; }
 
+    public bool IsDeleted { get; set; }
+
     public virtual HashSet<DataPoint> DataPoints { get; set; } = [];
 
     public bool SingleLine => Type is DataType.Mood or DataType.Number;

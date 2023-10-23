@@ -11,6 +11,8 @@
 
 			<MudSpacer />
 
+			<MudIconButton Icon="@Icons.Material.Filled.DeleteForever" OnClick="Delete" />
+
 			<MudIconButton Icon="@Icons.Material.Filled.Check" OnClick="Submit" />
 		</div>
 	</TitleContent>
@@ -85,6 +87,15 @@
 	void Cancel()
 	{
 		MudDialog.Close(DialogResult.Cancel());
+	}
+
+	async Task Delete()
+	{
+		if (await DialogService.ShowMessageBox(string.Empty, $"Are you sure you want to PERMANENTLY delete \"{Name}\"? This cannot be reversed.") != true)
+			return;
+
+		Category.IsDeleted = true;
+		Cancel();
 	}
 
 	async Task<bool> Submit()
