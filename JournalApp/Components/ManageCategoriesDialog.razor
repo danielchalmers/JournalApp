@@ -28,8 +28,8 @@
 
 					<MudTextField T="string" @bind-Text="c.Name" Disabled />
 
-					<MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="async () => await Edit(c)" Edge="Edge.End" Disabled="c.ReadOnly" />
-				</div>
+						<MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="async () => await Edit(c)" Edge="Edge.End" Disabled="c.ReadOnly" />
+					</div>
 			}
 		</MudStack>
 	</DialogContent>
@@ -62,15 +62,7 @@
 		if (result.Canceled)
 			return;
 
-		if (string.IsNullOrWhiteSpace(category.Name))
-		{
-			logger.LogInformation($"Deleting category: {category}, {category.Guid}");
-			db.Categories.Remove(category);
-		}
-		else
-		{
-			logger.LogInformation($"Edited category: {category}, {category.Guid}");
-		}
+		logger.LogInformation($"Edited category: {category}, {category.Guid}, Deleted: {category.IsDeleted}");
 
 		await db.SaveChangesAsync();
 	}

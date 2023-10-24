@@ -193,11 +193,15 @@ button {
 }
 
 .mud-dialog-title {
-	padding: 0 !important;
-	position: sticky;
-	top: 0;
-	background-color: var(--mud-palette-surface);
+	padding: 0.5em 1em !important;
 }
+
+	.mud-dialog-title:has(.page-header) {
+		padding: 0 !important;
+		position: sticky;
+		top: 0;
+		background-color: var(--mud-palette-surface);
+	}
 
 .mud-dialog-content {
 	max-width: 960px;
