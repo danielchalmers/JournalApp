@@ -19,47 +19,19 @@
 
 			<MudDivider />
 
-			<div>
-				<MudText Typo="Typo.h5">Warning Signs</MudText>
-				<MudText Typo="Typo.subtitle2">Warning signs that a crisis may be developing</MudText>
-				<MudTextField T="string" @bind-Text="Plan.WarningSigns" Lines="5" Placeholder="types of situations, images, thoughts, feelings, behaviors" />
-			</div>
-
-			<div>
-				<MudText Typo="Typo.h5">Coping Strategies</MudText>
-				<MudText Typo="Typo.subtitle2">Ways to distract myself without contacting another person</MudText>
-				<MudTextField T="string" @bind-Text="Plan.CopingStrategies" Lines="5" Placeholder="listening to music, relaxation techniques, physical activities" />
-			</div>
-
-			<div>
-				<MudText Typo="Typo.h5">Social Distractions</MudText>
-				<MudText Typo="Typo.subtitle2">People and social settings that provide distraction</MudText>
-				<MudTextField T="string" @bind-Text="Plan.SocialDistractions" Lines="3" Placeholder="family, friends, public places" />
-			</div>
-
-			<div>
-				<MudText Typo="Typo.h5">Social Contacts</MudText>
-				<MudText Typo="Typo.subtitle2">People whom I can ask for help</MudText>
-				<MudTextField T="string" @bind-Text="Plan.SocialContacts" Lines="3" Placeholder="significant other, friends, relatives, religious leader" />
-			</div>
-
-			<div>
-				<MudText Typo="Typo.h5">Professional Contacts</MudText>
-				<MudText Typo="Typo.subtitle2">Professionals or agencies I can contact during a crisis</MudText>
-				<MudTextField T="string" @bind-Text="Plan.ProfessionalContacts" Lines="5" Placeholder="psychiatrist, therapist, a crisis hotline" />
-			</div>
-
-			<div>
-				<MudText Typo="Typo.h5">Environment Changes</MudText>
-				<MudText Typo="Typo.subtitle2">Ways to make the environment safer</MudText>
-				<MudTextField T="string" @bind-Text="Plan.EnvironmentChanges" Lines="3" Placeholder="removing or securing items, or going to another location until the urges have passed" />
-			</div>
-
-			<div>
-				<MudText Typo="Typo.h5">Purpose</MudText>
-				<MudText Typo="Typo.subtitle2">Things that are most important to me and worth living for</MudText>
-				<MudTextField T="string" @bind-Text="Plan.Purpose" Lines="3" Placeholder="blessings like your family, friends, pets, health, faith" />
-			</div>
+			<SafetyPlanItem Title="Warning Signs" Subtitle="Warning signs that a crisis may be developing" Placeholder="types of situations, images, thoughts, feelings, behaviors" Lines="5" @bind-Text="Plan.WarningSigns" />
+			
+			<SafetyPlanItem Title="Coping Strategies" Subtitle="Ways to distract myself without contacting another person" Placeholder="listening to music, relaxation techniques, physical activities" Lines="5" @bind-Text="Plan.CopingStrategies" />
+			
+			<SafetyPlanItem Title="Social Distractions" Subtitle="People and social settings that provide distraction" Placeholder="family, friends, public places" Lines="3" @bind-Text="Plan.SocialDistractions" />
+			
+			<SafetyPlanItem Title="Social Contacts" Subtitle="People whom I can ask for help" Placeholder="significant other, friends, relatives, religious leader" Lines="3" @bind-Text="Plan.SocialContacts" />
+			
+			<SafetyPlanItem Title="Professional Contacts" Subtitle="Professionals or agencies I can contact during a crisis" Placeholder="psychiatrist, therapist, a crisis hotline" Lines="5" @bind-Text="Plan.ProfessionalContacts" />
+			
+			<SafetyPlanItem Title="Environment Changes" Subtitle="Ways to make the environment safer" Placeholder="removing or securing items, or going to another location until the urges have passed" Lines="3" @bind-Text="Plan.EnvironmentChanges" />
+			
+			<SafetyPlanItem Title="Purpose" Subtitle="Things that are most important to me and worth living for" Placeholder="blessings like your family, friends, pets, health, faith" Lines="3" @bind-Text="Plan.Purpose" />
 		</div>
 	</DialogContent>
 </MudDialog>

@@ -1,0 +1,42 @@
+﻿@namespace JournalApp.SafetyPlanning
+
+<div>
+	<MudText Typo="Typo.h5">@Title</MudText>
+		<MudText Typo="Typo.subtitle2">@Subtitle</MudText>
+		<MudTextField T="string" @bind-Text="Text" Lines="@Lines" Placeholder="@Placeholder" />
+	</div>
+
+	@code {
+	string _text;
+
+	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+	[Parameter]
+	public string Title { get; set; }
+
+	[Parameter]
+	public string Subtitle { get; set; }
+
+	[Parameter]
+	public string Placeholder { get; set; }
+
+	[Parameter]
+	public int Lines { get; set; }
+
+	[Parameter]
+	public string Text
+	{
+		get => _text;
+		set
+		{
+			if (_text == value)
+				return;
+
+			_text = value;
+			TextChanged.InvokeAsync(value);
+		}
+	}
+
+	[Parameter]
+	public EventCallback<string> TextChanged { get; set; }
+}
