@@ -43,7 +43,7 @@ public class AppDbSeeder
     private async Task SeedCategories()
     {
         async Task AddOrUpdate(
-            string guid,
+            string guidString,
             DataType dataType,
             string group = null,
             string name = null,
@@ -55,10 +55,12 @@ public class AppDbSeeder
         {
             // Apply the given values to a new category, or an existing one without replacing it.
 
-            var category = db.Categories.FirstOrDefault(x => x.Guid.ToString() == guid);
-            var isNew = category == null;
+            var guid = new Guid(guidString);
+            var category = db.Categories.FirstOrDefault(x => x.Guid == guid);
+            var doesExist = category != null;
             category ??= new();
 
+            category.Guid = guid;
             category.Group = group;
             category.Name = name;
             category.ReadOnly = readOnly;
@@ -68,7 +70,7 @@ public class AppDbSeeder
             category.MedicationUnit = medUnit;
             category.MedicationEveryDaySince = medEveryDaySince;
 
-            if (isNew)
+            if (!doesExist)
                 await db.AddCategory(category);
         }
 
