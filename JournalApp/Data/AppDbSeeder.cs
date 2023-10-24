@@ -53,25 +53,29 @@ public class AppDbSeeder
             string medUnit = null,
             DateTimeOffset? medEveryDaySince = null)
         {
-            // Apply the given values to a new category, or an existing one without replacing it.
-
+            // Use existing category or create a new one.
             var guid = new Guid(guidString);
             var category = db.Categories.FirstOrDefault(x => x.Guid == guid);
             var doesExist = category != null;
             category ??= new();
 
+            // Keep some properties up-to-date but not all.
             category.Guid = guid;
             category.Group = group;
             category.Name = name;
             category.ReadOnly = readOnly;
-            category.Enabled = enabled;
-            category.Type = dataType;
-            category.MedicationDose = medDose;
-            category.MedicationUnit = medUnit;
-            category.MedicationEveryDaySince = medEveryDaySince;
 
+            // Save new category with given values.
             if (!doesExist)
+            {
+                category.Enabled = enabled;
+                category.Type = dataType;
+                category.MedicationDose = medDose;
+                category.MedicationUnit = medUnit;
+                category.MedicationEveryDaySince = medEveryDaySince;
+
                 await db.AddCategory(category);
+            }
         }
 
         await AddOrUpdate(
