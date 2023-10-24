@@ -19,7 +19,7 @@
 				@foreach (var palette in _palettes)
 				{
 					<MudMenuItem OnClick="() => SelectPalette(palette)" OnTouch="() => SelectPalette(palette)">
-						<div style="background-color: @(palette);">
+						<div style="color: @(Color.FromArgb(palette).GetComplementary().ToHex());background-color: @(palette)">
 							<MudText>@palette</MudText>
 						</div>
 					</MudMenuItem>
