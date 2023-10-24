@@ -1,12 +1,31 @@
 ﻿namespace JournalApp;
 
-public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+public class AppDbContext : DbContext
 {
+    public AppDbContext()
+    {
+    }
+
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+    {
+    }
+
     public DbSet<Day> Days { get; set; } = default!;
 
     public DbSet<DataPointCategory> Categories { get; set; } = default!;
 
     public DbSet<DataPoint> DataPoints { get; set; } = default!;
+
+    protected override void OnConfiguring(DbContextOptionsBuilder builder)
+    {
+        if (!builder.IsConfigured)
+        {
+            // Uncomment to use EF Core tooling (???).
+            //builder.UseSqlite($"Data Source = temp");
+        }
+
+        base.OnConfiguring(builder);
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

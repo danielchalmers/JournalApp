@@ -6,7 +6,7 @@ namespace JournalApp;
 
 public static class MauiProgram
 {
-    private static string DbFilename { get; } = Path.Combine(FileSystem.AppDataDirectory, $"journal.db");
+    public static string DbFilename { get; } = Path.Combine(FileSystem.AppDataDirectory, $"journal.db");
 
     public static MauiApp CreateMauiApp()
     {

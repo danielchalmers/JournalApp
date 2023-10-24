@@ -14,30 +14,18 @@ public class AppDbSeeder
     public async Task SeedAsync()
     {
         var sw = Stopwatch.StartNew();
-        bool? databaseWasCreated = null;
         try
         {
-#if DEBUG
-            //db.Database.EnsureDeleted();
-#endif
-            databaseWasCreated = db.Database.EnsureCreated();
+            db.Database.Migrate();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Ensure database error");
-
-            if (ex is Microsoft.Data.Sqlite.SqliteException sqliteEx && sqliteEx.SqliteErrorCode == 14)
-            {
-                // https://stackoverflow.com/a/38562947.
-            }
-            else
-            {
-                throw;
-            }
+            _logger.LogError(ex, "Database migration error");
+            throw;
         }
 
         sw.Stop();
-        _logger.LogInformation($"Ensured database was created in {sw.ElapsedMilliseconds}ms; Was created: {databaseWasCreated}");
+        _logger.LogInformation($"Migrated database in {sw.ElapsedMilliseconds}ms");
 
         sw.Restart();
         await SeedCategories();
