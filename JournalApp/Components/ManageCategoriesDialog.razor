@@ -62,7 +62,13 @@
 		if (result.Canceled)
 			return;
 
-		logger.LogInformation($"Edited category: {category}, {category.Guid}, Deleted: {category.IsDeleted}");
+		logger.LogInformation($"Edited category: {category}, {category.Guid}");
+
+		if (category.IsDeleted)
+		{
+			logger.LogInformation("Category was deleted, so now we're going to fix indexes.");
+			await db.FixCategoryIndexes();
+		}
 
 		await db.SaveChangesAsync();
 	}

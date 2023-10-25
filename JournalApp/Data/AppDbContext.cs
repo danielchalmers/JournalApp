@@ -126,17 +126,36 @@ public class AppDbContext : DbContext
 
     public async Task MoveCategoryUp(DataPointCategory category)
     {
-        var anyAbove = false;
+        // Ensure no conflicts.
+        await FixCategoryIndexes();
 
-        // Shift other categories in the same group.
-        foreach (var replaced in Categories.Where(x => x.Group == category.Group && x.Index == category.Index - 1))
+        var replaced = Categories.SingleOrDefault(x => x.Group == category.Group && x.Index == category.Index - 1);
+
+        if (replaced == null)
+            return;
+
+        replaced.Index++;
+        category.Index--;
+
+        await SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Removes gaps or overlap between indexes.
+    /// </summary>
+    public async Task FixCategoryIndexes()
+    {
+        foreach (var g in Categories.GroupBy(x => x.Group))
         {
-            anyAbove = true;
-            replaced.Index++;
+            var i = 0;
+            foreach (var c in g.OrderBy(x => x.Index))
+            {
+                if (c.IsDeleted)
+                    c.Index = 0;
+                else
+                    c.Index = ++i;
+            }
         }
-
-        if (anyAbove)
-            category.Index--;
 
         await SaveChangesAsync();
     }
