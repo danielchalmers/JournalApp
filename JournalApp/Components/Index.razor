@@ -31,26 +31,26 @@
 		<MudSpacer />
 
 		<MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
-			<MudMenuItem OnClick="ManageCategories" OnTouch="ManageCategories">Categories</MudMenuItem>
-			<MudMenuItem OnClick="ManageMedications" OnTouch="ManageMedications">Medications</MudMenuItem>
-			<MudMenuItem OnClick="NewNote" OnTouch="NewNote">New note</MudMenuItem>
+			<MudMenuItem Icon="@Icons.Material.Filled.Category" OnClick="ManageCategories" OnTouch="ManageCategories">Categories</MudMenuItem>
+			<MudMenuItem Icon="@Icons.Material.Filled.Medication" OnClick="ManageMedications" OnTouch="ManageMedications">Medications</MudMenuItem>
+			<MudMenuItem Icon="@Icons.Material.Filled.Comment" OnClick="NewNote" OnTouch="NewNote">New note</MudMenuItem>
 
 			@if (Debugger.IsAttached)
 			{
-				<MudMenuItem OnClick="OpenTrends" OnTouch="OpenTrends">Trends</MudMenuItem>
+				<MudMenuItem Icon="@Icons.Material.Filled.ShowChart" OnClick="OpenTrends" OnTouch="OpenTrends">Trends</MudMenuItem>
 			}
 
-			<MudMenuItem OnClick="OpenWorksheets" OnTouch="OpenWorksheets">Worksheets</MudMenuItem>
-			<MudMenuItem OnClick="OpenSafetyPlan" OnTouch="OpenSafetyPlan">Safety Plan</MudMenuItem>
+			<MudMenuItem Icon="@Icons.Material.Filled.Description" OnClick="OpenWorksheets" OnTouch="OpenWorksheets">Worksheets</MudMenuItem>
+			<MudMenuItem Icon="@Icons.Material.Filled.HealthAndSafety" OnClick="OpenSafetyPlan" OnTouch="OpenSafetyPlan">Safety Plan</MudMenuItem>
 
 			<MudDivider />
 
 			@if (Debugger.IsAttached)
 			{
-				<MudMenuItem OnClick="AppDataService.StartImport" OnTouch="AppDataService.StartImport">Import</MudMenuItem>
-				<MudMenuItem OnClick="AppDataService.StartExport" OnTouch="AppDataService.StartExport">Export</MudMenuItem>
+				<MudMenuItem Icon="@Icons.Material.Filled.Download" OnClick="AppDataService.StartImport" OnTouch="AppDataService.StartImport">Import</MudMenuItem>
+				<MudMenuItem Icon="@Icons.Material.Filled.Upload" OnClick="AppDataService.StartExport" OnTouch="AppDataService.StartExport">Export</MudMenuItem>
 			}
-			<MudMenuItem OnClick="OpenWebsite" OnTouch="OpenWebsite">v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
+			<MudMenuItem Icon="@Icons.Material.Filled.Info" OnClick="OpenWebsite" OnTouch="OpenWebsite">v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
 		</MudMenu>
 	</MudAppBar>
 
