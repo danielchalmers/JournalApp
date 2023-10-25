@@ -14,24 +14,52 @@
 	<DialogContent>
 		<div class="safety-plan-items-container">
 			<MudText>
-				@SafetyPlan.Preamble
+				A safety plan is a written list of coping strategies and sources of support can be used before or during a crisis. The plan should be brief, easy to read, and in your own words.
 			</MudText>
 
 			<MudDivider />
 
-			<SafetyPlanItem Title="Warning Signs" Subtitle="Warning signs that a crisis may be developing" Placeholder="types of situations, images, thoughts, feelings, behaviors" Lines="5" @bind-Text="Plan.WarningSigns" />
-			
-			<SafetyPlanItem Title="Coping Strategies" Subtitle="Ways to distract myself without contacting another person" Placeholder="listening to music, relaxation techniques, physical activities" Lines="5" @bind-Text="Plan.CopingStrategies" />
-			
-			<SafetyPlanItem Title="Social Distractions" Subtitle="People and social settings that provide distraction" Placeholder="family, friends, public places" Lines="3" @bind-Text="Plan.SocialDistractions" />
-			
-			<SafetyPlanItem Title="Social Contacts" Subtitle="People whom I can ask for help" Placeholder="significant other, friends, relatives, religious leader" Lines="3" @bind-Text="Plan.SocialContacts" />
-			
-			<SafetyPlanItem Title="Professional Contacts" Subtitle="Professionals or agencies I can contact during a crisis" Placeholder="psychiatrist, therapist, a crisis hotline" Lines="5" @bind-Text="Plan.ProfessionalContacts" />
-			
-			<SafetyPlanItem Title="Environment Changes" Subtitle="Ways to make the environment safer" Placeholder="removing or securing items, or going to another location until the urges have passed" Lines="3" @bind-Text="Plan.EnvironmentChanges" />
-			
-			<SafetyPlanItem Title="Purpose" Subtitle="Things that are most important to me and worth living for" Placeholder="blessings like your family, friends, pets, health, faith" Lines="3" @bind-Text="Plan.Purpose" />
+			<SafetyPlanItem Title="Warning Signs"
+							Subtitle="Warning signs that a crisis may be developing"
+							Placeholder="types of situations, images, thoughts, feelings, behaviors"
+							Lines="5"
+							@bind-Text="Plan.WarningSigns" />
+
+			<SafetyPlanItem Title="Coping Strategies"
+							Subtitle="Ways to distract myself without contacting another person"
+							Placeholder="listening to music, relaxation techniques, physical activities"
+							Lines="5"
+							@bind-Text="Plan.CopingStrategies" />
+
+			<SafetyPlanItem Title="Social Distractions"
+							Subtitle="People and social settings that provide distraction"
+							Placeholder="family, friends, public places"
+							Lines="3"
+							@bind-Text="Plan.SocialDistractions" />
+
+			<SafetyPlanItem Title="Social Contacts"
+							Subtitle="People whom I can ask for help"
+							Placeholder="significant other, friends, relatives, religious leader"
+							Lines="3"
+							@bind-Text="Plan.SocialContacts" />
+
+			<SafetyPlanItem Title="Professional Contacts"
+							Subtitle="Professionals or agencies I can contact during a crisis"
+							Placeholder="psychiatrist, therapist, a crisis hotline"
+							Lines="5"
+							@bind-Text="Plan.ProfessionalContacts" />
+
+			<SafetyPlanItem Title="Environment Changes"
+							Subtitle="Ways to make the environment safer"
+							Placeholder="removing or securing items, or going to another location until the urges have passed"
+							Lines="3"
+							@bind-Text="Plan.EnvironmentChanges" />
+
+			<SafetyPlanItem Title="Purpose"
+							Subtitle="Things that are most important to me and worth living for"
+							Placeholder="blessings like your family, friends, pets, health, faith"
+							Lines="3"
+							@bind-Text="Plan.Purpose" />
 		</div>
 	</DialogContent>
 </MudDialog>

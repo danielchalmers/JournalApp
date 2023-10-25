@@ -2,8 +2,8 @@
 
 <div>
 	<MudText Typo="Typo.h5">@Title</MudText>
-		<MudText Typo="Typo.subtitle2">@Subtitle</MudText>
-		<MudTextField T="string" @bind-Text="Text" Lines="@Lines" Placeholder="@Placeholder" />
+		<MudText Typo="Typo.caption">@Subtitle</MudText>
+		<MudTextField T="string" @bind-Text="Text" Lines="@Lines" Placeholder="@Placeholder" Variant="Variant.Outlined" DisableUnderLine />
 	</div>
 
 	@code {
