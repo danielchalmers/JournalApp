@@ -18,11 +18,7 @@
 	<DialogContent>
 		<MudText>@DataPoint.Category.Name:</MudText>
 
-		<div class="d-flex align-center" style="gap: 1em;">
-			<MudNumericField @bind-Value="Dose" HideSpinButtons Label="Dose" MaxLength="6" />
-
-				<MudText>@DataPoint.MedicationUnit</MudText>
-			</div>
+			<MudNumericField @bind-Value="Dose" HideSpinButtons Label="@($"Dose ({DataPoint.Day.Date:ddd, MMM d})")" MaxLength="6" Adornment="Adornment.End" AdornmentText="@DataPoint.MedicationUnit" />
 		</DialogContent>
 	</MudDialog>
 
@@ -63,7 +59,7 @@
 			DataPoint.MedicationDose = DataPoint.Category.MedicationDose;
 			DataPoint.Bool = false;
 		}
-		else
+		else if (Dose != DataPoint.MedicationDose)
 		{
 			DataPoint.MedicationDose = Dose;
 			DataPoint.Bool = true;

@@ -13,7 +13,7 @@
 			{
 				<MudMenuItem OnClick="@(() => DataPoint.Mood = mood)" OnTouch="@(() => DataPoint.Mood = mood)">
 					<MudText Typo="Typo.h4">@mood</MudText>
-				</MudMenuItem>
+					</MudMenuItem>
 			}
 		</ChildContent>
 	</MudMenu>
@@ -71,7 +71,7 @@ else if (DataPoint.DataType == DataType.Note)
 }
 else if (DataPoint.DataType == DataType.Medication)
 {
-	<div class="d-flex flex-grow-1 justify-space-between align-center" style="gap:1em;">
+	<div class="d-flex flex-grow-1 justify-space-between align-center" style="gap: 0.5em;">
 		<ButtonGroupCheckBox @bind-SelectedValue="DataPoint.Bool" />
 
 		<MudLink OnClick="EditDose">Edit</MudLink>
