@@ -148,6 +148,7 @@
 	MudTheme AppTheme { get; } = new()
 		{
 			PaletteDark = new PaletteDark() { TextDisabled = "#ffffffb2" },
+			LayoutProperties = new() { AppbarHeight = "4em" },
 		};
 
 	protected override async Task OnInitializedAsync()
