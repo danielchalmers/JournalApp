@@ -41,12 +41,7 @@
 			}
 
 			<MudMenuItem OnClick="OpenWorksheets" OnTouch="OpenWorksheets">Worksheets</MudMenuItem>
-
-			@* Show Safety Plan if the Depression category is enabled *@
-			@if (db.Categories.SingleOrDefault(x => x.Guid == new Guid("7330B995-0B56-46FF-9DD6-9CFC550FF5C8"))?.Enabled == true)
-			{
-				<MudMenuItem OnClick="OpenSafetyPlan" OnTouch="OpenSafetyPlan">Safety Plan</MudMenuItem>
-			}
+			<MudMenuItem OnClick="OpenSafetyPlan" OnTouch="OpenSafetyPlan">Safety Plan</MudMenuItem>
 
 			<MudDivider />
 
