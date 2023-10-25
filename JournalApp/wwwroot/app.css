@@ -180,6 +180,18 @@ button {
 	gap: 1em;
 }
 
+.trends-container {
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
+}
+
+.trend-view {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
 .category-view-compact {
 	display: flex;
 	flex-direction: row;
