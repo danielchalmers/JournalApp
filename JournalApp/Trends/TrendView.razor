@@ -1,0 +1,51 @@
+﻿@namespace JournalApp.Trends
+
+<div>
+	@if (RenderTrendView())
+	{
+		<MudText Typo="Typo.h6">
+			@Category.Name
+		</MudText>
+	}
+
+	<div class="trend-view">
+		@{
+			bool RenderTrendView()
+			{
+				@if (Category.Type == DataType.Mood)
+				{
+					foreach (var (day, point) in DayPoints)
+					{
+						<MudText Typo="Typo.caption">@(point?.Mood ?? day.ToString())</MudText>
+					}
+					return true;
+				}
+				else
+				{
+					return false;
+				}}
+		}
+	</div>
+</div>
+
+@code {
+	[Parameter]
+	public DataPointCategory Category { get; set; }
+
+	[Parameter]
+	public IReadOnlyDictionary<int, DataPoint> DayPoints { get; set; }
+
+	// Used to conditionally render only supported category types.
+	public RenderFragment GetTrendView() => Category.Type switch
+	{
+		DataType.Mood => (__builder) =>
+		{
+			foreach (var (day, point) in DayPoints)
+			{
+				<MudText Typo="Typo.caption">@(point?.Mood ?? day.ToString())</MudText>
+			}
+		}
+		,
+		_ => null
+	};
+}

@@ -21,23 +21,7 @@
 			{
 				@foreach (var category in group)
 				{
-					<div>
-						<MudText Typo="Typo.h6">@category.Name</MudText>
-
-							<div class="trend-view">
-								@if (category.Type == DataType.Mood)
-							{
-								foreach (var (day, point) in _points[category])
-								{
-									<MudText Typo="Typo.caption">@(point?.Mood ?? day.ToString())</MudText>
-								}
-							}
-							else
-							{
-								<MudText Typo="Typo.caption">TBA</MudText>
-							}
-						</div>
-					</div>
+					<TrendView Category="category" DayPoints="_points[category]" />
 				}
 			}
 		</div>
@@ -53,7 +37,7 @@
 	[Parameter]
 	public DateOnly OpenToDate { get; set; }
 
-	public IEnumerable<DataPointCategory> FilteredCategories => db.Categories.Where(x => x.Enabled && !x.IsDeleted && x.Group == null);
+	public IEnumerable<DataPointCategory> FilteredCategories => db.Categories.Where(x => x.Enabled && !x.IsDeleted);
 
 	public DateOnly SelectedDate
 	{
@@ -63,10 +47,20 @@
 			_selectedDate = value;
 
 			// Organize data points by category and day of month.
-			var days = Enumerable.Range(1, DateTime.DaysInMonth(value.Year, value.Month));
 			_points = new();
 			foreach (var category in FilteredCategories)
-				_points.Add(category, days.ToDictionary(d => d, d => category.DataPoints.SingleOrDefault(p => p.Day.Date.Year == value.Year && p.Day.Date.Month == value.Month && p.Day.Date.Day == d)));
+			{
+				var dayPoints = new Dictionary<int, DataPoint>();
+
+				// Each day has either a matching data point or null.
+				for (int day = 0; day < DateTime.DaysInMonth(value.Year, value.Month); day++)
+				{
+					var point = category.DataPoints.FirstOrDefault(p => p.Day.Date.Year == value.Year && p.Day.Date.Month == value.Month && p.Day.Date.Day == day);
+					dayPoints.Add(day, point);
+				}
+
+				_points.Add(category, dayPoints);
+			}
 		}
 	}
 
