@@ -21,7 +21,16 @@
 			{
 				@foreach (var category in group)
 				{
-					<TrendView Category="category" DayPoints="_points[category]" />
+					@if (TrendView.SupportedTypes.Contains(category.Type))
+					{
+						<div>
+							<MudText Typo="Typo.h6">
+								@category.Name
+							</MudText>
+
+							<TrendView Category="category" DayPoints="_points[category]" />
+						</div>
+					}
 				}
 			}
 		</div>
