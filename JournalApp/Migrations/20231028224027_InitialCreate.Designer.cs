@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace JournalApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231023233426_InitialCreate")]
+    [Migration("20231028224027_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -35,13 +35,10 @@ namespace JournalApp.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("DataType")
-                        .HasColumnType("INTEGER");
-
                     b.Property<Guid?>("DayGuid")
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<bool>("Deleted")
                         .HasColumnType("INTEGER");
 
                     b.Property<decimal?>("MedicationDose")
@@ -65,13 +62,16 @@ namespace JournalApp.Migrations
                     b.Property<string>("Text")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("Type")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Guid");
 
                     b.HasIndex("CategoryGuid");
 
                     b.HasIndex("DayGuid");
 
-                    b.ToTable("DataPoints");
+                    b.ToTable("Points");
                 });
 
             modelBuilder.Entity("JournalApp.DataPointCategory", b =>
@@ -80,6 +80,9 @@ namespace JournalApp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("INTEGER");
+
                     b.Property<bool>("Enabled")
                         .HasColumnType("INTEGER");
 
@@ -87,9 +90,6 @@ namespace JournalApp.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Index")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
                     b.Property<decimal?>("MedicationDose")
@@ -132,11 +132,11 @@ namespace JournalApp.Migrations
             modelBuilder.Entity("JournalApp.DataPoint", b =>
                 {
                     b.HasOne("JournalApp.DataPointCategory", "Category")
-                        .WithMany("DataPoints")
+                        .WithMany("Points")
                         .HasForeignKey("CategoryGuid");
 
                     b.HasOne("JournalApp.Day", "Day")
-                        .WithMany("DataPoints")
+                        .WithMany("Points")
                         .HasForeignKey("DayGuid");
 
                     b.Navigation("Category");
@@ -146,12 +146,12 @@ namespace JournalApp.Migrations
 
             modelBuilder.Entity("JournalApp.DataPointCategory", b =>
                 {
-                    b.Navigation("DataPoints");
+                    b.Navigation("Points");
                 });
 
             modelBuilder.Entity("JournalApp.Day", b =>
                 {
-                    b.Navigation("DataPoints");
+                    b.Navigation("Points");
                 });
 #pragma warning restore 612, 618
         }

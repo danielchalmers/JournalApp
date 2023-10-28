@@ -1,78 +1,78 @@
 ﻿@namespace JournalApp
 @inject IDialogService DialogService
 
-@if (DataPoint.DataType == DataType.Mood)
+@if (Point.Type == PointType.Mood)
 {
 	<MudMenu>
 		<ActivatorContent>
-			<MudText Typo="Typo.h4">@(DataPoint.Mood ?? "🤔")</MudText>
+			<MudText Typo="Typo.h4">@(Point.Mood ?? "🤔")</MudText>
 		</ActivatorContent>
 
 		<ChildContent>
 			@foreach (var mood in DataPoint.Moods)
 			{
-				<MudMenuItem OnClick="@(() => DataPoint.Mood = mood)" OnTouch="@(() => DataPoint.Mood = mood)">
+				<MudMenuItem OnClick="@(() => Point.Mood = mood)" OnTouch="@(() => Point.Mood = mood)">
 					<MudText Typo="Typo.h4">@mood</MudText>
 					</MudMenuItem>
 			}
 		</ChildContent>
 	</MudMenu>
 }
-else if (DataPoint.DataType == DataType.Sleep)
+else if (Point.Type == PointType.Sleep)
 {
 	<div class="d-flex align-center flex-grow-1" style="gap:1em">
-		<MudIconButton Icon="@Icons.Material.Filled.Remove" OnClick="DecrementSleep" Disabled="@(DataPoint.SleepHours <= 0)" Size="Size.Small" />
-		<MudSlider @bind-Value="DataPoint.SleepHours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" Size="Size.Large" Immediate />
-			<MudText Typo="Typo.caption">@((DataPoint.SleepHours ?? 0).ToString("00.0"))</MudText>
-			<MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="IncrementSleep" Disabled="@(DataPoint.SleepHours >= 24)" Size="Size.Small" />
+		<MudIconButton Icon="@Icons.Material.Filled.Remove" OnClick="DecrementSleep" Disabled="@(Point.SleepHours <= 0)" Size="Size.Small" />
+		<MudSlider @bind-Value="Point.SleepHours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" Size="Size.Large" Immediate />
+			<MudText Typo="Typo.caption">@((Point.SleepHours ?? 0).ToString("00.0"))</MudText>
+			<MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="IncrementSleep" Disabled="@(Point.SleepHours >= 24)" Size="Size.Small" />
 		</div>
 }
-else if (DataPoint.DataType == DataType.Scale)
+else if (Point.Type == PointType.Scale)
 {
 	<MudRating @bind-SelectedValue="ScaleIndexForMudRating" FullIcon="@Icons.Material.Filled.Circle" EmptyIcon="@Icons.Material.Outlined.Circle" Color="Color.Primary" />
 }
-else if (DataPoint.DataType == DataType.LowToHigh)
+else if (Point.Type == PointType.LowToHigh)
 {
-	<MudRadioButtonGroup @bind-SelectedOption="DataPoint.ScaleIndex">
+	<MudRadioButtonGroup @bind-SelectedOption="Point.ScaleIndex">
 		<MudRadioButton T="Nullable<Int32>" Color="Color.Primary" Size="Size.Small" Option="0"><MudText Typo="Typo.subtitle2">None</MudText></MudRadioButton>
 		<MudRadioButton T="Nullable<Int32>" Color="Color.Primary" Size="Size.Small" Option="1"><MudText Typo="Typo.subtitle2">Low</MudText></MudRadioButton>
 		<MudRadioButton T="Nullable<Int32>" Color="Color.Primary" Size="Size.Small" Option="3"><MudText Typo="Typo.subtitle2">Medium</MudText></MudRadioButton>
 		<MudRadioButton T="Nullable<Int32>" Color="Color.Primary" Size="Size.Small" Option="5"><MudText Typo="Typo.subtitle2">High</MudText></MudRadioButton>
 	</MudRadioButtonGroup>
 }
-else if (DataPoint.DataType == DataType.MildToSevere)
+else if (Point.Type == PointType.MildToSevere)
 {
-	<MudRadioButtonGroup @bind-SelectedOption="DataPoint.ScaleIndex">
+	<MudRadioButtonGroup @bind-SelectedOption="Point.ScaleIndex">
 		<MudRadioButton T="Nullable<Int32>" Color="Color.Primary" Size="Size.Small" Option="0"><MudText Typo="Typo.subtitle2">None</MudText></MudRadioButton>
 		<MudRadioButton T="Nullable<Int32>" Color="Color.Primary" Size="Size.Small" Option="1"><MudText Typo="Typo.subtitle2">Mild</MudText></MudRadioButton>
 		<MudRadioButton T="Nullable<Int32>" Color="Color.Primary" Size="Size.Small" Option="3"><MudText Typo="Typo.subtitle2">Moderate</MudText></MudRadioButton>
 		<MudRadioButton T="Nullable<Int32>" Color="Color.Primary" Size="Size.Small" Option="5"><MudText Typo="Typo.subtitle2">Severe</MudText></MudRadioButton>
 	</MudRadioButtonGroup>
 }
-else if (DataPoint.DataType == DataType.Bool)
+else if (Point.Type == PointType.Bool)
 {
-	<ButtonGroupCheckBox @bind-SelectedValue="DataPoint.Bool" />
+	<ButtonGroupCheckBox @bind-SelectedValue="Point.Bool" />
 }
-else if (DataPoint.DataType == DataType.Number)
+else if (Point.Type == PointType.Number)
 {
-	<MudNumericField @bind-Value="DataPoint.Number" Immediate HideSpinButtons MaxLength="9" />
+	<MudNumericField @bind-Value="Point.Number" Immediate HideSpinButtons MaxLength="9" />
 }
-else if (DataPoint.DataType == DataType.Text)
+else if (Point.Type == PointType.Text)
 {
-	<MudTextField @bind-Value="DataPoint.Text" Immediate />
+	<MudTextField @bind-Value="Point.Text" Immediate />
 }
-else if (DataPoint.DataType == DataType.Note)
+else if (Point.Type == PointType.Note)
 {
 	<div class="d-flex flex-column flex-grow-1">
-		<MudTextField @bind-Value="DataPoint.Text" Lines="4" Placeholder="What's on your mind?" Label="@(DataPoint.CreatedAt.ToString(DateOnly.FromDateTime(DataPoint.CreatedAt.Date) == DataPoint.Day.Date ? "h:mm tt" : "M/d/yy h:mm tt"))" Immediate ReadOnly />
+		<MudTextField @bind-Value="Point.Text" Lines="4" Placeholder="What's on your mind?" Label="@(Point.CreatedAt.ToString(DateOnly.FromDateTime(Point.CreatedAt.Date) == Point.Day.Date ? "h:mm tt" : "M/d/yy h:mm tt"))" Immediate ReadOnly />
 
 			<MudLink OnClick="EditTextInDialog">Edit note...</MudLink>
 		</div>
 }
-else if (DataPoint.DataType == DataType.Medication)
+else if (Point.Type == PointType.Medication)
 {
 	<div class="d-flex flex-grow-1 justify-space-between align-center" style="gap: 0.5em;">
-		<ButtonGroupCheckBox @bind-SelectedValue="DataPoint.Bool" />
+		<ButtonGroupCheckBox @bind-SelectedValue="Point.Bool" />
 
 		<MudLink OnClick="EditDose">Edit</MudLink>
 	</div>
@@ -80,36 +80,36 @@ else if (DataPoint.DataType == DataType.Medication)
 
 @code {
 	[Parameter]
-	public DataPoint DataPoint { get; set; }
+	public DataPoint Point { get; set; }
 
 	[Parameter]
 	public EventCallback DialogClosed { get; set; }
 
 	public int ScaleIndexForMudRating
 	{
-		get => DataPoint.ScaleIndex ?? 0;
-		set => DataPoint.ScaleIndex = value == 0 ? null : value;
+		get => Point.ScaleIndex ?? 0;
+		set => Point.ScaleIndex = value == 0 ? null : value;
 	}
 
 	void DecrementSleep()
 	{
-		DataPoint.SleepHours = Math.Max(0m, (DataPoint.SleepHours ?? 0) - 0.5m);
+		Point.SleepHours = Math.Max(0m, (Point.SleepHours ?? 0) - 0.5m);
 	}
 
 	void IncrementSleep()
 	{
-		DataPoint.SleepHours = Math.Min(24m, (DataPoint.SleepHours ?? 0) + 0.5m);
+		Point.SleepHours = Math.Min(24m, (Point.SleepHours ?? 0) + 0.5m);
 	}
 
 	async Task EditTextInDialog()
 	{
-		await EditTextDialog.ShowDialog(DialogService, DataPoint);
+		await EditTextDialog.ShowDialog(DialogService, Point);
 		await DialogClosed.InvokeAsync();
 	}
 
 	async Task EditDose()
 	{
-		await EditDoseDialog.ShowDialog(DialogService, DataPoint);
+		await EditDoseDialog.ShowDialog(DialogService, Point);
 		await DialogClosed.InvokeAsync();
 	}
 }

@@ -18,16 +18,16 @@
 	<DialogContent>
 		@foreach (var (type, points) in _points)
 		{
-			@if (type is DataType.Mood)
+			@if (type is PointType.Mood)
 			{
-				<TrendView DataType="type" Points="points" />
+				<TrendView PointType="type" Points="points" />
 			}
 		}
 	</DialogContent>
 </MudDialog>
 
 @code {
-	Dictionary<DataType, IReadOnlyDictionary<DataPointCategory, IReadOnlyDictionary<int, DataPoint>>> _points;
+	Dictionary<PointType, IReadOnlyDictionary<DataPointCategory, IReadOnlyDictionary<int, DataPoint>>> _points;
 	DateOnly _selectedDate;
 
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
@@ -44,7 +44,7 @@
 
 			// Group data points by type, category and day of month.
 			_points = new();
-			foreach (var group in db.Categories.Where(x => x.Enabled && !x.IsDeleted).GroupBy(x => x.Type))
+			foreach (var group in db.Categories.Where(x => x.Enabled && !x.Deleted).GroupBy(x => x.Type))
 			{
 				var categoryDictionary = new Dictionary<DataPointCategory, IReadOnlyDictionary<int, DataPoint>>();
 				foreach (var category in group)
@@ -54,7 +54,7 @@
 					// Each day has either a matching data point or null.
 					for (int day = 0; day < DateTime.DaysInMonth(value.Year, value.Month); day++)
 					{
-						var point = category.DataPoints.FirstOrDefault(p => p.Day.Date.Year == value.Year && p.Day.Date.Month == value.Month && p.Day.Date.Day == day);
+						var point = category.Points.FirstOrDefault(p => p.Day.Date.Year == value.Year && p.Day.Date.Month == value.Month && p.Day.Date.Day == day);
 						dayPoints.Add(day, point);
 					}
 

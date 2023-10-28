@@ -26,13 +26,13 @@
 
 				@if (Group == null)
 			{
-				<MudSelect Label="Type of data" @bind-Value="SelectedType">
-					<MudSelectItem Value="DataType.LowToHigh">Low to high</MudSelectItem>
-					<MudSelectItem Value="DataType.MildToSevere">Mild to severe</MudSelectItem>
-					<MudSelectItem Value="DataType.Scale">1-5 scale</MudSelectItem>
-					<MudSelectItem Value="DataType.Bool">Yes or no</MudSelectItem>
-					<MudSelectItem Value="DataType.Number">Number</MudSelectItem>
-					<MudSelectItem Value="DataType.Text">Text</MudSelectItem>
+				<MudSelect Label="Type of data" @bind-Value="Type">
+					<MudSelectItem Value="PointType.LowToHigh">Low to high</MudSelectItem>
+					<MudSelectItem Value="PointType.MildToSevere">Mild to severe</MudSelectItem>
+					<MudSelectItem Value="PointType.Scale">1-5 scale</MudSelectItem>
+					<MudSelectItem Value="PointType.Bool">Yes or no</MudSelectItem>
+					<MudSelectItem Value="PointType.Number">Number</MudSelectItem>
+					<MudSelectItem Value="PointType.Text">Text</MudSelectItem>
 				</MudSelect>
 			}
 			else if (Group == "Medications")
@@ -62,7 +62,7 @@
 
 	public string Name { get; set; } = string.Empty;
 
-	public DataType SelectedType { get; set; } = DataType.LowToHigh;
+	public PointType Type { get; set; } = PointType.LowToHigh;
 
 	public decimal? MedicationDose { get; set; }
 
@@ -78,7 +78,7 @@
 		{
 			Group = Category.Group;
 			Name = Category.Name;
-			SelectedType = Category.Type;
+			Type = Category.Type;
 			MedicationDose = Category.MedicationDose;
 			MedicationUnit = Category.MedicationUnit;
 			MedicationEveryDay = Category.MedicationEveryDaySince != null;
@@ -97,7 +97,7 @@
 		if (await DialogService.ShowMessageBox("Delete", $"Are you sure you want to PERMANENTLY delete \"{Name}\"? This cannot be reversed.", yesText: "Delete", cancelText: "Cancel") != true)
 			return;
 
-		Category.IsDeleted = true;
+		Category.Deleted = true;
 		MudDialog.Close(DialogResult.Ok(Category));
 	}
 
@@ -110,7 +110,7 @@
 		Category ??= new();
 		Category.Group = Group;
 		Category.Name = Name.Trim();
-		Category.Type = Group == "Medications" ? DataType.Medication : SelectedType;
+		Category.Type = Group == "Medications" ? PointType.Medication : Type;
 		Category.MedicationDose = MedicationDose;
 		Category.MedicationUnit = MedicationUnit.Trim();
 		Category.MedicationEveryDaySince = MedicationEveryDay ? DateTimeOffset.Now : null;

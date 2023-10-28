@@ -19,7 +19,7 @@
 
 	<DialogContent>
 		<MudStack Spacing="1">
-			@foreach (var c in db.Categories.Where(c => c.Group == Group && !c.IsDeleted).OrderBy(c => c.Index))
+			@foreach (var c in db.Categories.Where(c => c.Group == Group && !c.Deleted).OrderBy(c => c.Index))
 			{
 				<div class="category-view-compact">
 					<MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" OnClick="async () => await MoveUp(c)" Edge="Edge.Start" Disabled="c.Index <= 1" />
@@ -64,7 +64,7 @@
 
 		logger.LogInformation($"Edited category: {category}, {category.Guid}");
 
-		if (category.IsDeleted)
+		if (category.Deleted)
 		{
 			logger.LogInformation("Category was deleted, so now we're going to fix indexes.");
 			await db.FixCategoryIndexes();

@@ -8,9 +8,9 @@
 		</MudText>
 
 		<div class="trend-view">
-			@switch (DataType)
+			@switch (PointType)
 			{
-				case DataType.Mood:
+				case PointType.Mood:
 					foreach (var (day, point) in dayPoints)
 					{
 						<MudText Typo="Typo.caption">@(point?.Mood ?? day.ToString())</MudText>
@@ -23,7 +23,7 @@
 
 @code {
 	[Parameter]
-	public DataType DataType { get; set; }
+	public PointType PointType { get; set; }
 
 	[Parameter]
 	public IReadOnlyDictionary<DataPointCategory, IReadOnlyDictionary<int, DataPoint>> Points { get; set; }

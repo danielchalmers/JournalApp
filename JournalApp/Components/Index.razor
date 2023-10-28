@@ -86,9 +86,9 @@
 					</div>
 				}
 
-				@foreach (var category in group.Where(x => x.Enabled && !x.IsDeleted).OrderBy(x => x.Index).ThenBy(x => x.Name))
+				@foreach (var category in group.Where(x => x.Enabled && !x.Deleted).OrderBy(x => x.Index).ThenBy(x => x.Name))
 				{
-					@foreach (var point in _day.DataPoints.Where(x => !x.IsDeleted && x.Category == category))
+					@foreach (var point in _day.Points.Where(x => !x.Deleted && x.Category == category))
 					{
 						<div class="data-point-container">
 							@if (!string.IsNullOrEmpty(category.Name))
@@ -96,7 +96,7 @@
 								<div class="data-point-header">
 									<MudText>@category.Name</MudText>
 
-										@if (point.DataType == DataType.Medication)
+										@if (point.Type == PointType.Medication)
 									{
 										<MudText>&NonBreakingSpace;@($"{category.MedicationDose:0.##}{category.MedicationUnit}")</MudText>
 
@@ -116,7 +116,7 @@
 							}
 
 							<div class="data-point-view">
-								<DataPointView DataPoint="point" DialogClosed="_ => StateHasChanged()" />
+								<DataPointView Point="point" DialogClosed="_ => StateHasChanged()" />
 							</div>
 						</div>
 					}
@@ -252,7 +252,7 @@
 		logger.LogInformation("Managing categories");
 		await DialogService.Show<ManageCategoriesDialog>(ComponentUtil.FullscreenDialogOptions).Result;
 
-		if (db.AddMissingDataPoints(_day))
+		if (db.AddMissingPoints(_day))
 			logger.LogInformation($"Added missing data points for {_day}");
 	}
 
@@ -263,7 +263,7 @@
 
 		await DialogService.Show<ManageCategoriesDialog>(parameters, ComponentUtil.FullscreenDialogOptions).Result;
 
-		if (db.AddMissingDataPoints(_day))
+		if (db.AddMissingPoints(_day))
 			logger.LogInformation($"Added missing data points for {_day}");
 	}
 
@@ -307,11 +307,11 @@
 		var note = db.CreateNote(_day);
 
 		var dialogSubmitted = await EditTextDialog.ShowDialog(DialogService, note);
-		if (!dialogSubmitted || note.IsDeleted)
+		if (!dialogSubmitted || note.Deleted)
 			return;
 
 		logger.LogInformation("Saving new note");
-		note.Category.DataPoints.Add(note);
+		note.Category.Points.Add(note);
 		await db.SaveChangesAsync();
 	}
 }

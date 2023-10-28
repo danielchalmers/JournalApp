@@ -16,24 +16,24 @@
 	</TitleContent>
 
 	<DialogContent>
-		<MudText>@DataPoint.Category.Name:</MudText>
+		<MudText>@Point.Category.Name:</MudText>
 
-			<MudNumericField @bind-Value="Dose" HideSpinButtons Label="@($"Dose ({DataPoint.Day.Date:ddd, MMM d})")" MaxLength="6" Adornment="Adornment.End" AdornmentText="@DataPoint.MedicationUnit" />
+			<MudNumericField @bind-Value="Dose" HideSpinButtons Label="@($"Dose ({Point.Day.Date:ddd, MMM d})")" MaxLength="6" Adornment="Adornment.End" AdornmentText="@Point.MedicationUnit" />
 		</DialogContent>
 	</MudDialog>
 
 	@code {
-	DataPoint _dataPoint;
+	DataPoint _points;
 
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
 	[Parameter]
-	public DataPoint DataPoint
+	public DataPoint Point
 	{
-		get => _dataPoint;
+		get => _points;
 		set
 		{
-			_dataPoint = value;
+			_points = value;
 			Dose = value?.MedicationDose;
 		}
 	}
@@ -56,21 +56,21 @@
 	{
 		if (Dose == null || Dose == decimal.Zero)
 		{
-			DataPoint.MedicationDose = DataPoint.Category.MedicationDose;
-			DataPoint.Bool = false;
+			Point.MedicationDose = Point.Category.MedicationDose;
+			Point.Bool = false;
 		}
-		else if (Dose != DataPoint.MedicationDose)
+		else if (Dose != Point.MedicationDose)
 		{
-			DataPoint.MedicationDose = Dose;
-			DataPoint.Bool = true;
+			Point.MedicationDose = Dose;
+			Point.Bool = true;
 		}
 
 		MudDialog.Close(DialogResult.Ok(true));
 	}
 
-	public static async Task ShowDialog(IDialogService dialogService, DataPoint dataPoint)
+	public static async Task ShowDialog(IDialogService dialogService, DataPoint point)
 	{
-		var parameters = new DialogParameters<EditDoseDialog> { { x => x.DataPoint, dataPoint } };
+		var parameters = new DialogParameters<EditDoseDialog> { { x => x.Point, point } };
 		await dialogService.Show<EditDoseDialog>(parameters).Result;
 	}
 }

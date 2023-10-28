@@ -44,7 +44,7 @@ public class AppDbSeeder
     {
         async Task AddOrUpdate(
             string guidString,
-            DataType dataType,
+            PointType type,
             string group = null,
             string name = null,
             bool readOnly = true,
@@ -69,7 +69,7 @@ public class AppDbSeeder
             if (!doesExist)
             {
                 category.Enabled = enabled;
-                category.Type = dataType;
+                category.Type = type;
                 category.MedicationDose = medDose;
                 category.MedicationUnit = medUnit;
                 category.MedicationEveryDaySince = medEveryDaySince;
@@ -80,73 +80,73 @@ public class AppDbSeeder
 
         await AddOrUpdate(
             "BF394F35-2228-4933-BF38-AF5B1B97AEF7",
-            DataType.Note,
+            PointType.Note,
             group: "Notes"
         );
         await AddOrUpdate(
             "D90D89FB-F5B9-47CF-AE4E-3EC0D635E783",
-            DataType.Mood,
+            PointType.Mood,
             name: "Overall mood"
         );
         await AddOrUpdate(
             "D8657B36-F3A0-486F-BF80-0CF057919C7D",
-            DataType.Sleep,
+            PointType.Sleep,
             name: "Last night's sleep"
         );
         await AddOrUpdate(
             "7330B995-0B56-46FF-9DD6-9CFC550FF5C8",
-            DataType.MildToSevere,
+            PointType.MildToSevere,
             name: "Most depressed mood",
             enabled: false
         );
         await AddOrUpdate(
             "4955EB49-0BCF-433B-873E-2092F292CC6B",
-            DataType.MildToSevere,
+            PointType.MildToSevere,
             name: "Most elevated mood",
             enabled: false
         );
         await AddOrUpdate(
             "E9B7E4BE-FD17-4171-B1D4-D38B6009FDA0",
-            DataType.MildToSevere,
+            PointType.MildToSevere,
             name: "Irritability",
             enabled: false
         );
         await AddOrUpdate(
             "0FB54AFF-9ECC-4C17-BAB5-B908B794CEA9",
-            DataType.MildToSevere,
+            PointType.MildToSevere,
             name: "Anxiety",
             enabled: false
         );
         await AddOrUpdate(
             "40B5AF7B-4F4E-4E77-BD6B-F7855CF773AB",
-            DataType.LowToHigh,
+            PointType.LowToHigh,
             name: "Productivity"
         );
         await AddOrUpdate(
             "DE394B38-9007-4349-AE31-429541AAB947",
-            DataType.Bool,
+            PointType.Bool,
             name: "Exercised or was active"
         );
         await AddOrUpdate(
             "EE8DE4D0-3A87-4CA4-B384-81BD7508A19F",
-            DataType.Bool,
+            PointType.Bool,
             name: "Menstruating",
             enabled: false
         );
         await AddOrUpdate(
             "C871C9F7-1A6E-4EA2-ACC9-94A256C9E2CC",
-            DataType.Bool,
+            PointType.Bool,
             name: "Therapy",
             enabled: false
         );
         await AddOrUpdate(
             "480DC07D-1330-486F-9B30-EC83A3D4E6F0",
-            DataType.Number,
+            PointType.Number,
             name: "Weight"
         );
         await AddOrUpdate(
             "01A8F325-3002-40C4-B076-234E26172E82",
-            DataType.Medication,
+            PointType.Medication,
             group: "Medications",
             name: "Vitamin D",
             medDose: 2000,

@@ -7,7 +7,7 @@ public class Day
 
     public DateOnly Date { get; set; }
 
-    public virtual HashSet<DataPoint> DataPoints { get; set; } = [];
+    public virtual HashSet<DataPoint> Points { get; set; } = [];
 
     public override string ToString() => $"{Date}";
 }

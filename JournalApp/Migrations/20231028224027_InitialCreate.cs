@@ -21,11 +21,11 @@ namespace JournalApp.Migrations
                     Index = table.Column<int>(type: "INTEGER", nullable: false),
                     ReadOnly = table.Column<bool>(type: "INTEGER", nullable: false),
                     Enabled = table.Column<bool>(type: "INTEGER", nullable: false),
+                    Deleted = table.Column<bool>(type: "INTEGER", nullable: false),
                     Type = table.Column<int>(type: "INTEGER", nullable: false),
                     MedicationDose = table.Column<decimal>(type: "TEXT", nullable: true),
                     MedicationUnit = table.Column<string>(type: "TEXT", nullable: true),
-                    MedicationEveryDaySince = table.Column<DateTimeOffset>(type: "TEXT", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false)
+                    MedicationEveryDaySince = table.Column<DateTimeOffset>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -45,15 +45,15 @@ namespace JournalApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "DataPoints",
+                name: "Points",
                 columns: table => new
                 {
                     Guid = table.Column<Guid>(type: "TEXT", nullable: false),
                     DayGuid = table.Column<Guid>(type: "TEXT", nullable: true),
                     CategoryGuid = table.Column<Guid>(type: "TEXT", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
-                    DataType = table.Column<int>(type: "INTEGER", nullable: false),
+                    Type = table.Column<int>(type: "INTEGER", nullable: false),
+                    Deleted = table.Column<bool>(type: "INTEGER", nullable: false),
                     Mood = table.Column<string>(type: "TEXT", nullable: true),
                     SleepHours = table.Column<decimal>(type: "TEXT", nullable: true),
                     ScaleIndex = table.Column<int>(type: "INTEGER", nullable: true),
@@ -65,27 +65,27 @@ namespace JournalApp.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_DataPoints", x => x.Guid);
+                    table.PrimaryKey("PK_Points", x => x.Guid);
                     table.ForeignKey(
-                        name: "FK_DataPoints_Categories_CategoryGuid",
+                        name: "FK_Points_Categories_CategoryGuid",
                         column: x => x.CategoryGuid,
                         principalTable: "Categories",
                         principalColumn: "Guid");
                     table.ForeignKey(
-                        name: "FK_DataPoints_Days_DayGuid",
+                        name: "FK_Points_Days_DayGuid",
                         column: x => x.DayGuid,
                         principalTable: "Days",
                         principalColumn: "Guid");
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_DataPoints_CategoryGuid",
-                table: "DataPoints",
+                name: "IX_Points_CategoryGuid",
+                table: "Points",
                 column: "CategoryGuid");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DataPoints_DayGuid",
-                table: "DataPoints",
+                name: "IX_Points_DayGuid",
+                table: "Points",
                 column: "DayGuid");
         }
 
@@ -93,7 +93,7 @@ namespace JournalApp.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "DataPoints");
+                name: "Points");
 
             migrationBuilder.DropTable(
                 name: "Categories");

@@ -17,7 +17,9 @@ public class DataPointCategory
 
     public bool Enabled { get; set; } = true;
 
-    public DataType Type { get; set; }
+    public bool Deleted { get; set; }
+
+    public PointType Type { get; set; }
 
     public decimal? MedicationDose { get; set; }
 
@@ -25,11 +27,9 @@ public class DataPointCategory
 
     public DateTimeOffset? MedicationEveryDaySince { get; set; }
 
-    public bool IsDeleted { get; set; }
+    public virtual HashSet<DataPoint> Points { get; set; } = [];
 
-    public virtual HashSet<DataPoint> DataPoints { get; set; } = [];
-
-    public bool SingleLine => Type is DataType.Mood or DataType.Number;
+    public bool SingleLine => Type is PointType.Mood or PointType.Number;
 
     public override string ToString()
     {
@@ -62,11 +62,11 @@ public class DataPoint
 
     public virtual DataPointCategory Category { get; set; }
 
-    public bool IsDeleted { get; set; }
-
     public DateTimeOffset CreatedAt { get; set; }
 
-    public DataType DataType { get; set; }
+    public PointType Type { get; set; }
+
+    public bool Deleted { get; set; }
 
     public string Mood { get; set; }
     public decimal? SleepHours { get; set; }
@@ -77,7 +77,7 @@ public class DataPoint
     public decimal? MedicationDose { get; set; }
     public string MedicationUnit { get; set; }
 
-    public override string ToString() => $"{DataType}, {Day}, {Category}";
+    public override string ToString() => $"{Type}, {Day}, {Category}";
 
     public static IReadOnlyList<string> Moods { get; } = new[] { "🤔", "🤩", "😀", "🙂", "😐", "😕", "😢", "😭", };
 
@@ -88,14 +88,14 @@ public class DataPoint
             Day = day,
             Category = category,
             CreatedAt = DateTimeOffset.Now,
-            DataType = category.Type,
+            Type = category.Type,
             MedicationDose = category.MedicationDose,
             MedicationUnit = category.MedicationUnit,
         };
     }
 }
 
-public enum DataType
+public enum PointType
 {
     None,
     Mood,

@@ -14,7 +14,7 @@ public class AppDbContext : DbContext
 
     public DbSet<DataPointCategory> Categories { get; set; } = default!;
 
-    public DbSet<DataPoint> DataPoints { get; set; } = default!;
+    public DbSet<DataPoint> Points { get; set; } = default!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
@@ -30,11 +30,11 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<DataPointCategory>()
-            .HasMany(e => e.DataPoints)
+            .HasMany(e => e.Points)
             .WithOne(e => e.Category);
 
         modelBuilder.Entity<Day>()
-            .HasMany(e => e.DataPoints)
+            .HasMany(e => e.Points)
             .WithOne(e => e.Day);
     }
 
@@ -54,7 +54,7 @@ public class AppDbContext : DbContext
             changesMade = true;
         }
 
-        if (AddMissingDataPoints(day, random))
+        if (AddMissingPoints(day, random))
             changesMade = true;
 
         if (changesMade && saveChanges)
@@ -63,7 +63,7 @@ public class AppDbContext : DbContext
         return day;
     }
 
-    public bool AddMissingDataPoints(Day day, Random random = null)
+    public bool AddMissingPoints(Day day, Random random = null)
     {
         var newPoints = new HashSet<DataPoint>();
 
@@ -72,7 +72,7 @@ public class AppDbContext : DbContext
             if (category.Group == "Notes")
             {
                 // First-launch example note.
-                if (category.DataPoints.Count == 0)
+                if (category.Points.Count == 0)
                 {
                     var note = CreateNote(day);
                     note.Text = "I just started using JournalApp! 😎";
@@ -82,30 +82,30 @@ public class AppDbContext : DbContext
             else
             {
                 // Create a new data point for this category if it doesn't have one already.
-                if (!day.DataPoints.Any(x => x.Category == category))
+                if (!day.Points.Any(x => x.Category == category))
                 {
-                    var dataPoint = DataPoint.Create(day, category);
+                    var point = DataPoint.Create(day, category);
 
                     if (random != null)
                     {
-                        dataPoint.Mood = DataPoint.Moods[random.Next(1, DataPoint.Moods.Count)];
-                        dataPoint.SleepHours = random.Next(0, 49) / 2.0m;
-                        dataPoint.ScaleIndex = random.Next(0, 6);
-                        dataPoint.Bool = Convert.ToBoolean(random.Next(0, 2));
-                        dataPoint.Number = random.Next(0, 1000);
+                        point.Mood = DataPoint.Moods[random.Next(1, DataPoint.Moods.Count)];
+                        point.SleepHours = random.Next(0, 49) / 2.0m;
+                        point.ScaleIndex = random.Next(0, 6);
+                        point.Bool = Convert.ToBoolean(random.Next(0, 2));
+                        point.Number = random.Next(0, 1000);
                     }
 
                     // Automatically mark daily medications as taken.
                     if (category.Enabled && category.MedicationEveryDaySince != null && day.Date >= DateOnly.FromDateTime(category.MedicationEveryDaySince.Value.Date))
-                        dataPoint.Bool = true;
+                        point.Bool = true;
 
                     // Add to the database.
-                    newPoints.Add(dataPoint);
+                    newPoints.Add(point);
                 }
             }
         }
 
-        DataPoints.AddRange(newPoints);
+        Points.AddRange(newPoints);
 
         return newPoints.Count > 0;
     }
@@ -150,7 +150,7 @@ public class AppDbContext : DbContext
             var i = 0;
             foreach (var c in g.OrderBy(x => x.Index))
             {
-                if (c.IsDeleted)
+                if (c.Deleted)
                     c.Index = 0;
                 else
                     c.Index = ++i;

@@ -8,7 +8,7 @@
 		<div class="page-header">
 			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="Cancel" />
 
-			<MudText Typo="Typo.h6">@DataPoint.CreatedAt.ToString("MMM d h:mm tt")</MudText>
+			<MudText Typo="Typo.h6">@Point.CreatedAt.ToString("MMM d h:mm tt")</MudText>
 
 			<MudSpacer />
 
@@ -22,17 +22,17 @@
 	</MudDialog>
 
 	@code {
-	DataPoint _dataPoint;
+	DataPoint _point;
 
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
 	[Parameter]
-	public DataPoint DataPoint
+	public DataPoint Point
 	{
-		get => _dataPoint;
+		get => _point;
 		set
 		{
-			_dataPoint = value;
+			_point = value;
 			Text = value?.Text;
 		}
 	}
@@ -53,20 +53,20 @@
 
 	void Submit()
 	{
-		DataPoint.Text = Text;
+		Point.Text = Text;
 
 		if (string.IsNullOrWhiteSpace(Text))
 		{
-			logger.LogInformation("Discarding data point with empty text");
-			DataPoint.IsDeleted = true;
+			logger.LogInformation("Discarding point with empty text");
+			Point.Deleted = true;
 		}
 
 		MudDialog.Close(DialogResult.Ok(true));
 	}
 
-	public static async Task<bool> ShowDialog(IDialogService dialogService, DataPoint dataPoint)
+	public static async Task<bool> ShowDialog(IDialogService dialogService, DataPoint point)
 	{
-		var parameters = new DialogParameters<EditTextDialog> { { x => x.DataPoint, dataPoint } };
+		var parameters = new DialogParameters<EditTextDialog> { { x => x.Point, point } };
 		var options = new DialogOptions { FullWidth = true, };
 
 		var result = await dialogService.Show<EditTextDialog>(parameters, options).Result;
