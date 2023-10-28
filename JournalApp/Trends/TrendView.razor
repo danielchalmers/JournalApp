@@ -1,23 +1,30 @@
 ﻿@namespace JournalApp.Trends
 
-	<div class="trend-view">
-		@switch (Category.Type)
-		{
-			case DataType.Mood:
-				foreach (var (day, point) in DayPoints)
-				{
-					<MudText Typo="Typo.caption">@(point?.Mood ?? day.ToString())</MudText>
-				}
-				break;
-		}
-	</div>
+<div class="trends-container">
+	@foreach (var (category, dayPoints) in Points)
+	{
+		<MudText Typo="Typo.h6">
+			@category.Name
+		</MudText>
+
+		<div class="trend-view">
+			@switch (DataType)
+			{
+				case DataType.Mood:
+					foreach (var (day, point) in dayPoints)
+					{
+						<MudText Typo="Typo.caption">@(point?.Mood ?? day.ToString())</MudText>
+					}
+					break;
+			}
+		</div>
+	}
+</div>
 
 @code {
 	[Parameter]
-	public DataPointCategory Category { get; set; }
+	public DataType DataType { get; set; }
 
 	[Parameter]
-	public IReadOnlyDictionary<int, DataPoint> DayPoints { get; set; }
-
-	public static IReadOnlyCollection<DataType> SupportedTypes { get; } = new[] { DataType.Mood };
+	public IReadOnlyDictionary<DataPointCategory, IReadOnlyDictionary<int, DataPoint>> Points { get; set; }
 }
