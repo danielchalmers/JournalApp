@@ -26,7 +26,7 @@
 
 				@if (Group == null)
 			{
-				<MudSelect Label="Type of data" @bind-Value="Type">
+				<MudSelect Label="Type of data" @bind-Value="Type" Disabled="@(Category != null)">
 					<MudSelectItem Value="PointType.LowToHigh">Low to high</MudSelectItem>
 					<MudSelectItem Value="PointType.MildToSevere">Mild to severe</MudSelectItem>
 					<MudSelectItem Value="PointType.Scale">1-5 scale</MudSelectItem>
