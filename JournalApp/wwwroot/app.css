@@ -72,9 +72,7 @@ button {
 }
 
 .data-point-header {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
+	word-wrap: anywhere;
 }
 
 .data-point-view {
