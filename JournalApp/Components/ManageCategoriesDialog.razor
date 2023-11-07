@@ -26,9 +26,7 @@
 
 					<MudSwitch @bind-Checked="c.Enabled" Color="Color.Primary" Style="margin-right: -0.125em;" />
 
-					<MudTextField T="string" @bind-Text="c.Name" Disabled />
-
-						<MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="async () => await Edit(c)" Edge="Edge.End" Disabled="c.ReadOnly" />
+					<MudButton Variant="Variant.Text" OnClick="async () => await Edit(c)" Disabled="c.ReadOnly" StartIcon="@Icons.Material.Filled.Edit" Style="white-space: nowrap">@c.Name</MudButton>
 					</div>
 			}
 		</MudStack>
