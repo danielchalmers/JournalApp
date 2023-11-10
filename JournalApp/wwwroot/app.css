@@ -26,16 +26,6 @@ button {
 	text-transform: none !important;
 }
 
-.page-header {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	gap: 0.5em;
-	background-color: var(--mud-palette-primary);
-	height: calc(var(--mud-appbar-height) - var(--mud-appbar-height) / 4);
-	box-shadow: none;
-}
-
 #main-header {
 	top: 0;
 	position: sticky;
@@ -202,16 +192,26 @@ button {
 	width: 0;
 }
 
-.mud-dialog-title {
-	padding: 0.5em 1em !important;
+.page-header {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 0.5em;
+	box-shadow: none;
+	height: calc(var(--mud-appbar-height) - var(--mud-appbar-height) / 4);
 }
 
-	.mud-dialog-title:has(.page-header) {
-		padding: 0 !important;
-		position: sticky;
-		top: 0;
-		background-color: var(--mud-palette-surface);
-	}
+.mud-dialog-title > .page-header {
+	margin: -0.5em -1em;
+}
+
+.mud-dialog-title {
+	padding: 0.5em 1em !important;
+	margin: 0 !important;
+	top: 0 !important;
+	position: sticky !important;
+	background-color: var(--mud-palette-primary);
+}
 
 .mud-dialog-content {
 	max-width: 960px;
@@ -241,9 +241,8 @@ button {
 	margin: 0 !important;
 }
 
-	.mud-input-control-input-container:has(.mud-input-label) {
-		padding: 0.75em 0 0 0 !important;
-		margin: 0.375em 0 0 0 !important;
+	.mud-input-control-input-container > .mud-input-label {
+		margin: -1.125em 0 0 0 !important;
 	}
 
 .mud-input-root-outlined {
