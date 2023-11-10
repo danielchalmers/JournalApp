@@ -16,7 +16,7 @@
 	</TitleContent>
 
 	<DialogContent>
-		<MudText>@Point.Category.Name:</MudText>
+		<MudText Style="word-wrap: anywhere;">@Point.Category.Name:</MudText>
 
 			<MudNumericField @bind-Value="Dose" HideSpinButtons Label="@($"Dose ({Point.Day.Date:ddd, MMM d})")" MaxLength="6" Adornment="Adornment.End" AdornmentText="@Point.MedicationUnit" />
 		</DialogContent>
