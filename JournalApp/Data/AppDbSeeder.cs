@@ -18,6 +18,10 @@ public class AppDbSeeder
         {
             db.Database.Migrate();
         }
+        catch (Microsoft.Data.Sqlite.SqliteException ex) when (ex.SqliteErrorCode == 14)
+        {
+            // https://stackoverflow.com/a/38562947.
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Database migration error");
