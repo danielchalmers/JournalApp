@@ -238,11 +238,12 @@ button {
 }
 
 .mud-input-control-input-container {
+	/* margin: 0.375em 0 0 0 !important; */
 	margin: 0 !important;
 }
 
 	.mud-input-control-input-container > .mud-input-label {
-		margin: -1.125em 0 0 0 !important;
+		margin: -0.75em 0 0 0 !important;
 	}
 
 .mud-input-root-outlined {
