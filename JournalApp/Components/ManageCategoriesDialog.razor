@@ -18,18 +18,25 @@
 	</TitleContent>
 
 	<DialogContent>
-		<MudStack Spacing="1">
-			@foreach (var c in db.Categories.Where(c => c.Group == Group && !c.Deleted).OrderBy(c => c.Index))
-			{
-				<div class="category-view-compact">
-					<MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" OnClick="async () => await MoveUp(c)" Edge="Edge.Start" Disabled="c.Index <= 1" />
+		@if (!Categories.Any())
+		{
+			<MudText Align="Align.Center">Use the plus button in the top right to add a new one.</MudText>
+		}
+		else
+		{
+			<MudStack Spacing="1">
+				@foreach (var c in Categories.OrderBy(c => c.Index))
+				{
+					<div class="category-view-compact">
+						<MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" OnClick="async () => await MoveUp(c)" Edge="Edge.Start" Disabled="c.Index <= 1" />
 
-					<MudSwitch @bind-Checked="c.Enabled" Color="Color.Primary" Style="margin-right: -0.125em;" />
+						<MudSwitch @bind-Checked="c.Enabled" Color="Color.Primary" Style="margin-right: -0.125em;" />
 
-					<MudButton Variant="Variant.Text" OnClick="async () => await Edit(c)" Disabled="c.ReadOnly" StartIcon="@Icons.Material.Filled.Edit" Style="white-space: nowrap">@c.Name</MudButton>
-					</div>
-			}
-		</MudStack>
+						<MudButton Variant="Variant.Text" OnClick="async () => await Edit(c)" Disabled="c.ReadOnly" StartIcon="@Icons.Material.Filled.Edit" Style="white-space: nowrap">@c.Name</MudButton>
+						</div>
+				}
+			</MudStack>
+		}
 	</DialogContent>
 </MudDialog>
 
@@ -38,6 +45,8 @@
 
 	[Parameter]
 	public string Group { get; set; }
+
+	public IQueryable<DataPointCategory> Categories => db.Categories.Where(c => c.Group == Group && !c.Deleted);
 
 	protected override void OnInitialized()
 	{
