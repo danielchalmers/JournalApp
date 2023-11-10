@@ -1,5 +1,6 @@
 ﻿@namespace JournalApp.MoodGrid
 @using Color = Microsoft.Maui.Graphics.Color;
+@using MudBlazor.Utilities
 @inject AppDbContext db
 @inject ILogger<MoodGridDialog> logger
 @inject IDialogService DialogService
@@ -15,16 +16,7 @@
 
 			<MudSpacer />
 
-			<MudMenu Icon="@Icons.Material.Filled.Palette" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
-				@foreach (var palette in _palettes)
-				{
-					<MudMenuItem OnClick="() => SelectPalette(palette)" OnTouch="() => SelectPalette(palette)">
-						<div style="color: @(Color.FromArgb(palette).GetComplementary().ToHex());background-color: @(palette)">
-							<MudText>@palette</MudText>
-						</div>
-					</MudMenuItem>
-				}
-			</MudMenu>
+			<MudIconButton Icon="@Icons.Material.Filled.Palette" OnClick="() => _isColorPickerVisible = true" />
 		</div>
 
 		<MoodGridSwitcher @bind-SelectedYear="SelectedYear" />
@@ -74,22 +66,29 @@
 				}
 			}
 		</div>
+
+		<MudDialog @bind-IsVisible="_isColorPickerVisible" Options="_colorPickerDialogOptions">
+			<DialogContent>
+				<MudColorPicker Label="Primary" PickerVariant="PickerVariant.Static" Value="SelectedColor" ValueChanged="OnColorSelected" DisableToolbar="false" DisableAlpha="true" DisableDragEffect="true" />
+			</DialogContent>
+		</MudDialog>
 	</DialogContent>
 </MudDialog>
 
 @code {
+	private bool _isColorPickerVisible;
+	private DialogOptions _colorPickerDialogOptions = new() { NoHeader = true };
 	int _selectedYear;
 	GridYear? _gridYear;
 	DataPointCategory _moodCategory;
 	IReadOnlyDictionary<string, string> _moodColors;
-	string[] _palettes = new[] { "#6bdbe7", "#8de3ec", "#776be7", "#968dec", "#6be777", "#8dec96", };
 
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
 	[Parameter]
 	public DateOnly OpenToDate { get; set; }
 
-	public string SelectedPalette { get; set; }
+	public MudColor SelectedColor { get; set; }
 
 	public int SelectedYear
 	{
@@ -128,7 +127,7 @@
 
 		_moodCategory = db.Categories.SingleOrDefault(x => x.Guid == new Guid("D90D89FB-F5B9-47CF-AE4E-3EC0D635E783"));
 		KeycodeService.SubscribeOnceToBackButtonPressed(() => Close());
-		SelectedPalette = Preferences.Get("mood_palette", _palettes.First());
+		SelectedColor = new MudColor(Preferences.Get("mood_palette", "#6bdbe7"));
 		GenerateColors();
 
 		logger.LogInformation($"Opened to {OpenToDate}");
@@ -148,7 +147,7 @@
 	void GenerateColors()
 	{
 		var emojis = DataPoint.Moods.Where(x => x != "🤔").ToList();
-		var primary = Color.FromArgb(SelectedPalette);
+		var primary = SelectedColor.ToMauiColor();
 		var complementary = primary.GetComplementary();
 
 		var emojiColors = new Dictionary<string, string>();
@@ -161,7 +160,7 @@
 		}
 		_moodColors = emojiColors;
 
-		logger.LogInformation($"Using colors: {string.Join(",", emojiColors)}");
+		logger.LogInformation($"Palette: {string.Join(",", emojiColors)}");
 	}
 
 	string GetMoodColor(string emoji)
@@ -172,10 +171,10 @@
 			return color;
 	}
 
-	void SelectPalette(string palette)
+	void OnColorSelected(MudColor color)
 	{
-		Preferences.Set("mood_palette", palette);
-		SelectedPalette = palette;
+		SelectedColor = color;
+		Preferences.Set("mood_palette", color.Value[..^2]);
 		GenerateColors();
 		StateHasChanged();
 	}

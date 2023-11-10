@@ -1,9 +1,15 @@
-﻿using Color = Microsoft.Maui.Graphics.Color;
+﻿using MudBlazor.Utilities;
+using Color = Microsoft.Maui.Graphics.Color;
 
 namespace JournalApp;
 
 public static class ColorUtil
 {
+    public static Color ToMauiColor(this MudColor color)
+    {
+        return Color.FromRgb(color.R, color.G, color.B);
+    }
+
     public static Color GetComplementary(this Color color)
     {
         var hue = color.GetHue();
