@@ -32,7 +32,9 @@
 
 						<MudSwitch @bind-Checked="c.Enabled" Color="Color.Primary" Style="margin-right: -0.125em;" />
 
-						<MudButton Variant="Variant.Text" OnClick="async () => await Edit(c)" Disabled="c.ReadOnly" StartIcon="@Icons.Material.Filled.Edit" Style="white-space: nowrap">@c.Name</MudButton>
+						<div class="category-view-edit-button">
+							<MudButton Variant="Variant.Text" OnClick="async () => await Edit(c)" Disabled="c.ReadOnly" StartIcon="@Icons.Material.Filled.Edit">@c.Name</MudButton>
+							</div>
 						</div>
 				}
 			</MudStack>

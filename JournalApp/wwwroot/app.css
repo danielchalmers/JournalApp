@@ -187,6 +187,17 @@ button {
 	gap: 0.1em;
 }
 
+.category-view-edit-button {
+	display: flex;
+	flex-grow: 1;
+	overflow-x: clip;
+}
+
+	.category-view-edit-button > .mud-button {
+		justify-content: start !important;
+		flex-grow: 1 !important;
+	}
+
 .break-flex-column {
 	flex-basis: 100%;
 	width: 0;
