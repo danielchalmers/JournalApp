@@ -218,6 +218,9 @@ button {
 }
 
 .mud-dialog-title {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5em;
 	padding: 0.5em 1em !important;
 	margin: 0 !important;
 	top: 0 !important;
