@@ -35,10 +35,13 @@ public readonly struct GridMonth
 
         foreach (var i in indexes)
         {
-            // Bundle date during search to avoid additional DB lookups (thru DataPoint.Day).
             var date = i >= 1 && i <= daysInMonth ? new(firstDate.Year, firstDate.Month, i) : (DateOnly?)null;
             var point = date.HasValue ? moodPoints.GetValueOrDefault(date.Value) : null;
             var emoji = point?.Mood;
+
+            // Don't start a new row if we've gone past the last day.
+            if (i == firstIndex + 35 && date == null)
+                yield break;
 
             yield return new GridDay(i, date, emoji);
         }
