@@ -185,7 +185,7 @@
 		if (DeviceInfo.Current.Platform != DevicePlatform.WinUI && DateTimeOffset.Now - _stoppedDate > TimeSpan.FromHours(1))
 		{
 			logger.LogInformation($"Switching from {_day} to current day after user was gone since {_stoppedDate}");
-			await GoToDay(DateOnly.FromDateTime(DateTime.Now));
+			await GoToDay(DateOnly.FromDateTime(DateTime.Now), scrollToTop: true);
 
 			await AppDataService.ShowExportReminderIfDue();
 		}
