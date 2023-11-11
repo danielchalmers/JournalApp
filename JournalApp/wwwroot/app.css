@@ -210,6 +210,7 @@ button {
 	gap: 0.5em;
 	box-shadow: none;
 	height: calc(var(--mud-appbar-height) - var(--mud-appbar-height) / 4);
+	background-color: var(--mud-palette-primary);
 }
 
 .mud-dialog-title > .page-header {
@@ -221,7 +222,7 @@ button {
 	margin: 0 !important;
 	top: 0 !important;
 	position: sticky !important;
-	background-color: var(--mud-palette-primary);
+	background-color: var(--mud-palette-surface);
 }
 
 .mud-dialog-content {
