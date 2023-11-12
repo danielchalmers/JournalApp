@@ -1,4 +1,4 @@
-﻿namespace JournalApp.SafetyPlanning;
+﻿namespace JournalApp;
 
 public record SafetyPlan
 {

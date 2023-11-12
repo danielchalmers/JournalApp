@@ -1,10 +1,6 @@
 ﻿@namespace JournalApp
 @page "/"
 @using CommunityToolkit.Maui.Storage;
-@using JournalApp.MoodGrid
-@using JournalApp.SafetyPlanning
-@using JournalApp.Trends
-@using JournalApp.Worksheets
 @inherits LayoutComponentBase
 @inject AppDbContext db
 @inject AppDbSeeder dbSeeder
@@ -225,8 +221,8 @@
 	async Task OpenMoodGrid()
 	{
 		logger.LogInformation("Opening Mood Grid");
-		var parameters = new DialogParameters<MoodGrid.MoodGridDialog> { { x => x.OpenToDate, _day.Date } };
-		var result = await DialogService.Show<MoodGrid.MoodGridDialog>(parameters, ComponentUtil.FullscreenDialogOptions).Result;
+		var parameters = new DialogParameters<MoodGridDialog> { { x => x.OpenToDate, _day.Date } };
+		var result = await DialogService.Show<MoodGridDialog>(parameters, ComponentUtil.FullscreenDialogOptions).Result;
 
 		if (result.Data is DateOnly date)
 		{

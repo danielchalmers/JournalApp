@@ -1,4 +1,4 @@
-﻿namespace JournalApp.Worksheets;
+﻿namespace JournalApp;
 
 public static class WorksheetData
 {

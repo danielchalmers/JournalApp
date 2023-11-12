@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace JournalApp.MoodGrid;
+namespace JournalApp;
 
 public readonly record struct GridDay(int Index, DateOnly? Date, string Emoji);
 
