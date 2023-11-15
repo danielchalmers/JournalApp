@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using JournalApp.MoodGrid;
 
 namespace JournalApp.Tests;
 
