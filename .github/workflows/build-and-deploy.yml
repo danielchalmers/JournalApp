@@ -58,5 +58,5 @@ jobs:
         serviceAccountJsonPlainText: "${{ secrets.SERVICE_ACCOUNT_JSON }}"
         packageName: com.danielchalmers.journalapp
         releaseFiles: "publish/*-Signed.aab"
-        track: internal
-        status: draft
+        track: beta
+        status: completed
