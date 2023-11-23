@@ -65,13 +65,14 @@ button {
 	background-color: var(--mud-palette-primary-lighten);
 }
 
-.page-body {
-	padding-bottom: 15em;
-}
-
 .mud-dialog-content, .page-body {
 	max-width: 960px;
 	margin: 0.5em auto;
+	padding: 0.5em 0.5em 0.5em !important;
+}
+
+.page-body {
+	padding-bottom: 15em !important;
 }
 
 .mud-dialog-fullscreen {
