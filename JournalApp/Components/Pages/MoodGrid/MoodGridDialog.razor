@@ -108,7 +108,7 @@
 
 			var tomorrow = DateOnly.FromDateTime(DateTime.Now).Next();
 
-			// Link a single data point from the Mood category to its date.
+			// Group all mood points by their dates.
 			var moodPointsByDate = db.Days
 				.Select(x => new { Date = x.Date, DataPoints = x.Points })
 				.Where(x => x.Date.Year == value && x.Date <= tomorrow)
