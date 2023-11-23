@@ -1,0 +1,5 @@
+.safety-plan-items-container {
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
+}

@@ -1,0 +1,30 @@
+.main-timeline {
+	display: flex;
+	flex-direction: column;
+	gap: 2em;
+}
+
+.data-point-group {
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
+}
+
+.data-point-container {
+	display: flex;
+	flex-wrap: wrap;
+	flex-grow: 1;
+	align-items: center;
+	justify-items: center;
+	column-gap: 0.5em;
+}
+
+.data-point-header {
+	word-wrap: anywhere;
+}
+
+.data-point-view {
+	display: flex;
+	flex-grow: 1;
+	min-height: 2em;
+}

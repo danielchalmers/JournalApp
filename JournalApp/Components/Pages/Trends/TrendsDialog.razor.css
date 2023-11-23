@@ -1,0 +1,11 @@
+﻿.trends-container {
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
+}
+
+.trend-view {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}

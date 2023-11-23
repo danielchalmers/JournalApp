@@ -1,0 +1,43 @@
+.mood-grid {
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
+}
+
+.mood-grid-month-header {
+	display: flex;
+	justify-content: center;
+}
+
+.mood-grid-month {
+	display: flex;
+	flex-direction: column;
+}
+
+.mood-blocks-month {
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 0;
+}
+
+.mood-blocks-week {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	flex: 1 1 0;
+}
+
+.mood-block-container {
+	display: flex;
+	flex: 1 1 0;
+	margin: 0.125em;
+	padding: 0.25em;
+	min-width: 3em;
+	max-width: 6em;
+}
+
+.mood-block {
+	display: flex;
+	width: 100%;
+	aspect-ratio: 1 / 1;
+}

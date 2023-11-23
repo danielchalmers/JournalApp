@@ -1,0 +1,17 @@
+.category-view-compact {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 0.1em;
+}
+
+.category-view-edit-button {
+	display: flex;
+	flex-grow: 1;
+	overflow-x: clip;
+}
+
+	.category-view-edit-button > .mud-button {
+		justify-content: start !important;
+		flex-grow: 1 !important;
+	}
