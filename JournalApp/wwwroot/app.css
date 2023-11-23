@@ -26,23 +26,9 @@ button {
 	text-transform: none !important;
 }
 
-#main-header {
-	top: 0;
-	position: sticky;
-	background-color: var(--mud-palette-primary-lighten);
-	z-index: 1000;
-}
-
-#main-body {
+.main-timeline {
 	display: flex;
-	justify-content: center;
-}
-
-#main-timeline {
-	flex-grow: 1;
-	max-width: 960px;
-	margin: 0.5em 1em;
-	margin-bottom: 15em;
+	flex-direction: column;
 	gap: 2em;
 }
 
@@ -211,27 +197,27 @@ button {
 	box-shadow: none;
 	height: calc(var(--mud-appbar-height) - var(--mud-appbar-height) / 4);
 	background-color: var(--mud-palette-primary);
+	padding: 0.5em;
 }
 
-.mud-dialog-title > .page-header {
-	margin: -0.5em -1em;
-}
-
-.mud-dialog-title {
+.mud-dialog-title, .page-title {
+	z-index: +1;
 	display: flex;
 	flex-direction: column;
-	gap: 0.5em;
-	padding: 0.5em 1em !important;
+	padding: 0 !important;
 	margin: 0 !important;
 	top: 0 !important;
 	position: sticky !important;
-	background-color: var(--mud-palette-surface);
+	background-color: var(--mud-palette-primary-lighten);
 }
 
-.mud-dialog-content {
+.page-body {
+	padding-bottom: 15em;
+}
+
+.mud-dialog-content, .page-body {
 	max-width: 960px;
-	margin: 0 auto;
-	padding: 0.5em 1em !important;
+	margin: 0.5em auto;
 }
 
 .mud-dialog-fullscreen {

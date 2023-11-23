@@ -11,17 +11,17 @@
 @inject AppDataService AppDataService
 
 <MudThemeProvider Theme="AppTheme" IsDarkMode />
-	<MudDialogProvider MaxWidth="MaxWidth.Medium"
-					   NoHeader="false"
-					   CloseButton="false"
-					   CloseOnEscapeKey="true"
-					   Position="DialogPosition.Center" />
-	<MudSnackbarProvider />
+<MudDialogProvider MaxWidth="MaxWidth.Medium"
+				   NoHeader="false"
+				   CloseButton="false"
+				   CloseOnEscapeKey="true"
+				   Position="DialogPosition.Center" />
+<MudSnackbarProvider />
 
-	<div id="main-header">
-		<MudAppBar Color="Color.Primary" Fixed="false" Dense>
+<div class="page-title">
+	<div class="page-header">
 		<MudButton OnClick="ScrollToTop" DisableRipple Variant="Variant.Text">
-				<MudText Typo="Typo.h6">🙂 @ThisAssembly.AssemblyTitle BETA</MudText>
+			<MudText Typo="Typo.h6">🙂 @ThisAssembly.AssemblyTitle BETA</MudText>
 		</MudButton>
 
 		<MudSpacer />
@@ -48,7 +48,7 @@
 			}
 			<MudMenuItem Icon="@Icons.Material.Filled.Info" OnClick="OpenWebsite" OnTouch="OpenWebsite">v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
 		</MudMenu>
-	</MudAppBar>
+	</div>
 
 	<div class="switcher">
 		<MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
@@ -56,16 +56,16 @@
 		<div class="switcher-header">
 			<MudButton OnClick="OpenMoodGrid">
 				<MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false">@_day.Date.ToString("ddd, MMM d")</MudText>
-				</MudButton>
-			</div>
-
-			<MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" OnClick="NextDay" Disabled="@(_day.Date > DateOnly.FromDateTime(DateTime.Now))" />
+			</MudButton>
 		</div>
-	</div>
 
-	<div id="main-body">
-		<MudStack id="main-timeline">
-			@foreach (var group in db.Categories.GroupBy(x => x.Group))
+		<MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" OnClick="NextDay" Disabled="@(_day.Date > DateOnly.FromDateTime(DateTime.Now))" />
+	</div>
+</div>
+
+<div class="page-body">
+	<div class="main-timeline">
+		@foreach (var group in db.Categories.GroupBy(x => x.Group))
 		{
 			<div class="data-point-group">
 				@if (!string.IsNullOrEmpty(group.Key))
@@ -122,7 +122,7 @@
 				</div>
 			</div>
 		}
-	</MudStack>
+	</div>
 </div>
 
 @code {
