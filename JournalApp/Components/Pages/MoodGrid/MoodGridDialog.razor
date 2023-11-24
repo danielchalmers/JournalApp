@@ -16,7 +16,7 @@
 
 			<MudSpacer />
 
-			<MudIconButton Icon="@Icons.Material.Filled.Palette" OnClick="() => _isColorPickerVisible = true" />
+			<MudIconButton Icon="@Icons.Material.Filled.Palette" OnClick="OpenColorPicker" />
 		</div>
 
 		<MoodGridSwitcher @bind-SelectedYear="SelectedYear" />
@@ -66,18 +66,10 @@
 				}
 			}
 		</div>
-
-		<MudDialog @bind-IsVisible="_isColorPickerVisible" Options="_colorPickerDialogOptions">
-			<DialogContent>
-				<MudColorPicker Label="Primary" PickerVariant="PickerVariant.Static" Value="SelectedColor" ValueChanged="OnColorSelected" DisableToolbar="false" DisableAlpha="true" DisableDragEffect="true" />
-			</DialogContent>
-		</MudDialog>
 	</DialogContent>
 </MudDialog>
 
 @code {
-	private bool _isColorPickerVisible;
-	private DialogOptions _colorPickerDialogOptions = new() { NoHeader = true };
 	int _selectedYear;
 	GridYear? _gridYear;
 	DataPointCategory _moodCategory;
@@ -88,7 +80,11 @@
 	[Parameter]
 	public DateOnly OpenToDate { get; set; }
 
-	public MudColor SelectedColor { get; set; }
+	public MudColor PrimaryColor
+	{
+		get => new MudColor(Preferences.Get("mood_palette", "#6bdbe7"));
+		set => Preferences.Set("mood_palette", value.Value[..^2]);
+	}
 
 	public int SelectedYear
 	{
@@ -127,7 +123,6 @@
 
 		_moodCategory = db.Categories.SingleOrDefault(x => x.Guid == new Guid("D90D89FB-F5B9-47CF-AE4E-3EC0D635E783"));
 		KeycodeService.SubscribeOnceToBackButtonPressed(() => Close());
-		SelectedColor = new MudColor(Preferences.Get("mood_palette", "#6bdbe7"));
 		GenerateColors();
 
 		logger.LogInformation($"Opened to {OpenToDate}");
@@ -144,19 +139,31 @@
 		}
 	}
 
+	async Task OpenColorPicker()
+	{
+		logger.LogInformation("Opening color picker");
+
+		if (await ColorPickerDialog.ShowDialog(DialogService, PrimaryColor) is MudColor selectedColor)
+		{
+			PrimaryColor = selectedColor;
+			GenerateColors();
+			StateHasChanged();
+		}
+	}
+
 	void GenerateColors()
 	{
 		var emojis = DataPoint.Moods.Where(x => x != "🤔").ToList();
-		var primary = SelectedColor.ToMauiColor();
+		var primary = PrimaryColor.ToMauiColor();
 		var complementary = primary.GetComplementary();
 
 		var emojiColors = new Dictionary<string, string>();
 		for (int i = 0; i < emojis.Count; i++)
 		{
 			var p = i / (emojis.Count - 1f);
-			var color = ColorUtil.GetGradientColor(primary, complementary, p);
+			var c = ColorUtil.GetGradientColor(primary, complementary, p);
 
-			emojiColors.Add(emojis[i], color.ToHex());
+			emojiColors.Add(emojis[i], c.ToHex());
 		}
 		_moodColors = emojiColors;
 
@@ -169,14 +176,6 @@
 			return "transparent";
 		else
 			return color;
-	}
-
-	void OnColorSelected(MudColor color)
-	{
-		SelectedColor = color;
-		Preferences.Set("mood_palette", color.Value[..^2]);
-		GenerateColors();
-		StateHasChanged();
 	}
 
 	void Close()

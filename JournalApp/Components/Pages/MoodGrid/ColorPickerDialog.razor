@@ -1,0 +1,42 @@
+﻿@namespace JournalApp
+@using Color = Microsoft.Maui.Graphics.Color;
+@using MudBlazor.Utilities
+@inject ILogger<ColorPickerDialog> logger
+@inject IDialogService DialogService
+@inject KeycodeService KeycodeService
+
+<MudDialog DefaultFocus="DefaultFocus.Element" OnBackdropClick="Submit">
+	<DialogContent>
+		<MudColorPicker Label="Primary" PickerVariant="PickerVariant.Static" @bind-Value="SelectedColor" DisableToolbar DisableAlpha DisableInputs />
+	</DialogContent>
+</MudDialog>
+
+@code {
+	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+	[Parameter]
+	public MudColor SelectedColor { get; set; }
+
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+
+		KeycodeService.SubscribeOnceToBackButtonPressed(() => Submit());
+	}
+
+	void Submit()
+	{
+		MudDialog.Close(DialogResult.Ok(SelectedColor));
+	}
+
+	public static async Task<MudColor> ShowDialog(IDialogService dialogService, MudColor color)
+	{
+		var parameters = new DialogParameters<ColorPickerDialog> {
+			{ x => x.SelectedColor, color }
+		};
+
+		var result = await dialogService.Show<ColorPickerDialog>(parameters).Result;
+
+		return result.Data as MudColor;
+	}
+}
