@@ -43,15 +43,21 @@ button {
 	width: 0;
 }
 
+/* Should be in ManageCategoriesDialog.razor.css */
+.category-view-edit-button > .mud-button {
+	justify-content: start !important;
+	flex-grow: 1 !important;
+}
+
 .page-header {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 	gap: 0.5em;
 	box-shadow: none;
-	height: calc(var(--mud-appbar-height) - var(--mud-appbar-height) / 4);
+	min-height: calc(var(--mud-appbar-height) - var(--mud-appbar-height) / 4);
 	background-color: var(--mud-palette-primary);
-	padding: 0.5em;
+	padding: 0;
 }
 
 .mud-dialog-title, .page-title {
@@ -67,8 +73,8 @@ button {
 
 .mud-dialog-content, .page-body {
 	max-width: 960px;
-	margin: 0.5em auto;
-	padding: 0.5em 0.5em 0.5em !important;
+	margin: 0 auto !important;
+	padding: 0.25em 0.5em !important;
 }
 
 .page-body {
@@ -91,6 +97,11 @@ button {
 
 .mud-input {
 	margin: 0 !important;
+}
+
+/* Adds space to make up for label. Only works on newer browsers. */
+.mud-input-control-input-container:has(.mud-input-label) {
+	margin: 0.75em 0 0 0 !important;
 }
 
 .mud-input-control-input-container {
