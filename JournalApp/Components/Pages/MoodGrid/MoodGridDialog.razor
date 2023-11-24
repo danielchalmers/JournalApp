@@ -5,7 +5,7 @@
 @inject ILogger<MoodGridDialog> logger
 @inject IDialogService DialogService
 @inject IScrollManager ScrollManager
-@inject KeycodeService KeycodeService
+@inject PageService PageService
 
 <MudDialog DefaultFocus="DefaultFocus.Element">
 	<TitleContent>
@@ -122,7 +122,7 @@
 		base.OnInitialized();
 
 		_moodCategory = db.Categories.SingleOrDefault(x => x.Guid == new Guid("D90D89FB-F5B9-47CF-AE4E-3EC0D635E783"));
-		KeycodeService.SubscribeOnceToBackButtonPressed(() => Close());
+		PageService.EnteredPage(() => Close());
 		GenerateColors();
 
 		logger.LogInformation($"Opened to {OpenToDate}");
@@ -180,7 +180,7 @@
 
 	void Close()
 	{
-		MudDialog.Close(DialogResult.Ok(true));
+		PageService.CloseDialog(MudDialog, true);
 	}
 
 	void Close(DateOnly? date)
@@ -188,6 +188,6 @@
 		if (date == null || date > DateOnly.FromDateTime(DateTime.Now).Next())
 			return;
 
-		MudDialog.Close(DialogResult.Ok(date));
+		PageService.CloseDialog(MudDialog, date);
 	}
 }

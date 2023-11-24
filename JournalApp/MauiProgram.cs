@@ -39,7 +39,7 @@ public static class MauiProgram
 
         builder.Services.AddSingleton<AppDataService>();
         builder.Services.AddSingleton<AppDbSeeder>();
-        builder.Services.AddSingleton<KeycodeService>();
+        builder.Services.AddSingleton<PageService>();
 
         return builder.Build();
     }

@@ -2,7 +2,7 @@
 @inject AppDbContext db
 @inject ILogger<TrendsDialog> logger
 @inject IDialogService DialogService
-@inject KeycodeService KeycodeService
+@inject PageService PageService
 
 <MudDialog DefaultFocus="DefaultFocus.None">
 	<TitleContent>
@@ -69,7 +69,7 @@
 	{
 		base.OnInitialized();
 
-		KeycodeService.SubscribeOnceToBackButtonPressed(() => Submit());
+		PageService.EnteredPage(() => Submit());
 
 		logger.LogInformation($"Opened to {OpenToDate}");
 		SelectedDate = new(OpenToDate.Year, OpenToDate.Month, 1);
@@ -77,6 +77,6 @@
 
 	void Submit()
 	{
-		MudDialog.Close(DialogResult.Ok(true));
+		PageService.CloseDialog(MudDialog, true);
 	}
 }

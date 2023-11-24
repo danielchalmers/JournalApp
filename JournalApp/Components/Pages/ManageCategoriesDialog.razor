@@ -2,7 +2,7 @@
 @inject AppDbContext db
 @inject ILogger<ManageCategoriesDialog> logger
 @inject IDialogService DialogService
-@inject KeycodeService KeycodeService
+@inject PageService PageService
 
 <MudDialog DefaultFocus="DefaultFocus.Element">
 	<TitleContent>
@@ -54,7 +54,7 @@
 	{
 		base.OnInitialized();
 
-		KeycodeService.SubscribeOnceToBackButtonPressed(async () => await Submit());
+		PageService.EnteredPage(async () => await Submit());
 	}
 
 	async Task MoveUp(DataPointCategory category)
@@ -106,6 +106,6 @@
 	async Task Submit()
 	{
 		await db.SaveChangesAsync();
-		MudDialog.Close(DialogResult.Ok(true));
+		PageService.CloseDialog(MudDialog, true);
 	}
 }

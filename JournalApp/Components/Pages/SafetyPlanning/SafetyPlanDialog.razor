@@ -1,6 +1,6 @@
 ﻿@namespace JournalApp
 @inject IDialogService DialogService
-@inject KeycodeService KeycodeService
+@inject PageService PageService
 
 <MudDialog DefaultFocus="DefaultFocus.None">
 	<TitleContent>
@@ -74,11 +74,11 @@
 	{
 		base.OnInitialized();
 
-		KeycodeService.SubscribeOnceToBackButtonPressed(() => Submit());
+		PageService.EnteredPage(() => Submit());
 	}
 
 	void Submit()
 	{
-		MudDialog.Close(DialogResult.Ok(true));
+		PageService.CloseDialog(MudDialog, true);
 	}
 }

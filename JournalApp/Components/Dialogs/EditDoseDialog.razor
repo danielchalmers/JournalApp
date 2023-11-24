@@ -1,6 +1,6 @@
 ﻿@namespace JournalApp
 @inject IDialogService DialogService
-@inject KeycodeService KeycodeService
+@inject PageService PageService
 
 <MudDialog DefaultFocus="DefaultFocus.FirstChild" OnBackdropClick="Submit">
 	<TitleContent>
@@ -44,12 +44,12 @@
 	{
 		base.OnInitialized();
 
-		KeycodeService.SubscribeOnceToBackButtonPressed(() => Cancel());
+		PageService.EnteredPage(() => Cancel());
 	}
 
 	void Cancel()
 	{
-		MudDialog.Close(DialogResult.Cancel());
+		PageService.CancelDialog(MudDialog);
 	}
 
 	void Submit()
@@ -65,7 +65,7 @@
 			Point.Bool = true;
 		}
 
-		MudDialog.Close(DialogResult.Ok(true));
+		PageService.CloseDialog(MudDialog, true);
 	}
 
 	public static async Task ShowDialog(IDialogService dialogService, DataPoint point)
