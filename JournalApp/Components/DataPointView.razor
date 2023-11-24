@@ -12,9 +12,9 @@
 		<ChildContent>
 			@foreach (var mood in DataPoint.Moods)
 			{
-				<MudMenuItem OnClick="@(() => Point.Mood = mood)" OnTouch="@(() => Point.Mood = mood)">
+				<MudMenuItem OnClick="@(() => Point.Mood = mood)" OnAction="@(() => Point.Mood = mood)">
 					<MudText Typo="Typo.h4">@mood</MudText>
-					</MudMenuItem>
+				</MudMenuItem>
 			}
 		</ChildContent>
 	</MudMenu>
@@ -24,9 +24,9 @@ else if (Point.Type == PointType.Sleep)
 	<div class="d-flex align-center flex-grow-1" style="gap:1em">
 		<MudIconButton Icon="@Icons.Material.Filled.Remove" OnClick="DecrementSleep" Disabled="@(Point.SleepHours <= 0)" Size="Size.Small" />
 		<MudSlider @bind-Value="Point.SleepHours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" Size="Size.Large" Immediate />
-			<MudText Typo="Typo.caption">@((Point.SleepHours ?? 0).ToString("00.0"))</MudText>
-			<MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="IncrementSleep" Disabled="@(Point.SleepHours >= 24)" Size="Size.Small" />
-		</div>
+		<MudText Typo="Typo.caption">@((Point.SleepHours ?? 0).ToString("00.0"))</MudText>
+		<MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="IncrementSleep" Disabled="@(Point.SleepHours >= 24)" Size="Size.Small" />
+	</div>
 }
 else if (Point.Type == PointType.Scale)
 {
@@ -67,8 +67,8 @@ else if (Point.Type == PointType.Note)
 	<div class="d-flex flex-column flex-grow-1">
 		<MudTextField @bind-Value="Point.Text" Lines="4" Placeholder="What's on your mind?" Label="@(Point.CreatedAt.ToString(DateOnly.FromDateTime(Point.CreatedAt.Date) == Point.Day.Date ? "h:mm tt" : "M/d/yy h:mm tt"))" Immediate ReadOnly />
 
-			<MudLink OnClick="EditTextInDialog">Edit note...</MudLink>
-		</div>
+		<MudLink OnClick="EditTextInDialog">Edit note...</MudLink>
+	</div>
 }
 else if (Point.Type == PointType.Medication)
 {

@@ -18,11 +18,11 @@
 	<DialogContent>
 		<MudText Style="word-wrap: anywhere;">@Point.Category.Name:</MudText>
 
-			<MudNumericField @bind-Value="Dose" HideSpinButtons Label="@($"Dose ({Point.Day.Date:ddd, MMM d})")" MaxLength="6" Adornment="Adornment.End" AdornmentText="@Point.MedicationUnit" />
-		</DialogContent>
-	</MudDialog>
+		<MudNumericField @bind-Value="Dose" HideSpinButtons Label="@($"Dose ({Point.Day.Date:ddd, MMM d})")" MaxLength="6" Adornment="Adornment.End" AdornmentText="@Point.MedicationUnit" />
+	</DialogContent>
+</MudDialog>
 
-	@code {
+@code {
 	DataPoint _points;
 
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }

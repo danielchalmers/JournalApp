@@ -18,10 +18,10 @@
 
 	<DialogContent>
 		<MudTextField @bind-Value="Text" Lines="12" DisableUnderLine />
-		</DialogContent>
-	</MudDialog>
+	</DialogContent>
+</MudDialog>
 
-	@code {
+@code {
 	DataPoint _point;
 
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }

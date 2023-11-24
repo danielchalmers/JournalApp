@@ -6,7 +6,7 @@ public class MoodGridTests
     [Description("Are the number of years, and months in the grid correct?")]
     public void YearsAndMonths()
     {
-        var year = 2023;
+        const int year = 2023;
         var gridYear = new GridYear(year, CultureInfo.InvariantCulture, []);
 
         Assert.Equal(12, gridYear.GridMonths.Count);
@@ -24,7 +24,7 @@ public class MoodGridTests
     [Description("Are the number of days in the grid correct with no unnecessary rows?")]
     public void GridDays()
     {
-        var year = 2023;
+        const int year = 2023;
         var gridYear = new GridYear(year, CultureInfo.InvariantCulture, []);
 
         var rowCounts = new List<int>()

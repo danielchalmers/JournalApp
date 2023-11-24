@@ -24,7 +24,7 @@
 		<MudForm @ref="_form" ValidationDelay="0">
 			<MudTextField Label="Name" @bind-Value="Name" Immediate />
 
-				@if (Group == null)
+			@if (Group == null)
 			{
 				<MudSelect Label="Type of data" @bind-Value="Type" Disabled="@(Category != null)">
 					<MudSelectItem Value="PointType.LowToHigh">Low to high</MudSelectItem>
@@ -40,8 +40,8 @@
 				<div class="d-flex flex-row flex-grow-1" style="gap: 1em">
 					<MudNumericField @bind-Value="MedicationDose" HideSpinButtons Label="Dose" MaxLength="6" Required Immediate />
 
-						<MudTextField @bind-Value="MedicationUnit" Label="Unit" MaxLength="8" Required Immediate />
-					</div>
+					<MudTextField @bind-Value="MedicationUnit" Label="Unit" MaxLength="8" Required Immediate />
+				</div>
 
 				<MudSwitch @bind-Checked="MedicationEveryDay" Label="Taken every day" Color="Color.Primary" />
 			}

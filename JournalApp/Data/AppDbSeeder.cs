@@ -153,12 +153,11 @@ public class AppDbSeeder
             PointType.Medication,
             group: "Medications",
             name: "Vitamin D",
+            readOnly: false,
+            enabled: false,
             medDose: 2000,
             medUnit: "IU",
-            medEveryDaySince: DateTimeOffset.Now,
-            readOnly: false,
-            enabled: false
-        );
+            medEveryDaySince: DateTimeOffset.Now);
     }
 
     private async Task SeedDays()

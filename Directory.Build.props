@@ -5,7 +5,7 @@
     <TargetFrameworks>$(TargetFrameworks);net8.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <Deterministic>true</Deterministic>
-    <NoWarn>BL0007</NoWarn>
+    <NoWarn>BL0007,CA2254,IDE0305</NoWarn>
   </PropertyGroup>
 
   <!-- Platform -->
