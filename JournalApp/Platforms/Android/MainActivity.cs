@@ -11,7 +11,7 @@ public class MainActivity : MauiAppCompatActivity
     {
         if (e.KeyCode == Keycode.Back)
         {
-            if (e.Action == KeyEventActions.Down)
+            if (e.Action == KeyEventActions.Up)
             {
                 var service = IPlatformApplication.Current.Services.GetService<PageService>();
 
