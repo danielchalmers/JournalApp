@@ -35,7 +35,10 @@
 				<div class="worksheet-group" id="worksheet-group-key-@(MarkupUtil.ToClassName(group.Key))">
 					@if (!string.IsNullOrEmpty(group.Key))
 					{
-						<MudText Typo="Typo.h4">@group.Key</MudText>
+						<div class="d-flex align-center">
+							<MudText Typo="Typo.h4">@group.Key</MudText>
+							<MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" OnClick="GoToTop" title="Scroll to top" />
+						</div>
 					}
 
 					<div class="worksheet-group-items">
@@ -65,6 +68,11 @@
 	void Submit()
 	{
 		PageService.CloseDialog(MudDialog, true);
+	}
+
+	async Task GoToTop()
+	{
+		await ScrollManager.ScrollToTopAsync(".mud-dialog", ScrollBehavior.Smooth);
 	}
 
 	async Task GoToGroup(string key)
