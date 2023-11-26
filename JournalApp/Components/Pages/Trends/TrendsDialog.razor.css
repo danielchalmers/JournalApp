@@ -1,10 +1,10 @@
-﻿.trends-container {
+﻿::deep .trends-container {
 	display: flex;
 	flex-direction: column;
 	gap: 1em;
 }
 
-.trend-view {
+::deep .trend-view {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;

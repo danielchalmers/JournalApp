@@ -43,12 +43,6 @@ button {
 	width: 0;
 }
 
-/* Should be in ManageCategoriesDialog.razor.css */
-.category-view-edit-button > .mud-button {
-	justify-content: start !important;
-	flex-grow: 1 !important;
-}
-
 .page-header {
 	display: flex;
 	flex-direction: row;

@@ -3,3 +3,6 @@
 	flex-direction: column;
 	gap: 1em;
 }
+
+::deep safety-plan-item {
+}

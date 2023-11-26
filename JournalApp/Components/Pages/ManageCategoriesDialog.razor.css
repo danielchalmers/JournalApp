@@ -11,8 +11,7 @@
 	overflow-x: clip;
 }
 
-/* Moved to app.css because it doesn't apply in here for some reason.
-	.category-view-edit-button > .mud-button {
-		justify-content: start !important;
-		flex-grow: 1 !important;
-	}*/
+::deep .category-view-edit-button > .mud-button {
+	justify-content: start !important;
+	flex-grow: 1 !important;
+}
