@@ -65,7 +65,11 @@ else if (Point.Type == PointType.Text)
 else if (Point.Type == PointType.Note)
 {
 	<div class="d-flex flex-column flex-grow-1">
-		<MudTextField @bind-Value="Point.Text" Lines="4" Placeholder="What's on your mind?" Label="@(Point.CreatedAt.ToString(DateOnly.FromDateTime(Point.CreatedAt.Date) == Point.Day.Date ? "h:mm tt" : "M/d/yy h:mm tt"))" Immediate ReadOnly />
+		<MudTextField @bind-Value="Point.Text"
+					  Placeholder="What's on your mind?"
+					  Label="@(Point.CreatedAt.ToString(DateOnly.FromDateTime(Point.CreatedAt.Date) == Point.Day.Date ? "h:mm tt" : "M/d/yy h:mm tt"))"
+					  Immediate ReadOnly DisableUnderLine
+					  AutoGrow Lines="3" MaxLines="10" />
 
 		<MudLink OnClick="EditTextInDialog">Edit note...</MudLink>
 	</div>

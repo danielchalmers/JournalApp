@@ -3,7 +3,7 @@
 <div>
 	<MudText Typo="Typo.h5">@Title</MudText>
 	<MudText Typo="Typo.caption">@Subtitle</MudText>
-	<MudTextField T="string" @bind-Text="Text" Lines="@Lines" Placeholder="@Placeholder" Variant="Variant.Outlined" DisableUnderLine />
+	<MudTextField T="string" @bind-Text="Text" Placeholder="@Placeholder" Variant="Variant.Outlined" DisableUnderLine AutoGrow Lines="3" MaxLines="10" />
 </div>
 
 @code {
@@ -19,9 +19,6 @@
 
 	[Parameter]
 	public string Placeholder { get; set; }
-
-	[Parameter]
-	public int Lines { get; set; }
 
 	[Parameter]
 	public string Text
