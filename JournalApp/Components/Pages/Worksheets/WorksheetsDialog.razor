@@ -1,6 +1,7 @@
 ﻿@namespace JournalApp
 @inject IDialogService DialogService
 @inject IScrollManager ScrollManager
+@inject IJSRuntime JSRuntime
 @inject PageService PageService
 
 <MudDialog DefaultFocus="DefaultFocus.None">
@@ -77,6 +78,6 @@
 
 	async Task GoToGroup(string key)
 	{
-		await ScrollManager.ScrollIntoViewAsync($"#worksheet-group-key-{key}", ScrollBehavior.Smooth);
+		await JSRuntime.InvokeVoidAsyncIgnoreErrors("scrollToElementInsideDialog", $"#worksheet-group-key-{key}");
 	}
 }

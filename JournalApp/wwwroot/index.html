@@ -30,6 +30,12 @@
 	<script src="_framework/blazor.webview.js" autostart="false"></script>
 	<script src="_content/MudBlazor/MudBlazor.min.js"></script>
 
+	<script>
+		window.scrollToElementInsideDialog = (elementSelector) => {
+			document.querySelector(".mud-dialog").scrollTop = document.querySelector(elementSelector).offsetTop;
+		}
+	</script>
+
 </body>
 
 </html>
