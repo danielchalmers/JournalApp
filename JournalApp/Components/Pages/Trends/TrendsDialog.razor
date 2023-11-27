@@ -18,7 +18,7 @@
 	<DialogContent>
 		@foreach (var (type, points) in _points)
 		{
-			@if (type is PointType.Mood)
+			@if (type is PointType.Mood or PointType.Sleep)
 			{
 				<TrendView PointType="type" Points="points" />
 			}

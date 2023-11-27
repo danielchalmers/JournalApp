@@ -16,6 +16,9 @@
 						<MudText Typo="Typo.caption">@(point?.Mood ?? day.ToString())</MudText>
 					}
 					break;
+				case PointType.Sleep:
+					<MudChart ChartType="ChartType.Line" ChartSeries="@GetSleepSeries(category)" Height="15em"></MudChart>
+					break;
 			}
 		</div>
 	}
@@ -27,4 +30,16 @@
 
 	[Parameter]
 	public IReadOnlyDictionary<DataPointCategory, IReadOnlyDictionary<int, DataPoint>> Points { get; set; }
+
+	List<ChartSeries> GetSleepSeries(DataPointCategory category)
+	{
+		return new()
+		{
+			new()
+			{
+				Name = category.Name,
+				Data = Points[category].Select(x => (double)(x.Value?.SleepHours ?? 0)).ToArray(),
+			}
+		};
+	}
 }
