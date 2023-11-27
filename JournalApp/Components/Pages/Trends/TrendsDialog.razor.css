@@ -1,7 +1,12 @@
-﻿::deep .trends-container {
+﻿.trends-category-list {
 	display: flex;
 	flex-direction: column;
-	gap: 1em;
+	gap: 2em;
+}
+
+.trends-category {
+	display: flex;
+	flex-direction: column;
 }
 
 ::deep .trend-view {

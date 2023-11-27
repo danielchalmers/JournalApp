@@ -16,18 +16,26 @@
 	</TitleContent>
 
 	<DialogContent>
-		@foreach (var (type, points) in _points)
-		{
-			@if (type is PointType.Mood or PointType.Sleep)
+		<div class="trends-category-list">
+			@foreach (var (category, categoryPoints) in _allPoints)
 			{
-				<TrendView PointType="type" Points="points" />
+				@if (TrendView.IsSupported(category.Type))
+				{
+					<div class="trends-category">
+						<MudText Typo="Typo.h6">
+							@category.Name
+						</MudText>
+
+						<TrendView Category="category" Points="categoryPoints" />
+					</div>
+				}
 			}
-		}
+		</div>
 	</DialogContent>
 </MudDialog>
 
 @code {
-	Dictionary<PointType, IReadOnlyDictionary<DataPointCategory, IReadOnlyDictionary<int, DataPoint>>> _points;
+	Dictionary<DataPointCategory, IReadOnlyDictionary<int, DataPoint>> _allPoints;
 	DateOnly _selectedDate;
 
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
@@ -42,25 +50,20 @@
 		{
 			_selectedDate = value;
 
-			// Group data points by type, category and day of month.
-			_points = new();
-			foreach (var group in db.Categories.Where(x => x.Enabled && !x.Deleted).GroupBy(x => x.Type))
+			// Group data points by category and its points of the selected month.
+			_allPoints = new();
+			foreach (var category in db.Categories.Where(x => x.Enabled && !x.Deleted).OrderBy(x => x.Type))
 			{
-				var categoryDictionary = new Dictionary<DataPointCategory, IReadOnlyDictionary<int, DataPoint>>();
-				foreach (var category in group)
+				var dayPoints = new Dictionary<int, DataPoint>();
+
+				// Each day has either a matching data point or null.
+				for (int day = 0; day < DateTime.DaysInMonth(value.Year, value.Month); day++)
 				{
-					var dayPoints = new Dictionary<int, DataPoint>();
-
-					// Each day has either a matching data point or null.
-					for (int day = 0; day < DateTime.DaysInMonth(value.Year, value.Month); day++)
-					{
-						var point = category.Points.FirstOrDefault(p => p.Day.Date.Year == value.Year && p.Day.Date.Month == value.Month && p.Day.Date.Day == day);
-						dayPoints.Add(day, point);
-					}
-
-					categoryDictionary.Add(category, dayPoints);
+					var point = category.Points.FirstOrDefault(p => p.Day.Date.Year == value.Year && p.Day.Date.Month == value.Month && p.Day.Date.Day == day);
+					dayPoints.Add(day, point);
 				}
-				_points.Add(group.Key, categoryDictionary);
+
+				_allPoints.Add(category, dayPoints);
 			}
 		}
 	}

@@ -1,44 +1,38 @@
 ﻿@namespace JournalApp
 
-<div class="trends-container">
-	@foreach (var (category, dayPoints) in Points)
+<div class="trend-view">
+	@switch (Category.Type)
 	{
-		<MudText Typo="Typo.h6">
-			@category.Name
-		</MudText>
-
-		<div class="trend-view">
-			@switch (PointType)
+		case PointType.Mood:
+			foreach (var (day, point) in Points)
 			{
-				case PointType.Mood:
-					foreach (var (day, point) in dayPoints)
-					{
-						<MudText Typo="Typo.caption">@(point?.Mood ?? day.ToString())</MudText>
-					}
-					break;
-				case PointType.Sleep:
-					<MudChart ChartType="ChartType.Line" ChartSeries="@GetSleepSeries(category)" Height="15em"></MudChart>
-					break;
+				<MudText Typo="Typo.caption">@(point?.Mood ?? day.ToString())</MudText>
 			}
-		</div>
+			break;
+		case PointType.Sleep:
+			<MudChart ChartType="ChartType.Line" ChartSeries="@GetSleepSeries()" Height="15em" Width="100%" Style="width:100%;"></MudChart>
+			break;
 	}
 </div>
 
 @code {
 	[Parameter]
-	public PointType PointType { get; set; }
+	public DataPointCategory Category { get; set; }
 
 	[Parameter]
-	public IReadOnlyDictionary<DataPointCategory, IReadOnlyDictionary<int, DataPoint>> Points { get; set; }
+	public IReadOnlyDictionary<int, DataPoint> Points { get; set; }
 
-	List<ChartSeries> GetSleepSeries(DataPointCategory category)
+	public static bool IsSupported(PointType type) =>
+		type is PointType.Mood or PointType.Sleep;
+
+	List<ChartSeries> GetSleepSeries()
 	{
 		return new()
 		{
 			new()
 			{
-				Name = category.Name,
-				Data = Points[category].Select(x => (double)(x.Value?.SleepHours ?? 0)).ToArray(),
+				Name = Category.Name,
+				Data = Points.Select(x => (double)(x.Value?.SleepHours ?? 0)).ToArray(),
 			}
 		};
 	}
