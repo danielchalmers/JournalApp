@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace JournalApp;
+﻿namespace JournalApp;
 
 public static class MarkupUtil
 {

@@ -27,26 +27,26 @@
 		<MudSpacer />
 
 		<MudMenu Icon="@Icons.Material.Filled.MoreVert" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
-			<MudMenuItem Icon="@Icons.Material.Filled.Category" OnClick="ManageCategories" OnAction="ManageCategories">Categories</MudMenuItem>
-			<MudMenuItem Icon="@Icons.Material.Filled.Medication" OnClick="ManageMedications" OnAction="ManageMedications">Medications</MudMenuItem>
-			<MudMenuItem Icon="@Icons.Material.Filled.Comment" OnClick="NewNote" OnAction="NewNote">New note</MudMenuItem>
+			<MudMenuItem Icon="@Icons.Material.Filled.Category" OnAction="ManageCategories">Categories</MudMenuItem>
+			<MudMenuItem Icon="@Icons.Material.Filled.Medication" OnAction="ManageMedications">Medications</MudMenuItem>
+			<MudMenuItem Icon="@Icons.Material.Filled.Comment" OnAction="NewNote">New note</MudMenuItem>
 
 			@if (Debugger.IsAttached)
 			{
-				<MudMenuItem Icon="@Icons.Material.Filled.ShowChart" OnClick="OpenTrends" OnAction="OpenTrends">Trends</MudMenuItem>
+				<MudMenuItem Icon="@Icons.Material.Filled.ShowChart" OnAction="OpenTrends">Trends</MudMenuItem>
 			}
 
-			<MudMenuItem Icon="@Icons.Material.Filled.Description" OnClick="OpenWorksheets" OnAction="OpenWorksheets">Worksheets</MudMenuItem>
-			<MudMenuItem Icon="@Icons.Material.Filled.HealthAndSafety" OnClick="OpenSafetyPlan" OnAction="OpenSafetyPlan">Safety Plan</MudMenuItem>
+			<MudMenuItem Icon="@Icons.Material.Filled.Description" OnAction="OpenWorksheets">Worksheets</MudMenuItem>
+			<MudMenuItem Icon="@Icons.Material.Filled.HealthAndSafety" OnAction="OpenSafetyPlan">Safety Plan</MudMenuItem>
 
 			<MudDivider />
 
 			@if (Debugger.IsAttached)
 			{
-				<MudMenuItem Icon="@Icons.Material.Filled.Download" OnClick="AppDataService.StartImport" OnAction="AppDataService.StartImport">Import</MudMenuItem>
-				<MudMenuItem Icon="@Icons.Material.Filled.Upload" OnClick="AppDataService.StartExport" OnAction="AppDataService.StartExport">Export</MudMenuItem>
+				<MudMenuItem Icon="@Icons.Material.Filled.Download" OnAction="@(() => AppDataService.StartImportWizard(DialogService))">Import</MudMenuItem>
+				<MudMenuItem Icon="@Icons.Material.Filled.Upload" OnAction="@(() => AppDataService.StartExportWizard(DialogService))">Export</MudMenuItem>
 			}
-			<MudMenuItem Icon="@Icons.Material.Filled.Info" OnClick="OpenWebsite" OnAction="OpenWebsite">v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
+			<MudMenuItem Icon="@Icons.Material.Filled.Info" OnAction="OpenWebsite">v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
 		</MudMenu>
 	</div>
 
@@ -181,7 +181,7 @@
 			logger.LogInformation($"Switching from {_day} to current day after user was gone since {_stoppedDate}");
 			await GoToDay(DateOnly.FromDateTime(DateTime.Now), scrollToTop: true);
 
-			await AppDataService.ShowExportReminderIfDue();
+			await AppDataService.ShowExportReminderIfDue(DialogService);
 		}
 	}
 
