@@ -17,10 +17,10 @@
 
   <ItemGroup>
     <!-- App Icon -->
-    <MauiIcon Include="Resources\AppIcon\appicon.svg" />
+    <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" />
 
     <!-- Splash Screen -->
-		<MauiSplashScreen Include="Resources\AppIcon\appicon.svg" Color="#776be7" />
+		<MauiSplashScreen Include="Resources\AppIcon\appiconfg.svg" Color="#776be7" />
 
     <!-- Images -->
     <MauiImage Include="Resources\Images\*" />
