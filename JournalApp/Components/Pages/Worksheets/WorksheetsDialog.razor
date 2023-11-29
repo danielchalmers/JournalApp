@@ -7,7 +7,7 @@
 <MudDialog DefaultFocus="DefaultFocus.None">
 	<TitleContent>
 		<div class="page-header">
-			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="Submit" />
+			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Close" OnClick="Close" />
 
 			<MudText Typo="Typo.h6">Worksheets</MudText>
 		</div>
@@ -24,7 +24,7 @@
 						@if (!string.IsNullOrEmpty(group.Key))
 						{
 							<div class="worksheet-group-toc-item">
-								<MudLink OnClick="async () => await GoToGroup(MarkupUtil.ToClassName(group.Key))">• @group.Key</MudLink>
+								<MudLink OnClick="async () => await ScrollToGroup(MarkupUtil.ToClassName(group.Key))">• @group.Key</MudLink>
 							</div>
 						}
 					}
@@ -38,7 +38,7 @@
 					{
 						<div class="d-flex align-center">
 							<MudText Typo="Typo.h4">@group.Key</MudText>
-							<MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" OnClick="GoToTop" title="Scroll to top" />
+							<MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" OnClick="ScrollToTop" title="Scroll to top" />
 						</div>
 					}
 
@@ -63,20 +63,20 @@
 	{
 		base.OnInitialized();
 
-		PageService.EnteredPage(() => Submit());
+		PageService.EnteredPage(() => Close());
 	}
 
-	void Submit()
+	void Close()
 	{
 		PageService.CloseDialog(MudDialog, true);
 	}
 
-	async Task GoToTop()
+	async Task ScrollToTop()
 	{
 		await ScrollManager.ScrollToTopAsync(".mud-dialog", ScrollBehavior.Smooth);
 	}
 
-	async Task GoToGroup(string key)
+	async Task ScrollToGroup(string key)
 	{
 		await JSRuntime.InvokeVoidAsyncIgnoreErrors("scrollToElementInsideDialog", $"#worksheet-group-key-{key}");
 	}

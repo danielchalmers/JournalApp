@@ -7,13 +7,13 @@
 <MudDialog DefaultFocus="DefaultFocus.Element">
 	<TitleContent>
 		<div class="page-header">
-			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="Submit" />
+			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Submit" OnClick="Submit" />
 
 			<MudText Typo="Typo.h6">@(Group == null ? "Categories" : Group)</MudText>
 
 			<MudSpacer />
 
-			<MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="New" />
+			<MudIconButton Icon="@Icons.Material.Filled.Add" Title="New" OnClick="New" />
 		</div>
 	</TitleContent>
 
@@ -28,12 +28,12 @@
 				@foreach (var c in Categories.OrderBy(c => c.Index))
 				{
 					<div class="category-view-compact">
-						<MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" OnClick="async () => await MoveUp(c)" Edge="Edge.Start" Disabled="c.Index <= 1" />
+						<MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" Title="Move up" OnClick="async () => await MoveUp(c)" Edge="Edge.Start" Disabled="c.Index <= 1" />
 
-						<MudSwitch @bind-Checked="c.Enabled" Color="Color.Primary" Style="margin-right: -0.125em;" />
+						<MudSwitch @bind-Checked="c.Enabled" Color="Color.Primary" Style="margin-right: -0.125em;" title="Toggle enabled" />
 
 						<div class="category-view-edit-button">
-							<MudButton Variant="Variant.Text" OnClick="async () => await Edit(c)" Disabled="c.ReadOnly" StartIcon="@Icons.Material.Filled.Edit">@c.Name</MudButton>
+							<MudButton Variant="Variant.Text" OnClick="async () => await Edit(c)" Disabled="c.ReadOnly" StartIcon="@Icons.Material.Filled.Edit" title="Edit">@c.Name</MudButton>
 						</div>
 					</div>
 				}

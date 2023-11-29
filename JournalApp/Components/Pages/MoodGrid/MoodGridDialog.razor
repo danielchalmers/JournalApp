@@ -10,13 +10,13 @@
 <MudDialog DefaultFocus="DefaultFocus.Element">
 	<TitleContent>
 		<div class="page-header">
-			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" OnClick="Close" />
+			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Close" OnClick="Close" />
 
 			<MudText Typo="Typo.h6">Mood Grid</MudText>
 
 			<MudSpacer />
 
-			<MudIconButton Icon="@Icons.Material.Filled.Palette" OnClick="OpenColorPicker" />
+			<MudIconButton Icon="@Icons.Material.Filled.Palette" Title="Pick color" OnClick="OpenColorPicker" />
 		</div>
 
 		<MoodGridSwitcher @bind-SelectedYear="SelectedYear" />

@@ -1,7 +1,7 @@
 ﻿@namespace JournalApp
 
 <div class="switcher">
-	<MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" OnClick="GoPrevious" />
+	<MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" Title="Previous month" OnClick="GoPrevious" />
 
 	<div class="switcher-header">
 		<MudButton OnClick="() => SelectedDate = NowDate">
@@ -9,7 +9,7 @@
 		</MudButton>
 	</div>
 
-	<MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" OnClick="GoNext" Disabled="@(NextMonth > NowDate)" />
+	<MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" Title="Next month" OnClick="GoNext" Disabled="@(NextMonth > NowDate)" />
 </div>
 
 @code {
