@@ -1,6 +1,6 @@
 ﻿# 🙂 JournalApp [![License](https://img.shields.io/github/license/danielchalmers/JournalApp)](LICENSE)
 
-**Keep track of your days by noting your mood, sleep, productivity, or any other custom categories, along with medications you're taking. 📝**
+**Write notes and save things like mood, sleep, productivity, medications, or custom categories, and review later. 📝**
 
 ![Main page](https://github.com/danielchalmers/JournalApp/assets/7112040/b41e5df4-a805-426d-bcf9-6edf9d282643)
 
