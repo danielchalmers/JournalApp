@@ -46,7 +46,7 @@
 				<MudMenuItem Icon="@Icons.Material.Filled.Download" OnAction="@(() => AppDataService.StartImportWizard(DialogService))">Import</MudMenuItem>
 				<MudMenuItem Icon="@Icons.Material.Filled.Upload" OnAction="@(() => AppDataService.StartExportWizard(DialogService))">Export</MudMenuItem>
 			}
-			<MudMenuItem Icon="@Icons.Material.Filled.Info" OnAction="OpenWebsite">v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
+			<MudMenuItem Icon="@Icons.Material.Filled.Info" OnAction="OpenAbout">v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
 		</MudMenu>
 	</div>
 
@@ -272,14 +272,14 @@
 
 	async Task OpenWorksheets()
 	{
-		logger.LogInformation("Opening worksheets dialog");
-		var result = await DialogService.Show<WorksheetsDialog>(ComponentUtil.FullscreenDialogOptions).Result;
+		logger.LogInformation("Opening Worksheets dialog");
+		await DialogService.Show<WorksheetsDialog>(ComponentUtil.FullscreenDialogOptions).Result;
 	}
 
-	async Task OpenWebsite()
+	async Task OpenAbout()
 	{
-		logger.LogInformation("Opening website");
-		await Browser.Default.OpenAsync("https://github.com/danielchalmers/JournalApp");
+		logger.LogInformation("Opening About dialog");
+		await DialogService.Show<AboutDialog>(ComponentUtil.FullscreenDialogOptions).Result;
 	}
 
 	async Task NewNote()

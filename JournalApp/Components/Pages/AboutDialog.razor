@@ -1,0 +1,54 @@
+﻿@namespace JournalApp
+@inject ILogger<AboutDialog> logger
+@inject IDialogService DialogService
+@inject PageService PageService
+
+<MudDialog DefaultFocus="DefaultFocus.Element">
+	<TitleContent>
+		<div class="page-header">
+			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Close" OnClick="Close" />
+
+			<MudText Typo="Typo.h6">About JournalApp</MudText>
+		</div>
+	</TitleContent>
+
+	<DialogContent>
+		<MudTextField T="string" Text="@CreditsText" AutoGrow ReadOnly DisableUnderLine />
+	</DialogContent>
+</MudDialog>
+
+@code {
+	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+
+		PageService.EnteredPage(Close);
+	}
+
+	public string CreditsText { get; private set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+
+		CreditsText = await GetCreditsText();
+	}
+
+    void Close()
+    {
+		PageService.CloseDialog(MudDialog, true);
+	}
+
+	public async Task<string> GetCreditsText()
+	{
+		logger.LogInformation("Getting credits stream");
+
+		using var stream = await FileSystem.OpenAppPackageFileAsync("Credits.txt");
+		using var reader = new StreamReader(stream);
+
+		logger.LogInformation("Reading credits as text");
+		return reader.ReadToEnd();
+	}
+}
