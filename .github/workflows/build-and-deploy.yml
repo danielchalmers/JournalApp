@@ -45,12 +45,12 @@ jobs:
       with:
         path: "publish/*.aab"
 
-#    - name: Create GitHub release
-#      uses: softprops/action-gh-release@v1
-#      with:
+    - name: Create GitHub release
+      uses: softprops/action-gh-release@v1
+      with:
 #        files: |
 #          "publish/*.aab"
-#        generate_release_notes: true
+        generate_release_notes: true
 
     - name: Upload to Play Store
       uses: r0adkll/upload-google-play@v1
