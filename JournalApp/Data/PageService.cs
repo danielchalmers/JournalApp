@@ -2,12 +2,14 @@
 
 namespace JournalApp;
 
-public class PageService
+public class PageService(ILogger<PageService> logger)
 {
     private readonly Stack<Action> _backButtonPressedActions = [];
 
     public void EnteredPage(Action backButtonAction)
     {
+        logger.LogDebug("Entered page");
+
         lock (_backButtonPressedActions)
         {
             _backButtonPressedActions.Push(backButtonAction);
@@ -16,6 +18,8 @@ public class PageService
 
     public void ExitedPage()
     {
+        logger.LogDebug("Exited page");
+
         lock (_backButtonPressedActions)
         {
             if (_backButtonPressedActions.Count != 0)
@@ -37,6 +41,8 @@ public class PageService
 
     internal bool OnBackButtonPressed()
     {
+        logger.LogInformation("Back button pressed");
+
         var anyActions = _backButtonPressedActions.Count != 0;
         if (anyActions)
             _backButtonPressedActions.First().Invoke();
