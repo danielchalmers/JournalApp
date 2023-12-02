@@ -2,7 +2,6 @@
 @inject ILogger<AboutDialog> logger
 @inject IDialogService DialogService
 @inject PageService PageService
-@inject IJSRuntime JSRuntime
 
 <MudDialog DefaultFocus="DefaultFocus.Element">
 	<TitleContent>
@@ -14,14 +13,12 @@
 	</TitleContent>
 
 	<DialogContent>
-		<MudTextField @ref="creditsField" T="string" AutoGrow ReadOnly DisableUnderLine />
+		<MudTextField T="string" Text="@CreditsText" AutoGrow ReadOnly DisableUnderLine />
 	</DialogContent>
 </MudDialog>
 
 @code {
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
-
-	MudTextField<string> creditsField;
 
 	protected override void OnInitialized()
 	{
@@ -30,19 +27,17 @@
 		PageService.EnteredPage(Close);
 	}
 
-	protected override async Task OnAfterRenderAsync(bool firstRender)
-	{
-		if (firstRender)
-		{
-			// https://github.com/MudBlazor/MudBlazor/issues/7839.
-			await creditsField.SetText(await GetCreditsText());
-		}
+	public string CreditsText { get; private set; }
 
-		await base.OnAfterRenderAsync(firstRender);
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+
+		CreditsText = await GetCreditsText();
 	}
 
-	void Close()
-	{
+    void Close()
+    {
 		PageService.CloseDialog(MudDialog, true);
 	}
 
