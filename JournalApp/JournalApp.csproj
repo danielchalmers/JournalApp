@@ -15,7 +15,18 @@
     <ApplicationIdGuid>2B30B066-B4D9-4C17-8A4B-C72E1ABC4BF3</ApplicationIdGuid>
   </PropertyGroup>
 
-  <ItemGroup>
+	
+
+
+	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-android|AnyCPU'">
+		<ApplicationId>com.danielchalmers.journalapp</ApplicationId>
+		<RunAOTCompilation>False</RunAOTCompilation>
+		<PublishTrimmed>True</PublishTrimmed>
+		<UseInterpreter>True</UseInterpreter>
+	</PropertyGroup>
+
+
+	<ItemGroup>
     <!-- App Icon -->
     <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" />
 
@@ -46,9 +57,9 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Maui" Version="7.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="8.0.0-preview.6.23329.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.0-preview.6.23329.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0-preview.6.23329.4">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
