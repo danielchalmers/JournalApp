@@ -78,6 +78,6 @@
 
 	async Task ScrollToGroup(string key)
 	{
-		await JSRuntime.InvokeVoidAsyncIgnoreErrors("scrollToElementInsideDialog", $"#worksheet-group-key-{key}");
+		await JSRuntime.InvokeVoidAsyncIgnoreErrors("scrollToNestedElement", ".mud-dialog", $"#worksheet-group-key-{key}");
 	}
 }

@@ -31,8 +31,8 @@
 	<script src="_content/MudBlazor/MudBlazor.min.js"></script>
 
 	<script>
-		window.scrollToElementInsideDialog = (elementSelector) => {
-			document.querySelector(".mud-dialog").scrollTop = document.querySelector(elementSelector).offsetTop;
+		window.scrollToNestedElement = (ancestorSelector, descendantSelector) => {
+			document.querySelector(ancestorSelector).scrollTop = document.querySelector(descendantSelector).offsetTop;
 		}
 	</script>
 

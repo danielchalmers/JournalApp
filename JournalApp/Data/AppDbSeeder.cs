@@ -1,16 +1,7 @@
 ﻿namespace JournalApp;
 
-public class AppDbSeeder
+public class AppDbSeeder(AppDbContext db, ILogger<AppDbSeeder> _logger)
 {
-    private readonly AppDbContext db;
-    private readonly ILogger<AppDbSeeder> _logger;
-
-    public AppDbSeeder(AppDbContext dbContext, ILogger<AppDbSeeder> logger)
-    {
-        db = dbContext;
-        _logger = logger;
-    }
-
     public async Task SeedAsync()
     {
         var sw = Stopwatch.StartNew();

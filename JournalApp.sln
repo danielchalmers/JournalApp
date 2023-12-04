@@ -11,6 +11,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.github\workflows\build-and-deploy.yml = .github\workflows\build-and-deploy.yml
 		Directory.Build.props = Directory.Build.props
 		global.json = global.json
+		LICENSE = LICENSE
+		PRIVACY_POLICY.md = PRIVACY_POLICY.md
+		README.md = README.md
 		version.json = version.json
 	EndProjectSection
 EndProject

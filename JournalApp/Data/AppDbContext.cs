@@ -20,7 +20,7 @@ public class AppDbContext : DbContext
     {
         if (!builder.IsConfigured)
         {
-            // Uncomment to use EF Core tooling (???).
+            // Uncomment to use EF Core tooling.
             //builder.UseSqlite($"Data Source = temp");
         }
 

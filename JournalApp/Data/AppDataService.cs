@@ -30,7 +30,7 @@ public class AppDataService(ILogger<AppDataService> logger, AppDbContext db)
 
         // Read the backup file.
         logger.LogInformation("Reading backup file");
-        using var stream = await pickResult.OpenReadAsync();
+        await using var stream = await pickResult.OpenReadAsync();
 
         // Do some integrity checks.
 
@@ -44,7 +44,7 @@ public class AppDataService(ILogger<AppDataService> logger, AppDbContext db)
     public async Task StartExportWizard(IDialogService dialogService)
     {
         // Create the stream of file contents.
-        using var stream = new MemoryStream(Encoding.Default.GetBytes("JournalApp"));
+        await using var stream = new MemoryStream(Encoding.Default.GetBytes("JournalApp"));
 
         // Save the file.
         var saveResult = await FileSaver.Default.SaveAsync($"backup-{DateTime.Now:s}.journalapp", stream, CancellationToken.None);
