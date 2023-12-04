@@ -41,7 +41,7 @@
 			new()
 			{
 				Name = Category.Name,
-				Data = Points.Select(x => (double)(x.Value?.SleepHours ?? 0)).ToArray(),
+				Data = Points.Where(x => x.Value?.SleepHours is not null).Select(x => (double)x.Value.SleepHours.Value).ToArray(),
 			}
 		};
 	}
@@ -49,10 +49,10 @@
 	string GetBoolIcon(DataPoint point)
 	{
 		if (point?.Bool == true)
-			return "✔️";
+			return "🟩";
 		if (point?.Bool == false)
-			return "❌";
-		return "⭕";
+			return "🟥";
+		return "⬛";
 	}
 
 	List<ChartSeries> GetNumberSeries()
@@ -62,7 +62,7 @@
 			new()
 			{
 				Name = Category.Name,
-				Data = Points.Select(x => x.Value?.Number ?? 0d).ToArray(),
+				Data = Points.Where(x => x.Value?.Number is not null).Select(x => x.Value.Number.Value).ToArray(),
 			}
 		};
 	}
