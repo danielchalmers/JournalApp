@@ -11,6 +11,17 @@
 
 ::deep .trend-view {
 	display: flex;
+	justify-content: center;
+}
+
+::deep .trend-view-columns {
+	/* display: grid;
+	grid-auto-columns: minmax(0, 31);
+	grid-auto-flow: column; */
+	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
+}
+
+::deep  .trend-view-chart {
 }

@@ -57,7 +57,7 @@
 				var dayPoints = new Dictionary<int, DataPoint>();
 
 				// Each day has either a matching data point or null.
-				for (int day = 0; day < DateTime.DaysInMonth(value.Year, value.Month); day++)
+				for (int day = 1; day <= DateTime.DaysInMonth(value.Year, value.Month); day++)
 				{
 					var point = category.Points.FirstOrDefault(p => p.Day.Date.Year == value.Year && p.Day.Date.Month == value.Month && p.Day.Date.Day == day);
 					dayPoints.Add(day, point);

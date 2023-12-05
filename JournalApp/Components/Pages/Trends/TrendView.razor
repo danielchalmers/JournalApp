@@ -4,22 +4,36 @@
 	@switch (Category.Type)
 	{
 		case PointType.Mood:
-			foreach (var (day, point) in Points)
-			{
-				<MudText Typo="Typo.caption">@(point?.Mood ?? "😶")</MudText>
-			}
+			<div class="trend-view-columns">
+				@foreach (var (day, point) in Points)
+				{
+					<div class="d-flex flex-column align-center">
+						<MudText Typo="Typo.caption">@(day)</MudText>
+						<MudText Typo="Typo.caption">@(point?.Mood ?? "😶")</MudText>
+					</div>
+				}
+			</div>
 			break;
 		case PointType.Sleep:
-			<MudChart ChartType="ChartType.Line" ChartSeries="@GetSleepSeries()" Height="15em" Width="100%" Style="width:100%;"></MudChart>
+			<div class="trend-view-chart">
+				<MudChart ChartType="ChartType.Line" ChartSeries="@GetSleepSeries()" Height="15em" Width="100%" Style="width:100%;"></MudChart>
+			</div>
 			break;
 		case PointType.Bool:
-			foreach (var (day, point) in Points)
-			{
-				<MudText Typo="Typo.caption">@(GetBoolIcon(point))</MudText>
-			}
+			<div class="trend-view-columns">
+				@foreach (var (day, point) in Points)
+				{
+					<div class="d-flex flex-column align-center">
+						<MudText Typo="Typo.caption">@(day)</MudText>
+						<MudText Typo="Typo.caption">@(GetBoolIcon(point))</MudText>
+					</div>
+				}
+			</div>
 			break;
 		case PointType.Number:
-			<MudChart ChartType="ChartType.Line" ChartSeries="@GetNumberSeries()" Height="15em" Width="100%" Style="width:100%;"></MudChart>
+			<div class="trend-view-chart">
+				<MudChart ChartType="ChartType.Line" ChartSeries="@GetNumberSeries()" Height="15em" Width="100%" Style="width:100%;"></MudChart>
+			</div>
 			break;
 	}
 </div>
