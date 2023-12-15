@@ -7,7 +7,7 @@
 		<div class="page-header">
 			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Cancel" OnClick="Cancel" />
 
-			<MudText Typo="Typo.h6">@(Category == null ? "New" : "Edit") @(Group == "Medications" ? "medication" : "category")</MudText>
+			<MudText Typo="Typo.h6">@(Category == null ? "New" : "Edit") @(Group == CategoryGroup.Medications ? "medication" : "category")</MudText>
 
 			<MudSpacer />
 
@@ -24,7 +24,7 @@
 		<MudForm @ref="_form" ValidationDelay="0">
 			<MudTextField Label="Name" @bind-Value="Name" Immediate Required />
 
-			@if (Group == null)
+			@if (Group == CategoryGroup.None)
 			{
 				<MudSelect Label="Type of data" @bind-Value="Type" Disabled="@(Category != null)">
 					<MudSelectItem Value="PointType.LowToHigh">Low to high</MudSelectItem>
@@ -35,7 +35,7 @@
 					<MudSelectItem Value="PointType.Text">Text</MudSelectItem>
 				</MudSelect>
 			}
-			else if (Group == "Medications")
+			else if (Group == CategoryGroup.Medications)
 			{
 				<div class="d-flex flex-row flex-grow-1" style="gap: 1em">
 					<MudNumericField @bind-Value="MedicationDose" HideSpinButtons Label="Dose" MaxLength="6" Required Immediate />
@@ -55,7 +55,7 @@
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
 	[Parameter]
-	public string Group { get; set; }
+	public CategoryGroup Group { get; set; }
 
 	[Parameter]
 	public DataPointCategory Category { get; set; }
@@ -110,7 +110,7 @@
 		Category ??= new();
 		Category.Group = Group;
 		Category.Name = Name.Trim();
-		Category.Type = Group == "Medications" ? PointType.Medication : Type;
+		Category.Type = Group ==  CategoryGroup.Medications ? PointType.Medication : Type;
 		Category.MedicationDose = MedicationDose;
 		Category.MedicationUnit = MedicationUnit.Trim();
 		Category.MedicationEveryDaySince = MedicationEveryDay ? DateTimeOffset.Now : null;

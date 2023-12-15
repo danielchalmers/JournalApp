@@ -69,7 +69,7 @@ public class AppDbContext : DbContext
 
         foreach (var category in Categories)
         {
-            if (category.Group == "Notes")
+            if (category.Group == CategoryGroup.Notes)
             {
                 // First-launch example note.
                 if (category.Points.Count == 0)
@@ -162,7 +162,7 @@ public class AppDbContext : DbContext
 
     public DataPoint CreateNote(Day day)
     {
-        var notes = Categories.Single(x => x.Group == "Notes");
+        var notes = Categories.Single(x => x.Group == CategoryGroup.Notes);
         return DataPoint.Create(day, notes);
     }
 }

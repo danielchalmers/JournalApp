@@ -9,7 +9,7 @@
 		<div class="page-header">
 			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Submit" OnClick="Submit" />
 
-			<MudText Typo="Typo.h6">@(Group == null ? "Categories" : Group)</MudText>
+			<MudText Typo="Typo.h6">@(Group == CategoryGroup.None ? "Categories" : Group)</MudText>
 
 			<MudSpacer />
 
@@ -46,7 +46,7 @@
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
 	[Parameter]
-	public string Group { get; set; }
+	public CategoryGroup Group { get; set; }
 
 	public IQueryable<DataPointCategory> Categories => db.Categories.Where(c => c.Group == Group && !c.Deleted);
 

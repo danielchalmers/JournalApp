@@ -5,7 +5,7 @@ public class DataPointCategory
     [Key]
     public Guid Guid { get; set; }
 
-    public string Group { get; set; }
+    public CategoryGroup Group { get; set; }
 
     public string Name { get; set; }
 
@@ -33,12 +33,9 @@ public class DataPointCategory
     {
         var stringBuilder = new StringBuilder();
 
-        if (Group != null)
-        {
-            stringBuilder.Append(Group);
-            if (Name != null)
-                stringBuilder.Append('|');
-        }
+        stringBuilder.Append(Group);
+        if (Name != null)
+            stringBuilder.Append('|');
 
         stringBuilder.Append(Name);
 
