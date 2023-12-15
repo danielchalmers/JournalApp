@@ -40,7 +40,7 @@ public class AppDbSeeder(AppDbContext db, ILogger<AppDbSeeder> _logger)
         async Task AddOrUpdate(
             string guidString,
             PointType type,
-            CategoryGroup group = CategoryGroup.None,
+            string group = null,
             string name = null,
             bool readOnly = true,
             bool enabled = true,
@@ -76,7 +76,7 @@ public class AppDbSeeder(AppDbContext db, ILogger<AppDbSeeder> _logger)
         await AddOrUpdate(
             "BF394F35-2228-4933-BF38-AF5B1B97AEF7",
             PointType.Note,
-            group: CategoryGroup.Notes
+            group: "Notes"
         );
         await AddOrUpdate(
             "D90D89FB-F5B9-47CF-AE4E-3EC0D635E783",
@@ -142,7 +142,7 @@ public class AppDbSeeder(AppDbContext db, ILogger<AppDbSeeder> _logger)
         await AddOrUpdate(
             "01A8F325-3002-40C4-B076-234E26172E82",
             PointType.Medication,
-            group: CategoryGroup.Medications,
+            group: "Medications",
             name: "Vitamin D",
             readOnly: false,
             enabled: false,

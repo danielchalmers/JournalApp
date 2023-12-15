@@ -83,8 +83,8 @@ namespace JournalApp.Migrations
                     b.Property<bool>("Enabled")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Group")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("Group")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("Index")
                         .HasColumnType("INTEGER");

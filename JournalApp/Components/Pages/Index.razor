@@ -66,14 +66,14 @@
 	@foreach (var group in db.Categories.GroupBy(x => x.Group))
 	{
 		<div class="data-point-group">
-			@if (group.Key != CategoryGroup.None)
+			@if (!string.IsNullOrEmpty(group.Key))
 			{
 				<div class="data-point-group-header">
-					@if (group.Key == CategoryGroup.Medications)
+					@if (group.Key == "Medications")
 					{
 						<MudText Typo="Typo.h5">Medications taken</MudText>
 					}
-					else if (group.Key == CategoryGroup.Notes)
+					else if (group.Key == "Notes")
 					{
 						<MudText Typo="Typo.h5">Today's notes</MudText>
 					}
@@ -105,15 +105,15 @@
 			}
 
 			<div class="data-point-group-footer">
-				@if (group.Key == CategoryGroup.None)
+				@if (group.Key == null)
 				{
 					<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Category" OnClick="ManageCategories" FullWidth>Choose categories</MudButton>
 				}
-					else if (group.Key == CategoryGroup.Medications)
+				else if (group.Key == "Medications")
 				{
 					<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Medication" OnClick="ManageMedications" FullWidth>Choose medications</MudButton>
 				}
-					else if (group.Key == CategoryGroup.Notes)
+				else if (group.Key == "Notes")
 				{
 					<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote" FullWidth>New note</MudButton>
 				}
@@ -240,7 +240,7 @@
 	async Task ManageMedications()
 	{
 		logger.LogInformation("Managing medications");
-		var parameters = new DialogParameters<ManageCategoriesDialog> { { x => x.Group, CategoryGroup.Medications } };
+		var parameters = new DialogParameters<ManageCategoriesDialog> { { x => x.Group, "Medications" } };
 
 		await DialogService.Show<ManageCategoriesDialog>(parameters, ComponentUtil.FullscreenDialogOptions).Result;
 
