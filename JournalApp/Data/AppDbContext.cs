@@ -82,7 +82,7 @@ public class AppDbContext : DbContext
             else
             {
                 // Create a new data point for this category if it doesn't have one already.
-                if (!day.Points.Any(x => x.Category == category))
+                if (!day.Points.Any(x => x.Category == category && x.Type == category.Type))
                 {
                     var point = DataPoint.Create(day, category);
 

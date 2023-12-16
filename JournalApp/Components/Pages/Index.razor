@@ -83,7 +83,7 @@
 
 				@foreach (var category in group.Where(x => x.Enabled && !x.Deleted).OrderBy(x => x.Index).ThenBy(x => x.Name))
 				{
-					@foreach (var point in _day.Points.Where(x => !x.Deleted && x.Category == category))
+					@foreach (var point in _day.Points.Where(x => !x.Deleted && x.Category == category && x.Type == category.Type))
 					{
 						<div class="data-point-container">
 							@if (!string.IsNullOrEmpty(category.Name))
