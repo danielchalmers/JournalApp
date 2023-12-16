@@ -5,6 +5,7 @@
 @inject ILogger<MoodGridDialog> logger
 @inject IDialogService DialogService
 @inject IScrollManager ScrollManager
+@inject IJSRuntime JSRuntime
 @inject PageService PageService
 
 <MudDialog DefaultFocus="DefaultFocus.Element">
@@ -25,7 +26,7 @@
 	<DialogContent>
 		@if(_gridYear != null)
 		{
-			<MoodGridCalendar MoodColors="MoodColors" GridYear="_gridYear.Value" DayClicked="@(d => Close(d))" />
+			<MoodGridCalendar MoodColors="MoodColors" GridYear="_gridYear.Value" DayClicked="@(d => Close(d))" CalendarLoaded="ScrollToOpenToDate" />
 		}
 	</DialogContent>
 </MudDialog>
@@ -33,6 +34,7 @@
 @code {
 	DataPointCategory _moodCategory;
 	GridYear? _gridYear = null;
+	Task _loadYearTask;
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
 	[Parameter]
@@ -59,7 +61,7 @@
 
 		GenerateColors();
 
-		await LoadYear();
+		_loadYearTask = LoadYear();
 	}
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -68,8 +70,20 @@
 
 		if (firstRender)
 		{
-		await ScrollManager.ScrollIntoViewAsync($"#mood-grid-month-{OpenToDate.Month}", ScrollBehavior.Smooth);
+			// If the year wasn't loaded before render, we have to render again.
+			if (!_loadYearTask.IsCompleted)
+			{
+				await _loadYearTask;
+				StateHasChanged();
+			}
 		}
+	}
+
+	async Task ScrollToOpenToDate()
+	{
+		// TODO: Unsure why we need two calls.
+		await JSRuntime.InvokeVoidAsyncIgnoreErrors("scrollToNestedElement", ".mud-dialog", $"#mood-grid-month-{OpenToDate.Month}");
+		await ScrollManager.ScrollIntoViewAsync($"#mood-grid-month-{OpenToDate.Month}", ScrollBehavior.Auto);
 	}
 
 	async Task LoadYear()

@@ -52,6 +52,19 @@
 	[Parameter]
 	public GridYear GridYear { get; set; }
 
+	[Parameter]
+	public EventCallback CalendarLoaded { get; set; }
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		await base.OnAfterRenderAsync(firstRender);
+
+		if (firstRender)
+		{
+			await CalendarLoaded.InvokeAsync();
+		}
+	}
+
 	string GetMoodColor(string emoji)
 	{
 		if (string.IsNullOrEmpty(emoji) || !MoodColors.TryGetValue(emoji, out var color))
