@@ -151,23 +151,37 @@ public class AppDbSeeder(AppDbContext db, ILogger<AppDbSeeder> _logger)
             medEveryDaySince: DateTimeOffset.Now);
     }
 
+    private async Task SeedDays(DateOnly start, DateOnly end)
+    {
+        var currentDate = start;
+        while (true)
+        {
+            // Use the same seed over a random number of days to represent trends.
+            var chunkLength = Random.Shared.Next(1, 6);
+            var random = new Random(Guid.NewGuid().GetHashCode());
+
+            for (var i = 0; i < chunkLength; i++)
+            {
+                // Sometimes don't even generate the day as if the user forgot.
+                var fillDay = Random.Shared.Next(0, 10) > 0;
+
+                // Get or create the day and fill in all missing points with the random seed.
+                await db.GetOrCreateDay(currentDate, false, fillDay ? random : null);
+
+                // Increment day and see if we're done.
+                currentDate = currentDate.AddDays(1);
+                if (currentDate > end)
+                    return;
+            }
+        }
+    }
+
     private async Task SeedDays()
     {
         var startDate = DateOnly.FromDateTime(DateTime.Now - TimeSpan.FromDays(120));
         var endDate = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(7));
 
-        foreach (var dates in startDate.DatesTo(endDate).Chunk(3))
-        {
-            // We want the same values over a batch of days to represent trends.
-            var seed = Guid.NewGuid().GetHashCode();
-            foreach (var date in dates)
-            {
-                // Sometimes don't even generate the day as if the user forgot.
-                var fillDay = Random.Shared.Next(0, 10) > 0;
-
-                await db.GetOrCreateDay(date, false, fillDay ? new(seed) : null);
-            }
-        }
+        await SeedDays(startDate, endDate);
 
         // A few additional days to test multi-year features.
         foreach (var relativeMonth in new int[] { -12, -18, -24, -30, -36, -42, -48 })
