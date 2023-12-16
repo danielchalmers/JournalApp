@@ -27,10 +27,10 @@
 			@if (Group == null)
 			{
 				<MudSelect Label="Type of data" @bind-Value="Type" Disabled="@(Category != null)">
+					<MudSelectItem Value="PointType.Bool">Yes or no</MudSelectItem>
 					<MudSelectItem Value="PointType.LowToHigh">Low to high</MudSelectItem>
 					<MudSelectItem Value="PointType.MildToSevere">Mild to severe</MudSelectItem>
 					<MudSelectItem Value="PointType.Scale">1-5 scale</MudSelectItem>
-					<MudSelectItem Value="PointType.Bool">Yes or no</MudSelectItem>
 					<MudSelectItem Value="PointType.Number">Number</MudSelectItem>
 					<MudSelectItem Value="PointType.Text">Text</MudSelectItem>
 					<MudSelectItem Value="PointType.Note">Note</MudSelectItem>
@@ -63,7 +63,7 @@
 
 	public string Name { get; set; } = string.Empty;
 
-	public PointType Type { get; set; } = PointType.LowToHigh;
+	public PointType Type { get; set; } = PointType.Bool;
 
 	public decimal? MedicationDose { get; set; }
 
