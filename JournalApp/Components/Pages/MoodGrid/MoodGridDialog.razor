@@ -19,7 +19,7 @@
 			<MudIconButton Icon="@Icons.Material.Filled.Palette" Title="Pick color" OnClick="OpenColorPicker" />
 		</div>
 
-		<MoodGridSwitcher @bind-SelectedYear="SelectedYear" />
+		<MoodGridSwitcher @bind-SelectedYear="SelectedYear" @bind-SelectedYear:after="LoadYear" />
 	</TitleContent>
 
 	<DialogContent>
@@ -70,7 +70,6 @@
 </MudDialog>
 
 @code {
-	int _selectedYear;
 	GridYear? _gridYear;
 	DataPointCategory _moodCategory;
 	IReadOnlyDictionary<string, string> _moodColors;
@@ -86,47 +85,18 @@
 		set => Preferences.Set("mood_palette", value.Value[..^2]);
 	}
 
-	public int SelectedYear
-	{
-		get => _selectedYear;
-		set
-		{
-			_selectedYear = value;
-
-			// The category may have been deleted from the database or not seeded in the first place.
-			if (_moodCategory == null)
-			{
-				logger.LogInformation($"Not loading year {value} because mood category isn't present");
-				return;
-			}
-
-			var sw = Stopwatch.StartNew();
-
-			var tomorrow = DateOnly.FromDateTime(DateTime.Now).Next();
-
-			// Group all mood points by their dates.
-			var moodPointsByDate = db.Days
-				.Select(x => new { Date = x.Date, DataPoints = x.Points })
-				.Where(x => x.Date.Year == value && x.Date <= tomorrow)
-				.ToDictionary(x => x.Date, x => x.DataPoints.Where(x => x.Category == _moodCategory).Single());
-
-			_gridYear = new GridYear(value, System.Globalization.CultureInfo.CurrentCulture, moodPointsByDate);
-
-			sw.Stop();
-			logger.LogInformation($"Loaded year {value} in {sw.ElapsedMilliseconds}ms");
-		}
-	}
+	public int SelectedYear { get; set; }
 
 	protected override void OnInitialized()
 	{
 		base.OnInitialized();
 
-		_moodCategory = db.Categories.SingleOrDefault(x => x.Guid == new Guid("D90D89FB-F5B9-47CF-AE4E-3EC0D635E783"));
 		PageService.EnteredPage(() => Close());
-		GenerateColors();
 
 		logger.LogInformation($"Opened to {OpenToDate}");
 		SelectedYear = OpenToDate.Year;
+
+		GenerateColors();
 	}
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -135,8 +105,31 @@
 
 		if (firstRender)
 		{
+			// Load content after the initial rendering is done to make it look smoother.
+			await LoadYear();
+
 			await ScrollManager.ScrollIntoViewAsync($"#mood-grid-month-{OpenToDate.Month}", ScrollBehavior.Smooth);
 		}
+	}
+
+	async Task LoadYear()
+	{
+		var sw = Stopwatch.StartNew();
+		var tomorrow = DateOnly.FromDateTime(DateTime.Now).Next();
+		
+		_moodCategory ??= await db.Categories.SingleOrDefaultAsync(x => x.Guid == new Guid("D90D89FB-F5B9-47CF-AE4E-3EC0D635E783"));
+
+		// Group all mood points by their dates.
+		var moodPointsByDate = await db.Days
+			.Select(x => new { Date = x.Date, DataPoints = x.Points })
+			.Where(x => x.Date.Year == SelectedYear && x.Date <= tomorrow)
+			.ToDictionaryAsync(x => x.Date, x => x.DataPoints.Where(x => x.Category == _moodCategory).Single());
+
+		_gridYear = new GridYear(SelectedYear, System.Globalization.CultureInfo.CurrentCulture, moodPointsByDate);
+		StateHasChanged();
+
+		sw.Stop();
+		logger.LogInformation($"Loaded year {SelectedYear} in {sw.ElapsedMilliseconds}ms");
 	}
 
 	async Task OpenColorPicker()
