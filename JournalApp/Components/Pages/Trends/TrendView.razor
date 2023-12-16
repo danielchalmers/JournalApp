@@ -3,36 +3,26 @@
 <div class="trend-view">
 	@switch (Category.Type)
 	{
-		case PointType.Mood:
-			<div class="trend-view-columns">
-				@foreach (var (day, point) in Points)
-				{
-					<div class="d-flex flex-column align-center">
-						<MudText Typo="Typo.caption">@(day)</MudText>
-						<MudText Typo="Typo.caption">@(point?.Mood ?? "😶")</MudText>
-					</div>
-				}
-			</div>
-			break;
 		case PointType.Sleep:
 			<div class="trend-view-chart">
-				<MudChart ChartType="ChartType.Line" ChartSeries="@GetSleepSeries()" Height="15em" Width="100%" Style="width:100%;"></MudChart>
+				<MudChart ChartType="ChartType.Line" ChartSeries="@GetSleepSeries()" Height="15em" Width="100%" Style="width: 100%"></MudChart>
 			</div>
 			break;
 		case PointType.Bool:
+		case PointType.Medication:
 			<div class="trend-view-columns">
 				@foreach (var (day, point) in Points)
 				{
-					<div class="d-flex flex-column align-center">
-						<MudText Typo="Typo.caption">@(day)</MudText>
-						<MudText Typo="Typo.caption">@(GetBoolIcon(point))</MudText>
+					<div class="trend-column-container" style="background-color: @(GetBoolColor(point));">
+						<div class="trend-column">
+						</div>
 					</div>
 				}
 			</div>
 			break;
 		case PointType.Number:
 			<div class="trend-view-chart">
-				<MudChart ChartType="ChartType.Line" ChartSeries="@GetNumberSeries()" Height="15em" Width="100%" Style="width:100%;"></MudChart>
+				<MudChart ChartType="ChartType.Line" ChartSeries="@GetNumberSeries()" Height="15em" Width="100%" Style="width: 100%"></MudChart>
 			</div>
 			break;
 	}
@@ -46,7 +36,7 @@
 	public IReadOnlyDictionary<int, DataPoint> Points { get; set; }
 
 	public static bool IsSupported(PointType type) =>
-		type is PointType.Mood or PointType.Sleep or PointType.Bool or PointType.Number;
+		type is PointType.Sleep or PointType.Bool or PointType.Medication or PointType.Number;
 
 	List<ChartSeries> GetSleepSeries()
 	{
@@ -60,13 +50,13 @@
 		};
 	}
 
-	string GetBoolIcon(DataPoint point)
+	string GetBoolColor(DataPoint point)
 	{
 		if (point?.Bool == true)
-			return "🟩";
+			return "green";
 		if (point?.Bool == false)
-			return "🟥";
-		return "⬛";
+			return "red";
+		return "black";
 	}
 
 	List<ChartSeries> GetNumberSeries()

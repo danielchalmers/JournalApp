@@ -1,0 +1,25 @@
+﻿.trend-view {
+	display: flex;
+	justify-content: center;
+}
+
+.trend-view-columns {
+	display: flex;
+	flex: 1 1 0;
+}
+
+.trend-view-chart {
+}
+
+.trend-column-container {
+	display: flex;
+	flex: 1 1 0;
+	margin: 0.125em;
+	max-height: 1em;
+}
+
+.trend-column {
+	display: flex;
+	width: 100%;
+	aspect-ratio: 0.2 / 1;
+}
