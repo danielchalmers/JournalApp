@@ -66,17 +66,17 @@ else if (Point.Type == PointType.Note)
 {
 	<div class="d-flex flex-column flex-grow-1">
 		<MudTextField @bind-Value="Point.Text"
-					  Placeholder="What's on your mind?"
-					  Label="@(Point.CreatedAt.ToString(DateOnly.FromDateTime(Point.CreatedAt.Date) == Point.Day.Date ? "h:mm tt" : "M/d/yy h:mm tt"))"
+					  Placeholder="@(Point.Category.Group == "Notes" ? "What's on your mind?" : null)"
+					  Label="@(NoteLabel)"
 					  Immediate ReadOnly DisableUnderLine
-					  AutoGrow Lines="3" MaxLines="10" />
+					  AutoGrow Lines="1" MaxLines="10" />
 
 		<MudLink OnClick="EditTextInDialog">Edit note...</MudLink>
 	</div>
 }
 else if (Point.Type == PointType.Medication)
 {
-	<div class="d-flex flex-grow-1 justify-space-between align-center" style="gap: 0.5em;">
+	<div class="d-flex flex-grow-1 justify-space-between align-center" style="gap: 0.5em">
 		<ButtonGroupCheckBox @bind-SelectedValue="Point.Bool" />
 
 		<MudLink OnClick="EditDose">Edit</MudLink>
@@ -94,6 +94,18 @@ else if (Point.Type == PointType.Medication)
 	{
 		get => Point.ScaleIndex ?? 0;
 		set => Point.ScaleIndex = value == 0 ? null : value;
+	}
+
+	public string NoteLabel
+	{
+		get
+		{
+			// Only include a label if we're in the general notes group. If this is a custom category it will be covered by its own label.
+			if(Point.Category.Group == "Notes")
+				return Point.CreatedAt.ToString(DateOnly.FromDateTime(Point.CreatedAt.Date) == Point.Day.Date ? "h:mm tt" : "M/d/yy h:mm tt");
+
+			return null;
+		}
 	}
 
 	void DecrementSleep()
