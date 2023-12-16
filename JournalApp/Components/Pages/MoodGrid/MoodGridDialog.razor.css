@@ -1,7 +1,7 @@
 .mood-grid {
 	display: flex;
 	flex-direction: column;
-	gap: 1em;
+	gap: 0.75em;
 }
 
 .mood-grid-month-header {

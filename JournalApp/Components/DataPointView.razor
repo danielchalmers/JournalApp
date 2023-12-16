@@ -21,7 +21,7 @@
 }
 else if (Point.Type == PointType.Sleep)
 {
-	<div class="d-flex align-center flex-grow-1" style="gap:1em">
+	<div class="d-flex align-center flex-grow-1" style="gap: 0.75em">
 		<MudIconButton Icon="@Icons.Material.Filled.Remove" Title="Less sleep" OnClick="DecrementSleep" Disabled="@(Point.SleepHours <= 0)" Size="Size.Small" />
 		<MudSlider @bind-Value="Point.SleepHours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" Size="Size.Large" Immediate />
 		<MudText Typo="Typo.caption">@((Point.SleepHours ?? 0).ToString("00.0"))</MudText>

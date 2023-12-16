@@ -1,7 +1,7 @@
 ﻿.trends-category-list {
 	display: flex;
 	flex-direction: column;
-	gap: 2em;
+	gap: 1.5em;
 }
 
 .trends-category {

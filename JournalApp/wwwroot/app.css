@@ -72,7 +72,7 @@ button {
 }
 
 .page-body {
-	padding-bottom: 15em !important;
+	padding-bottom: 10em !important;
 }
 
 .mud-dialog-fullscreen {
@@ -80,22 +80,26 @@ button {
 	max-height: 100% !important;
 	border-radius: 0;
 	overflow-y: auto !important;
-	padding-bottom: 15em;
+	padding-bottom: 10em;
 }
 
 .mud-form {
 	display: flex;
 	flex-direction: column;
-	gap: 1em;
+	gap: 0.75em;
 }
 
 .mud-input {
 	margin: 0 !important;
 }
 
+.mud-input-control {
+	margin: 0 !important;
+}
+
 /* Adds space to make up for label. Only works on newer browsers. */
 .mud-input-control-input-container:has(.mud-input-label) {
-	margin: 0.75em 0 0 0 !important;
+	margin: 1em 0 0 0 !important;
 }
 
 .mud-input-control-input-container {
