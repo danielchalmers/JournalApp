@@ -1,6 +1,24 @@
 ﻿@namespace JournalApp
 @inherits LayoutComponentBase
 
+<MudThemeProvider Theme="AppTheme" IsDarkMode />
+
+<MudDialogProvider MaxWidth="MaxWidth.Medium"
+				   NoHeader="false"
+				   CloseButton="false"
+				   CloseOnEscapeKey="true"
+				   Position="DialogPosition.Center" />
+
+<MudSnackbarProvider />
+
 <div class="page">
 	@Body
 </div>
+
+@code {
+	MudTheme AppTheme { get; } = new()
+		{
+			PaletteDark = new PaletteDark() { TextDisabled = "#ffffffb2" },
+			LayoutProperties = new() { AppbarHeight = "4em" },
+		};
+}

@@ -10,14 +10,6 @@
 @inject IScrollManager ScrollManager
 @inject AppDataService AppDataService
 
-<MudThemeProvider Theme="AppTheme" IsDarkMode />
-<MudDialogProvider MaxWidth="MaxWidth.Medium"
-				   NoHeader="false"
-				   CloseButton="false"
-				   CloseOnEscapeKey="true"
-				   Position="DialogPosition.Center" />
-<MudSnackbarProvider />
-
 <div class="page-title">
 	<div class="page-header">
 		<MudButton OnClick="ScrollToTop" DisableRipple Variant="Variant.Text">
@@ -127,12 +119,6 @@
 @code {
 	Day _day;
 	DateTimeOffset _stoppedDate;
-
-	MudTheme AppTheme { get; } = new()
-		{
-			PaletteDark = new PaletteDark() { TextDisabled = "#ffffffb2" },
-			LayoutProperties = new() { AppbarHeight = "4em" },
-		};
 
 	protected override async Task OnInitializedAsync()
 	{
