@@ -56,6 +56,7 @@ public class AppDbSeeder(AppDbContext db, ILogger<AppDbSeeder> _logger)
 
             // Keep some properties up-to-date but not all.
             category.Guid = guid;
+            category.Type = type;
             category.Group = group;
             category.Name = name;
             category.ReadOnly = readOnly;
@@ -64,7 +65,6 @@ public class AppDbSeeder(AppDbContext db, ILogger<AppDbSeeder> _logger)
             if (!doesExist)
             {
                 category.Enabled = enabled;
-                category.Type = type;
                 category.MedicationDose = medDose;
                 category.MedicationUnit = medUnit;
                 category.MedicationEveryDaySince = medEveryDaySince;
@@ -119,8 +119,8 @@ public class AppDbSeeder(AppDbContext db, ILogger<AppDbSeeder> _logger)
         );
         await AddOrUpdate(
             "DE394B38-9007-4349-AE31-429541AAB947",
-            PointType.Bool,
-            name: "Exercised or was active"
+            PointType.LowToHigh,
+            name: "Physical activity"
         );
         await AddOrUpdate(
             "EE8DE4D0-3A87-4CA4-B384-81BD7508A19F",
