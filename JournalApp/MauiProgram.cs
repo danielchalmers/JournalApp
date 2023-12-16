@@ -41,6 +41,10 @@ public static class MauiProgram
         builder.Services.AddSingleton<AppDbSeeder>();
         builder.Services.AddSingleton<PageService>();
 
+        using var provider = builder.Services.BuildServiceProvider();
+        var dbSeeder = provider.GetService<AppDbSeeder>();
+        dbSeeder.SeedAsync().GetAwaiter().GetResult();
+
         return builder.Build();
     }
 }

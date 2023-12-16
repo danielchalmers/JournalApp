@@ -38,36 +38,59 @@ public class AppDbContext : DbContext
             .WithOne(e => e.Day);
     }
 
-    public async Task<Day> GetOrCreateDay(DateOnly date, bool saveChanges = true, Random random = null)
+    public async Task<Day> GetOrCreateDayAndAddPoints(DateOnly date)
     {
         var changesMade = false;
         var day = await Days.SingleOrDefaultAsync(x => x.Date == date);
 
         if (day == null)
         {
-            day = new()
-            {
-                Date = date,
-            };
-
+            day = Day.Create(date);
             Days.Add(day);
             changesMade = true;
         }
 
-        if (AddMissingPoints(day, random))
+        if (AddMissingPoints(day))
             changesMade = true;
 
-        if (changesMade && saveChanges)
+        if (changesMade)
             await SaveChangesAsync();
 
         return day;
     }
 
-    public bool AddMissingPoints(Day day, Random random = null)
+    public List<Day> GetOrCreateDays(IEnumerable<DateOnly> dates)
+    {
+        var days = new HashSet<Day>(Days);
+        var categories = new HashSet<DataPointCategory>(Categories);
+        var addedDays = new HashSet<Day>();
+        var foundDays = new List<Day>();
+
+        foreach (var date in dates)
+        {
+            var day = days.FirstOrDefault(x => x.Date == date);
+
+            if (day == null)
+            {
+                day = Day.Create(date);
+                addedDays.Add(day);
+            }
+
+            foundDays.Add(day);
+        }
+
+        Days.AddRange(addedDays);
+
+        return foundDays;
+    }
+
+    public bool AddMissingPoints(Day day) => AddMissingPoints(day, new HashSet<DataPointCategory>(Categories), null);
+
+    public bool AddMissingPoints(Day day, HashSet<DataPointCategory> categories, Random random)
     {
         var newPoints = new HashSet<DataPoint>();
 
-        foreach (var category in Categories)
+        foreach (var category in categories)
         {
             if (category.Group == "Notes")
             {

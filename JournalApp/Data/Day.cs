@@ -10,4 +10,12 @@ public class Day
     public virtual HashSet<DataPoint> Points { get; set; } = [];
 
     public override string ToString() => $"{Date}";
+
+    public static Day Create(DateOnly date)
+    {
+        return new()
+        {
+            Date = date,
+        };
+    }
 }

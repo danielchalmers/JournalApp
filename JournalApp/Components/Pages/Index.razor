@@ -3,7 +3,6 @@
 @using CommunityToolkit.Maui.Storage;
 @inherits LayoutComponentBase
 @inject AppDbContext db
-@inject AppDbSeeder dbSeeder
 @inject ILogger<Index> logger
 @inject ISnackbar SnackbarService
 @inject IDialogService DialogService
@@ -125,9 +124,6 @@
 		logger.LogInformation("Initializing asynchronously");
 		await base.OnInitializedAsync();
 
-		logger.LogInformation("Seeding database");
-		await dbSeeder.SeedAsync();
-
 		logger.LogInformation("Going to the current day");
 		await GoToDay(DateOnly.FromDateTime(DateTime.Now));
 
@@ -181,7 +177,7 @@
 	async Task GoToDay(DateOnly date, bool scrollToTop = false)
 	{
 		var sw = Stopwatch.StartNew();
-		_day = await db.GetOrCreateDay(date);
+		_day = await db.GetOrCreateDayAndAddPoints(date);
 		sw.Stop();
 		logger.LogInformation($"Went to {_day} in {sw.ElapsedTicks} ticks");
 

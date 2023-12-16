@@ -4,6 +4,8 @@ public class AppDbSeeder(AppDbContext db, ILogger<AppDbSeeder> _logger)
 {
     public async Task SeedAsync()
     {
+        _logger.LogInformation("Seeding database");
+
         var sw = Stopwatch.StartNew();
         try
         {
@@ -151,9 +153,12 @@ public class AppDbSeeder(AppDbContext db, ILogger<AppDbSeeder> _logger)
             medEveryDaySince: DateTimeOffset.Now);
     }
 
-    private async Task SeedDays(DateOnly start, DateOnly end)
+    private void SeedDays(DateOnly start, DateOnly end)
     {
-        var currentDate = start;
+        var categories = new HashSet<DataPointCategory>(db.Categories);
+        var days = db.GetOrCreateDays(start.DatesTo(end));
+
+        var d = 0;
         while (true)
         {
             // Use the same seed over a random number of days to represent trends.
@@ -166,11 +171,11 @@ public class AppDbSeeder(AppDbContext db, ILogger<AppDbSeeder> _logger)
                 var fillDay = Random.Shared.Next(0, 10) > 0;
 
                 // Get or create the day and fill in all missing points with the random seed.
-                await db.GetOrCreateDay(currentDate, false, fillDay ? random : null);
+                db.AddMissingPoints(days[d], categories, fillDay ? random : null);
 
                 // Increment day and see if we're done.
-                currentDate = currentDate.AddDays(1);
-                if (currentDate > end)
+                d++;
+                if (d == days.Count)
                     return;
             }
         }
@@ -181,12 +186,12 @@ public class AppDbSeeder(AppDbContext db, ILogger<AppDbSeeder> _logger)
         var startDate = DateOnly.FromDateTime(DateTime.Now - TimeSpan.FromDays(120));
         var endDate = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(7));
 
-        await SeedDays(startDate, endDate);
+        SeedDays(startDate, endDate);
 
         // A few additional days to test multi-year features.
         foreach (var relativeMonth in new int[] { -12, -18, -24, -30, -36, -42, -48 })
         {
-            await db.GetOrCreateDay(startDate.AddMonths(relativeMonth), false, Random.Shared);
+            await db.GetOrCreateDayAndAddPoints(startDate.AddMonths(relativeMonth));
         }
 
         await db.SaveChangesAsync();
