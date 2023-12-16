@@ -19,23 +19,26 @@
 			<MudIconButton Icon="@Icons.Material.Filled.Palette" Title="Pick color" OnClick="OpenColorPicker" />
 		</div>
 
-		<MoodGridSwitcher @bind-SelectedYear="SelectedYear" />
+		<MoodGridSwitcher @bind-SelectedYear="SelectedYear" @bind-SelectedYear:after="LoadYear" />
 	</TitleContent>
 
 	<DialogContent>
-		@if(_hasInitiallyRendered)
+		@if(_gridYear != null)
 		{
-			<MoodGridCalendar MoodColors="MoodColors" SelectedYear="SelectedYear" DayClicked="@(d => Close(d))" CalendarLoaded="ScrollToOpenToDate" />
+			<MoodGridCalendar MoodColors="MoodColors" GridYear="_gridYear.Value" DayClicked="@(d => Close(d))" />
 		}
 	</DialogContent>
 </MudDialog>
 
 @code {
-	bool _hasInitiallyRendered = false;
+	DataPointCategory _moodCategory;
+	GridYear? _gridYear = null;
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
 	[Parameter]
 	public DateOnly OpenToDate { get; set; }
+
+	public int SelectedYear { get; set; }
 
 	public MudColor PrimaryColor
 	{
@@ -45,11 +48,9 @@
 
 	public IReadOnlyDictionary<string, string> MoodColors { get; set; }
 
-	public int SelectedYear { get; set; }
-
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
-		base.OnInitialized();
+		await base.OnInitializedAsync();
 
 		PageService.EnteredPage(() => Close());
 
@@ -57,6 +58,8 @@
 		SelectedYear = OpenToDate.Year;
 
 		GenerateColors();
+
+		await LoadYear();
 	}
 
 	protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -65,14 +68,27 @@
 
 		if (firstRender)
 		{
-			_hasInitiallyRendered = true;
-			StateHasChanged();
+		await ScrollManager.ScrollIntoViewAsync($"#mood-grid-month-{OpenToDate.Month}", ScrollBehavior.Smooth);
 		}
 	}
 
-	async Task ScrollToOpenToDate()
+	async Task LoadYear()
 	{
-		await ScrollManager.ScrollIntoViewAsync($"#mood-grid-month-{OpenToDate.Month}", ScrollBehavior.Smooth);
+		var sw = Stopwatch.StartNew();
+		var tomorrow = DateOnly.FromDateTime(DateTime.Now).Next();
+
+		_moodCategory ??= await db.Categories.SingleOrDefaultAsync(x => x.Guid == new Guid("D90D89FB-F5B9-47CF-AE4E-3EC0D635E783"));
+
+		// Group all mood points by their dates.
+		var moodPointsByDate = await db.Days
+			.Select(x => new { Date = x.Date, DataPoints = x.Points })
+			.Where(x => x.Date.Year == SelectedYear && x.Date <= tomorrow)
+			.ToDictionaryAsync(x => x.Date, x => x.DataPoints.Where(x => x.Category == _moodCategory).Single());
+
+		_gridYear = new GridYear(SelectedYear, System.Globalization.CultureInfo.CurrentCulture, moodPointsByDate);
+
+		sw.Stop();
+		logger.LogInformation($"Loaded year {SelectedYear} in {sw.ElapsedMilliseconds}ms");
 	}
 
 	async Task OpenColorPicker()
