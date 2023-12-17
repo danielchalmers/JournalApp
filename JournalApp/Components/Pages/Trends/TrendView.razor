@@ -1,11 +1,19 @@
 ﻿@namespace JournalApp
+@using ApexCharts
 
 <div class="trend-view">
 	@switch (Category.Type)
 	{
 		case PointType.Sleep:
 			<div class="trend-view-chart">
-				<MudChart ChartType="ChartType.Line" ChartSeries="@GetSleepSeries()" Height="15em" Width="100%" Style="width: 100%"></MudChart>
+				<ApexChart TItem="PointOnChart" Options="ChartOptions">
+					<ApexPointSeries TItem="PointOnChart"
+									 Name="Hours"
+									 Items="ChartItems"
+									 SeriesType="SeriesType.Line"
+									 XValue="e => e.Day"
+									 YValue="e => e.Point.SleepHours" />
+				</ApexChart>
 			</div>
 			break;
 		case PointType.Bool:
@@ -22,13 +30,32 @@
 			break;
 		case PointType.Number:
 			<div class="trend-view-chart">
-				<MudChart ChartType="ChartType.Line" ChartSeries="@GetNumberSeries()" Height="15em" Width="100%" Style="width: 100%"></MudChart>
 			</div>
 			break;
 	}
 </div>
 
 @code {
+	ApexChartOptions<PointOnChart> ChartOptions = new()
+		{
+			Theme = new Theme
+			{
+				Mode = Mode.Dark,
+				Palette = PaletteType.Palette1,
+			},
+			Chart = new Chart
+			{
+				Background = "transparent",
+				Zoom = new Zoom
+				{
+					Enabled = false,
+				},
+			},
+		};
+
+	List<PointOnChart> ChartItems = new();
+	private record PointOnChart(int Day, DataPoint Point);
+
 	[Parameter]
 	public DataPointCategory Category { get; set; }
 
@@ -38,16 +65,16 @@
 	public static bool IsSupported(PointType type) =>
 		type is PointType.Sleep or PointType.Bool or PointType.Medication or PointType.Number;
 
-	List<ChartSeries> GetSleepSeries()
+	protected override void OnInitialized()
 	{
-		return new()
+		base.OnInitialized();
+
+		foreach (var (day, point) in Points)
 		{
-			new()
-			{
-				Name = Category.Name,
-				Data = Points.Where(x => x.Value?.SleepHours is not null).Select(x => (double)x.Value.SleepHours.Value).ToArray(),
-			}
-		};
+			if (point?.SleepHours == null)
+				continue;
+			ChartItems.Add(new(day, point));
+		}
 	}
 
 	string GetBoolColor(DataPoint point)
