@@ -40,14 +40,20 @@ jobs:
         -p:AndroidSigningStorePass="${{ secrets.RELEASE_KEYSTORE_PASS }}"
         -p:AndroidSigningKeyAlias="key"
         -p:AndroidSigningKeyPass="${{ secrets.RELEASE_KEYSTORE_PASS }}"
-    
-    - name: Create GitHub release
-      uses: softprops/action-gh-release@v1
+
+    - uses: actions/upload-artifact@v4
       with:
-        files: |
-          "publish/*.aab"
+        path: |
           "publish/*.apk"
-        generate_release_notes: true
+#          "publish/*.aab"
+
+#    - name: Create GitHub release
+#      uses: softprops/action-gh-release@v1
+#      with:
+#        files: |
+#          "publish/*.apk"
+#          "publish/*.aab"
+#        generate_release_notes: true
 
     - name: Upload to Play Store
       uses: r0adkll/upload-google-play@v1
