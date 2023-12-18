@@ -41,15 +41,12 @@ jobs:
         -p:AndroidSigningKeyAlias="key"
         -p:AndroidSigningKeyPass="${{ secrets.RELEASE_KEYSTORE_PASS }}"
     
-    - uses: actions/upload-artifact@v3
-      with:
-        path: "publish/*.aab"
-
     - name: Create GitHub release
       uses: softprops/action-gh-release@v1
       with:
-#        files: |
-#          "publish/*.aab"
+        files: |
+          "publish/*.aab"
+          "publish/*.apk"
         generate_release_notes: true
 
     - name: Upload to Play Store
