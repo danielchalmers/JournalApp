@@ -44,7 +44,7 @@ public class AppDbSeeder(AppDbContext db, ILogger<AppDbSeeder> _logger)
             PointType type,
             string group = null,
             string name = null,
-            bool readOnly = true,
+            bool readOnly = false,
             bool enabled = true,
             decimal? medDose = null,
             string medUnit = null,
@@ -63,6 +63,9 @@ public class AppDbSeeder(AppDbContext db, ILogger<AppDbSeeder> _logger)
             category.Name = name;
             category.ReadOnly = readOnly;
 
+            if (readOnly)
+                category.Deleted = false;
+
             // Save new category with given values.
             if (!doesExist)
             {
@@ -78,12 +81,14 @@ public class AppDbSeeder(AppDbContext db, ILogger<AppDbSeeder> _logger)
         await AddOrUpdate(
             "BF394F35-2228-4933-BF38-AF5B1B97AEF7",
             PointType.Note,
-            group: "Notes"
+            group: "Notes",
+            readOnly: true
         );
         await AddOrUpdate(
             "D90D89FB-F5B9-47CF-AE4E-3EC0D635E783",
             PointType.Mood,
-            name: "Overall mood"
+            name: "Overall mood",
+            readOnly: true
         );
         await AddOrUpdate(
             "D8657B36-F3A0-486F-BF80-0CF057919C7D",
@@ -146,7 +151,6 @@ public class AppDbSeeder(AppDbContext db, ILogger<AppDbSeeder> _logger)
             PointType.Medication,
             group: "Medications",
             name: "Vitamin D",
-            readOnly: false,
             enabled: false,
             medDose: 2000,
             medUnit: "IU",
