@@ -22,7 +22,7 @@
 
 	<DialogContent>
 		<MudForm @ref="_form" ValidationDelay="0">
-			<MudTextField Label="Name" @bind-Value="Name" Immediate Required />
+			<MudTextField Label="Name" @bind-Value="Name" Immediate Required MaxLength="200" />
 
 			@if (Group == null)
 			{

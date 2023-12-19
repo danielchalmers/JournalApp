@@ -14,4 +14,5 @@
 ::deep .category-view-edit-button > .mud-button {
 	justify-content: start !important;
 	flex-grow: 1 !important;
+	word-wrap: anywhere;
 }
