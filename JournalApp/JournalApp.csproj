@@ -45,7 +45,7 @@
 
   <ItemGroup>
     <PackageReference Include="Blazor-ApexCharts" Version="2.2.0" />
-    <PackageReference Include="CommunityToolkit.Maui" Version="7.0.0" />
+    <PackageReference Include="CommunityToolkit.Maui" Version="7.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="8.0.0-preview.6.23329.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.0-preview.6.23329.4" />
@@ -57,7 +57,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
     <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
     <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
-    <PackageReference Include="MudBlazor" Version="6.11.1" />
+    <PackageReference Include="MudBlazor" Version="6.11.2" />
     <PackageReference Include="Nerdbank.GitVersioning" Version="3.6.133" PrivateAssets="All" />
   </ItemGroup>
 
