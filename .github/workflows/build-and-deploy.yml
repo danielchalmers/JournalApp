@@ -17,7 +17,7 @@ jobs:
       id: create_keystore
       uses: timheuer/base64-to-file@v1.2
       with:
-        fileName: 'release.keystore'
+        fileName: release.keystore
         encodedString: "${{ secrets.RELEASE_KEYSTORE_BASE64 }}"
 
     - uses: actions/setup-dotnet@v3
@@ -33,8 +33,7 @@ jobs:
 
     - name: Build for Android
       run: >
-        dotnet publish .\JournalApp\JournalApp.csproj -c:Release -o "publish"
-        -f:net8.0-android
+        dotnet publish JournalApp\JournalApp.csproj -o publish -c:Release -f:net8.0-android
         -p:AndroidKeyStore=True
         -p:AndroidSigningKeyStore="${{ steps.create_keystore.outputs.filePath }}"
         -p:AndroidSigningStorePass="${{ secrets.RELEASE_KEYSTORE_PASS }}"
@@ -47,16 +46,17 @@ jobs:
     - uses: actions/upload-artifact@v4
       with:
         path: |
-          "publish/*.apk"
-#          "publish/*.aab"
-        if-no-files-found: 'error'
+          publish
+#          publish/*.apk
+#          publish/*.aab
+        if-no-files-found: error
 
 #    - name: Create GitHub release
 #      uses: softprops/action-gh-release@v1
 #      with:
 #        files: |
-#          "publish/*.apk"
-#          "publish/*.aab"
+#          publish/*.apk
+#          publish/*.aab
 #        fail_on_unmatched_files: true
 #        generate_release_notes: true
 
@@ -65,6 +65,6 @@ jobs:
       with:
         serviceAccountJsonPlainText: "${{ secrets.SERVICE_ACCOUNT_JSON }}"
         packageName: com.danielchalmers.journalapp
-        releaseFiles: "publish/*-Signed.aab"
+        releaseFiles: publish/*-Signed.aab
         track: beta
         status: completed
