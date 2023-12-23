@@ -7,7 +7,7 @@ on:
 
 jobs:
   android:
-    runs-on: windows-2022
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
       with:
@@ -40,12 +40,16 @@ jobs:
         -p:AndroidSigningStorePass="${{ secrets.RELEASE_KEYSTORE_PASS }}"
         -p:AndroidSigningKeyAlias="key"
         -p:AndroidSigningKeyPass="${{ secrets.RELEASE_KEYSTORE_PASS }}"
+    
+    - name: Show build output
+      run: ls publish
 
     - uses: actions/upload-artifact@v4
       with:
         path: |
           "publish/*.apk"
 #          "publish/*.aab"
+        if-no-files-found: 'error'
 
 #    - name: Create GitHub release
 #      uses: softprops/action-gh-release@v1
@@ -53,6 +57,7 @@ jobs:
 #        files: |
 #          "publish/*.apk"
 #          "publish/*.aab"
+#        fail_on_unmatched_files: true
 #        generate_release_notes: true
 
     - name: Upload to Play Store
