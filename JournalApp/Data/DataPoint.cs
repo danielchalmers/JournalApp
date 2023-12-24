@@ -27,7 +27,7 @@ public class DataPointCategory
 
     public virtual HashSet<DataPoint> Points { get; set; } = [];
 
-    public bool SingleLine => Type is PointType.Mood or PointType.Number;
+    public bool SingleLine => Type is PointType.Mood or PointType.Sleep or PointType.Scale or PointType.Number;
 
     public override string ToString()
     {
