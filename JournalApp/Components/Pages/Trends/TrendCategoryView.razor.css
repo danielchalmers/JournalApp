@@ -9,6 +9,15 @@
 }
 
 .trend-view-chart {
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 0;
+}
+
+.trend-view-notes {
+	display: flex;
+	flex-direction: column;
+	flex: 1 1 0;
 }
 
 .trend-column-container {

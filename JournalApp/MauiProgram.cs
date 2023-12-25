@@ -40,6 +40,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<AppDataService>();
         builder.Services.AddSingleton<AppDbSeeder>();
         builder.Services.AddSingleton<PageService>();
+        builder.Services.AddSingleton<TrendPdfService>();
 
         using var provider = builder.Services.BuildServiceProvider();
         var dbSeeder = provider.GetService<AppDbSeeder>();

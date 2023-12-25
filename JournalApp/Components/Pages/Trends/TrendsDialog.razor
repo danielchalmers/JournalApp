@@ -1,8 +1,10 @@
 ﻿@namespace JournalApp
+@using CommunityToolkit.Maui.Storage;
 @inject AppDbContext db
 @inject ILogger<TrendsDialog> logger
 @inject IDialogService DialogService
 @inject PageService PageService
+@inject TrendPdfService PdfService
 
 <MudDialog DefaultFocus="DefaultFocus.None">
 	<TitleContent>
@@ -10,23 +12,27 @@
 			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Close" OnClick="Close" />
 
 			<MudText Typo="Typo.h6">Trends</MudText>
+
+			<MudSpacer />
+
+			<MudIconButton Icon="@Icons.Material.Filled.PictureAsPdf" Title="Create PDF" OnClick="ExportPDF" />
 		</div>
 
-		<TrendsSwitcher @bind-SelectedDate="SelectedDate" />
+		<TrendsSwitcher @bind-SelectedDates="SelectedDates" OpenToDate="OpenToDate" />
 	</TitleContent>
 
 	<DialogContent>
 		<div class="trends-category-list">
-			@foreach (var (category, categoryPoints) in _allPoints)
+			@foreach (var group in db.Categories.GroupBy(x => x.Group))
 			{
-				@if (TrendView.IsSupported(category.Type))
+				foreach (var category in group.Where(x => x.Enabled && !x.Deleted && TrendCategoryView.IsSupported(x.Type)).OrderBy(x => x.Index))
 				{
 					<div class="trends-category">
 						<MudText Typo="Typo.h6">
 							@category.Name
 						</MudText>
 
-						<TrendView Category="category" Points="categoryPoints" />
+						<TrendCategoryView Category="category" Dates="SelectedDates" PointsByDay="_allPoints[category]" />
 					</div>
 				}
 			}
@@ -35,32 +41,32 @@
 </MudDialog>
 
 @code {
-	Dictionary<DataPointCategory, IReadOnlyDictionary<int, DataPoint>> _allPoints;
-	DateOnly _selectedDate;
+	Dictionary<DataPointCategory, IReadOnlyDictionary<int, IReadOnlyList<DataPoint>>> _allPoints;
+	IReadOnlyList<DateOnly> _selectedDates;
 
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
 	[Parameter]
 	public DateOnly OpenToDate { get; set; }
-
-	public DateOnly SelectedDate
+	
+	public IReadOnlyList<DateOnly> SelectedDates
 	{
-		get => _selectedDate;
+		get => _selectedDates;
 		set
 		{
-			_selectedDate = value;
+			_selectedDates = value;
 
 			// Group data points by category and its points of the selected month.
 			_allPoints = new();
 			foreach (var category in db.Categories.Where(x => x.Enabled && !x.Deleted).OrderBy(x => x.Type))
 			{
-				var dayPoints = new Dictionary<int, DataPoint>();
+				var dayPoints = new Dictionary<int, IReadOnlyList<DataPoint>>();
 
 				// Each day has either a matching data point or null.
-				for (int day = 1; day <= DateTime.DaysInMonth(value.Year, value.Month); day++)
+				foreach (var date in value)
 				{
-					var point = category.Points.FirstOrDefault(p => p.Day.Date.Year == value.Year && p.Day.Date.Month == value.Month && p.Day.Date.Day == day);
-					dayPoints.Add(day, point);
+					var points = category.Points.Where(x => !x.Deleted && x.Category == category && x.Type == category.Type && x.Day.Date == date);
+					dayPoints.Add(date.Day, points.ToList());
 				}
 
 				_allPoints.Add(category, dayPoints);
@@ -75,11 +81,19 @@
 		PageService.EnteredPage(() => Close());
 
 		logger.LogInformation($"Opened to {OpenToDate}");
-		SelectedDate = new(OpenToDate.Year, OpenToDate.Month, 1);
 	}
 
 	void Close()
 	{
 		PageService.CloseDialog(MudDialog, true);
+	}
+
+	public async Task ExportPDF()
+	{
+		logger.LogInformation($"Exporting PDF <{SelectedDates[0]}..{SelectedDates[^1]}>");
+
+		var document = await PdfService.CreatePDF(_allPoints);
+
+		await PdfService.SavePDF(document);
 	}
 }

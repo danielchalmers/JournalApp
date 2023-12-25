@@ -81,6 +81,7 @@ public class AppDbSeeder(AppDbContext db, ILogger<AppDbSeeder> _logger)
         await AddOrUpdate(
             "BF394F35-2228-4933-BF38-AF5B1B97AEF7",
             PointType.Note,
+            name: "Notes",
             group: "Notes",
             readOnly: true
         );

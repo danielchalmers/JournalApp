@@ -1,0 +1,127 @@
+﻿@namespace JournalApp
+@using ApexCharts
+
+<div class="trend-view">
+	@switch (Category.Type)
+	{
+		case PointType.Sleep:
+			<div class="trend-view-chart">
+				<ApexChart TItem="PointOnChart" Options="ChartOptions">
+					<ApexPointSeries TItem="PointOnChart"
+									 Name="Hours"
+									 Items="_sleepChartItems"
+									 SeriesType="SeriesType.Line"
+									 XValue="e => e.Day"
+									 YValue="e => e.Point.SleepHours" />
+				</ApexChart>
+			</div>
+			break;
+		case PointType.Bool:
+		case PointType.Medication:
+			<div class="trend-view-columns">
+				@foreach (var (day, point) in PointByDay)
+				{
+					<div class="trend-column-container" style="background-color: @(GetBoolColor(point));">
+						<div class="trend-column" />
+					</div>
+				}
+			</div>
+			break;
+		case PointType.Number:
+			<div class="trend-view-chart">
+				<ApexChart TItem="PointOnChart" Options="ChartOptions">
+					<ApexPointSeries TItem="PointOnChart"
+									 Name="Number"
+									 Items="_numberChartItems"
+									 SeriesType="SeriesType.Line"
+									 XValue="e => e.Day"
+									 YValue="e => (decimal?)e.Point.Number" />
+				</ApexChart>
+			</div>
+			break;
+		case PointType.Note:
+			<div class="trend-view-notes">
+				@foreach (var (day, points) in PointsByDay)
+				{
+					foreach (var point in points)
+					{
+						<MudTextField Value="point.Text"
+									  Label="@(point.CreatedAt.ToString("M/d/yy h:mm tt"))"
+									  ReadOnly DisableUnderLine AutoGrow MaxLines="10" />
+					}
+				}
+			</div>
+			break;
+	}
+</div>
+
+@code {
+	IReadOnlyDictionary<int, IReadOnlyList<DataPoint>> _pointsByDay;
+	List<PointOnChart> _sleepChartItems = new();
+	List<PointOnChart> _numberChartItems = new();
+
+	ApexChartOptions<PointOnChart> ChartOptions = new()
+		{
+			Theme = new Theme
+			{
+				Mode = Mode.Dark,
+				Palette = PaletteType.Palette1,
+			},
+			Chart = new Chart
+			{
+				Background = "transparent",
+				Height = "200px",
+				Zoom = new Zoom
+				{
+					Enabled = false,
+				},
+			},
+		};
+
+	[Parameter]
+	public DataPointCategory Category { get; set; }
+
+	[Parameter]
+	public IReadOnlyList<DateOnly> Dates { get; set; }
+
+	[Parameter]
+	public IReadOnlyDictionary<int, IReadOnlyList<DataPoint>> PointsByDay
+	{
+		get => _pointsByDay;
+		set
+		{
+			_pointsByDay = value;
+
+			PointByDay = PointsByDay.ToDictionary(x => x.Key, x => x.Value.LastOrDefault());
+
+			_sleepChartItems.Clear();
+			_numberChartItems.Clear();
+			foreach (var (day, point) in PointByDay)
+			{
+				if (point?.SleepHours != null)
+					_sleepChartItems.Add(new(day, point));
+
+				if (point?.Number != null)
+					_numberChartItems.Add(new(day, point));
+			}
+			
+			// TODO: Force chart to update with new items.
+		}
+	}
+
+	public IReadOnlyDictionary<int, DataPoint> PointByDay { get; set; }
+
+	public static bool IsSupported(PointType type) =>
+		type is PointType.Sleep or PointType.Bool or PointType.Medication or PointType.Number or PointType.Note;
+
+	string GetBoolColor(DataPoint point)
+	{
+		if (point?.Bool == true)
+			return "green";
+		if (point?.Bool == false)
+			return "red";
+		return "black";
+	}
+
+	private record PointOnChart(int Day, DataPoint Point);
+}

@@ -59,6 +59,7 @@
     <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
     <PackageReference Include="MudBlazor" Version="6.11.2" />
     <PackageReference Include="Nerdbank.GitVersioning" Version="3.6.133" PrivateAssets="All" />
+    <PackageReference Include="QuestPDF" Version="2023.12.1" />
   </ItemGroup>
 
 </Project>
