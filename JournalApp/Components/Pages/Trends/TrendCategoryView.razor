@@ -4,41 +4,87 @@
 <div class="trend-view">
 	@switch (Category.Type)
 	{
+		case PointType.Mood:
+			<div class="trend-view-chart">
+				<ApexChart TItem="PointOnChart" Options="ChartOptions">
+					<ApexPointSeries TItem="PointOnChart"
+									 Name="Mood (1=saddest, 7=happiest)"
+									 Items="_chartItems"
+									 SeriesType="SeriesType.Line"
+									 XValue="e => e.Day"
+									 YValue="e => e.Mood" />
+				</ApexChart>
+			</div>
+			break;
+
 		case PointType.Sleep:
 			<div class="trend-view-chart">
 				<ApexChart TItem="PointOnChart" Options="ChartOptions">
 					<ApexPointSeries TItem="PointOnChart"
 									 Name="Hours"
-									 Items="_sleepChartItems"
+									 Items="_chartItems"
 									 SeriesType="SeriesType.Line"
 									 XValue="e => e.Day"
 									 YValue="e => e.Point.SleepHours" />
 				</ApexChart>
 			</div>
 			break;
-		case PointType.Bool:
-		case PointType.Medication:
-			<div class="trend-view-columns">
-				@foreach (var (day, point) in PointByDay)
-				{
-					<div class="trend-column-container" style="background-color: @(GetBoolColor(point));">
-						<div class="trend-column" />
-					</div>
-				}
+
+		case PointType.Scale:
+		case PointType.LowToHigh:
+		case PointType.MildToSevere:
+			<div class="trend-view-chart">
+				<ApexChart TItem="PointOnChart" Options="ChartOptions">
+					<ApexPointSeries TItem="PointOnChart"
+									 Name="Scale (0=lowest, 5=highest)"
+									 Items="_chartItems"
+									 SeriesType="SeriesType.Line"
+									 XValue="e => e.Day"
+									 YValue="e => e.Scale" />
+				</ApexChart>
 			</div>
 			break;
+
+		case PointType.Bool:
+			<div class="trend-view-chart">
+				<ApexChart TItem="PointOnChart" Options="ChartOptions">
+					<ApexPointSeries TItem="PointOnChart"
+									 Name="Bool (0=no, 1=yes)"
+									 Items="_chartItems"
+									 SeriesType="SeriesType.Line"
+									 XValue="e => e.Day"
+									 YValue="e => e.Bool" />
+				</ApexChart>
+			</div>
+			break;
+
+		case PointType.Medication:
+			<div class="trend-view-chart">
+				<ApexChart TItem="PointOnChart" Options="ChartOptions">
+					<ApexPointSeries TItem="PointOnChart"
+									 Name="Dose"
+									 Items="_chartItems"
+									 SeriesType="SeriesType.Line"
+									 XValue="e => e.Day"
+									 YValue="e => e.MedDose" />
+				</ApexChart>
+			</div>
+			break;
+
 		case PointType.Number:
 			<div class="trend-view-chart">
 				<ApexChart TItem="PointOnChart" Options="ChartOptions">
 					<ApexPointSeries TItem="PointOnChart"
 									 Name="Number"
-									 Items="_numberChartItems"
+									 Items="_chartItems"
 									 SeriesType="SeriesType.Line"
 									 XValue="e => e.Day"
-									 YValue="e => (decimal?)e.Point.Number" />
+									 YValue="e => e.Number" />
 				</ApexChart>
 			</div>
 			break;
+
+		case PointType.Text:
 		case PointType.Note:
 			<div class="trend-view-notes">
 				@foreach (var (day, points) in PointsByDay)
@@ -57,11 +103,11 @@
 
 @code {
 	IReadOnlyDictionary<int, IReadOnlyList<DataPoint>> _pointsByDay;
-	List<PointOnChart> _sleepChartItems = new();
-	List<PointOnChart> _numberChartItems = new();
+	List<PointOnChart> _chartItems = new();
+	static List<string> _chartEmojis = ["😭", "😢", "😕", "😐", "🙂", "😀", "🤩"];
 
 	ApexChartOptions<PointOnChart> ChartOptions = new()
-		{
+		{ 
 			Theme = new Theme
 			{
 				Mode = Mode.Dark,
@@ -70,10 +116,21 @@
 			Chart = new Chart
 			{
 				Background = "transparent",
-				Height = "200px",
+				Height = "150px",
 				Zoom = new Zoom
 				{
 					Enabled = false,
+				},
+				Toolbar = new Toolbar
+				{
+					Show = false,
+				},
+			},
+			Xaxis = new XAxis
+			{
+				Labels = new XAxisLabels
+				{
+					HideOverlappingLabels = true,
 				},
 			},
 		};
@@ -94,34 +151,58 @@
 
 			PointByDay = PointsByDay.ToDictionary(x => x.Key, x => x.Value.LastOrDefault());
 
-			_sleepChartItems.Clear();
-			_numberChartItems.Clear();
+			_chartItems.Clear();
 			foreach (var (day, point) in PointByDay)
 			{
-				if (point?.SleepHours != null)
-					_sleepChartItems.Add(new(day, point));
-
-				if (point?.Number != null)
-					_numberChartItems.Add(new(day, point));
+				_chartItems.Add(new(day, point));
 			}
-			
+
 			// TODO: Force chart to update with new items.
 		}
 	}
 
 	public IReadOnlyDictionary<int, DataPoint> PointByDay { get; set; }
 
-	public static bool IsSupported(PointType type) =>
-		type is PointType.Sleep or PointType.Bool or PointType.Medication or PointType.Number or PointType.Note;
-
-	string GetBoolColor(DataPoint point)
+	private record PointOnChart(int Day, DataPoint Point)
 	{
-		if (point?.Bool == true)
-			return "green";
-		if (point?.Bool == false)
-			return "red";
-		return "black";
-	}
+		public decimal? Mood
+		{
+			get
+			{
+				var i = _chartEmojis.IndexOf(Point.Mood);
 
-	private record PointOnChart(int Day, DataPoint Point);
+				return i == -1 ? null : i + 1;
+			}
+		}
+
+		public decimal? Scale => (decimal?)Point.ScaleIndex;
+
+		public decimal? Number => (decimal?)Point.Number;
+
+		public decimal? MedDose
+		{
+			get
+			{
+				if(Point.Bool == true)
+					return Point.MedicationDose;
+				else if(Point.Bool == false)
+					return 0;
+
+				return null;
+			}
+		}
+
+		public decimal? Bool
+		{
+			get
+			{
+				if(Point.Bool == true)
+					return 1;
+				else if(Point.Bool == false)
+					return 0;
+
+				return null;
+			}
+		}
+	}
 }

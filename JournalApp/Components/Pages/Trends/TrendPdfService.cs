@@ -12,14 +12,14 @@ public class TrendPdfService(ILogger<TrendPdfService> logger, IDialogService Dia
         QuestPDF.Settings.License = LicenseType.Community;
         //var title = $"{date.Year}-{date.Month:00}";
         await Task.CompletedTask;
-        return null;
+        return Document.Create((dc) => dc.Page((pd) => pd.Content()));
     }
 
     [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "All platforms are supported or not relevant")]
     public async Task SavePDF(Document document)
     {
         await using var stream = new MemoryStream(document.GeneratePdf());
-        var saveResult = await FileSaver.Default.SaveAsync($"JournalApp {document.GetMetadata().Title}", stream, CancellationToken.None);
+        var saveResult = await FileSaver.Default.SaveAsync($"JournalApp {document.GetMetadata().Title}.pdf", stream, CancellationToken.None);
 
         if (!saveResult.IsSuccessful)
         {

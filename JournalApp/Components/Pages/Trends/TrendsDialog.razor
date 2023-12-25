@@ -15,7 +15,7 @@
 
 			<MudSpacer />
 
-			<MudIconButton Icon="@Icons.Material.Filled.PictureAsPdf" Title="Create PDF" OnClick="ExportPDF" />
+			<MudIconButton Icon="@Icons.Material.Filled.PictureAsPdf" Title="Export to PDF" OnClick="ExportPDF" />
 		</div>
 
 		<TrendsSwitcher @bind-SelectedDates="SelectedDates" OpenToDate="OpenToDate" />
@@ -25,11 +25,11 @@
 		<div class="trends-category-list">
 			@foreach (var group in db.Categories.GroupBy(x => x.Group))
 			{
-				foreach (var category in group.Where(x => x.Enabled && !x.Deleted && TrendCategoryView.IsSupported(x.Type)).OrderBy(x => x.Index))
+				foreach (var category in group.Where(x => x.Enabled && !x.Deleted).OrderBy(x => x.Index))
 				{
 					<div class="trends-category">
 						<MudText Typo="Typo.h6">
-							@category.Name
+							@(category.Name + (category.Type == PointType.Medication ? $" ({category.MedicationUnit})" : string.Empty))
 						</MudText>
 
 						<TrendCategoryView Category="category" Dates="SelectedDates" PointsByDay="_allPoints[category]" />
@@ -48,7 +48,7 @@
 
 	[Parameter]
 	public DateOnly OpenToDate { get; set; }
-	
+
 	public IReadOnlyList<DateOnly> SelectedDates
 	{
 		get => _selectedDates;
