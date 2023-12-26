@@ -4,33 +4,55 @@
 	<MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" Title="Previous month" OnClick="GoPrevious" />
 
 	<div class="switcher-header">
-		<MudButton OnClick="() => FirstDayOfSelectedMonth = CurrentMonth">
-			<MudText Typo="Typo.h5">@FirstDayOfSelectedMonth.ToString("MMM yyyy")</MudText>
+		<MudButton OnClick="() => SelectedMonth = CurrentNextMonth">
+			<MudText Typo="Typo.h5">@(HeaderText)</MudText>
 		</MudButton>
 	</div>
 
-	<MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" Title="Next month" OnClick="GoNext" Disabled="@(NextMonth > CurrentMonth)" />
+	<MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" Title="Next month" OnClick="GoNext" Disabled="@(NextMonth > CurrentNextMonth)" />
 </div>
 
 @code {
-	DateOnly _firstDayOfSelectedMonth;
+	DateOnly _selectedMonth;
 	IReadOnlyList<DateOnly> _selectedDates;
 
+	string HeaderText => SelectedMonth == CurrentNextMonth ? "Last 30 Days" : SelectedMonth.ToString("MMM yyyy");
+
 	DateOnly CurrentMonth => new DateOnly(DateTime.Now.Year, DateTime.Now.Month, 1);
-	DateOnly PreviousMonth => _firstDayOfSelectedMonth.AddMonths(-1);
-	DateOnly NextMonth => _firstDayOfSelectedMonth.AddMonths(1);
+	DateOnly CurrentNextMonth => CurrentMonth.AddMonths(1);
+	DateOnly PreviousMonth => _selectedMonth.AddMonths(-1);
+	DateOnly NextMonth => _selectedMonth.AddMonths(1);
 
 	[Parameter]
-	public DateOnly FirstDayOfSelectedMonth
+	public DateOnly SelectedMonth
 	{
-		get => _firstDayOfSelectedMonth;
+		get => _selectedMonth;
 		set
 		{
-			_firstDayOfSelectedMonth = value;
+			_selectedMonth = value;
 
-			SelectedDates = Enumerable.Range(1, DateTime.DaysInMonth(value.Year, value.Month)).Select(d => new DateOnly(value.Year, value.Month, d)).ToList();
+			var dates = new List<DateOnly>();
+
+			if (SelectedMonth == CurrentNextMonth)
+			{
+				var nowDate = DateOnly.FromDateTime(DateTime.Now);
+
+				for (int i = 0; i > -30; i--)
+					dates.Add(nowDate.AddDays(i));
+			}
+			else
+			{
+				for (int i = 1; i <= DateTime.DaysInMonth(value.Year, value.Month); i++)
+					dates.Add(new DateOnly(value.Year, value.Month, i));
+			}
+
+			SelectedMonthChanged.InvokeAsync(value);
+			SelectedDates = dates;
 		}
 	}
+
+	[Parameter]
+	public EventCallback<DateOnly> SelectedMonthChanged { get; set; }
 
 	[Parameter]
 	public DateOnly OpenToDate { get; set; }
@@ -42,7 +64,6 @@
 		set
 		{
 			_selectedDates = value;
-
 			SelectedDatesChanged.InvokeAsync(SelectedDates);
 		}
 	}
@@ -54,16 +75,16 @@
 	{
 		base.OnInitialized();
 
-		FirstDayOfSelectedMonth = new DateOnly(OpenToDate.Year, OpenToDate.Month, 1);
+		SelectedMonth = new DateOnly(OpenToDate.Year, OpenToDate.Month, 1);
 	}
 
 	void GoPrevious()
 	{
-		FirstDayOfSelectedMonth = PreviousMonth;
+		SelectedMonth = PreviousMonth;
 	}
 
 	void GoNext()
 	{
-		FirstDayOfSelectedMonth = NextMonth;
+		SelectedMonth = NextMonth;
 	}
 }
