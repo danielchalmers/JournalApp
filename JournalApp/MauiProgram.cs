@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Maui;
+﻿using Append.Blazor.Printing;
+using CommunityToolkit.Maui;
 using MudBlazor;
 using MudBlazor.Services;
 
@@ -40,7 +41,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<AppDataService>();
         builder.Services.AddSingleton<AppDbSeeder>();
         builder.Services.AddSingleton<PageService>();
-        builder.Services.AddSingleton<TrendPdfService>();
+        builder.Services.AddScoped<IPrintingService, PrintingService>();
 
         using var provider = builder.Services.BuildServiceProvider();
         var dbSeeder = provider.GetService<AppDbSeeder>();

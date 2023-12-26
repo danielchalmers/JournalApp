@@ -1,10 +1,11 @@
 ﻿@namespace JournalApp
 @using CommunityToolkit.Maui.Storage;
+@using Append.Blazor.Printing
 @inject AppDbContext db
 @inject ILogger<TrendsDialog> logger
 @inject IDialogService DialogService
 @inject PageService PageService
-@inject TrendPdfService PdfService
+@inject IPrintingService PrintingService
 
 <MudDialog DefaultFocus="DefaultFocus.None">
 	<TitleContent>
@@ -15,14 +16,14 @@
 
 			<MudSpacer />
 
-			<MudIconButton Icon="@Icons.Material.Filled.PictureAsPdf" Title="Export to PDF" OnClick="ExportPDF" />
+			<MudIconButton Icon="@Icons.Material.Filled.Print" Title="Print" OnClick="Print" />
 		</div>
 
 		<TrendsSwitcher @bind-SelectedDates="SelectedDates" OpenToDate="OpenToDate" />
 	</TitleContent>
 
 	<DialogContent>
-		<div class="trends-category-list">
+		<div id="trends-category-list">
 			@foreach (var group in db.Categories.GroupBy(x => x.Group))
 			{
 				foreach (var category in group.Where(x => x.Enabled && !x.Deleted).OrderBy(x => x.Index))
@@ -88,12 +89,10 @@
 		PageService.CloseDialog(MudDialog, true);
 	}
 
-	public async Task ExportPDF()
+	public async Task Print()
 	{
-		logger.LogInformation($"Exporting PDF <{SelectedDates[0]}..{SelectedDates[^1]}>");
+		logger.LogInformation("Opening print dialog");
 
-		var document = await PdfService.CreatePDF(_allPoints);
-
-		await PdfService.SavePDF(document);
+		await PrintingService.Print("trends-category-list", PrintType.Html);
 	}
 }
