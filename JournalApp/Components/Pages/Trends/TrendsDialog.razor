@@ -33,7 +33,15 @@
 							@((string.IsNullOrEmpty(category.Name) ? category.Group : category.Name) + (category.Type == PointType.Medication ? $" ({category.MedicationUnit})" : string.Empty))
 						</MudText>
 
-						<TrendCategoryView Category="category" Dates="SelectedDates" PointsByDay="_allPoints[category]" />
+						<ErrorBoundary>
+							<ChildContent>
+								<TrendCategoryView Category="category" Dates="SelectedDates" PointsByDay="_allPoints[category]" />
+							</ChildContent>
+
+							<ErrorContent>
+								<MudText Color="Color.Error">💥 Failed to load.</MudText>
+							</ErrorContent>
+						</ErrorBoundary>
 					</div>
 				}
 			}
