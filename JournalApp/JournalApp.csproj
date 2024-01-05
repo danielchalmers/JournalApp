@@ -47,6 +47,7 @@
     <PackageReference Include="Append.Blazor.Printing" Version="6.2.0" />
     <PackageReference Include="Blazor-ApexCharts" Version="2.2.1" />
     <PackageReference Include="CommunityToolkit.Maui" Version="7.0.1" />
+    <PackageReference Include="CsvHelper" Version="30.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="8.0.0-preview.6.23329.4" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.0-preview.6.23329.4" />
