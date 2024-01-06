@@ -20,7 +20,7 @@ public class AppDataService(ILogger<AppDataService> logger, AppDbContext db)
         // Let user pick the file to import.
         logger.LogInformation("Picking file to import");
         var pickResult = await FilePicker.Default.PickAsync();
-        logger.LogInformation($"Pick result: {pickResult}");
+        logger.LogInformation($"Picked file: {pickResult.FullPath}");
 
         if (pickResult == null)
             return;
@@ -28,48 +28,76 @@ public class AppDataService(ILogger<AppDataService> logger, AppDbContext db)
         logger.LogInformation("Reading file for import");
         await using var stream = await pickResult.OpenReadAsync();
 
-        var backupFile = BackupFile.ReadArchive(stream);
+        BackupFile backupFile;
+        try
+        {
+            backupFile = await BackupFile.ReadArchive(stream);
+        }
+        catch (Exception ex)
+        {
+            logger.LogDebug($"Failed to read archive: {ex.Message}");
+            await dialogService.ShowMessageBox(string.Empty, $"Nothing happened; Failed to read archive: {ex.Message}.");
+            return;
+        }
+
         logger.LogDebug("Archive was read");
 
-        foreach (var (key, value) in backupFile.BackupPreferences)
+        foreach (var (key, value) in backupFile.PreferenceBackups)
             Preferences.Set(key, value);
         logger.LogDebug("Set preferences");
+
+        db.SaveChanges();
+        logger.LogDebug("Saved database to prepare");
 
         db.Days.RemoveRange(db.Days);
         db.Categories.RemoveRange(db.Categories);
         db.Points.RemoveRange(db.Points);
+        //db.ChangeTracker.Clear();
+        //db.Database.Migrate();
+        db.SaveChanges();
+        logger.LogDebug("Removed old db sets");
+
+        // TODO: Make importing over the same dataset you exported from work.
 
         db.Days.AddRange(backupFile.Days);
         db.Categories.AddRange(backupFile.Categories);
         db.Points.AddRange(backupFile.Points);
-
+        //db.ChangeTracker.Clear();
         db.SaveChanges();
+        logger.LogDebug("Added new db sets");
 
-        logger.LogDebug("Replaced db sets");
+        logger.LogInformation("Finished import");
     }
 
     [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "All platforms are supported or not relevant")]
     public async Task StartExportWizard(IDialogService dialogService)
     {
+        var preferenceBackups = new List<PreferenceBackup>();
+        foreach (var key in new[] { "safety_plan", "mood_palette" })
+            preferenceBackups.Add(new(key, Preferences.Get(key, string.Empty)));
+
         var backupFile = new BackupFile
         {
             Days = db.Days,
             Categories = db.Categories,
-            Points = db.Points
+            Points = db.Points,
+            PreferenceBackups = preferenceBackups,
         };
 
-        // Create a stream and write an archive file.
         await using var ms = new MemoryStream();
 
         try
         {
-            backupFile.WriteArchive(ms);
+            await backupFile.WriteArchive(ms);
         }
         catch (Exception ex)
         {
-            await dialogService.ShowMessageBox(string.Empty, $"Failed to create archive: {ex.Message}.");
+            logger.LogDebug($"Failed to create archive: {ex.Message}");
+            await dialogService.ShowMessageBox(string.Empty, $"Nothing happened; Failed to create archive: {ex.Message}.");
             return;
         }
+
+        logger.LogInformation("Archive was written");
 
         // Save the file.
         var saveResult = await FileSaver.Default.SaveAsync($"backup-{DateTime.Now:s}.journalapp", ms, CancellationToken.None);

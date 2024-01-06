@@ -28,11 +28,8 @@
 
 			<MudDivider />
 
-			<environment include="Development">
-				<MudMenuItem Icon="@Icons.Material.Filled.Download" OnAction="@(() => AppDataService.StartImportWizard(DialogService))">Import</MudMenuItem>
-				<MudMenuItem Icon="@Icons.Material.Filled.Upload" OnAction="@(() => AppDataService.StartExportWizard(DialogService))">Export</MudMenuItem>
-			</environment>
-
+			<MudMenuItem Icon="@Icons.Material.Filled.Download" OnAction="StartImport">Import</MudMenuItem>
+			<MudMenuItem Icon="@Icons.Material.Filled.Upload" OnAction="StartExport">Export</MudMenuItem>
 			<MudMenuItem Icon="@Icons.Material.Filled.Info" OnAction="OpenAbout">v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
 		</MudMenu>
 	</div>
@@ -254,6 +251,18 @@
 	{
 		logger.LogInformation("Opening Worksheets dialog");
 		await DialogService.Show<WorksheetsDialog>(ComponentUtil.FullscreenDialogOptions).Result;
+	}
+
+	async Task StartImport()
+	{
+		await AppDataService.StartImportWizard(DialogService);
+
+		await GoToDay(DateOnly.FromDateTime(DateTime.Now), scrollToTop: true);
+	}
+
+	async Task StartExport()
+	{
+		await AppDataService.StartExportWizard(DialogService);
 	}
 
 	async Task OpenAbout()

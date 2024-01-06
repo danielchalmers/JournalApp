@@ -1,4 +1,6 @@
-﻿namespace JournalApp;
+﻿using System.Text.Json.Serialization;
+
+namespace JournalApp;
 
 public class DataPointCategory
 {
@@ -56,8 +58,10 @@ public class DataPoint
     [Key]
     public Guid Guid { get; set; }
 
+    [JsonIgnore]
     public virtual Day Day { get; set; }
 
+    [JsonIgnore]
     public virtual DataPointCategory Category { get; set; }
 
     public DateTimeOffset CreatedAt { get; set; }
@@ -77,7 +81,7 @@ public class DataPoint
 
     public override string ToString() => $"{Type}, {Day}, {Category}";
 
-    public static IReadOnlyList<string> Moods { get; } = [ "🤔", "🤩", "😀", "🙂", "😐", "😕", "😢", "😭" ];
+    public static IReadOnlyList<string> Moods { get; } = ["🤔", "🤩", "😀", "🙂", "😐", "😕", "😢", "😭"];
 
     public static DataPoint Create(Day day, DataPointCategory category)
     {
