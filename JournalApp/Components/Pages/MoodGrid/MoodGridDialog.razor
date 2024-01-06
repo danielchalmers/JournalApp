@@ -42,9 +42,22 @@
 
 	public int SelectedYear { get; set; }
 
+	private string MoodPalettePreference
+	{
+		get
+		{
+			var palette = Preferences.Get("mood_palette", null);
+
+			if (string.IsNullOrEmpty(palette))
+				palette = "#6bdbe7";
+
+			return palette;
+		}
+	}
+
 	public MudColor PrimaryColor
 	{
-		get => new MudColor(Preferences.Get("mood_palette", "#6bdbe7"));
+		get => new MudColor(MoodPalettePreference);
 		set => Preferences.Set("mood_palette", value.Value[..^2]);
 	}
 

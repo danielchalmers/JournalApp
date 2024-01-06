@@ -29,27 +29,23 @@ public class AppDataService(ILogger<AppDataService> logger, AppDbContext db)
         await using var stream = await pickResult.OpenReadAsync();
 
         var backupFile = BackupFile.ReadArchive(stream);
-        logger.LogDebug("Read archive");
+        logger.LogDebug("Archive was read");
 
-        if (backupFile.Days.Any())
-        {
-            db.Days.RemoveRange(db.Days);
-            db.Days.AddRange(backupFile.Days);
-        }
+        foreach (var (key, value) in backupFile.BackupPreferences)
+            Preferences.Set(key, value);
+        logger.LogDebug("Set preferences");
 
-        if (backupFile.Categories.Any())
-        {
-            db.Categories.RemoveRange(db.Categories);
-            db.Categories.AddRange(backupFile.Categories);
-        }
+        db.Days.RemoveRange(db.Days);
+        db.Categories.RemoveRange(db.Categories);
+        db.Points.RemoveRange(db.Points);
 
-        if (backupFile.Points.Any())
-        {
-            db.Points.RemoveRange(db.Points);
-            db.Points.AddRange(backupFile.Points);
-        }
+        db.Days.AddRange(backupFile.Days);
+        db.Categories.AddRange(backupFile.Categories);
+        db.Points.AddRange(backupFile.Points);
 
         db.SaveChanges();
+
+        logger.LogDebug("Replaced db sets");
     }
 
     [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "All platforms are supported or not relevant")]
@@ -64,7 +60,16 @@ public class AppDataService(ILogger<AppDataService> logger, AppDbContext db)
 
         // Create a stream and write an archive file.
         await using var ms = new MemoryStream();
-        backupFile.WriteArchive(ms);
+
+        try
+        {
+            backupFile.WriteArchive(ms);
+        }
+        catch (Exception ex)
+        {
+            await dialogService.ShowMessageBox(string.Empty, $"Failed to create archive: {ex.Message}.");
+            return;
+        }
 
         // Save the file.
         var saveResult = await FileSaver.Default.SaveAsync($"backup-{DateTime.Now:s}.journalapp", ms, CancellationToken.None);

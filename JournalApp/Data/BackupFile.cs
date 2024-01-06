@@ -12,16 +12,24 @@ public class BackupFile
 
     public IEnumerable<DataPoint> Points { get; set; }
 
+    public IEnumerable<BackupPreference> BackupPreferences { get; set; }
+
     public void WriteArchive(MemoryStream ms)
     {
         using var archive = new ZipArchive(ms, ZipArchiveMode.Create, true);
 
-        WriteCsvFileToArchive(archive, "days.csv", Days);
-        WriteCsvFileToArchive(archive, "categories.csv", Categories);
-        WriteCsvFileToArchive(archive, "points.csv", Points);
+        WriteCsvToArchive(archive, "days.csv", Days);
+        WriteCsvToArchive(archive, "categories.csv", Categories);
+        WriteCsvToArchive(archive, "points.csv", Points);
+
+        var backupPreferences = new List<BackupPreference>();
+        foreach (var key in new[] { "safety_plan", "mood_palette", "last_export" })
+            backupPreferences.Add(new(key, Preferences.Get(key, string.Empty)));
+
+        WriteCsvToArchive(archive, "preferences.csv", backupPreferences);
     }
 
-    private void WriteCsvFileToArchive<T>(ZipArchive archive, string fileName, IEnumerable<T> records)
+    private void WriteCsvToArchive<T>(ZipArchive archive, string fileName, IEnumerable<T> records)
     {
         if (!records.Any())
             return;
@@ -42,22 +50,30 @@ public class BackupFile
 
         foreach (var entry in archive.Entries)
         {
-            if (entry.FullName == "days.csv")
-                backupFile.Days = ReadCsvFileFromArchive<Day>(entry);
+            switch (entry.FullName)
+            {
+                case "days.csv":
+                    backupFile.Days = ReadCsvFromArchive<Day>(entry);
+                    break;
 
-            if (entry.FullName == "categories.csv")
-                backupFile.Categories = ReadCsvFileFromArchive<DataPointCategory>(entry);
+                case "categories.csv":
+                    backupFile.Categories = ReadCsvFromArchive<DataPointCategory>(entry);
+                    break;
 
-            if (entry.FullName == "points.csv")
-                backupFile.Points = ReadCsvFileFromArchive<DataPoint>(entry);
+                case "points.csv":
+                    backupFile.Points = ReadCsvFromArchive<DataPoint>(entry);
+                    break;
 
-            // TODO: Back up preferences.
+                case "preferences.csv":
+                    backupFile.BackupPreferences = ReadCsvFromArchive<BackupPreference>(entry);
+                    break;
+            }
         }
 
         return backupFile;
     }
 
-    private static List<T> ReadCsvFileFromArchive<T>(ZipArchiveEntry entry)
+    private static List<T> ReadCsvFromArchive<T>(ZipArchiveEntry entry)
     {
         using var entryStream = entry.Open();
         using var reader = new StreamReader(entryStream);
@@ -66,3 +82,5 @@ public class BackupFile
         return csv.GetRecords<T>().ToList();
     }
 }
+
+public record class BackupPreference(string Name, string Value);
