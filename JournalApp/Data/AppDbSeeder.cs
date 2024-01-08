@@ -1,15 +1,17 @@
 ﻿namespace JournalApp;
 
-public class AppDbSeeder(AppDbContext db, ILogger<AppDbSeeder> _logger)
+public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeeder> _logger)
 {
     public async Task SeedAsync()
     {
         _logger.LogInformation("Seeding database");
 
+        await using var db = await dbcf.CreateDbContextAsync();
         var sw = Stopwatch.StartNew();
         try
         {
             db.Database.Migrate();
+            await db.SaveChangesAsync();
         }
         catch (Microsoft.Data.Sqlite.SqliteException ex) when (ex.SqliteErrorCode == 14)
         {
@@ -39,6 +41,8 @@ public class AppDbSeeder(AppDbContext db, ILogger<AppDbSeeder> _logger)
 
     private async Task SeedCategories()
     {
+        await using var db = await dbcf.CreateDbContextAsync();
+
         async Task AddOrUpdate(
             string guidString,
             PointType type,
@@ -159,6 +163,8 @@ public class AppDbSeeder(AppDbContext db, ILogger<AppDbSeeder> _logger)
 
     private void SeedDays(DateOnly start, DateOnly end)
     {
+        using var db = dbcf.CreateDbContext();
+
         var categories = new HashSet<DataPointCategory>(db.Categories);
         var days = db.GetOrCreateDays(start.DatesTo(end));
 
@@ -180,7 +186,10 @@ public class AppDbSeeder(AppDbContext db, ILogger<AppDbSeeder> _logger)
                 // Increment day and see if we're done.
                 d++;
                 if (d == days.Count)
+                {
+                    db.SaveChanges();
                     return;
+                }
             }
         }
     }
@@ -191,6 +200,8 @@ public class AppDbSeeder(AppDbContext db, ILogger<AppDbSeeder> _logger)
         var endDate = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(7));
 
         SeedDays(startDate, endDate);
+
+        await using var db = await dbcf.CreateDbContextAsync();
 
         // A few additional days to test multi-year features.
         foreach (var relativeMonth in new int[] { -12, -18, -24, -30, -36, -42, -48 })

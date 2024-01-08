@@ -25,7 +25,7 @@
 									 Items="_chartItems"
 									 SeriesType="SeriesType.Line"
 									 XValue="e => e.Day"
-									 YValue="e => e.Point.SleepHours" />
+									 YValue="e => e.SleepHours" />
 				</ApexChart>
 			</div>
 			break;
@@ -170,23 +170,25 @@
 		{
 			get
 			{
-				var i = _chartEmojis.IndexOf(Point.Mood);
+				var i = _chartEmojis.IndexOf(Point?.Mood);
 
 				return i == -1 ? null : i + 1;
 			}
 		}
 
-		public decimal? Scale => (decimal?)Point.ScaleIndex;
+		public decimal? SleepHours => (decimal?)Point?.SleepHours;
 
-		public decimal? Number => (decimal?)Point.Number;
+		public decimal? Scale => (decimal?)Point?.ScaleIndex;
+
+		public decimal? Number => (decimal?)Point?.Number;
 
 		public decimal? MedDose
 		{
 			get
 			{
-				if(Point.Bool == true)
+				if(Point?.Bool == true)
 					return Point.MedicationDose;
-				else if(Point.Bool == false)
+				else if(Point?.Bool == false)
 					return 0;
 
 				return null;
@@ -197,9 +199,9 @@
 		{
 			get
 			{
-				if(Point.Bool == true)
+				if(Point?.Bool == true)
 					return 1;
-				else if(Point.Bool == false)
+				else if(Point?.Bool == false)
 					return 0;
 
 				return null;

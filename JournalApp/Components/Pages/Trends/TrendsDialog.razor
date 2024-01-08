@@ -24,9 +24,9 @@
 
 	<DialogContent>
 		<div id="trends-category-list">
-			@foreach (var group in db.Categories.GroupBy(x => x.Group))
+			@foreach (var group in Categories.GroupBy(x => x.Group))
 			{
-				foreach (var category in group.Where(x => x.Enabled && !x.Deleted).OrderBy(x => x.Index))
+				foreach (var category in group)
 				{
 					<div class="trends-category">
 						<MudText Typo="Typo.h6">
@@ -58,6 +58,8 @@
 	[Parameter]
 	public DateOnly OpenToDate { get; set; }
 
+	IQueryable<DataPointCategory> Categories => db.Categories.Where(x => x.Enabled && !x.Deleted).OrderBy(x => x.Index);
+
 	public IReadOnlyList<DateOnly> SelectedDates
 	{
 		get => _selectedDates;
@@ -68,13 +70,13 @@
 
 			// Group data points by category and its points of the selected month.
 			_allPoints.Clear();
-			foreach (var category in db.Categories.Where(x => x.Enabled && !x.Deleted).OrderBy(x => x.Type))
+			foreach (var category in Categories)
 			{
 				var dayPoints = new Dictionary<int, IReadOnlyList<DataPoint>>();
 
 				foreach (var date in value)
 				{
-					var points = category.Points.Where(x => !x.Deleted && x.Category == category && x.Type == category.Type && x.Day.Date == date);
+					var points = category.Points.Where(x => !x.Deleted && x.Category.Guid == category.Guid && x.Type == category.Type && x.Day.Date == date);
 					dayPoints.Add(date.Day, points.ToList());
 				}
 

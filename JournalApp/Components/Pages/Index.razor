@@ -2,7 +2,7 @@
 @page "/"
 @using CommunityToolkit.Maui.Storage;
 @inherits LayoutComponentBase
-@inject AppDbContext db
+@inject IDbContextFactory<AppDbContext> dbcf
 @inject ILogger<Index> logger
 @inject ISnackbar SnackbarService
 @inject IDialogService DialogService
@@ -49,7 +49,7 @@
 
 <div class="page-body">
 	<div class="main-timeline">
-		@foreach (var group in db.Categories.GroupBy(x => x.Group))
+		@foreach (var group in _categoryGroupings)
 		{
 			<div class="data-point-group">
 				@if (!string.IsNullOrEmpty(group.Key))
@@ -68,7 +68,7 @@
 
 				@foreach (var category in group.Where(x => x.Enabled && !x.Deleted).OrderBy(x => x.Index).ThenBy(x => x.Name))
 				{
-					@foreach (var point in _day.Points.Where(x => !x.Deleted && x.Category == category && x.Type == category.Type))
+					@foreach (var point in _day.Points.Where(x => !x.Deleted && x.Category.Guid == category.Guid && x.Type == category.Type))
 					{
 						<div class="data-point-container">
 							@if (!string.IsNullOrEmpty(category.Name))
@@ -110,6 +110,7 @@
 </div>
 
 @code {
+	HashSet<IGrouping<string, DataPointCategory>> _categoryGroupings;
 	Day _day;
 	DateTimeOffset _stoppedDate;
 
@@ -117,6 +118,8 @@
 	{
 		logger.LogInformation("Initializing asynchronously");
 		await base.OnInitializedAsync();
+		
+		await UpdateCategoryGroupings();
 
 		logger.LogInformation("Going to the current day");
 		await GoToDay(DateOnly.FromDateTime(DateTime.Now));
@@ -135,7 +138,8 @@
 
 		try
 		{
-			await db.SaveChangesAsync();
+			await using (var db = await dbcf.CreateDbContextAsync())
+				await db.SaveChangesAsync();
 		}
 		catch (ObjectDisposedException)
 		{
@@ -162,6 +166,15 @@
 		}
 	}
 
+	async Task UpdateCategoryGroupings()
+	{
+		logger.LogDebug("Updating category groupings");
+
+		await using var db = await dbcf.CreateDbContextAsync();
+	
+		_categoryGroupings = db.Categories.GroupBy(x => x.Group).ToHashSet();
+	}
+
 	async Task ScrollToTop()
 	{
 		logger.LogInformation($"Scrolling to the top");
@@ -171,7 +184,14 @@
 	async Task GoToDay(DateOnly date, bool scrollToTop = false)
 	{
 		var sw = Stopwatch.StartNew();
-		_day = await db.GetOrCreateDayAndAddPoints(date);
+
+		await UpdateCategoryGroupings();
+
+		await using (var db = await dbcf.CreateDbContextAsync())
+		{
+			_day = await db.GetOrCreateDayAndAddPoints(date);
+		}
+
 		sw.Stop();
 		logger.LogInformation($"Went to {_day} in {sw.ElapsedTicks} ticks");
 
@@ -211,8 +231,12 @@
 		logger.LogInformation("Managing categories");
 		await DialogService.Show<ManageCategoriesDialog>(ComponentUtil.FullscreenDialogOptions).Result;
 
+		await using var db = await dbcf.CreateDbContextAsync();
+
 		if (db.AddMissingPoints(_day))
 			logger.LogInformation($"Added missing data points for {_day}");
+			
+		await UpdateCategoryGroupings();
 	}
 
 	async Task ManageMedications()
@@ -222,8 +246,12 @@
 
 		await DialogService.Show<ManageCategoriesDialog>(parameters, ComponentUtil.FullscreenDialogOptions).Result;
 
+		await using var db = await dbcf.CreateDbContextAsync();
+
 		if (db.AddMissingPoints(_day))
 			logger.LogInformation($"Added missing data points for {_day}");
+			
+		await UpdateCategoryGroupings();
 	}
 
 	async Task OpenTrends()
@@ -255,9 +283,10 @@
 
 	async Task StartImport()
 	{
-		await AppDataService.StartImportWizard(DialogService);
+		var imported = await AppDataService.StartImportWizard(DialogService);
 
-		await GoToDay(DateOnly.FromDateTime(DateTime.Now), scrollToTop: true);
+		if (imported)
+			await GoToDay(DateOnly.FromDateTime(DateTime.Now), scrollToTop: true);
 	}
 
 	async Task StartExport()
@@ -274,6 +303,8 @@
 	async Task NewNote()
 	{
 		logger.LogInformation("Creating new note");
+
+		await using var db = await dbcf.CreateDbContextAsync();
 
 		var note = db.CreateNote(_day);
 

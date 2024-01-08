@@ -81,6 +81,8 @@ public class AppDbContext : DbContext
 
         Days.AddRange(addedDays);
 
+        SaveChanges();
+
         return foundDays;
     }
 
@@ -105,7 +107,7 @@ public class AppDbContext : DbContext
             else
             {
                 // Create a new data point for this category if it doesn't have one already.
-                if (!day.Points.Any(x => x.Category == category && x.Type == category.Type))
+                if (!day.Points.Any(x => x.Category.Guid == category.Guid && x.Type == category.Type))
                 {
                     var point = DataPoint.Create(day, category);
 
@@ -129,6 +131,8 @@ public class AppDbContext : DbContext
         }
 
         Points.AddRange(newPoints);
+
+        SaveChanges();
 
         return newPoints.Count > 0;
     }

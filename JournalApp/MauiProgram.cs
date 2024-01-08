@@ -32,7 +32,7 @@ public static class MauiProgram
             c.SnackbarConfiguration.SnackbarVariant = Variant.Text;
         });
 
-        builder.Services.AddDbContext<AppDbContext>(options => options
+        builder.Services.AddDbContextFactory<AppDbContext>(options => options
             .UseLazyLoadingProxies()
             .UseSqlite($"Data Source = {DbFilename}")
             .EnableSensitiveDataLogging()
