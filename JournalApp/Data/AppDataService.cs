@@ -97,6 +97,7 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
         try
         {
             await backupFile.WriteArchive(ms);
+            ms.Position = 0; // Required on Android for some reason.
         }
         catch (Exception ex)
         {
