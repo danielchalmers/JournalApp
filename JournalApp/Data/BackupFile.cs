@@ -6,7 +6,7 @@ namespace JournalApp;
 
 public class BackupFile
 {
-    private const string InternalBackupFileName = "journalapp-backup.json";
+    private const string InternalBackupFileName = "journalapp-data.json";
 
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
@@ -22,15 +22,6 @@ public class BackupFile
 
     public IEnumerable<PreferenceBackup> PreferenceBackups { get; set; }
 
-    public async Task WriteArchive(MemoryStream ms)
-    {
-        using var archive = new ZipArchive(ms, ZipArchiveMode.Create, true);
-        var entry = archive.CreateEntry(InternalBackupFileName);
-        await using var entryStream = entry.Open();
-
-        await JsonSerializer.SerializeAsync(entryStream, this, SerializerOptions);
-    }
-
     public static async Task<BackupFile> ReadArchive(Stream stream)
     {
         using var archive = new ZipArchive(stream, ZipArchiveMode.Read, true);
@@ -40,11 +31,22 @@ public class BackupFile
             if (entry.FullName == InternalBackupFileName)
             {
                 await using var entryStream = entry.Open();
+
                 return await JsonSerializer.DeserializeAsync<BackupFile>(entryStream, SerializerOptions);
             }
         }
 
         throw new InvalidOperationException("No backup file found!");
+    }
+
+    public async Task WriteArchive(MemoryStream ms)
+    {
+        using var archive = new ZipArchive(ms, ZipArchiveMode.Create, true);
+
+        var entry = archive.CreateEntry(InternalBackupFileName);
+        await using var entryStream = entry.Open();
+
+        await JsonSerializer.SerializeAsync(entryStream, this, SerializerOptions);
     }
 }
 

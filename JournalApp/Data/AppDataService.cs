@@ -3,10 +3,8 @@ using MudBlazor;
 
 namespace JournalApp;
 
-public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<AppDbContext> dbcf)
+public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<AppDbContext> dbcf, IFilePicker filePicker, IFileSaver fileSaver)
 {
-    public DateTimeOffset LastExportDate => DateTimeOffset.Parse(Preferences.Get("last_export", DateTimeOffset.Now.ToString()));
-
     public async Task<bool> StartImportWizard(IDialogService dialogService)
     {
         // Warn the user of what's going to happen.
@@ -19,14 +17,18 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
 
         // Let user pick the file to import.
         logger.LogInformation("Picking file to import");
-        var pickResult = await FilePicker.Default.PickAsync();
+        var pickResult = await filePicker.PickAsync();
 
         if (pickResult == null)
+        {
+            logger.LogInformation("Didn't pick file");
             return false;
+        }
 
         logger.LogInformation($"Reading file: {pickResult.FullPath}");
         await using var stream = await pickResult.OpenReadAsync();
 
+        // Attempt to read the archive.
         BackupFile backupFile;
         try
         {
@@ -34,17 +36,21 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
         }
         catch (Exception ex)
         {
-            logger.LogDebug(ex, "Failed to read archive");
+            logger.LogInformation(ex, "Failed to read archive");
             await dialogService.ShowMessageBox(string.Empty, $"Nothing happened; Failed to read archive: {ex.Message}.");
             return false;
         }
 
         logger.LogDebug("Archive was read");
 
+        // Set preferences.
         foreach (var (key, value) in backupFile.PreferenceBackups)
+        {
             Preferences.Set(key, value);
-        logger.LogDebug("Preferences were set");
+            logger.LogInformation($"Preference set: {key}");
+        }
 
+        // Apply the backup content to the database.
         await using (var db = await dbcf.CreateDbContextAsync())
         {
             db.SaveChanges();
@@ -84,29 +90,31 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
             PreferenceBackups = preferenceBackups,
         };
 
+        // Initialize the memory stream that will be used when saving.
         await using var ms = new MemoryStream();
 
+        // Attempt to create the archive.
         try
         {
             await backupFile.WriteArchive(ms);
         }
         catch (Exception ex)
         {
-            logger.LogDebug(ex, "Failed to create archive");
+            logger.LogInformation(ex, "Failed to create archive");
             await dialogService.ShowMessageBox(string.Empty, $"Nothing happened; Failed to create archive: {ex.Message}.");
             return;
         }
 
-        logger.LogInformation("Archive was written");
+        logger.LogDebug("Archive was written");
 
-        // Save the file.
-        var saveResult = await FileSaver.Default.SaveAsync($"backup-{DateTime.Now:s}.journalapp", ms, CancellationToken.None);
-        logger.LogInformation($"Save picker result: {saveResult}");
+        // Save the file through a prompt.
+        var saverResult = await fileSaver.SaveAsync($"backup-{DateTime.Now:s}.journalapp", ms, CancellationToken.None);
+        logger.LogInformation($"File saver result: {saverResult}");
 
         // Alert user that the file wasn't saved.
-        if (!saveResult.IsSuccessful)
+        if (!saverResult.IsSuccessful)
         {
-            await dialogService.ShowMessageBox(string.Empty, $"Didn't save: {saveResult.Exception.Message}");
+            await dialogService.ShowMessageBox(string.Empty, $"Didn't save: {saverResult.Exception.Message}");
             return;
         }
 
@@ -115,11 +123,34 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
 
     public async Task ShowExportReminderIfDue(IDialogService dialogService)
     {
-        if (LastExportDate.AddDays(90) > DateTimeOffset.Now)
+        if (LastExportDate.AddDays(180) > DateTimeOffset.Now)
             return;
 
-        logger.LogInformation($"It's been a while since the last export <{LastExportDate}>");
+        logger.LogInformation($"It's been a while since last export <{LastExportDate}>");
 
-        await dialogService.ShowMessageBox(string.Empty, "Keep your data backed up regularly in case something happens to your device by going to the dots menu and choosing \"Export...\"");
+        // We're going to show the message so let's not bug the user again until next interval.
+        LastExportDate = DateTimeOffset.Now;
+
+        await dialogService.ShowMessageBox(string.Empty, "Reminder: You haven't backed your data up in a while. You can do this by going to the dots menu and choosing \"Export\".");
+    }
+
+    public DateTimeOffset LastExportDate
+    {
+        get
+        {
+            var lastExportString = Preferences.Get("last_export", null);
+
+            if (DateTimeOffset.TryParse(lastExportString, out var parsed))
+            {
+                return parsed;
+            }
+            else
+            {
+                // If we haven't tracked this, or it's malformed, set it to current so the user won't immediately get notified after first launch.
+                LastExportDate = DateTimeOffset.Now;
+                return DateTimeOffset.Now;
+            }
+        }
+        set => Preferences.Set("last_export", DateTimeOffset.Now.ToString("O"));
     }
 }
