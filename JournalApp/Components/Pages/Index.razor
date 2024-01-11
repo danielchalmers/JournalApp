@@ -131,6 +131,9 @@
 		var window = App.Current.Windows.Single();
 		window.Stopped += Window_Stopped;
 		window.Resumed += Window_Resumed;
+
+		if (LaunchHurdle.ShouldShowHurdle())
+			await DialogService.Show<LaunchHurdle>(ComponentUtil.FullscreenDialogOptions).Result;
 	}
 
 	private void Window_Stopped(object sender, EventArgs e)
