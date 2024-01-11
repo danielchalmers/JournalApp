@@ -42,7 +42,7 @@
 		<MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" Title="Previous day" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
 
 		<div class="switcher-header">
-			<MudButton OnClick="OpenMoodGrid" title="Go to Mood Grid">
+			<MudButton OnClick="OpenMoodGrid" title="Open Mood Grid">
 				<MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false">@_day.Date.ToString("ddd, MMM d")</MudText>
 			</MudButton>
 		</div>
