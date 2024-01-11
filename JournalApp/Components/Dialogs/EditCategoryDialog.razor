@@ -113,7 +113,7 @@
 		Category.Name = Name.Trim();
 		Category.Type = Group == "Medications" ? PointType.Medication : Type;
 		Category.MedicationDose = MedicationDose;
-		Category.MedicationUnit = MedicationUnit?.Trim();
+		Category.MedicationUnit = MedicationUnit?.TrimEnd(); // Allow spaces before, but not after the unit.
 		Category.MedicationEveryDaySince = MedicationEveryDay ? DateTimeOffset.Now : null;
 
 		PageService.CloseDialog(MudDialog, Category);
