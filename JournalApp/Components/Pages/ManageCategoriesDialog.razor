@@ -27,7 +27,7 @@
 			@foreach (var c in Categories.OrderBy(c => c.Index))
 			{
 				<div class="category-view-compact">
-					<MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" Title="Move up" OnClick="async () => await MoveUp(c)" Edge="Edge.Start" Disabled="c.Index <= 1" />
+					<MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" Title="Move up" OnClick="() => MoveUp(c)" Edge="Edge.Start" Disabled="c.Index <= 1" />
 
 					<MudSwitch @bind-Value="c.Enabled" Color="Color.Primary" Style="margin-right: -0.125em;" title="Toggle enabled" />
 
@@ -55,10 +55,12 @@
 		PageService.EnteredPage(async () => await Submit());
 	}
 
-	async Task MoveUp(DataPointCategory category)
+	void MoveUp(DataPointCategory category)
 	{
-		await db.MoveCategoryUp(category);
+		db.MoveCategoryUp(category);
 		logger.LogInformation($"Moved category up: {category}, {category.Guid}");
+
+		db.SaveChanges();
 	}
 
 	async Task Edit(DataPointCategory category)
@@ -70,11 +72,11 @@
 			return;
 
 		logger.LogInformation($"Edited category: {category}, {category.Guid}");
-		
+
 		if (category.Deleted)
 		{
 			logger.LogInformation("Category was deleted, so now we're going to fix indexes.");
-			await db.FixCategoryIndexes();
+			db.FixCategoryIndexes();
 		}
 
 		await db.SaveChangesAsync();
@@ -96,7 +98,8 @@
 		}
 		else
 		{
-			await db.AddCategory(newCategory);
+			db.AddCategory(newCategory);
+			await db.SaveChangesAsync();
 			logger.LogInformation($"Added new category <{newCategory}>");
 		}
 	}

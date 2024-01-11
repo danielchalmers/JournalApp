@@ -68,7 +68,7 @@
 
 				@foreach (var category in group.Where(x => x.Enabled && !x.Deleted).OrderBy(x => x.Index).ThenBy(x => x.Name))
 				{
-					@foreach (var point in _day.Points.Where(x => !x.Deleted && x.Category.Guid == category.Guid && x.Type == category.Type))
+					@foreach (var point in _dayPoints.Where(x => !x.Deleted && x.Category.Guid == category.Guid && x.Type == category.Type).OrderBy(x => x.CreatedAt))
 					{
 						<div class="data-point-container">
 							@if (!string.IsNullOrEmpty(category.Name))
@@ -111,6 +111,7 @@
 
 @code {
 	HashSet<IGrouping<string, DataPointCategory>> _categoryGroupings;
+	HashSet<DataPoint> _dayPoints;
 	Day _day;
 	DateTimeOffset _stoppedDate;
 
@@ -118,33 +119,14 @@
 	{
 		logger.LogInformation("Initializing asynchronously");
 		await base.OnInitializedAsync();
-		
-		await UpdateCategoryGroupings();
 
 		logger.LogInformation("Going to the current day");
 		await GoToDay(DateOnly.FromDateTime(DateTime.Now));
 
 		// https://learn.microsoft.com/en-us/dotnet/maui/fundamentals/app-lifecycle
 		var window = App.Current.Windows.Single();
-		window.Deactivated += Window_DeactivatedOrDestroying;
-		window.Destroying += Window_DeactivatedOrDestroying;
 		window.Stopped += Window_Stopped;
 		window.Resumed += Window_Resumed;
-	}
-
-	private async void Window_DeactivatedOrDestroying(object sender, EventArgs e)
-	{
-		logger.LogInformation("Window deactivated or destroying; Saving database");
-
-		try
-		{
-			await using (var db = await dbcf.CreateDbContextAsync())
-				await db.SaveChangesAsync();
-		}
-		catch (ObjectDisposedException)
-		{
-			// Ignore.
-		}
 	}
 
 	private void Window_Stopped(object sender, EventArgs e)
@@ -166,13 +148,13 @@
 		}
 	}
 
-	async Task UpdateCategoryGroupings()
+	void UpdateDbReferences(AppDbContext db, DateOnly date)
 	{
-		logger.LogDebug("Updating category groupings");
-
-		await using var db = await dbcf.CreateDbContextAsync();
-	
+		_day = db.GetOrCreateDayAndAddPoints(date);
 		_categoryGroupings = db.Categories.GroupBy(x => x.Group).ToHashSet();
+		_dayPoints = _day.Points.ToHashSet();
+
+		logger.LogDebug($"Updated day <{date}> and {_categoryGroupings.Count} category groupings");
 	}
 
 	async Task ScrollToTop()
@@ -185,11 +167,10 @@
 	{
 		var sw = Stopwatch.StartNew();
 
-		await UpdateCategoryGroupings();
-
-		await using (var db = await dbcf.CreateDbContextAsync())
+		using (var db = dbcf.CreateDbContext())
 		{
-			_day = await db.GetOrCreateDayAndAddPoints(date);
+			UpdateDbReferences(db, date);
+			db.SaveChanges();
 		}
 
 		sw.Stop();
@@ -226,17 +207,21 @@
 		}
 	}
 
+	async Task FinalizeCategoryEdits()
+	{
+		await using var db = await dbcf.CreateDbContextAsync();
+
+		UpdateDbReferences(db, _day.Date);
+
+		await db.SaveChangesAsync();
+	}
+
 	async Task ManageCategories()
 	{
 		logger.LogInformation("Managing categories");
 		await DialogService.Show<ManageCategoriesDialog>(ComponentUtil.FullscreenDialogOptions).Result;
 
-		await using var db = await dbcf.CreateDbContextAsync();
-
-		if (db.AddMissingPoints(_day))
-			logger.LogInformation($"Added missing data points for {_day}");
-			
-		await UpdateCategoryGroupings();
+		await FinalizeCategoryEdits();
 	}
 
 	async Task ManageMedications()
@@ -246,12 +231,7 @@
 
 		await DialogService.Show<ManageCategoriesDialog>(parameters, ComponentUtil.FullscreenDialogOptions).Result;
 
-		await using var db = await dbcf.CreateDbContextAsync();
-
-		if (db.AddMissingPoints(_day))
-			logger.LogInformation($"Added missing data points for {_day}");
-			
-		await UpdateCategoryGroupings();
+		await FinalizeCategoryEdits();
 	}
 
 	async Task OpenTrends()
@@ -306,7 +286,10 @@
 
 		await using var db = await dbcf.CreateDbContextAsync();
 
-		var note = db.CreateNote(_day);
+		// Use fresh day instead of stale _day field.
+		var day = db.Days.SingleOrDefault(x => x.Date == _day.Date);
+
+		var note = db.CreateNote(day);
 
 		var dialogSubmitted = await EditTextDialog.ShowDialog(DialogService, note);
 		if (!dialogSubmitted || note.Deleted)
@@ -315,5 +298,7 @@
 		logger.LogInformation("Saving new note");
 		note.Category.Points.Add(note);
 		await db.SaveChangesAsync();
+
+		UpdateDbReferences(db, day.Date);
 	}
 }

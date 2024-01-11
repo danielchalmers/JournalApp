@@ -48,7 +48,7 @@ public static class MauiProgram
 
         using var provider = builder.Services.BuildServiceProvider();
         var dbSeeder = provider.GetService<AppDbSeeder>();
-        dbSeeder.SeedAsync().GetAwaiter().GetResult();
+        dbSeeder.SeedDb();
 
         return builder.Build();
     }

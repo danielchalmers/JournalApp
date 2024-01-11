@@ -2,16 +2,16 @@
 
 public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeeder> _logger)
 {
-    public async Task SeedAsync()
+    public void SeedDb()
     {
         _logger.LogInformation("Seeding database");
 
-        await using var db = await dbcf.CreateDbContextAsync();
+        using var db = dbcf.CreateDbContext();
         var sw = Stopwatch.StartNew();
         try
         {
             db.Database.Migrate();
-            await db.SaveChangesAsync();
+            db.SaveChanges();
         }
         catch (Microsoft.Data.Sqlite.SqliteException ex) when (ex.SqliteErrorCode == 14)
         {
@@ -27,23 +27,23 @@ public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeed
         _logger.LogInformation($"Migrated database in {sw.ElapsedMilliseconds}ms");
 
         sw.Restart();
-        await SeedCategories();
+        SeedCategories();
         sw.Stop();
         _logger.LogInformation($"Seeded categories in {sw.ElapsedMilliseconds}ms");
 
 #if DEBUG
         sw.Restart();
-        await SeedDays();
+        SeedDays();
         sw.Stop();
         _logger.LogInformation($"Seeded days in {sw.ElapsedMilliseconds}ms");
 #endif
     }
 
-    private async Task SeedCategories()
+    private void SeedCategories()
     {
-        await using var db = await dbcf.CreateDbContextAsync();
+        using var db = dbcf.CreateDbContext();
 
-        async Task AddOrUpdate(
+        void AddOrUpdate(
             string guidString,
             PointType type,
             string group = null,
@@ -78,79 +78,80 @@ public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeed
                 category.MedicationUnit = medUnit;
                 category.MedicationEveryDaySince = medEveryDaySince;
 
-                await db.AddCategory(category);
+                db.AddCategory(category);
+                db.SaveChanges();
             }
         }
 
-        await AddOrUpdate(
+        AddOrUpdate(
             "BF394F35-2228-4933-BF38-AF5B1B97AEF7",
             PointType.Note,
             group: "Notes",
             readOnly: true
         );
-        await AddOrUpdate(
+        AddOrUpdate(
             "D90D89FB-F5B9-47CF-AE4E-3EC0D635E783",
             PointType.Mood,
             name: "Overall mood",
             readOnly: true
         );
-        await AddOrUpdate(
+        AddOrUpdate(
             "D8657B36-F3A0-486F-BF80-0CF057919C7D",
             PointType.Sleep,
             name: "Last night's sleep"
         );
-        await AddOrUpdate(
+        AddOrUpdate(
             "7330B995-0B56-46FF-9DD6-9CFC550FF5C8",
             PointType.MildToSevere,
             name: "Most depressed mood",
             enabled: false
         );
-        await AddOrUpdate(
+        AddOrUpdate(
             "4955EB49-0BCF-433B-873E-2092F292CC6B",
             PointType.MildToSevere,
             name: "Most elevated mood",
             enabled: false
         );
-        await AddOrUpdate(
+        AddOrUpdate(
             "E9B7E4BE-FD17-4171-B1D4-D38B6009FDA0",
             PointType.MildToSevere,
             name: "Irritability",
             enabled: false
         );
-        await AddOrUpdate(
+        AddOrUpdate(
             "0FB54AFF-9ECC-4C17-BAB5-B908B794CEA9",
             PointType.MildToSevere,
             name: "Anxiety",
             enabled: false
         );
-        await AddOrUpdate(
+        AddOrUpdate(
             "40B5AF7B-4F4E-4E77-BD6B-F7855CF773AB",
             PointType.LowToHigh,
             name: "Productivity"
         );
-        await AddOrUpdate(
+        AddOrUpdate(
             "DE394B38-9007-4349-AE31-429541AAB947",
             PointType.LowToHigh,
             name: "Physical activity"
         );
-        await AddOrUpdate(
+        AddOrUpdate(
             "EE8DE4D0-3A87-4CA4-B384-81BD7508A19F",
             PointType.Bool,
             name: "Menstruating",
             enabled: false
         );
-        await AddOrUpdate(
+        AddOrUpdate(
             "C871C9F7-1A6E-4EA2-ACC9-94A256C9E2CC",
             PointType.Bool,
             name: "Therapy",
             enabled: false
         );
-        await AddOrUpdate(
+        AddOrUpdate(
             "480DC07D-1330-486F-9B30-EC83A3D4E6F0",
             PointType.Number,
             name: "Weight"
         );
-        await AddOrUpdate(
+        AddOrUpdate(
             "01A8F325-3002-40C4-B076-234E26172E82",
             PointType.Medication,
             group: "Medications",
@@ -161,12 +162,12 @@ public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeed
             medEveryDaySince: DateTimeOffset.Now);
     }
 
-    private void SeedDays(DateOnly start, DateOnly end)
+    private void SeedDays(IEnumerable<DateOnly> dates)
     {
         using var db = dbcf.CreateDbContext();
 
-        var categories = new HashSet<DataPointCategory>(db.Categories);
-        var days = db.GetOrCreateDays(start.DatesTo(end));
+        var categories = db.Categories.ToHashSet();
+        var days = db.GetOrCreateDays(dates);
 
         var d = 0;
         while (true)
@@ -194,21 +195,22 @@ public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeed
         }
     }
 
-    private async Task SeedDays()
+    private void SeedDays()
     {
         var startDate = DateOnly.FromDateTime(DateTime.Now - TimeSpan.FromDays(120));
         var endDate = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(7));
+        var dates = new List<DateOnly>();
 
-        SeedDays(startDate, endDate);
-
-        await using var db = await dbcf.CreateDbContextAsync();
+        dates.AddRange(startDate.DatesTo(endDate));
 
         // A few additional days to test multi-year features.
         foreach (var relativeMonth in new int[] { -12, -18, -24, -30, -36, -42, -48 })
-        {
-            await db.GetOrCreateDayAndAddPoints(startDate.AddMonths(relativeMonth));
-        }
+            startDate.AddMonths(relativeMonth);
 
-        await db.SaveChangesAsync();
+        SeedDays(dates);
+
+        using var db = dbcf.CreateDbContext();
+
+        db.SaveChanges();
     }
 }

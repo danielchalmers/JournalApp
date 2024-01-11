@@ -38,31 +38,25 @@ public class AppDbContext : DbContext
             .WithOne(e => e.Day);
     }
 
-    public async Task<Day> GetOrCreateDayAndAddPoints(DateOnly date)
+    public Day GetOrCreateDayAndAddPoints(DateOnly date)
     {
-        var changesMade = false;
-        var day = await Days.SingleOrDefaultAsync(x => x.Date == date);
+        var day = Days.SingleOrDefault(x => x.Date == date);
 
         if (day == null)
         {
             day = Day.Create(date);
             Days.Add(day);
-            changesMade = true;
         }
 
-        if (AddMissingPoints(day))
-            changesMade = true;
-
-        if (changesMade)
-            await SaveChangesAsync();
+        AddMissingPoints(day);
 
         return day;
     }
 
     public List<Day> GetOrCreateDays(IEnumerable<DateOnly> dates)
     {
-        var days = new HashSet<Day>(Days);
-        var categories = new HashSet<DataPointCategory>(Categories);
+        var days = Days.ToHashSet();
+        var categories = Categories.ToHashSet();
         var addedDays = new HashSet<Day>();
         var foundDays = new List<Day>();
 
@@ -81,18 +75,14 @@ public class AppDbContext : DbContext
 
         Days.AddRange(addedDays);
 
-        SaveChanges();
-
         return foundDays;
     }
 
-    public bool AddMissingPoints(Day day) => AddMissingPoints(day, new HashSet<DataPointCategory>(Categories), null);
-
-    public bool AddMissingPoints(Day day, HashSet<DataPointCategory> categories, Random random)
+    public bool AddMissingPoints(Day day, IEnumerable<DataPointCategory> categories = null, Random random = null)
     {
         var newPoints = new HashSet<DataPoint>();
 
-        foreach (var category in categories)
+        foreach (var category in categories ?? Categories.ToHashSet())
         {
             if (category.Group == "Notes")
             {
@@ -132,12 +122,10 @@ public class AppDbContext : DbContext
 
         Points.AddRange(newPoints);
 
-        SaveChanges();
-
         return newPoints.Count > 0;
     }
 
-    public async Task AddCategory(DataPointCategory category)
+    public void AddCategory(DataPointCategory category)
     {
         // Set index to the end of the last category in the same group.
         if (category.Index == default)
@@ -147,14 +135,12 @@ public class AppDbContext : DbContext
         }
 
         Categories.Add(category);
-
-        await SaveChangesAsync();
     }
 
-    public async Task MoveCategoryUp(DataPointCategory category)
+    public void MoveCategoryUp(DataPointCategory category)
     {
         // Ensure no conflicts.
-        await FixCategoryIndexes();
+        FixCategoryIndexes();
 
         var replaced = Categories.SingleOrDefault(x => x.Group == category.Group && x.Index == category.Index - 1);
 
@@ -163,14 +149,12 @@ public class AppDbContext : DbContext
 
         replaced.Index++;
         category.Index--;
-
-        await SaveChangesAsync();
     }
 
     /// <summary>
     /// Removes gaps or overlap between indexes.
     /// </summary>
-    public async Task FixCategoryIndexes()
+    public void FixCategoryIndexes()
     {
         foreach (var g in Categories.GroupBy(x => x.Group))
         {
@@ -183,8 +167,6 @@ public class AppDbContext : DbContext
                     c.Index = ++i;
             }
         }
-
-        await SaveChangesAsync();
     }
 
     public DataPoint CreateNote(Day day)

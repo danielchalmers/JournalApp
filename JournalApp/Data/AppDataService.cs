@@ -53,9 +53,6 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
         // Apply the backup content to the database.
         await using (var db = await dbcf.CreateDbContextAsync())
         {
-            db.SaveChanges();
-            logger.LogDebug("Saved database to prepare");
-
             db.Days.RemoveRange(db.Days);
             db.Categories.RemoveRange(db.Categories);
             db.Points.RemoveRange(db.Points);
@@ -97,7 +94,7 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
         try
         {
             await backupFile.WriteArchive(ms);
-            ms.Position = 0; // Required on Android for some reason.
+            ms.Position = 0; // Required on Android.
         }
         catch (Exception ex)
         {
