@@ -56,31 +56,33 @@ public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeed
         {
             // Use existing category or create a new one.
             var guid = new Guid(guidString);
-            var category = db.Categories.FirstOrDefault(x => x.Guid == guid);
+            var category = db.Categories.SingleOrDefault(x => x.Guid == guid);
             var doesExist = category != null;
             category ??= new();
 
-            // Keep some properties up-to-date but not all.
+            // Overwrite some properties that are always supposed to be static.
             category.Guid = guid;
             category.Type = type;
             category.Group = group;
-            category.Name = name;
             category.ReadOnly = readOnly;
             category.MedicationUnit = medUnit;
 
-            if (readOnly)
-                category.Deleted = false;
-
-            // Save new category with given values.
-            if (!doesExist)
+            // Overwrite some flexible properties if it doesn't already exist OR is readonly and isn't allowed to change.
+            if (!doesExist || readOnly)
             {
+                category.Name = name;
                 category.Enabled = enabled;
                 category.MedicationDose = medDose;
                 category.MedicationEveryDaySince = medEveryDaySince;
-
-                db.AddCategory(category);
-                db.SaveChanges();
+                category.Deleted = false;
             }
+
+            // Add the new category.
+            if (!doesExist)
+                db.AddCategory(category);
+            
+            // Save all the changed properties or the new category itself.
+            db.SaveChanges();
         }
 
         AddOrUpdate(
