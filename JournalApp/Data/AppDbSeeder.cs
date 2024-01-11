@@ -80,7 +80,7 @@ public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeed
             // Add the new category.
             if (!doesExist)
                 db.AddCategory(category);
-            
+
             // Save all the changed properties or the new category itself.
             db.SaveChanges();
         }

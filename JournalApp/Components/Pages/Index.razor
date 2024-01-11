@@ -2,7 +2,7 @@
 @page "/"
 @using CommunityToolkit.Maui.Storage;
 @inherits LayoutComponentBase
-@inject IDbContextFactory<AppDbContext> dbcf
+@inject AppDbContext db
 @inject ILogger<Index> logger
 @inject ISnackbar SnackbarService
 @inject IDialogService DialogService
@@ -53,7 +53,7 @@
 
 <div class="page-body">
 	<div class="main-timeline">
-		@foreach (var group in _categoryGroupings)
+		@foreach (var group in db.Categories.GroupBy(x => x.Group))
 		{
 			<div class="data-point-group">
 				@if (!string.IsNullOrEmpty(group.Key))
@@ -72,7 +72,7 @@
 
 				@foreach (var category in group.Where(x => x.Enabled && !x.Deleted).OrderBy(x => x.Index).ThenBy(x => x.Name))
 				{
-					@foreach (var point in _dayPoints.Where(x => !x.Deleted && x.Category.Guid == category.Guid && x.Type == category.Type).OrderBy(x => x.CreatedAt))
+					@foreach (var point in _day.Points.Where(x => !x.Deleted && x.Category.Guid == category.Guid && x.Type == category.Type).OrderBy(x => x.CreatedAt))
 					{
 						<div class="data-point-container">
 							@if (!string.IsNullOrEmpty(category.Name))
@@ -114,8 +114,6 @@
 </div>
 
 @code {
-	HashSet<IGrouping<string, DataPointCategory>> _categoryGroupings;
-	HashSet<DataPoint> _dayPoints;
 	Day _day;
 	DateTimeOffset _stoppedDate;
 
@@ -129,11 +127,27 @@
 
 		// https://learn.microsoft.com/en-us/dotnet/maui/fundamentals/app-lifecycle
 		var window = App.Current.Windows.Single();
+		window.Deactivated += Window_DeactivatedOrDestroying;
+		window.Destroying += Window_DeactivatedOrDestroying;
 		window.Stopped += Window_Stopped;
 		window.Resumed += Window_Resumed;
 
 		if (LaunchHurdle.ShouldShowHurdle())
 			await DialogService.Show<LaunchHurdle>(ComponentUtil.FullscreenDialogOptions).Result;
+	}
+
+	private void Window_DeactivatedOrDestroying(object sender, EventArgs e)
+	{
+		logger.LogInformation("Window deactivated or destroying; Saving database");
+
+		try
+		{
+			db.SaveChanges();
+		}
+		catch (ObjectDisposedException)
+		{
+			// Ignore.
+		}
 	}
 
 	private void Window_Stopped(object sender, EventArgs e)
@@ -159,15 +173,6 @@
 		}
 	}
 
-	void UpdateDbReferences(AppDbContext db, DateOnly date)
-	{
-		_day = db.GetOrCreateDayAndAddPoints(date);
-		_categoryGroupings = db.Categories.GroupBy(x => x.Group).ToHashSet();
-		_dayPoints = _day.Points.ToHashSet();
-
-		logger.LogDebug($"Updated day <{date}> and {_categoryGroupings.Count} category groupings");
-	}
-
 	async Task ScrollToTop()
 	{
 		logger.LogInformation($"Scrolling to the top");
@@ -178,11 +183,7 @@
 	{
 		var sw = Stopwatch.StartNew();
 
-		using (var db = dbcf.CreateDbContext())
-		{
-			UpdateDbReferences(db, date);
-			db.SaveChanges();
-		}
+		_day = db.GetOrCreateDayAndAddPoints(date);
 
 		sw.Stop();
 		logger.LogInformation($"Went to {_day} in {sw.ElapsedTicks} ticks");
@@ -218,21 +219,10 @@
 		}
 	}
 
-	async Task FinalizeCategoryEdits()
-	{
-		await using var db = await dbcf.CreateDbContextAsync();
-
-		UpdateDbReferences(db, _day.Date);
-
-		await db.SaveChangesAsync();
-	}
-
 	async Task ManageCategories()
 	{
 		logger.LogInformation("Managing categories");
 		await DialogService.Show<ManageCategoriesDialog>(ComponentUtil.FullscreenDialogOptions).Result;
-
-		await FinalizeCategoryEdits();
 	}
 
 	async Task ManageMedications()
@@ -241,8 +231,6 @@
 		var parameters = new DialogParameters<ManageCategoriesDialog> { { x => x.Group, "Medications" } };
 
 		await DialogService.Show<ManageCategoriesDialog>(parameters, ComponentUtil.FullscreenDialogOptions).Result;
-
-		await FinalizeCategoryEdits();
 	}
 
 	async Task OpenTrends()
@@ -274,10 +262,15 @@
 
 	async Task StartImport()
 	{
-		var imported = await AppDataService.StartImportWizard(DialogService);
+		await DialogService.ShowCustomMessageBox(string.Empty, "Import has not been fully implemented yet. Please check back in another update!");
+		return;
 
-		if (imported)
-			await GoToDay(DateOnly.FromDateTime(DateTime.Now), scrollToTop: true);
+		// var date = _day.Date;
+
+		// var imported = await AppDataService.StartImportWizard(DialogService);
+
+		// if (imported)
+		// 	await GoToDay(date, scrollToTop: true);
 	}
 
 	async Task StartExport()
@@ -301,8 +294,6 @@
 	{
 		logger.LogInformation("Creating new note");
 
-		await using var db = await dbcf.CreateDbContextAsync();
-
 		// Use fresh day instead of stale _day field.
 		var day = db.Days.SingleOrDefault(x => x.Date == _day.Date);
 
@@ -315,7 +306,5 @@
 		logger.LogInformation("Saving new note");
 		note.Category.Points.Add(note);
 		await db.SaveChangesAsync();
-
-		UpdateDbReferences(db, day.Date);
 	}
 }
