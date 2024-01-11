@@ -80,7 +80,6 @@ public class DataPoint
     public double? Number { get; set; }
     public string Text { get; set; }
     public decimal? MedicationDose { get; set; }
-    public string MedicationUnit { get; set; }
 
     public override string ToString() => $"{Type}, {Category}, {Day}";
 
@@ -95,7 +94,6 @@ public class DataPoint
             CreatedAt = DateTimeOffset.Now,
             Type = category.Type,
             MedicationDose = category.MedicationDose,
-            MedicationUnit = category.MedicationUnit,
         };
     }
 }

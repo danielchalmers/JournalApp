@@ -66,6 +66,7 @@ public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeed
             category.Group = group;
             category.Name = name;
             category.ReadOnly = readOnly;
+            category.MedicationUnit = medUnit;
 
             if (readOnly)
                 category.Deleted = false;
@@ -75,7 +76,6 @@ public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeed
             {
                 category.Enabled = enabled;
                 category.MedicationDose = medDose;
-                category.MedicationUnit = medUnit;
                 category.MedicationEveryDaySince = medEveryDaySince;
 
                 db.AddCategory(category);

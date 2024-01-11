@@ -141,9 +141,9 @@ else if (Point.Type == PointType.Medication)
 		{
 			sb.Append($" {category.MedicationDose:0.##}{category.MedicationUnit}");
 
-			if ((point.MedicationDose != category.MedicationDose || point.MedicationUnit != category.MedicationUnit) && point.MedicationDose != null && point.MedicationUnit != null)
+			if ((point.MedicationDose != category.MedicationDose || category.MedicationUnit != category.MedicationUnit) && point.MedicationDose != null && category.MedicationUnit != null)
 			{
-				sb.Append($" - {point.MedicationDose:0.##}{point.MedicationUnit}");
+				sb.Append($" - {point.MedicationDose:0.##}{category.MedicationUnit}");
 			}
 		}
 
