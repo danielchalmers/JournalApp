@@ -95,7 +95,7 @@
 
 	async Task Delete()
 	{
-		if (await DialogService.ShowMessageBox(string.Empty, $"Are you sure you want to PERMANENTLY delete \"{Name}\"? This cannot be reversed.", yesText: "Delete", cancelText: "Cancel") != true)
+		if (await DialogService.ShowCustomMessageBox(string.Empty, $"Are you sure you want to PERMANENTLY delete \"{Name}\"? This cannot be reversed.", yesText: "Delete", cancelText: "Cancel") != true)
 			return;
 
 		Category.Deleted = true;

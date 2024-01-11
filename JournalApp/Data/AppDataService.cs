@@ -8,11 +8,11 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
     public async Task<bool> StartImportWizard(IDialogService dialogService)
     {
         // Warn the user of what's going to happen.
-        if (await dialogService.ShowMessageBox(string.Empty, "Importing data will replace ALL existing notes, categories, medications, etc, and cannot be undone!", yesText: "OK", cancelText: "Cancel") == null)
+        if (await dialogService.ShowCustomMessageBox(string.Empty, "Importing data will replace ALL existing notes, categories, medications, etc, and cannot be undone!", yesText: "OK", cancelText: "Cancel") == null)
             return false;
 
         // Warn if an export wasn't done in the last week.
-        if (DateTimeOffset.Now > LastExportDate.AddDays(7) && await dialogService.ShowMessageBox(string.Empty, "It's recommended to export your data first", yesText: "Continue anyway", cancelText: "Go back") == null)
+        if (DateTimeOffset.Now > LastExportDate.AddDays(7) && await dialogService.ShowCustomMessageBox(string.Empty, "It's recommended to export your data first", yesText: "Continue anyway", cancelText: "Go back") == null)
             return false;
 
         // Let user pick the file to import.
@@ -37,7 +37,7 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
         catch (Exception ex)
         {
             logger.LogInformation(ex, "Failed to read archive");
-            await dialogService.ShowMessageBox(string.Empty, $"Nothing happened; Failed to read archive: {ex.Message}.");
+            await dialogService.ShowCustomMessageBox(string.Empty, $"Nothing happened; Failed to read archive: {ex.Message}.", showFeedbackLink: true);
             return false;
         }
 
@@ -99,7 +99,7 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
         catch (Exception ex)
         {
             logger.LogInformation(ex, "Failed to create archive");
-            await dialogService.ShowMessageBox(string.Empty, $"Nothing happened; Failed to create archive: {ex.Message}.");
+            await dialogService.ShowCustomMessageBox(string.Empty, $"Nothing happened; Failed to create archive: {ex.Message}.", showFeedbackLink: true);
             return;
         }
 
@@ -112,7 +112,7 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
         // Alert user that the file wasn't saved.
         if (!saverResult.IsSuccessful)
         {
-            await dialogService.ShowMessageBox(string.Empty, $"Didn't save: {saverResult.Exception.Message}");
+            await dialogService.ShowCustomMessageBox(string.Empty, $"Didn't save: {saverResult.Exception.Message}", showFeedbackLink: true);
             return;
         }
 
@@ -129,7 +129,7 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
         // We're going to show the message so let's not bug the user again until next interval.
         LastExportDate = DateTimeOffset.Now;
 
-        await dialogService.ShowMessageBox(string.Empty, "Reminder: You haven't backed your data up in a while. You can do this by going to the dots menu and choosing \"Export\".");
+        await dialogService.ShowCustomMessageBox(string.Empty, "Reminder: You haven't backed your data up in a while. You can do this by going to the dots menu and choosing \"Export\".");
     }
 
     public DateTimeOffset LastExportDate

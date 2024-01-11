@@ -15,4 +15,36 @@ internal static class ComponentUtil
         dialogService.Show<TComponent>(string.Empty, parameters, options);
 
     public static DialogOptions FullscreenDialogOptions => new() { FullScreen = true, DisableBackdropClick = true, CloseOnEscapeKey = false, };
+
+    public static async Task<bool?> ShowCustomMessageBox(this IDialogService dialogService, string title, string message, string yesText = "OK",
+        string noText = null, string cancelText = null, DialogOptions options = null, bool showFeedbackLink = false)
+    {
+        var messageBoxOptions = new MessageBoxOptions
+        {
+            Title = title,
+            Message = message,
+            YesText = yesText,
+            NoText = noText,
+            CancelText = cancelText,
+        };
+
+        var parameters = new DialogParameters()
+        {
+            [nameof(MessageBoxOptions.Title)] = messageBoxOptions.Title,
+            [nameof(MessageBoxOptions.Message)] = messageBoxOptions.Message,
+            [nameof(MessageBoxOptions.MarkupMessage)] = messageBoxOptions.MarkupMessage,
+            [nameof(MessageBoxOptions.CancelText)] = messageBoxOptions.CancelText,
+            [nameof(MessageBoxOptions.NoText)] = messageBoxOptions.NoText,
+            [nameof(MessageBoxOptions.YesText)] = messageBoxOptions.YesText,
+            [nameof(CustomMessageBox.ShowFeedbackLink)] = showFeedbackLink,
+        };
+
+        var reference = await dialogService.ShowAsync<CustomMessageBox>(title: messageBoxOptions.Title, parameters: parameters, options: options);
+        var result = await reference.Result;
+
+        if (result.Canceled || result.Data is not bool data)
+            return null;
+
+        return data;
+    }
 }
