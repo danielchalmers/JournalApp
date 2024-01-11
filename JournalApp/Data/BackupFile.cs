@@ -39,9 +39,9 @@ public class BackupFile
         throw new InvalidOperationException("No backup file found!");
     }
 
-    public async Task WriteArchive(MemoryStream ms)
+    public async Task WriteArchive(Stream stream)
     {
-        using var archive = new ZipArchive(ms, ZipArchiveMode.Create, true);
+        using var archive = new ZipArchive(stream, ZipArchiveMode.Create, true);
 
         var entry = archive.CreateEntry(InternalBackupFileName);
         await using var entryStream = entry.Open();

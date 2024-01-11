@@ -1,6 +1,5 @@
 ﻿using Append.Blazor.Printing;
 using CommunityToolkit.Maui;
-using CommunityToolkit.Maui.Storage;
 using MudBlazor;
 using MudBlazor.Services;
 
@@ -43,7 +42,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<AppDbSeeder>();
         builder.Services.AddSingleton<PageService>();
         builder.Services.AddScoped<IPrintingService, PrintingService>();
-        builder.Services.AddSingleton(FileSaver.Default);
+        builder.Services.AddSingleton(Share.Default);
         builder.Services.AddSingleton(FilePicker.Default);
 
         using var provider = builder.Services.BuildServiceProvider();

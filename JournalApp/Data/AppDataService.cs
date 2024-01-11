@@ -1,9 +1,8 @@
-﻿using CommunityToolkit.Maui.Storage;
-using MudBlazor;
+﻿using MudBlazor;
 
 namespace JournalApp;
 
-public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<AppDbContext> dbcf, IFilePicker filePicker, IFileSaver fileSaver)
+public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<AppDbContext> dbcf, IFilePicker filePicker, IShare share)
 {
     public async Task<bool> StartImportWizard(IDialogService dialogService)
     {
@@ -87,14 +86,18 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
             PreferenceBackups = preferenceBackups,
         };
 
-        // Initialize the memory stream that will be used when saving.
-        await using var ms = new MemoryStream();
-
-        // Attempt to create the archive.
+        // Create the file and write the archive to it.
+        // We don't write directly to a place the user picks because that requires the harsh WRITE_EXTERNAL_STORAGE permission.
+        var filePath = Path.Combine(FileSystem.AppDataDirectory, $"backup-{DateTime.Now:yyyy-MM-dd}.journalapp");
+        logger.LogDebug($"Creating a file at {filePath}");
         try
         {
-            await backupFile.WriteArchive(ms);
-            ms.Position = 0; // Required on Android.
+            await using (var stream = File.Create(filePath))
+            {
+                await backupFile.WriteArchive(stream);
+
+                logger.LogDebug("Archive was written");
+            }
         }
         catch (Exception ex)
         {
@@ -103,18 +106,12 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
             return;
         }
 
-        logger.LogDebug("Archive was written");
-
-        // Save the file through a prompt.
-        var saverResult = await fileSaver.SaveAsync($"backup-{DateTime.Now:s}.journalapp", ms, CancellationToken.None);
-        logger.LogInformation($"File saver result: {saverResult}");
-
-        // Alert user that the file wasn't saved.
-        if (!saverResult.IsSuccessful)
+        // Prompt the user to share the file.
+        await share.RequestAsync(new ShareFileRequest
         {
-            await dialogService.ShowCustomMessageBox(string.Empty, $"Didn't save: {saverResult.Exception.Message}", showFeedbackLink: true);
-            return;
-        }
+            Title = "JournalApp backup",
+            File = new ShareFile(filePath)
+        });
 
         Preferences.Set("last_export", DateTimeOffset.Now.ToString());
     }
