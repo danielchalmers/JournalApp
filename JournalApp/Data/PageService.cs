@@ -6,6 +6,8 @@ public class PageService(ILogger<PageService> logger)
 {
     private readonly Stack<Action> _backButtonPressedActions = [];
 
+    public int CurrentDepth => _backButtonPressedActions.Count;
+
     public void EnteredPage(Action backButtonAction)
     {
         logger.LogDebug("Entered page");
@@ -22,7 +24,7 @@ public class PageService(ILogger<PageService> logger)
 
         lock (_backButtonPressedActions)
         {
-            if (_backButtonPressedActions.Count != 0)
+            if (CurrentDepth != 0)
                 _backButtonPressedActions.Pop();
         }
     }
@@ -43,9 +45,9 @@ public class PageService(ILogger<PageService> logger)
     {
         logger.LogInformation("Back button pressed");
 
-        var anyActions = _backButtonPressedActions.Count != 0;
+        var anyActions = CurrentDepth != 0;
         if (anyActions)
-            _backButtonPressedActions.First().Invoke();
+            _backButtonPressedActions.Peek().Invoke();
 
         // Consider the event handled if there were any subscriptions.
         // ex: a dialog used the event to close itself; or none were open and therefore the platform decides what to do.

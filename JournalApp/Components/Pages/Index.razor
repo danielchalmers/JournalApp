@@ -6,6 +6,7 @@
 @inject ILogger<Index> logger
 @inject ISnackbar SnackbarService
 @inject IDialogService DialogService
+@inject PageService PageService
 @inject IScrollManager ScrollManager
 @inject AppDataService AppDataService
 
@@ -141,10 +142,14 @@
 		// but not on Windows because Resumed can occur without a corresponding Stopped for some reason.
 		if (DeviceInfo.Current.Platform != DevicePlatform.WinUI && DateTimeOffset.Now - _stoppedDate > TimeSpan.FromHours(1))
 		{
-			logger.LogInformation($"Switching from {_day} to current day after user was gone since {_stoppedDate}");
-			await GoToDay(DateOnly.FromDateTime(DateTime.Now), scrollToTop: true);
+			// If no dialogs are open.
+			if (PageService.CurrentDepth == 0)
+			{
+				logger.LogInformation($"Switching from {_day} to current day after user was gone since {_stoppedDate}");
+				await GoToDay(DateOnly.FromDateTime(DateTime.Now), scrollToTop: true);
 
-			await AppDataService.ShowExportReminderIfDue(DialogService);
+				await AppDataService.ShowExportReminderIfDue(DialogService);
+			}
 		}
 	}
 
