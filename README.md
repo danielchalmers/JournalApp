@@ -1,8 +1,8 @@
 ﻿# 🙂 JournalApp [![License](https://img.shields.io/github/license/danielchalmers/JournalApp)](LICENSE)
 
-**Track your wellness goals with JournalApp, your personal diary and mood tracker for Android! Write notes and record things like mood, sleep, medications, or your own custom categories that you can review later. 📝**
+**Track your wellness goals with JournalApp, your personal diary and mood tracker for Android! Write yourself notes and record things like mood, sleep, medications, or your own custom categories. 📝**
 
-Free, open source, and written entirely in .NET MAUI + Blazor. ❤️
+Free, open source, and made with .NET MAUI + Blazor. ❤️
 
 ![Main page](https://github.com/danielchalmers/JournalApp/assets/7112040/b41e5df4-a805-426d-bcf9-6edf9d282643)
 
