@@ -23,7 +23,6 @@
 			<MudMenuItem Icon="@Icons.Material.Filled.Medication" OnAction="ManageMedications">Medications</MudMenuItem>
 			<MudMenuItem Icon="@Icons.Material.Filled.Comment" OnAction="NewNote">New note</MudMenuItem>
 			<MudMenuItem Icon="@Icons.Material.Filled.ShowChart" OnAction="OpenTrends">Trends</MudMenuItem>
-
 			<MudMenuItem Icon="@Icons.Material.Filled.Description" OnAction="OpenWorksheets">Worksheets</MudMenuItem>
 			<MudMenuItem Icon="@Icons.Material.Filled.HealthAndSafety" OnAction="OpenSafetyPlan">Safety Plan</MudMenuItem>
 
@@ -31,6 +30,10 @@
 
 			<MudMenuItem Icon="@Icons.Material.Filled.Download" OnAction="StartImport">Import</MudMenuItem>
 			<MudMenuItem Icon="@Icons.Material.Filled.Upload" OnAction="StartExport">Export</MudMenuItem>
+			
+			<MudDivider />
+
+			<MudMenuItem Icon="@Icons.Material.Filled.Chat" OnAction="OpenFeedback">Feedback</MudMenuItem>
 			<MudMenuItem Icon="@Icons.Material.Filled.Info" OnAction="OpenAbout">v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
 		</MudMenu>
 	</div>
@@ -277,6 +280,12 @@
 	async Task StartExport()
 	{
 		await AppDataService.StartExportWizard(DialogService);
+	}
+
+	async Task OpenFeedback()
+	{
+		logger.LogInformation("Opening feedback link");
+		await Browser.Default.OpenAsync("https://github.com/danielchalmers/JournalApp/issues/new");
 	}
 
 	async Task OpenAbout()
