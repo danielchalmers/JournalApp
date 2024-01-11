@@ -152,6 +152,14 @@ public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeed
             name: "Weight"
         );
         AddOrUpdate(
+            "2EEA42EE-4586-4E7D-ABF1-012BED1C0753",
+            PointType.Medication,
+            group: "Medications",
+            name: "Example medication",
+            enabled: true,
+            medDose: 1,
+            medUnit: " unit");
+        AddOrUpdate(
             "01A8F325-3002-40C4-B076-234E26172E82",
             PointType.Medication,
             group: "Medications",
@@ -159,6 +167,33 @@ public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeed
             enabled: false,
             medDose: 2000,
             medUnit: "IU",
+            medEveryDaySince: DateTimeOffset.Now);
+        AddOrUpdate(
+            "7DBB09E6-4A83-4E71-94AE-C40F3422DF09",
+            PointType.Medication,
+            group: "Medications",
+            name: "Cetirizine",
+            enabled: false,
+            medDose: 10,
+            medUnit: "mg",
+            medEveryDaySince: DateTimeOffset.Now);
+        AddOrUpdate(
+            "545E8EBE-3C5C-4289-B4AD-E11CAC7B9324",
+            PointType.Medication,
+            group: "Medications",
+            name: "Trazadone",
+            enabled: false,
+            medDose: 50,
+            medUnit: "mg",
+            medEveryDaySince: DateTimeOffset.Now);
+        AddOrUpdate(
+            "A3AD777F-680A-481F-AFF2-E1CE6BCEA29E",
+            PointType.Medication,
+            group: "Medications",
+            name: "Gabapentin",
+            enabled: false,
+            medDose: 300,
+            medUnit: "mg",
             medEveryDaySince: DateTimeOffset.Now);
     }
 
