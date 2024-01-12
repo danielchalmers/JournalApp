@@ -72,13 +72,13 @@
 			_allPoints.Clear();
 			foreach (var category in Categories)
 			{
+				var categoryPoints = category.Points.Where(x => !x.Deleted && x.Category.Guid == category.Guid && x.Type == category.Type).ToHashSet();
 				var dayPoints = new Dictionary<int, IReadOnlyList<DataPoint>>();
 				int x = 0;
 
 				foreach (var date in value)
 				{
-					var points = category.Points.Where(x => !x.Deleted && x.Category.Guid == category.Guid && x.Type == category.Type && x.Day.Date == date);
-					dayPoints.Add(++x, points.ToList());
+					dayPoints.Add(++x, categoryPoints.Where(x => x.Day.Date == date).ToList());
 				}
 
 				_allPoints.Add(category, dayPoints);

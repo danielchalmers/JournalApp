@@ -4,24 +4,24 @@
 	<MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" Title="Previous month" OnClick="GoPrevious" />
 
 	<div class="switcher-header">
-		<MudButton OnClick="() => SelectedMonth = CurrentNextMonth">
+		<MudButton OnClick="() => SelectedMonth = MonthAfterCurrent">
 			<MudText Typo="Typo.h5">@(HeaderText)</MudText>
 		</MudButton>
 	</div>
 
-	<MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" Title="Next month" OnClick="GoNext" Disabled="@(NextMonth > CurrentNextMonth)" />
+	<MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" Title="Next month" OnClick="GoNext" Disabled="@(NextSelectedMonth > MonthAfterCurrent)" />
 </div>
 
 @code {
 	DateOnly _selectedMonth;
 	IReadOnlyList<DateOnly> _selectedDates;
 
-	string HeaderText => SelectedMonth == CurrentNextMonth ? "Last 30 Days" : SelectedMonth.ToString("MMM yyyy");
+	string HeaderText => SelectedMonth == MonthAfterCurrent ? "Last 30 Days" : SelectedMonth.ToString("MMM yyyy");
 
 	DateOnly CurrentMonth => new DateOnly(DateTime.Now.Year, DateTime.Now.Month, 1);
-	DateOnly CurrentNextMonth => CurrentMonth.AddMonths(1);
-	DateOnly PreviousMonth => _selectedMonth.AddMonths(-1);
-	DateOnly NextMonth => _selectedMonth.AddMonths(1);
+	DateOnly MonthAfterCurrent => CurrentMonth.AddMonths(1);
+	DateOnly LastSelectedMonth => _selectedMonth.AddMonths(-1);
+	DateOnly NextSelectedMonth => _selectedMonth.AddMonths(1);
 
 	[Parameter]
 	public DateOnly SelectedMonth
@@ -33,11 +33,11 @@
 
 			var dates = new List<DateOnly>();
 
-			if (SelectedMonth == CurrentNextMonth)
+			if (SelectedMonth == MonthAfterCurrent)
 			{
 				var nowDate = DateOnly.FromDateTime(DateTime.Now);
 
-				for (int i = 0; i > -30; i--)
+				for (int i = -29; i <= 0; i++)
 					dates.Add(nowDate.AddDays(i));
 			}
 			else
@@ -46,8 +46,8 @@
 					dates.Add(new DateOnly(value.Year, value.Month, i));
 			}
 
-			SelectedMonthChanged.InvokeAsync(value);
 			SelectedDates = dates;
+			SelectedMonthChanged.InvokeAsync(value);
 		}
 	}
 
@@ -80,11 +80,11 @@
 
 	void GoPrevious()
 	{
-		SelectedMonth = PreviousMonth;
+		SelectedMonth = LastSelectedMonth;
 	}
 
 	void GoNext()
 	{
-		SelectedMonth = NextMonth;
+		SelectedMonth = NextSelectedMonth;
 	}
 }
