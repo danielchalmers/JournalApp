@@ -157,7 +157,15 @@ public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeed
             "2EEA42EE-4586-4E7D-ABF1-012BED1C0753",
             PointType.Medication,
             group: "Medications",
-            name: "Example",
+            name: "Example (AM)",
+            enabled: true,
+            medDose: 1,
+            medUnit: " unit");
+        AddOrUpdate(
+            "4A00F59D-7A66-4CA5-B05A-F7D67F4BB6B5",
+            PointType.Medication,
+            group: "Medications",
+            name: "Example (PM)",
             enabled: true,
             medDose: 1,
             medUnit: " unit");
