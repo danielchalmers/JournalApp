@@ -136,14 +136,18 @@
 	private void Window_DeactivatedOrDestroying(object sender, EventArgs e)
 	{
 		logger.LogInformation("Window deactivated or destroying; Saving database");
-
-		try
+		
+		// If no dialogs are open.
+		if (PageService.CurrentDepth == 0)
 		{
-			db.SaveChanges();
-		}
-		catch (ObjectDisposedException)
-		{
-			// Ignore.
+			try
+			{
+				db.SaveChanges();
+			}
+			catch (ObjectDisposedException)
+			{
+				// Ignore.
+			}
 		}
 	}
 
