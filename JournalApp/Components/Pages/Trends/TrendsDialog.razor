@@ -16,9 +16,10 @@
 
 			<MudSpacer />
 
-			<environment include="Development">
+			@if (Debugger.IsAttached)
+			{
 				<MudIconButton Icon="@Icons.Material.Filled.Print" Title="Print" OnClick="Print" />
-			</environment>
+			}
 		</div>
 
 		<TrendsSwitcher @bind-SelectedDates="SelectedDates" OpenToDate="OpenToDate" />
