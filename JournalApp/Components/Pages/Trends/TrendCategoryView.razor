@@ -1,114 +1,110 @@
 ﻿@namespace JournalApp
 @using ApexCharts
 
-<div class="trend-view">
-	@switch (Category.Type)
-	{
-		case PointType.Mood:
-			<div class="trend-view-chart">
-				<ApexChart @ref="_chart" TItem="PointOnChart" Options="ChartOptions">
-					<ApexPointSeries TItem="PointOnChart"
-									 Name="Mood (1=saddest, 7=happiest)"
-									 Items="_chartItems"
-									 SeriesType="SeriesType.Line"
-									 XValue="e => e.Day"
-									 YValue="e => e.Mood" />
-				</ApexChart>
-			</div>
-			break;
+@switch (Category.Type)
+{
+	case PointType.Mood:
+		<div class="trend-view-chart">
+			<ApexChart @ref="_chart" TItem="PointOnChart" Options="ChartOptions">
+				<ApexPointSeries TItem="PointOnChart"
+								 Name="Mood (1=saddest, 7=happiest)"
+								 Items="_chartItems"
+								 SeriesType="SeriesType.Line"
+								 XValue="e => e.Day"
+								 YValue="e => e.Mood" />
+			</ApexChart>
+		</div>
+		break;
 
-		case PointType.Sleep:
-			<div class="trend-view-chart">
-				<ApexChart @ref="_chart" TItem="PointOnChart" Options="ChartOptions">
-					<ApexPointSeries TItem="PointOnChart"
-									 Name="Hours"
-									 Items="_chartItems"
-									 SeriesType="SeriesType.Line"
-									 XValue="e => e.Day"
-									 YValue="e => e.SleepHours" />
-				</ApexChart>
-			</div>
-			break;
+	case PointType.Sleep:
+		<div class="trend-view-chart">
+			<ApexChart @ref="_chart" TItem="PointOnChart" Options="ChartOptions">
+				<ApexPointSeries TItem="PointOnChart"
+								 Name="Hours"
+								 Items="_chartItems"
+								 SeriesType="SeriesType.Line"
+								 XValue="e => e.Day"
+								 YValue="e => e.SleepHours" />
+			</ApexChart>
+		</div>
+		break;
 
-		case PointType.Scale:
-		case PointType.LowToHigh:
-		case PointType.MildToSevere:
-			<div class="trend-view-chart">
-				<ApexChart @ref="_chart" TItem="PointOnChart" Options="ChartOptions">
-					<ApexPointSeries TItem="PointOnChart"
-									 Name="Scale (0=lowest, 5=highest)"
-									 Items="_chartItems"
-									 SeriesType="SeriesType.Line"
-									 XValue="e => e.Day"
-									 YValue="e => e.Scale" />
-				</ApexChart>
-			</div>
-			break;
+	case PointType.Scale:
+	case PointType.LowToHigh:
+	case PointType.MildToSevere:
+		<div class="trend-view-chart">
+			<ApexChart @ref="_chart" TItem="PointOnChart" Options="ChartOptions">
+				<ApexPointSeries TItem="PointOnChart"
+								 Name="Scale (0=lowest, 5=highest)"
+								 Items="_chartItems"
+								 SeriesType="SeriesType.Line"
+								 XValue="e => e.Day"
+								 YValue="e => e.Scale" />
+			</ApexChart>
+		</div>
+		break;
 
-		case PointType.Bool:
-			<div class="trend-view-chart">
-				<ApexChart @ref="_chart" TItem="PointOnChart" Options="ChartOptions">
-					<ApexPointSeries TItem="PointOnChart"
-									 Name="Bool (0=no, 1=yes)"
-									 Items="_chartItems"
-									 SeriesType="SeriesType.Line"
-									 XValue="e => e.Day"
-									 YValue="e => e.Bool" />
-				</ApexChart>
-			</div>
-			break;
+	case PointType.Bool:
+		<div class="trend-view-chart">
+			<ApexChart @ref="_chart" TItem="PointOnChart" Options="ChartOptions">
+				<ApexPointSeries TItem="PointOnChart"
+								 Name="Bool (0=no, 1=yes)"
+								 Items="_chartItems"
+								 SeriesType="SeriesType.Line"
+								 XValue="e => e.Day"
+								 YValue="e => e.Bool" />
+			</ApexChart>
+		</div>
+		break;
 
-		case PointType.Medication:
-			<div class="trend-view-chart">
-				<ApexChart @ref="_chart" TItem="PointOnChart" Options="ChartOptions">
-					<ApexPointSeries TItem="PointOnChart"
-									 Name="Dose"
-									 Items="_chartItems"
-									 SeriesType="SeriesType.Line"
-									 XValue="e => e.Day"
-									 YValue="e => e.MedDose" />
-				</ApexChart>
-			</div>
-			break;
+	case PointType.Medication:
+		<div class="trend-view-chart">
+			<ApexChart @ref="_chart" TItem="PointOnChart" Options="ChartOptions">
+				<ApexPointSeries TItem="PointOnChart"
+								 Name="Dose"
+								 Items="_chartItems"
+								 SeriesType="SeriesType.Line"
+								 XValue="e => e.Day"
+								 YValue="e => e.MedDose" />
+			</ApexChart>
+		</div>
+		break;
 
-		case PointType.Number:
-			<div class="trend-view-chart">
-				<ApexChart @ref="_chart" TItem="PointOnChart" Options="ChartOptions">
-					<ApexPointSeries TItem="PointOnChart"
-									 Name="Number"
-									 Items="_chartItems"
-									 SeriesType="SeriesType.Line"
-									 XValue="e => e.Day"
-									 YValue="e => e.Number" />
-				</ApexChart>
-			</div>
-			break;
+	case PointType.Number:
+		<div class="trend-view-chart">
+			<ApexChart @ref="_chart" TItem="PointOnChart" Options="ChartOptions">
+				<ApexPointSeries TItem="PointOnChart"
+								 Name="Number"
+								 Items="_chartItems"
+								 SeriesType="SeriesType.Line"
+								 XValue="e => e.Day"
+								 YValue="e => e.Number" />
+			</ApexChart>
+		</div>
+		break;
 
-		case PointType.Text:
-		case PointType.Note:
-			<div class="trend-view-notes">
-				@foreach (var (day, points) in PointsByDay)
+	case PointType.Text:
+	case PointType.Note:
+		<div class="trend-view-notes">
+			@foreach (var (day, points) in PointsByDay)
+			{
+				foreach (var point in points)
 				{
-					foreach (var point in points)
-					{
-						<MudTextField Value="point.Text"
-									  Label="@(point.CreatedAt.ToString("M/d/yy h:mm tt"))"
-									  ReadOnly DisableUnderLine AutoGrow MaxLines="10" />
-					}
+					<MudTextField Value="point.Text"
+								  Label="@(point.CreatedAt.ToString("M/d/yy h:mm tt"))"
+								  ReadOnly DisableUnderLine AutoGrow MaxLines="10" />
 				}
-			</div>
-			break;
-	}
-</div>
+			}
+		</div>
+		break;
+}
 
 @code {
-	IReadOnlyDictionary<int, IReadOnlyList<DataPoint>> _pointsByDay;
 	ApexChart<PointOnChart> _chart;
-	List<PointOnChart> _chartItems = new();
-	static List<string> _chartEmojis = ["😭", "😢", "😕", "😐", "🙂", "😀", "🤩"];
+	List<PointOnChart> _chartItems;
 
 	ApexChartOptions<PointOnChart> ChartOptions = new()
-		{ 
+		{
 			Theme = new Theme
 			{
 				Mode = Mode.Dark,
@@ -156,69 +152,36 @@
 	public IReadOnlyList<DateOnly> Dates { get; set; }
 
 	[Parameter]
-	public IReadOnlyDictionary<int, IReadOnlyList<DataPoint>> PointsByDay
+	public IReadOnlyDictionary<int, IReadOnlyList<DataPoint>> PointsByDay { get; set; }
+
+	protected override async Task OnParametersSetAsync()
 	{
-		get => _pointsByDay;
-		set
+		await base.OnParametersSetAsync();
+
+		var pointByDay = PointsByDay.ToDictionary(x => x.Key, x => x.Value.LastOrDefault());
+
+		_chartItems = new();
+		foreach (var (day, point) in pointByDay)
 		{
-			_pointsByDay = value;
-
-			PointByDay = PointsByDay.ToDictionary(x => x.Key, x => x.Value.LastOrDefault());
-
-			_chartItems.Clear();
-			foreach (var (day, point) in PointByDay)
-			{
-				_chartItems.Add(new(day, point));
-			}
-
-			_chart?.RenderAsync();
+			_chartItems.Add(new(day, point));
 		}
+
+		if (_chart != null)
+			await _chart.UpdateSeriesAsync(false);
 	}
 
-	public IReadOnlyDictionary<int, DataPoint> PointByDay { get; set; }
-
-	private record PointOnChart(int Day, DataPoint Point)
+	public static string GetHeaderText(DataPointCategory category)
 	{
-		public decimal? Mood
-		{
-			get
-			{
-				var i = _chartEmojis.IndexOf(Point?.Mood);
+		var sb = new StringBuilder();
 
-				return i == -1 ? null : i + 1;
-			}
-		}
+		if (string.IsNullOrEmpty(category.Name))
+			sb.Append(category.Group);
+		else
+			sb.Append(category.Name);
 
-		public decimal? SleepHours => (decimal?)Point?.SleepHours;
+		if (category.Type == PointType.Medication)
+			sb.Append($" ({category.MedicationUnit?.Trim()})");
 
-		public decimal? Scale => (decimal?)Point?.ScaleIndex;
-
-		public decimal? Number => (decimal?)Point?.Number;
-
-		public decimal? MedDose
-		{
-			get
-			{
-				if(Point?.Bool == true)
-					return Point.MedicationDose;
-				else if(Point?.Bool == false)
-					return 0;
-
-				return null;
-			}
-		}
-
-		public decimal? Bool
-		{
-			get
-			{
-				if(Point?.Bool == true)
-					return 1;
-				else if(Point?.Bool == false)
-					return 0;
-
-				return null;
-			}
-		}
+		return sb.ToString();
 	}
 }

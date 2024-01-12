@@ -39,9 +39,7 @@
 				foreach (var category in group)
 				{
 					<div class="trends-category">
-						<MudText Typo="Typo.h6">
-							@((string.IsNullOrEmpty(category.Name) ? category.Group : category.Name) + (category.Type == PointType.Medication ? $" ({category.MedicationUnit?.Trim()})" : string.Empty))
-						</MudText>
+						<MudText Typo="Typo.h6">@(TrendCategoryView.GetHeaderText(category))</MudText>
 
 						<ErrorBoundary>
 							<ChildContent>

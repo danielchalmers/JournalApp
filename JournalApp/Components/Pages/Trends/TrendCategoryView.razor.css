@@ -1,9 +1,4 @@
-﻿.trend-view {
-	display: flex;
-	justify-content: center;
-}
-
-.trend-view-chart {
+﻿.trend-view-chart {
 	display: flex;
 	flex-direction: column;
 	flex: 1 1 0;
