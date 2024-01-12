@@ -1,102 +1,84 @@
 ﻿@namespace JournalApp
 @using ApexCharts
 
-@switch (Category.Type)
+@if (Category.Type is PointType.Text or PointType.Note)
 {
-	case PointType.Mood:
-		<div class="trend-view-chart">
-			<ApexChart @ref="_chart" TItem="PointOnChart" Options="ChartOptions">
-				<ApexPointSeries TItem="PointOnChart"
-								 Name="Mood (1=saddest, 7=happiest)"
-								 Items="_chartItems"
-								 SeriesType="SeriesType.Line"
-								 XValue="e => e.Day"
-								 YValue="e => e.Mood" />
-			</ApexChart>
-		</div>
-		break;
-
-	case PointType.Sleep:
-		<div class="trend-view-chart">
-			<ApexChart @ref="_chart" TItem="PointOnChart" Options="ChartOptions">
-				<ApexPointSeries TItem="PointOnChart"
-								 Name="Hours"
-								 Items="_chartItems"
-								 SeriesType="SeriesType.Line"
-								 XValue="e => e.Day"
-								 YValue="e => e.SleepHours" />
-			</ApexChart>
-		</div>
-		break;
-
-	case PointType.Scale:
-	case PointType.LowToHigh:
-	case PointType.MildToSevere:
-		<div class="trend-view-chart">
-			<ApexChart @ref="_chart" TItem="PointOnChart" Options="ChartOptions">
-				<ApexPointSeries TItem="PointOnChart"
-								 Name="Scale (0=lowest, 5=highest)"
-								 Items="_chartItems"
-								 SeriesType="SeriesType.Line"
-								 XValue="e => e.Day"
-								 YValue="e => e.Scale" />
-			</ApexChart>
-		</div>
-		break;
-
-	case PointType.Bool:
-		<div class="trend-view-chart">
-			<ApexChart @ref="_chart" TItem="PointOnChart" Options="ChartOptions">
-				<ApexPointSeries TItem="PointOnChart"
-								 Name="Bool (0=no, 1=yes)"
-								 Items="_chartItems"
-								 SeriesType="SeriesType.Line"
-								 XValue="e => e.Day"
-								 YValue="e => e.Bool" />
-			</ApexChart>
-		</div>
-		break;
-
-	case PointType.Medication:
-		<div class="trend-view-chart">
-			<ApexChart @ref="_chart" TItem="PointOnChart" Options="ChartOptions">
-				<ApexPointSeries TItem="PointOnChart"
-								 Name="Dose"
-								 Items="_chartItems"
-								 SeriesType="SeriesType.Line"
-								 XValue="e => e.Day"
-								 YValue="e => e.MedDose" />
-			</ApexChart>
-		</div>
-		break;
-
-	case PointType.Number:
-		<div class="trend-view-chart">
-			<ApexChart @ref="_chart" TItem="PointOnChart" Options="ChartOptions">
-				<ApexPointSeries TItem="PointOnChart"
-								 Name="Number"
-								 Items="_chartItems"
-								 SeriesType="SeriesType.Line"
-								 XValue="e => e.Day"
-								 YValue="e => e.Number" />
-			</ApexChart>
-		</div>
-		break;
-
-	case PointType.Text:
-	case PointType.Note:
-		<div class="trend-view-notes">
-			@foreach (var (day, points) in PointsByDay)
+	<div class="trend-view-notes">
+		@foreach (var (day, points) in PointsByDay)
+		{
+			foreach (var point in points)
 			{
-				foreach (var point in points)
-				{
-					<MudTextField Value="point.Text"
-								  Label="@(point.CreatedAt.ToString("M/d/yy h:mm tt"))"
-								  ReadOnly DisableUnderLine AutoGrow MaxLines="10" />
-				}
+				<MudTextField Value="point.Text"
+								Label="@(point.CreatedAt.ToString("M/d/yy h:mm tt"))"
+								ReadOnly DisableUnderLine AutoGrow MaxLines="10" />
 			}
-		</div>
-		break;
+		}
+	</div>
+}
+else
+{
+	<div class="trend-view-chart">
+		<ApexChart @ref="_chart" TItem="PointOnChart" Options="ChartOptions">
+			@switch (Category.Type)
+			{
+				case PointType.Mood:
+							<ApexPointSeries TItem="PointOnChart"
+											 Name="Mood (1=saddest, 7=happiest)"
+											 Items="_chartItems"
+											 SeriesType="SeriesType.Line"
+											 XValue="e => e.Day"
+											 YValue="e => e.Mood" />
+					break;
+
+				case PointType.Sleep:
+							<ApexPointSeries TItem="PointOnChart"
+											 Name="Hours"
+											 Items="_chartItems"
+											 SeriesType="SeriesType.Line"
+											 XValue="e => e.Day"
+											 YValue="e => e.SleepHours" />
+					break;
+
+				case PointType.Scale:
+				case PointType.LowToHigh:
+				case PointType.MildToSevere:
+							<ApexPointSeries TItem="PointOnChart"
+											 Name="Scale (0=lowest, 5=highest)"
+											 Items="_chartItems"
+											 SeriesType="SeriesType.Line"
+											 XValue="e => e.Day"
+											 YValue="e => e.Scale" />
+					break;
+
+				case PointType.Bool:
+							<ApexPointSeries TItem="PointOnChart"
+											 Name="Bool (0=no, 1=yes)"
+											 Items="_chartItems"
+											 SeriesType="SeriesType.Line"
+											 XValue="e => e.Day"
+											 YValue="e => e.Bool" />
+					break;
+
+				case PointType.Medication:
+							<ApexPointSeries TItem="PointOnChart"
+											 Name="Dose"
+											 Items="_chartItems"
+											 SeriesType="SeriesType.Line"
+											 XValue="e => e.Day"
+											 YValue="e => e.MedDose" />
+					break;
+
+				case PointType.Number:
+							<ApexPointSeries TItem="PointOnChart"
+											 Name="Number"
+											 Items="_chartItems"
+											 SeriesType="SeriesType.Line"
+											 XValue="e => e.Day"
+											 YValue="e => e.Number" />
+					break;
+			}
+		</ApexChart>
+	</div>
 }
 
 @code {
