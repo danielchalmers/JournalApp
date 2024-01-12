@@ -131,9 +131,6 @@
 		window.Destroying += Window_DeactivatedOrDestroying;
 		window.Stopped += Window_Stopped;
 		window.Resumed += Window_Resumed;
-
-		if (LaunchHurdle.ShouldShowHurdle())
-			await DialogService.Show<LaunchHurdle>(ComponentUtil.FullscreenDialogOptions).Result;
 	}
 
 	private void Window_DeactivatedOrDestroying(object sender, EventArgs e)
