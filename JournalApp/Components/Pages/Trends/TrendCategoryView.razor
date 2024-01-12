@@ -6,7 +6,7 @@
 	{
 		case PointType.Mood:
 			<div class="trend-view-chart">
-				<ApexChart TItem="PointOnChart" Options="ChartOptions">
+				<ApexChart @ref="_chart" TItem="PointOnChart" Options="ChartOptions">
 					<ApexPointSeries TItem="PointOnChart"
 									 Name="Mood (1=saddest, 7=happiest)"
 									 Items="_chartItems"
@@ -19,7 +19,7 @@
 
 		case PointType.Sleep:
 			<div class="trend-view-chart">
-				<ApexChart TItem="PointOnChart" Options="ChartOptions">
+				<ApexChart @ref="_chart" TItem="PointOnChart" Options="ChartOptions">
 					<ApexPointSeries TItem="PointOnChart"
 									 Name="Hours"
 									 Items="_chartItems"
@@ -34,7 +34,7 @@
 		case PointType.LowToHigh:
 		case PointType.MildToSevere:
 			<div class="trend-view-chart">
-				<ApexChart TItem="PointOnChart" Options="ChartOptions">
+				<ApexChart @ref="_chart" TItem="PointOnChart" Options="ChartOptions">
 					<ApexPointSeries TItem="PointOnChart"
 									 Name="Scale (0=lowest, 5=highest)"
 									 Items="_chartItems"
@@ -47,7 +47,7 @@
 
 		case PointType.Bool:
 			<div class="trend-view-chart">
-				<ApexChart TItem="PointOnChart" Options="ChartOptions">
+				<ApexChart @ref="_chart" TItem="PointOnChart" Options="ChartOptions">
 					<ApexPointSeries TItem="PointOnChart"
 									 Name="Bool (0=no, 1=yes)"
 									 Items="_chartItems"
@@ -60,7 +60,7 @@
 
 		case PointType.Medication:
 			<div class="trend-view-chart">
-				<ApexChart TItem="PointOnChart" Options="ChartOptions">
+				<ApexChart @ref="_chart" TItem="PointOnChart" Options="ChartOptions">
 					<ApexPointSeries TItem="PointOnChart"
 									 Name="Dose"
 									 Items="_chartItems"
@@ -73,7 +73,7 @@
 
 		case PointType.Number:
 			<div class="trend-view-chart">
-				<ApexChart TItem="PointOnChart" Options="ChartOptions">
+				<ApexChart @ref="_chart" TItem="PointOnChart" Options="ChartOptions">
 					<ApexPointSeries TItem="PointOnChart"
 									 Name="Number"
 									 Items="_chartItems"
@@ -103,6 +103,7 @@
 
 @code {
 	IReadOnlyDictionary<int, IReadOnlyList<DataPoint>> _pointsByDay;
+	ApexChart<PointOnChart> _chart;
 	List<PointOnChart> _chartItems = new();
 	static List<string> _chartEmojis = ["😭", "😢", "😕", "😐", "🙂", "😀", "🤩"];
 
@@ -162,7 +163,7 @@
 				_chartItems.Add(new(day, point));
 			}
 
-			// TODO: Force chart to update with new items.
+			_chart?.RenderAsync();
 		}
 	}
 
