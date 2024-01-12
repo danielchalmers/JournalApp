@@ -17,7 +17,7 @@ internal static class ComponentUtil
     public static DialogOptions FullscreenDialogOptions => new() { FullScreen = true, DisableBackdropClick = true, CloseOnEscapeKey = false, };
 
     public static async Task<bool?> ShowCustomMessageBox(this IDialogService dialogService, string title, string message, string yesText = "OK",
-        string noText = null, string cancelText = null, DialogOptions options = null, bool showFeedbackLink = false)
+        string noText = null, string cancelText = null, DialogOptions options = null, bool showFeedbackLink = true)
     {
         var messageBoxOptions = new MessageBoxOptions
         {

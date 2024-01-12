@@ -282,7 +282,7 @@
 	async Task OpenFeedback()
 	{
 		logger.LogInformation("Opening feedback link");
-		await Browser.Default.OpenAsync("https://github.com/danielchalmers/JournalApp/issues/new");
+		await Browser.Default.OpenAsync(FeedbackService.GenerateLink());
 	}
 
 	async Task OpenAbout()
