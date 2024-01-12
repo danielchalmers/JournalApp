@@ -26,13 +26,6 @@
 	</TitleContent>
 
 	<DialogContent>
-		<div class="d-flex flex-column align-center justify-center">
-			<MudText Typo="Typo.h5">Charts not working?</MudText>
-			<MudLink Href="@(FeedbackService.GenerateLink("Charts not working"))">Send feedback...</MudLink>
-		</div>
-
-		<MudDivider />
-
 		<div id="trends-category-list">
 			@foreach (var group in Categories.GroupBy(x => x.Group))
 			{
