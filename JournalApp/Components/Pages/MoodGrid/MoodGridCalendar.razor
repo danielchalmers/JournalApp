@@ -1,12 +1,17 @@
 ﻿@namespace JournalApp
 @inject ILogger<MoodGridCalendar> logger
+@inject IScrollManager ScrollManager
 
 <div class="mood-grid">
 	@foreach (var month in GridYear.GridMonths)
 	{
 		<div class="mood-grid-month" id="mood-grid-month-@(month.Month)">
 			<div class="mood-grid-month-header">
-				<MudText Typo="Typo.h4">@(month.Name)</MudText>
+				<div class="d-flex align-center">
+					<MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" OnClick="ScrollToTop" title="Scroll to top" />
+					<MudText Typo="Typo.h4">@(month.Name)</MudText>
+					<MudIconButton Icon="@Icons.Material.Filled.ArrowDownward" OnClick="ScrollToBottom" title="Scroll to bottom" />
+				</div>
 			</div>
 
 			<div class="mood-blocks-month">
@@ -71,5 +76,15 @@
 			return "transparent";
 		else
 			return color;
+	}
+
+	async Task ScrollToTop()
+	{
+		await ScrollManager.ScrollToTopAsync(".mud-dialog", ScrollBehavior.Auto);
+	}
+
+	async Task ScrollToBottom()
+	{
+		await ScrollManager.ScrollToBottomAsync(".mud-dialog", ScrollBehavior.Auto);
 	}
 }
