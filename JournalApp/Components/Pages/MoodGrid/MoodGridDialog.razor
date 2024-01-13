@@ -26,9 +26,11 @@
 	<DialogContent>
 		@if (_gridYear != null)
 		{
-			<MoodGridCalendar MoodColors="MoodColors" GridYear="_gridYear.Value" OpenToDate="OpenToDate"
-							CalendarLoaded="ScrollToOpenToDate" DayClicked="@(d => Close(d))" 
-							PreviousMonthClicked="PreviousMonth" NextMonthClicked="NextMonth" />
+			<div style="padding-bottom: 40vh;">
+				<MoodGridCalendar MoodColors="MoodColors" GridYear="_gridYear.Value" OpenToDate="OpenToDate"
+								CalendarLoaded="ScrollToOpenToDate" DayClicked="@(d => Close(d))" 
+								PreviousMonthClicked="PreviousMonth" NextMonthClicked="NextMonth" />
+			</div>
 		}
 	</DialogContent>
 </MudDialog>
