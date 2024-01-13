@@ -6,7 +6,9 @@
 	{
 		<div class="mood-grid-month" id="mood-grid-month-@(month.Month)">
 			<div class="mood-grid-month-header">
+				<MudIconButton Icon="@Icons.Material.Filled.ArrowLeft" OnClick="async () => await PreviousMonthClicked.InvokeAsync(month.Month)" title="Previous month" />
 				<MudText Typo="Typo.h4">@(month.Name)</MudText>
+				<MudIconButton Icon="@Icons.Material.Filled.ArrowRight" OnClick="async () => await NextMonthClicked.InvokeAsync(month.Month)" title="Next month" Disabled="@(month.Month == 12 && month.Year == DateTime.Now.Year)" />
 			</div>
 
 			<div class="mood-blocks-month">
@@ -48,6 +50,12 @@
 
 	[Parameter]
 	public EventCallback<DateOnly?> DayClicked { get; set; }
+
+	[Parameter]
+	public EventCallback<int> PreviousMonthClicked { get; set; }
+
+	[Parameter]
+	public EventCallback<int> NextMonthClicked { get; set; }
 
 	[Parameter]
 	public GridYear GridYear { get; set; }

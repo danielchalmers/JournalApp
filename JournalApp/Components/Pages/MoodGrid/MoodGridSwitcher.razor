@@ -1,7 +1,7 @@
 ﻿@namespace JournalApp
 
 <div class="switcher">
-	<MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" Title="Previous year" OnClick="() => SelectedYear--" />
+	<MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" Title="Previous year" OnClick="PreviousYear" />
 
 	<div class="switcher-header">
 		<MudButton OnClick="() => SelectedYear = DateTime.Now.Year">
@@ -9,7 +9,7 @@
 		</MudButton>
 	</div>
 
-	<MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" Title="Next year" OnClick="() => SelectedYear++" Disabled="@(SelectedYear >= DateTime.Now.Year)" />
+	<MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" Title="Next year" OnClick="NextYear" Disabled="@(SelectedYear >= DateTime.Now.Year)" />
 </div>
 
 @code {
@@ -28,4 +28,16 @@
 
 	[Parameter]
 	public EventCallback<int> SelectedYearChanged { get; set; }
+
+	public void NextYear()
+	{
+		SelectedYear++;
+		StateHasChanged();
+	}
+
+	public void PreviousYear()
+	{
+		SelectedYear--;
+		StateHasChanged();
+	}
 }

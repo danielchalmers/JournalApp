@@ -20,18 +20,21 @@
 			<MudIconButton Icon="@Icons.Material.Filled.Palette" Title="Pick color" OnClick="OpenColorPicker" />
 		</div>
 
-		<MoodGridSwitcher @bind-SelectedYear="SelectedYear" @bind-SelectedYear:after="LoadYear" />
+		<MoodGridSwitcher @ref="_switcher" @bind-SelectedYear="SelectedYear" @bind-SelectedYear:after="LoadYear" />
 	</TitleContent>
 
 	<DialogContent>
 		@if(_gridYear != null)
 		{
-			<MoodGridCalendar MoodColors="MoodColors" GridYear="_gridYear.Value" DayClicked="@(d => Close(d))" CalendarLoaded="ScrollToOpenToDate" />
+			<MoodGridCalendar MoodColors="MoodColors" GridYear="_gridYear.Value" 
+			CalendarLoaded="ScrollToOpenToDate" DayClicked="@(d => Close(d))" 
+			PreviousMonthClicked="PreviousMonth" NextMonthClicked="NextMonth" />
 		}
 	</DialogContent>
 </MudDialog>
 
 @code {
+	MoodGridSwitcher _switcher;
 	DataPointCategory _moodCategory;
 	GridYear? _gridYear = null;
 	Task _loadYearTask;
@@ -92,13 +95,43 @@
 		}
 	}
 
-	async Task ScrollToOpenToDate()
+	async Task ScrollToMonth(int month)
 	{
-		logger.LogDebug($"Scrolling to the Open To date <{OpenToDate}>");
+		logger.LogDebug($"Scrolling to month {OpenToDate}");
 
 		// TODO: Unsure why we need two calls.
-		await JSRuntime.InvokeVoidAsyncIgnoreErrors("scrollToNestedElement", ".mud-dialog", $"#mood-grid-month-{OpenToDate.Month}");
-		await ScrollManager.ScrollIntoViewAsync($"#mood-grid-month-{OpenToDate.Month}", ScrollBehavior.Auto);
+		await JSRuntime.InvokeVoidAsyncIgnoreErrors("scrollToNestedElement", ".mud-dialog", $"#mood-grid-month-{month}");
+		await ScrollManager.ScrollToTopAsync($"#mood-grid-month-{month}", ScrollBehavior.Smooth);
+	}
+
+	async Task ScrollToOpenToDate() => await ScrollToMonth(OpenToDate.Month);
+
+	async Task PreviousMonth(int month)
+	{
+		if (month == 1)
+		{
+			_switcher.PreviousYear();
+
+			await ScrollToMonth(12);
+		}
+		else
+		{
+			await ScrollToMonth(month - 1);
+		}
+	}
+
+	async Task NextMonth(int month)
+	{
+		if (month == 12)
+		{
+			_switcher.NextYear();
+
+			await ScrollToMonth(1);
+		}
+		else
+		{
+			await ScrollToMonth(month + 1);
+		}
 	}
 
 	async Task LoadYear()
