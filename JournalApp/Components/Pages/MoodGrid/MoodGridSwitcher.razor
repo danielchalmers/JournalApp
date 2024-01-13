@@ -4,7 +4,7 @@
 	<MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" Title="Previous year" OnClick="PreviousYear" />
 
 	<div class="switcher-header">
-		<MudButton OnClick="() => SelectedYear = DateTime.Now.Year">
+		<MudButton OnClick="OnHeaderClicked">
 			<MudText Typo="Typo.h5">@SelectedYear</MudText>
 		</MudButton>
 	</div>
@@ -28,6 +28,15 @@
 
 	[Parameter]
 	public EventCallback<int> SelectedYearChanged { get; set; }
+
+	[Parameter]
+	public EventCallback HeaderClicked { get; set; }
+
+	void OnHeaderClicked()
+	{
+		SelectedYear = DateTime.Now.Year;
+		HeaderClicked.InvokeAsync();
+	}
 
 	public void NextYear()
 	{
