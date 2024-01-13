@@ -60,20 +60,20 @@ public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeed
             var doesExist = category != null;
             category ??= new();
 
-            // Overwrite some properties that are always supposed to be static.
+            // Overwrite some properties that are supposed to be static.
             category.Guid = guid;
-            category.Type = type;
             category.Group = group;
             category.ReadOnly = readOnly;
-            category.MedicationUnit = medUnit;
 
             // Overwrite some flexible properties if it doesn't already exist OR is readonly and isn't allowed to change.
             if (!doesExist || readOnly)
             {
+                category.Type = type;
                 category.Name = name;
                 category.Enabled = enabled;
                 category.MedicationDose = medDose;
                 category.MedicationEveryDaySince = medEveryDaySince;
+                category.MedicationUnit = medUnit;
                 category.Deleted = false;
             }
 
