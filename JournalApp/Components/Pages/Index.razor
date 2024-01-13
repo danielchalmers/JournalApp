@@ -221,6 +221,8 @@
 	async Task OpenMoodGrid()
 	{
 		logger.LogInformation("Opening Mood Grid");
+		db.SaveChanges();
+
 		var parameters = new DialogParameters<MoodGridDialog> { { x => x.OpenToDate, _day.Date } };
 		var result = await DialogService.Show<MoodGridDialog>(parameters, ComponentUtil.FullscreenDialogOptions).Result;
 
@@ -243,6 +245,8 @@
 	async Task ManageCategories()
 	{
 		logger.LogInformation("Managing categories");
+		db.SaveChanges();
+
 		await DialogService.Show<ManageCategoriesDialog>(ComponentUtil.FullscreenDialogOptions).Result;
 
 		FinalizeCategories();
@@ -251,8 +255,9 @@
 	async Task ManageMedications()
 	{
 		logger.LogInformation("Managing medications");
-		var parameters = new DialogParameters<ManageCategoriesDialog> { { x => x.Group, "Medications" } };
+		db.SaveChanges();
 
+		var parameters = new DialogParameters<ManageCategoriesDialog> { { x => x.Group, "Medications" } };
 		await DialogService.Show<ManageCategoriesDialog>(parameters, ComponentUtil.FullscreenDialogOptions).Result;
 
 		FinalizeCategories();
@@ -261,6 +266,8 @@
 	async Task OpenTrends()
 	{
 		logger.LogInformation("Opening trends dialog");
+		db.SaveChanges();
+
 		var parameters = new DialogParameters<TrendsDialog> { { x => x.OpenToDate, _day.Date } };
 		var result = await DialogService.Show<TrendsDialog>(parameters, ComponentUtil.FullscreenDialogOptions).Result;
 	}
@@ -300,6 +307,7 @@
 
 	async Task StartExport()
 	{
+		db.SaveChanges();
 		await AppDataService.StartExportWizard(DialogService);
 	}
 
