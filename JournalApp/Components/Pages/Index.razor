@@ -193,6 +193,7 @@
 		var sw = Stopwatch.StartNew();
 
 		_day = db.GetOrCreateDayAndAddPoints(date);
+		db.SaveChanges();
 
 		logger.LogDebug($"Went to {_day} in {sw.ElapsedTicks} ticks");
 
@@ -302,10 +303,7 @@
 	{
 		logger.LogInformation("Creating new note");
 
-		// Use fresh day instead of stale _day field.
-		var day = db.Days.SingleOrDefault(x => x.Date == _day.Date);
-
-		var note = db.CreateNote(day);
+		var note = db.CreateNote(_day);
 
 		var dialogSubmitted = await EditTextDialog.ShowDialog(DialogService, note);
 		if (!dialogSubmitted || note.Deleted)

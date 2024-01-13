@@ -40,7 +40,7 @@ public class AppDbContext : DbContext
 
     public Day GetOrCreateDayAndAddPoints(DateOnly date)
     {
-        var day = Days.SingleOrDefault(x => x.Date == date);
+        var day = Days.FirstOrDefault(x => x.Date == date);
 
         if (day == null)
         {
