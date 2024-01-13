@@ -231,10 +231,21 @@
 		}
 	}
 
+	void FinalizeCategories()
+	{
+		if (db.AddMissingPoints(_day))
+		{
+			logger.LogInformation($"Added missing data points for {_day}");
+			db.SaveChanges();
+		}
+	}
+
 	async Task ManageCategories()
 	{
 		logger.LogInformation("Managing categories");
 		await DialogService.Show<ManageCategoriesDialog>(ComponentUtil.FullscreenDialogOptions).Result;
+
+		FinalizeCategories();
 	}
 
 	async Task ManageMedications()
@@ -243,6 +254,8 @@
 		var parameters = new DialogParameters<ManageCategoriesDialog> { { x => x.Group, "Medications" } };
 
 		await DialogService.Show<ManageCategoriesDialog>(parameters, ComponentUtil.FullscreenDialogOptions).Result;
+
+		FinalizeCategories();
 	}
 
 	async Task OpenTrends()
