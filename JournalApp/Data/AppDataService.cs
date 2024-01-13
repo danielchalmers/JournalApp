@@ -90,6 +90,13 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
         foreach (var key in new[] { "safety_plan", "mood_palette" })
             preferenceBackups.Add(new(key, Preferences.Get(key, string.Empty)));
 
+        // Clean up old backups.
+        foreach (var f in Directory.EnumerateFiles(FileSystem.AppDataDirectory, "backup-*.journalapp"))
+        {
+            File.Delete(f);
+            logger.LogDebug($"Deleted old export <{f}>");
+        }
+
         await using var db = await dbcf.CreateDbContextAsync();
 
         var backupFile = new BackupFile
