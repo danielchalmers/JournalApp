@@ -10,6 +10,7 @@ public class BackupFile
 
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
         ReferenceHandler = ReferenceHandler.Preserve,
         WriteIndented = true,
     };
