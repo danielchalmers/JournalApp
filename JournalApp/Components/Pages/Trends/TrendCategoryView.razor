@@ -6,7 +6,7 @@
 	<div class="trend-view-notes">
 		@foreach (var (day, points) in PointsByDay)
 		{
-			foreach (var point in points)
+			foreach (var point in points.Where(x => !string.IsNullOrEmpty(x.Text)))
 			{
 				<MudTextField Value="point.Text"
 								Label="@(point.CreatedAt.ToString("M/d/yy h:mm tt"))"
