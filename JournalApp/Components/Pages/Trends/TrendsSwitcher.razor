@@ -84,7 +84,15 @@
 	{
 		base.OnInitialized();
 
-		SelectedMonth = new DateOnly(OpenToDate.Year, OpenToDate.Month, 1);
+		if (OpenToDate >= CurrentMonth)
+		{
+			logger.LogDebug($"Started at most recent month so switching to Last 30 Days");
+			SelectedMonth = MonthAfterCurrent;
+		}
+		else
+		{
+			SelectedMonth = new DateOnly(OpenToDate.Year, OpenToDate.Month, 1);
+		}
 	}
 
 	void GoPrevious()
