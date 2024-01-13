@@ -65,7 +65,10 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
             db.Points.RemoveRange(db.Points);
             db.SaveChanges();
             logger.LogDebug("Cleared old db sets");
+        }
 
+        await using (var db = await dbcf.CreateDbContextAsync())
+        {
             db.Days.AddRange(backupFile.Days);
             db.Categories.AddRange(backupFile.Categories);
             db.Points.AddRange(backupFile.Points);

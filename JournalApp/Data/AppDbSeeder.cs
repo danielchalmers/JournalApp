@@ -253,9 +253,5 @@ public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeed
             startDate.AddMonths(relativeMonth);
 
         SeedDays(dates);
-
-        using var db = dbcf.CreateDbContext();
-
-        db.SaveChanges();
     }
 }

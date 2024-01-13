@@ -52,7 +52,7 @@
 	{
 		base.OnInitialized();
 
-		PageService.EnteredPage(async () => await Submit());
+		PageService.EnteredPage(() => Submit());
 	}
 
 	void MoveUp(DataPointCategory category)
@@ -104,9 +104,9 @@
 		}
 	}
 
-	async Task Submit()
+	void Submit()
 	{
-		await db.SaveChangesAsync();
+		db.SaveChanges();
 		PageService.CloseDialog(MudDialog, true);
 	}
 }
