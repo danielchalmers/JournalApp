@@ -131,6 +131,9 @@
 		window.Destroying += Window_DeactivatedOrDestroying;
 		window.Stopped += Window_Stopped;
 		window.Resumed += Window_Resumed;
+
+		// Reset the count of nested pages. Relevant if a refresh happens and so the pages are never properly exited.
+		PageService.ResetStack();
 	}
 
 	private void Window_DeactivatedOrDestroying(object sender, EventArgs e)

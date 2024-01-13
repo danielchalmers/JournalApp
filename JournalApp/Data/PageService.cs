@@ -9,6 +9,8 @@ public class PageService(ILogger<PageService> logger)
 
     public int CurrentDepth => _backButtonPressedActions.Count;
 
+    public void ResetStack() => _backButtonPressedActions.Clear();
+
     public void EnteredPage(Action backButtonAction, [CallerFilePath] string callerFilePath = "")
     {
         logger.LogDebug($"Entered page <{callerFilePath}>");
