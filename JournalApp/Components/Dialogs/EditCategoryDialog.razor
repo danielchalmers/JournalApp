@@ -1,4 +1,5 @@
 ﻿@namespace JournalApp
+@inject ILogger<EditCategoryDialog> logger
 @inject IDialogService DialogService
 @inject PageService PageService
 
@@ -77,6 +78,8 @@
 
 		if (Category != null)
 		{
+			logger.LogDebug($"Using data from existing category <{Category}>");
+
 			Group = Category.Group;
 			Name = Category.Name;
 			Type = Category.Type;
@@ -95,18 +98,29 @@
 
 	async Task Delete()
 	{
+		logger.LogDebug("Asking for deletion");
+
 		if (await DialogService.ShowCustomMessageBox(string.Empty, $"Are you sure you want to PERMANENTLY delete \"{Name}\"? This cannot be reversed.", yesText: "Delete", cancelText: "Cancel") != true)
+		{
+			logger.LogDebug("Deletion was canceled");
 			return;
+		}
 
 		Category.Deleted = true;
+		logger.LogDebug($"Deleted {Category}");
 		PageService.CloseDialog(MudDialog, Category);
 	}
 
 	async Task<bool> Submit()
 	{
+		logger.LogDebug("Submitting");
+
 		await _form.Validate();
 		if (!_form.IsValid)
+		{
+			logger.LogDebug("Form was not valid");
 			return false;
+		}
 
 		Category ??= new();
 		Category.Group = Group;
@@ -115,6 +129,8 @@
 		Category.MedicationDose = MedicationDose;
 		Category.MedicationUnit = MedicationUnit?.TrimEnd(); // Allow spaces before, but not after the unit.
 		Category.MedicationEveryDaySince = MedicationEveryDay ? DateTimeOffset.Now : null;
+		
+		logger.LogDebug($"Created new category <Name: {Category.Name}, Type: {Category.Type}>");
 
 		PageService.CloseDialog(MudDialog, Category);
 		return true;

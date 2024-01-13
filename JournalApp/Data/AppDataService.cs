@@ -6,13 +6,21 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
 {
     public async Task<bool> StartImportWizard(IDialogService dialogService)
     {
+        logger.LogInformation("Starting import wizard");
+
         // Warn the user of what's going to happen.
         if (await dialogService.ShowCustomMessageBox(string.Empty, "Importing data will replace ALL existing notes, categories, medications, etc, and cannot be undone!", yesText: "OK", cancelText: "Cancel") == null)
+        {
+            logger.LogDebug("User declined to start importing data");
             return false;
+        }
 
         // Warn if an export wasn't done in the last week.
         if (DateTimeOffset.Now > LastExportDate.AddDays(7) && await dialogService.ShowCustomMessageBox(string.Empty, "It's recommended to export your data first", yesText: "Continue anyway", cancelText: "Go back") == null)
+        {
+            logger.LogDebug("User didn't want to import and might export first");
             return false;
+        }
 
         // Let user pick the file to import.
         logger.LogInformation("Picking file to import");
@@ -72,6 +80,9 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
     [SuppressMessage("Interoperability", "CA1416:Validate platform compatibility", Justification = "All platforms are supported or not relevant")]
     public async Task StartExportWizard(IDialogService dialogService)
     {
+        logger.LogInformation("Starting export wizard");
+        var sw = Stopwatch.StartNew();
+
         var preferenceBackups = new List<PreferenceBackup>();
         foreach (var key in new[] { "safety_plan", "mood_palette" })
             preferenceBackups.Add(new(key, Preferences.Get(key, string.Empty)));
@@ -89,24 +100,26 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
         // Create the file and write the archive to it.
         // We don't write directly to a place the user picks because that requires the harsh WRITE_EXTERNAL_STORAGE permission.
         var filePath = Path.Combine(FileSystem.AppDataDirectory, $"backup-{DateTime.Now:yyyy-MM-dd}.journalapp");
-        logger.LogDebug($"Creating a file at {filePath}");
+        logger.LogDebug($"Creating a file at {filePath} after {sw.ElapsedMilliseconds}ms");
+        sw.Restart();
         try
         {
             await using (var stream = File.Create(filePath))
             {
                 await backupFile.WriteArchive(stream);
 
-                logger.LogDebug("Archive was written");
+                logger.LogDebug($"File created and archive written in {sw.ElapsedMilliseconds}ms");
             }
         }
         catch (Exception ex)
         {
-            logger.LogInformation(ex, "Failed to create archive");
+            logger.LogInformation(ex, $"Failed to create archive after {sw.ElapsedMilliseconds}ms");
             await dialogService.ShowCustomMessageBox(string.Empty, $"Nothing happened; Failed to create archive: {ex.Message}.", showFeedbackLink: true);
             return;
         }
 
         // Prompt the user to share the file.
+        logger.LogDebug("Share request");
         await share.RequestAsync(new ShareFileRequest
         {
             Title = "JournalApp backup",
@@ -114,6 +127,8 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
         });
 
         Preferences.Set("last_export", DateTimeOffset.Now.ToString());
+
+        logger.LogInformation("Finished export");
     }
 
     public async Task ShowExportReminderIfDue(IDialogService dialogService)

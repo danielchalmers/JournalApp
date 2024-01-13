@@ -1,4 +1,5 @@
 ﻿@namespace JournalApp
+@inject ILogger<WorksheetsDialog> logger
 @inject IDialogService DialogService
 @inject IScrollManager ScrollManager
 @inject IJSRuntime JSRuntime
@@ -73,11 +74,13 @@
 
 	async Task ScrollToTop()
 	{
+		logger.LogDebug("Scrolling to top");
 		await ScrollManager.ScrollToTopAsync(".mud-dialog", ScrollBehavior.Smooth);
 	}
 
 	async Task ScrollToGroup(string key)
 	{
+		logger.LogDebug($"Scrolling to group <{key}>");
 		await JSRuntime.InvokeVoidAsyncIgnoreErrors("scrollToNestedElement", ".mud-dialog", $"#worksheet-group-key-{key}");
 	}
 }

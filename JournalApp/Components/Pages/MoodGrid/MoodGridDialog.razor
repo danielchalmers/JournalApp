@@ -83,9 +83,9 @@
 
 		if (firstRender)
 		{
-			// If the year wasn't loaded before render, we have to render again.
 			if (!_loadYearTask.IsCompleted)
 			{
+				logger.LogDebug("Year wasn't loaded before render so we have to render again");
 				await _loadYearTask;
 				StateHasChanged();
 			}
@@ -94,6 +94,8 @@
 
 	async Task ScrollToOpenToDate()
 	{
+		logger.LogDebug($"Scrolling to the Open To date <{OpenToDate}>");
+
 		// TODO: Unsure why we need two calls.
 		await JSRuntime.InvokeVoidAsyncIgnoreErrors("scrollToNestedElement", ".mud-dialog", $"#mood-grid-month-{OpenToDate.Month}");
 		await ScrollManager.ScrollIntoViewAsync($"#mood-grid-month-{OpenToDate.Month}", ScrollBehavior.Auto);
@@ -101,22 +103,26 @@
 
 	async Task LoadYear()
 	{
+		logger.LogDebug($"Loading year {SelectedYear}");
 		var sw = Stopwatch.StartNew();
 		var tomorrow = DateOnly.FromDateTime(DateTime.Now).Next();
 		await using var db = await dbcf.CreateDbContextAsync();
 
 		_moodCategory ??= await db.Categories.SingleOrDefaultAsync(x => x.Guid == new Guid("D90D89FB-F5B9-47CF-AE4E-3EC0D635E783"));
+		logger.LogDebug($"Using mood category <{_moodCategory}>");
 
 		// Group all mood points by their dates.
 		var moodPointsByDate = await db.Days
 			.Select(x => new { Date = x.Date, DataPoints = x.Points })
 			.Where(x => x.Date.Year == SelectedYear && x.Date <= tomorrow)
 			.ToDictionaryAsync(x => x.Date, x => x.DataPoints.Single(x => x.Category.Guid == _moodCategory.Guid));
+		logger.LogDebug($"Found {moodPointsByDate.Count} mood points");
 
 		_gridYear = new GridYear(SelectedYear, System.Globalization.CultureInfo.CurrentCulture, moodPointsByDate);
+		logger.LogDebug("Created grid year");
 
 		sw.Stop();
-		logger.LogInformation($"Loaded year {SelectedYear} in {sw.ElapsedMilliseconds}ms");
+		logger.LogInformation($"Loaded {SelectedYear} in {sw.ElapsedMilliseconds}ms");
 	}
 
 	async Task OpenColorPicker()

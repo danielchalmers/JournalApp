@@ -67,22 +67,24 @@
 		set
 		{
 			_selectedDates = value;
-			logger.LogInformation($"Changed selected dates <{value[0]}..{value[^1]}>");
+			logger.LogInformation($"Selected dates <{value[0]}..{value[^1]}>");
 
 			// Group data points by category and its points of the selected month.
 			_allPoints.Clear();
 			foreach (var category in Categories)
 			{
-				var categoryPoints = category.Points.Where(x => !x.Deleted && x.Category.Guid == category.Guid && x.Type == category.Type).ToHashSet();
+				var catPoints = category.Points.Where(x => !x.Deleted && x.Category.Guid == category.Guid && x.Type == category.Type).ToHashSet();
 				var dayPoints = new Dictionary<int, IReadOnlyList<DataPoint>>();
 				int x = 0;
 
 				foreach (var date in value)
 				{
-					dayPoints.Add(++x, categoryPoints.Where(x => x.Day.Date == date).ToList());
+					dayPoints.Add(++x, catPoints.Where(x => x.Day.Date == date).ToList());
 				}
 
 				_allPoints.Add(category, dayPoints);
+
+				logger.LogDebug($"Processed category {category} with {catPoints.Count} points");
 			}
 		}
 	}

@@ -75,7 +75,7 @@
 
 		if (category.Deleted)
 		{
-			logger.LogInformation("Category was deleted, so now we're going to fix indexes.");
+			logger.LogInformation("Category was deleted so now we're fixing indexes.");
 			db.FixCategoryIndexes();
 		}
 

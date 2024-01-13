@@ -135,11 +135,13 @@
 
 	private void Window_DeactivatedOrDestroying(object sender, EventArgs e)
 	{
-		logger.LogInformation("Window deactivated or destroying; Saving database");
-		
+		logger.LogDebug("Window deactivated or destroying");
+
 		// If no dialogs are open.
 		if (PageService.CurrentDepth == 0)
 		{
+			logger.LogInformation("Auto saving database because no pages are open");
+
 			try
 			{
 				db.SaveChanges();
@@ -149,16 +151,22 @@
 				// Ignore.
 			}
 		}
+		else
+		{
+			logger.LogDebug($"Not auto saving database because {PageService.CurrentDepth} pages are open");
+		}
 	}
 
 	private void Window_Stopped(object sender, EventArgs e)
 	{
 		_stoppedDate = DateTimeOffset.Now;
-		logger.LogInformation($"Window was stopped at {_stoppedDate}");
+		logger.LogDebug($"Window was stopped at {_stoppedDate}");
 	}
 
 	private async void Window_Resumed(object sender, EventArgs e)
 	{
+		logger.LogInformation("Window resumed");
+
 		// Go to current day if user returns after a certain amount of time,
 		// but not on Windows because Resumed can occur without a corresponding Stopped for some reason.
 		if (DeviceInfo.Current.Platform != DevicePlatform.WinUI && DateTimeOffset.Now - _stoppedDate > TimeSpan.FromHours(1))
@@ -186,8 +194,7 @@
 
 		_day = db.GetOrCreateDayAndAddPoints(date);
 
-		sw.Stop();
-		logger.LogInformation($"Went to {_day} in {sw.ElapsedTicks} ticks");
+		logger.LogDebug($"Went to {_day} in {sw.ElapsedTicks} ticks");
 
 		if (scrollToTop)
 			await ScrollToTop();

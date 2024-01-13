@@ -1,4 +1,5 @@
-﻿using MudBlazor;
+﻿using System.Runtime.CompilerServices;
+using MudBlazor;
 
 namespace JournalApp;
 
@@ -8,9 +9,9 @@ public class PageService(ILogger<PageService> logger)
 
     public int CurrentDepth => _backButtonPressedActions.Count;
 
-    public void EnteredPage(Action backButtonAction)
+    public void EnteredPage(Action backButtonAction, [CallerFilePath] string callerFilePath = "")
     {
-        logger.LogDebug("Entered page");
+        logger.LogDebug($"Entered page <{callerFilePath}>");
 
         lock (_backButtonPressedActions)
         {

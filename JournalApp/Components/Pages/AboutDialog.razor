@@ -43,12 +43,12 @@
 
 	public async Task<string> GetCreditsText()
 	{
-		logger.LogInformation("Getting credits stream");
+		logger.LogDebug("Getting credits stream");
 
 		using var stream = await FileSystem.OpenAppPackageFileAsync("Credits.txt");
 		using var reader = new StreamReader(stream);
 
-		logger.LogInformation("Reading credits as text");
+		logger.LogDebug("Reading credits as text");
 		return reader.ReadToEnd();
 	}
 }

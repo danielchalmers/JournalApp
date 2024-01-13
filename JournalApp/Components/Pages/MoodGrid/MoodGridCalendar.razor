@@ -61,6 +61,7 @@
 
 		if (firstRender)
 		{
+			logger.LogDebug("Calendar loaded");
 			await CalendarLoaded.InvokeAsync();
 		}
 	}
