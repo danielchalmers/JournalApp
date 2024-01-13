@@ -36,6 +36,10 @@
 	max-width: 6em;
 }
 
+.current-mood-block-container {
+	outline: 0.125em dashed white;
+}
+
 .mood-block {
 	display: flex;
 	width: 100%;
