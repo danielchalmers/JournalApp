@@ -8,10 +8,14 @@ public static class PreferenceUtil
     {
         var jsonString = preferences.Get(key, "");
 
-        if (string.IsNullOrWhiteSpace(jsonString))
+        try
+        {
+            return JsonSerializer.Deserialize<T>(jsonString);
+        }
+        catch
+        {
             return default;
-
-        return JsonSerializer.Deserialize<T>(jsonString);
+        }
     }
 
     public static void SetJson<T>(this IPreferences preferences, string key, T obj)

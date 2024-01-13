@@ -194,9 +194,10 @@
 	async Task GoToDay(DateOnly date, bool scrollToTop = false)
 	{
 		var sw = Stopwatch.StartNew();
-
+		
+		db.SaveChanges(); // Save any changes that could have been made from the DataPointViews.
 		_day = db.GetOrCreateDayAndAddPoints(date);
-		db.SaveChanges();
+		db.SaveChanges(); // Save potentially new day and points.
 
 		logger.LogDebug($"Went to {_day} in {sw.ElapsedTicks} ticks");
 

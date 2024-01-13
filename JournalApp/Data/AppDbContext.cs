@@ -171,7 +171,7 @@ public class AppDbContext : DbContext
 
     public DataPoint CreateNote(Day day)
     {
-        var notes = Categories.Single(x => x.Group == "Notes");
+        var notes = Categories.Single(x => x.Guid == new Guid("BF394F35-2228-4933-BF38-AF5B1B97AEF7"));
         return DataPoint.Create(day, notes);
     }
 }

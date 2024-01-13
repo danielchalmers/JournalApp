@@ -146,6 +146,13 @@
 		await using var db = await dbcf.CreateDbContextAsync();
 
 		_moodCategory ??= await db.Categories.SingleOrDefaultAsync(x => x.Guid == new Guid("D90D89FB-F5B9-47CF-AE4E-3EC0D635E783"));
+
+		if (_moodCategory == null)
+		{
+			logger.LogDebug($"Mood category somehow doesn't exist so we can't load the year.");
+			return;
+		}
+
 		logger.LogDebug($"Using mood category <{_moodCategory}>");
 
 		// Group all mood points by their dates.
