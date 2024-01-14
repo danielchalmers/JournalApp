@@ -194,7 +194,7 @@
 	async Task GoToDay(DateOnly date, bool scrollToTop = false)
 	{
 		var sw = Stopwatch.StartNew();
-		
+
 		db.SaveChanges(); // Save any changes that could have been made from the DataPointViews.
 		_day = db.GetOrCreateDayAndAddPoints(date);
 		db.SaveChanges(); // Save potentially new day and points.
@@ -236,10 +236,13 @@
 
 	void FinalizeCategories()
 	{
-		if (db.AddMissingPoints(_day))
+		var points = db.GetMissingPoints(_day);
+
+		if (points.Count != 0)
 		{
-			logger.LogInformation($"Added missing data points for {_day}");
+			db.Points.AddRange(points);
 			db.SaveChanges();
+			logger.LogInformation($"Added missing data points for {_day}");
 		}
 	}
 

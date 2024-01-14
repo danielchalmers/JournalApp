@@ -48,41 +48,43 @@ public class AppDbContext : DbContext
             Days.Add(day);
         }
 
-        AddMissingPoints(day);
+        var points = GetMissingPoints(day);
+
+        if (points.Count != 0)
+            Points.AddRange(points);
 
         return day;
     }
 
     public List<Day> GetOrCreateDays(IEnumerable<DateOnly> dates)
     {
-        var days = Days.ToHashSet();
-        var categories = Categories.ToHashSet();
-        var addedDays = new HashSet<Day>();
+        var existingDays = Days.Where(d => dates.Contains(d.Date)).Include(d => d.Points).ToHashSet();
+        var newDays = new HashSet<Day>();
         var foundDays = new List<Day>();
 
         foreach (var date in dates)
         {
-            var day = days.FirstOrDefault(x => x.Date == date);
+            var day = existingDays.FirstOrDefault(x => x.Date == date);
 
             if (day == null)
             {
                 day = Day.Create(date);
-                addedDays.Add(day);
+                newDays.Add(day);
             }
 
             foundDays.Add(day);
         }
 
-        Days.AddRange(addedDays);
+        Days.AddRange(newDays);
 
         return foundDays;
     }
 
-    public bool AddMissingPoints(Day day, IEnumerable<DataPointCategory> categories = null, Random random = null)
+    public HashSet<DataPoint> GetMissingPoints(Day day, IEnumerable<DataPointCategory> categories = null, Random random = null)
     {
         var newPoints = new HashSet<DataPoint>();
 
-        foreach (var category in categories ?? Categories.ToHashSet())
+        foreach (var category in categories ?? Categories.AsQueryable())
         {
             if (category.Group == "Notes")
             {
@@ -120,9 +122,7 @@ public class AppDbContext : DbContext
             }
         }
 
-        Points.AddRange(newPoints);
-
-        return newPoints.Count > 0;
+        return newPoints;
     }
 
     public void AddCategory(DataPointCategory category)
@@ -130,8 +130,9 @@ public class AppDbContext : DbContext
         // Set index to the end of the last category in the same group.
         if (category.Index == default)
         {
-            var groupCategories = Categories.Where(x => x.Group == category.Group).ToHashSet();
-            category.Index = groupCategories.Count > 0 ? groupCategories.Max(x => x.Index) + 1 : 1;
+            var highestIndex = Categories.Where(x => x.Group == category.Group).Select(x => x.Index).AsEnumerable().Prepend(0).Max();
+
+            category.Index = highestIndex + 1;
         }
 
         Categories.Add(category);

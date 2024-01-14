@@ -134,7 +134,7 @@ else
 	public IReadOnlyList<DateOnly> Dates { get; set; }
 
 	[Parameter]
-	public IReadOnlyDictionary<int, IReadOnlyList<DataPoint>> PointsByDay { get; set; }
+	public IReadOnlyDictionary<int, IReadOnlyCollection<DataPoint>> PointsByDay { get; set; }
 
 	protected override async Task OnParametersSetAsync()
 	{

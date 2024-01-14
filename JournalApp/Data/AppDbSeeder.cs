@@ -213,6 +213,7 @@ public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeed
 
         var categories = db.Categories.ToHashSet();
         var days = db.GetOrCreateDays(dates);
+        var newPoints = new List<DataPoint>();
 
         var d = 0;
         while (true)
@@ -227,12 +228,13 @@ public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeed
                 var fillDay = Random.Shared.Next(0, 10) > 0;
 
                 // Get or create the day and fill in all missing points with the random seed.
-                db.AddMissingPoints(days[d], categories, fillDay ? random : null);
+                newPoints.AddRange(db.GetMissingPoints(days[d], categories, fillDay ? random : null));
 
                 // Increment day and see if we're done.
                 d++;
                 if (d == days.Count)
                 {
+                    db.Points.AddRange(newPoints);
                     db.SaveChanges();
                     return;
                 }

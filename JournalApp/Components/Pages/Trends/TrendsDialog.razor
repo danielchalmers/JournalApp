@@ -68,7 +68,7 @@
 		}
 	}
 
-	Dictionary<DataPointCategory, IReadOnlyDictionary<int, IReadOnlyList<DataPoint>>> AllPoints = new();
+	Dictionary<DataPointCategory, IReadOnlyDictionary<int, IReadOnlyCollection<DataPoint>>> AllPoints = new();
 
 	protected override void OnInitialized()
 	{
@@ -83,22 +83,27 @@
 	{
 		using var db = dbcf.CreateDbContext();
 
-		var categories = db.Categories.Where(x => x.Enabled && !x.Deleted).OrderBy(x => x.Group).ThenBy(x => x.Index);
+		var query = db.Categories
+			.Include(c => c.Points)
+			.ThenInclude(p => p.Day)
+			.Where(x => x.Enabled && !x.Deleted)
+			.OrderBy(x => x.Group).ThenBy(x => x.Index)
+			.ToDictionary(
+				c => c,
+				c => c.Points.Where(p => !p.Deleted && p.Type == c.Type).ToHashSet()
+			);
 
 		AllPoints.Clear();
-		foreach (var category in categories)
+		foreach (var (category, points) in query)
 		{
-			var categoryPoints = category.Points.Where(x => !x.Deleted && x.Category.Guid == category.Guid && x.Type == category.Type).ToHashSet();
-			var pointsByDay = new Dictionary<int, IReadOnlyList<DataPoint>>();
+			var pointsByDay = new Dictionary<int, IReadOnlyCollection<DataPoint>>();
 
 			for (int i = 0; i < SelectedDates.Count; i++)
 			{
-				pointsByDay.Add(i, categoryPoints.Where(x => x.Day.Date == SelectedDates[i]).ToList());
+				pointsByDay.Add(i, points.Where(p => p.Day.Date == SelectedDates[i]).ToHashSet());
 			}
 
 			AllPoints.Add(category, pointsByDay);
-
-			logger.LogDebug($"Processed category {category} with {categoryPoints.Count} points");
 		}
 	}
 
