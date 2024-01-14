@@ -12,7 +12,7 @@
 
 <div class="page-title">
 	<div class="page-header">
-		<MudButton OnClick="ScrollToTop" DisableRipple Variant="Variant.Text">
+		<MudButton OnClick="OnTitleClicked" DisableRipple Variant="Variant.Text">
 			<MudText Typo="Typo.h6">🙂 @ThisAssembly.AssemblyTitle BETA</MudText>
 		</MudButton>
 
@@ -183,6 +183,12 @@
 				await AppDataService.ShowExportReminderIfDue(DialogService);
 			}
 		}
+	}
+
+	async Task OnTitleClicked()
+	{
+		logger.LogDebug("Title clicked");
+		await GoToDay(DateOnly.FromDateTime(DateTime.Now), scrollToTop: true);
 	}
 
 	async Task ScrollToTop()
