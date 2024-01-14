@@ -47,6 +47,9 @@
 
 				<MudSwitch @bind-Value="MedicationEveryDay" Label="Taken every day" Color="Color.Primary" />
 			}
+			
+			<MudTextField @bind-Value="Details" AutoGrow MaxLines="10"
+				Label="Additional details" Placeholder="@(Group == "Medications" ? "Start date, side effects, etc." : "Scoring criteria, etc.")"  />
 		</MudForm>
 	</DialogContent>
 </MudDialog>
@@ -72,6 +75,8 @@
 
 	public bool MedicationEveryDay { get; set; } = true;
 
+	public string Details { get; set; }
+
 	protected override async Task OnInitializedAsync()
 	{
 		await base.OnInitializedAsync();
@@ -86,6 +91,7 @@
 			MedicationDose = Category.MedicationDose;
 			MedicationUnit = Category.MedicationUnit;
 			MedicationEveryDay = Category.MedicationEveryDaySince != null;
+			Details = Category.Details;
 		}
 
 		PageService.EnteredPage(() => Cancel());
@@ -129,7 +135,8 @@
 		Category.MedicationDose = MedicationDose;
 		Category.MedicationUnit = MedicationUnit?.TrimEnd(); // Allow spaces before, but not after the unit.
 		Category.MedicationEveryDaySince = MedicationEveryDay ? DateTimeOffset.Now : null;
-		
+		Category.Details = Details;
+
 		logger.LogDebug($"Created new category <Name: {Category.Name}, Type: {Category.Type}>");
 
 		PageService.CloseDialog(MudDialog, Category);

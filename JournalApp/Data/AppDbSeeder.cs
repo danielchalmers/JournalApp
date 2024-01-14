@@ -48,6 +48,7 @@ public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeed
             PointType type,
             string group = null,
             string name = null,
+            string details = null,
             bool readOnly = false,
             bool enabled = true,
             decimal? medDose = null,
@@ -70,6 +71,7 @@ public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeed
             {
                 category.Type = type;
                 category.Name = name;
+                category.Details = details;
                 category.Enabled = enabled;
                 category.MedicationDose = medDose;
                 category.MedicationEveryDaySince = medEveryDaySince;
@@ -95,23 +97,27 @@ public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeed
             "D90D89FB-F5B9-47CF-AE4E-3EC0D635E783",
             PointType.Mood,
             name: "Overall mood",
+            details: "My rating for the day",
             readOnly: true
         );
         AddOrUpdate(
             "D8657B36-F3A0-486F-BF80-0CF057919C7D",
             PointType.Sleep,
-            name: "Last night's sleep"
+            name: "Last night's sleep",
+            details: "The total amount of sleep I got last night"
         );
         AddOrUpdate(
             "7330B995-0B56-46FF-9DD6-9CFC550FF5C8",
             PointType.MildToSevere,
             name: "Most depressed mood",
+            details: "My most severe level of depression today",
             enabled: false
         );
         AddOrUpdate(
             "4955EB49-0BCF-433B-873E-2092F292CC6B",
             PointType.MildToSevere,
             name: "Most elevated mood",
+            details: "My most severe level of elevation today",
             enabled: false
         );
         AddOrUpdate(
@@ -151,13 +157,15 @@ public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeed
         AddOrUpdate(
             "480DC07D-1330-486F-9B30-EC83A3D4E6F0",
             PointType.Number,
-            name: "Weight"
+            name: "Weight",
+            details: "My weight in any measurement I prefer"
         );
         AddOrUpdate(
             "2EEA42EE-4586-4E7D-ABF1-012BED1C0753",
             PointType.Medication,
             group: "Medications",
             name: "Example (AM)",
+            details: "Shown as an example of an AM/morning dose",
             enabled: true,
             medDose: 1,
             medUnit: " unit");
@@ -166,6 +174,7 @@ public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeed
             PointType.Medication,
             group: "Medications",
             name: "Example (PM)",
+            details: "Shown as an example of a PM/evening dose",
             enabled: true,
             medDose: 1,
             medUnit: " unit");
@@ -183,6 +192,7 @@ public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeed
             PointType.Medication,
             group: "Medications",
             name: "Cetirizine",
+            details: "A second-generation antihistamine",
             enabled: false,
             medDose: 10,
             medUnit: "mg",
@@ -192,6 +202,7 @@ public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeed
             PointType.Medication,
             group: "Medications",
             name: "Trazadone",
+            details: "Used to treat depression, anxiety, and insomnia",
             enabled: false,
             medDose: 50,
             medUnit: "mg",
@@ -201,6 +212,7 @@ public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeed
             PointType.Medication,
             group: "Medications",
             name: "Gabapentin",
+            details: "An anticonvulsant that's primarily used to treat partial seizures and neuropathic pain",
             enabled: false,
             medDose: 300,
             medUnit: "mg",

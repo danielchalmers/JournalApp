@@ -27,6 +27,8 @@ public class DataPointCategory
 
     public DateTimeOffset? MedicationEveryDaySince { get; set; }
 
+    public string Details { get; set; }
+
     public virtual HashSet<DataPoint> Points { get; set; } = [];
 
     public bool SingleLine => Type is PointType.Mood or PointType.Sleep or PointType.Scale or PointType.Number;
