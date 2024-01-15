@@ -38,9 +38,9 @@ public class AppDbContext : DbContext
             .WithOne(e => e.Day);
     }
 
-    public Day GetOrCreateDayAndAddPoints(DateOnly date)
+    public async Task<Day> GetOrCreateDayAndAddPoints(DateOnly date)
     {
-        var day = Days.FirstOrDefault(x => x.Date == date);
+        var day = await Days.FirstOrDefaultAsync(x => x.Date == date);
 
         if (day == null)
         {
@@ -51,7 +51,7 @@ public class AppDbContext : DbContext
         var points = GetMissingPoints(day);
 
         if (points.Count != 0)
-            Points.AddRange(points);
+            await Points.AddRangeAsync(points);
 
         return day;
     }
@@ -84,7 +84,7 @@ public class AppDbContext : DbContext
     {
         var newPoints = new HashSet<DataPoint>();
 
-        foreach (var category in categories ?? Categories.AsQueryable())
+        foreach (var category in categories ?? Categories.AsEnumerable())
         {
             if (category.Group == "Notes")
             {
@@ -138,13 +138,14 @@ public class AppDbContext : DbContext
         Categories.Add(category);
     }
 
-    public void MoveCategoryUp(DataPointCategory category)
+    public async Task MoveCategoryUp(DataPointCategory category)
     {
         // Ensure no conflicts.
         FixCategoryIndexes();
 
-        var replaced = Categories.SingleOrDefault(x => x.Group == category.Group && x.Index == category.Index - 1);
+        var replaced = await Categories.SingleOrDefaultAsync(x => x.Group == category.Group && x.Index == category.Index - 1);
 
+        // No categories above to take the place of.
         if (replaced == null)
             return;
 

@@ -21,10 +21,10 @@
 }
 else if (Point.Type == PointType.Sleep)
 {
-	<div class="d-flex align-center flex-grow-1" style="gap: 0.75em">
+	<div class="d-flex align-center flex-grow-1">
+		<MudText Typo="Typo.caption">@((Point.SleepHours ?? 0).ToString("00.0"))</MudText>
 		<MudIconButton Icon="@Icons.Material.Filled.Remove" Title="Less sleep" OnClick="DecrementSleep" Disabled="@(Point.SleepHours <= 0)" Size="Size.Small" />
 		<MudSlider @bind-Value="Point.SleepHours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" Size="Size.Large" Immediate />
-		<MudText Typo="Typo.caption">@((Point.SleepHours ?? 0).ToString("00.0"))</MudText>
 		<MudIconButton Icon="@Icons.Material.Filled.Add" Title="More sleep" OnClick="IncrementSleep" Disabled="@(Point.SleepHours >= 24)" Size="Size.Small" />
 	</div>
 }
@@ -71,7 +71,7 @@ else if (Point.Type == PointType.Note)
 					  Immediate ReadOnly DisableUnderLine
 					  AutoGrow Lines="1" MaxLines="10" />
 
-		<MudLink OnClick="EditTextInDialog">Edit note...</MudLink>
+		<MudLink OnClick="EditTextInDialog">Edit note</MudLink>
 	</div>
 }
 else if (Point.Type == PointType.Medication)
@@ -101,7 +101,7 @@ else if (Point.Type == PointType.Medication)
 		get
 		{
 			// Only include a label if we're in the general notes group. If this is a custom category it will be covered by its own label.
-			if(Point.Category.Group == "Notes")
+			if (Point.Category.Group == "Notes")
 				return Point.CreatedAt.ToString(DateOnly.FromDateTime(Point.CreatedAt.Date) == Point.Day.Date ? "h:mm tt" : "M/d/yy h:mm tt");
 
 			return null;

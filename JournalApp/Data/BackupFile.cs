@@ -15,17 +15,17 @@ public class BackupFile
         WriteIndented = true,
     };
 
-    public IEnumerable<Day> Days { get; set; }
+    public IReadOnlyCollection<Day> Days { get; set; }
 
-    public IEnumerable<DataPointCategory> Categories { get; set; }
+    public IReadOnlyCollection<DataPointCategory> Categories { get; set; }
 
-    public IEnumerable<DataPoint> Points { get; set; }
+    public IReadOnlyCollection<DataPoint> Points { get; set; }
 
-    public IEnumerable<PreferenceBackup> PreferenceBackups { get; set; }
+    public IReadOnlyCollection<PreferenceBackup> PreferenceBackups { get; set; }
 
     public static async Task<BackupFile> ReadArchive(Stream stream)
     {
-        using var archive = new ZipArchive(stream, ZipArchiveMode.Read, true);
+        using var archive = new ZipArchive(stream, ZipArchiveMode.Read);
 
         foreach (var entry in archive.Entries)
         {
@@ -42,7 +42,7 @@ public class BackupFile
 
     public async Task WriteArchive(Stream stream)
     {
-        using var archive = new ZipArchive(stream, ZipArchiveMode.Create, true);
+        using var archive = new ZipArchive(stream, ZipArchiveMode.Create);
 
         var entry = archive.CreateEntry(InternalBackupFileName);
         await using var entryStream = entry.Open();

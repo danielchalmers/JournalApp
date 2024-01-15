@@ -7,7 +7,7 @@
 		<div class="page-header">
 			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Cancel" OnClick="Cancel" />
 
-			<MudText Typo="Typo.h6">Change day's dose</MudText>
+			<MudText Typo="Typo.h6">Edit day's dose</MudText>
 
 			<MudSpacer />
 
@@ -17,9 +17,12 @@
 
 	<DialogContent>
 		<MudForm>
-			<MudText Style="word-wrap: anywhere;">@Point.Category.Name:</MudText>
+			<MudText Style="word-wrap: anywhere">@(Point.Category.Name + ":")</MudText>
 
-			<MudNumericField @bind-Value="Dose" HideSpinButtons Label="@($"Dose ({Point.Day.Date:ddd, MMM d})")" MaxLength="6" Adornment="Adornment.End" AdornmentText="@Point.Category.MedicationUnit" />
+			<MudNumericField @bind-Value="Dose"
+							 Label="@($"Dose ({Point.Day.Date:ddd, MMM d})")"
+							 AdornmentText="@Point.Category.MedicationUnit" Adornment="Adornment.End"
+							 MaxLength="6" HideSpinButtons />
 
 			@if (!string.IsNullOrWhiteSpace(CategoryDetails))
 			{
@@ -30,17 +33,17 @@
 </MudDialog>
 
 @code {
-	DataPoint _points;
+	DataPoint _point;
 
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
 	[Parameter]
 	public DataPoint Point
 	{
-		get => _points;
+		get => _point;
 		set
 		{
-			_points = value;
+			_point = value;
 			Dose = value?.MedicationDose;
 			CategoryDetails = value?.Category?.Details;
 		}
@@ -66,11 +69,13 @@
 	{
 		if (Dose == null || Dose == decimal.Zero)
 		{
+			// Restore default dose but mark as not taken.
 			Point.MedicationDose = Point.Category.MedicationDose;
 			Point.Bool = false;
 		}
 		else if (Dose != Point.MedicationDose)
 		{
+			// Update with new dose.
 			Point.MedicationDose = Dose;
 			Point.Bool = true;
 		}

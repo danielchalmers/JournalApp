@@ -9,8 +9,8 @@
 			foreach (var point in points.Where(x => !string.IsNullOrEmpty(x.Text)))
 			{
 				<MudTextField Value="point.Text"
-								Label="@(point.CreatedAt.ToString("M/d/yy h:mm tt"))"
-								ReadOnly DisableUnderLine AutoGrow MaxLines="10" />
+							  Label="@($"{day} @ {point.CreatedAt.ToString("M/d/yy h:mm tt")}")"
+							  ReadOnly DisableUnderLine AutoGrow MaxLines="10" />
 			}
 		}
 	</div>
@@ -22,59 +22,59 @@ else
 			@switch (Category.Type)
 			{
 				case PointType.Mood:
-							<ApexPointSeries TItem="PointOnChart"
-											 Name="Mood (1=saddest, 7=happiest)"
-											 Items="_chartItems"
-											 SeriesType="SeriesType.Line"
-											 XValue="e => e.Day"
-											 YValue="e => e.Mood" />
+					<ApexPointSeries TItem="PointOnChart"
+									 Name="Mood (1=saddest, 7=happiest)"
+									 Items="_chartItems"
+									 SeriesType="SeriesType.Line"
+									 XValue="e => e.Day"
+									 YValue="e => e.Mood" />
 					break;
 
 				case PointType.Sleep:
-							<ApexPointSeries TItem="PointOnChart"
-											 Name="Hours"
-											 Items="_chartItems"
-											 SeriesType="SeriesType.Line"
-											 XValue="e => e.Day"
-											 YValue="e => e.SleepHours" />
+					<ApexPointSeries TItem="PointOnChart"
+									 Name="Hours"
+									 Items="_chartItems"
+									 SeriesType="SeriesType.Line"
+									 XValue="e => e.Day"
+									 YValue="e => e.SleepHours" />
 					break;
 
 				case PointType.Scale:
 				case PointType.LowToHigh:
 				case PointType.MildToSevere:
-							<ApexPointSeries TItem="PointOnChart"
-											 Name="Scale (0=lowest, 5=highest)"
-											 Items="_chartItems"
-											 SeriesType="SeriesType.Line"
-											 XValue="e => e.Day"
-											 YValue="e => e.Scale" />
+					<ApexPointSeries TItem="PointOnChart"
+									 Name="Scale (0=lowest, 5=highest)"
+									 Items="_chartItems"
+									 SeriesType="SeriesType.Line"
+									 XValue="e => e.Day"
+									 YValue="e => e.Scale" />
 					break;
 
 				case PointType.Bool:
-							<ApexPointSeries TItem="PointOnChart"
-											 Name="Bool (0=no, 1=yes)"
-											 Items="_chartItems"
-											 SeriesType="SeriesType.Line"
-											 XValue="e => e.Day"
-											 YValue="e => e.Bool" />
+					<ApexPointSeries TItem="PointOnChart"
+									 Name="Bool (0=no, 1=yes)"
+									 Items="_chartItems"
+									 SeriesType="SeriesType.Line"
+									 XValue="e => e.Day"
+									 YValue="e => e.Bool" />
 					break;
 
 				case PointType.Medication:
-							<ApexPointSeries TItem="PointOnChart"
-											 Name="Dose"
-											 Items="_chartItems"
-											 SeriesType="SeriesType.Line"
-											 XValue="e => e.Day"
-											 YValue="e => e.MedDose" />
+					<ApexPointSeries TItem="PointOnChart"
+									 Name="Dose"
+									 Items="_chartItems"
+									 SeriesType="SeriesType.Line"
+									 XValue="e => e.Day"
+									 YValue="e => e.MedDose" />
 					break;
 
 				case PointType.Number:
-							<ApexPointSeries TItem="PointOnChart"
-											 Name="Number"
-											 Items="_chartItems"
-											 SeriesType="SeriesType.Line"
-											 XValue="e => e.Day"
-											 YValue="e => e.Number" />
+					<ApexPointSeries TItem="PointOnChart"
+									 Name="Number"
+									 Items="_chartItems"
+									 SeriesType="SeriesType.Line"
+									 XValue="e => e.Day"
+									 YValue="e => e.Number" />
 					break;
 			}
 		</ApexChart>
@@ -115,6 +115,10 @@ else
 				Toolbar = new Toolbar
 				{
 					Show = false,
+				},
+				Animations = new Animations
+				{
+					Enabled = false,
 				},
 			},
 			Xaxis = new XAxis

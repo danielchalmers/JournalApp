@@ -149,33 +149,31 @@
 
 		if (_moodCategory == null)
 		{
-			logger.LogDebug($"Mood category somehow doesn't exist so we can't load the year.");
+			logger.LogError($"Mood category doesn't exist so we can't load the year.");
 			return;
 		}
 
-		logger.LogDebug($"Using mood category <{_moodCategory}>");
-
-		var query = db.Days
-			.Include(c => c.Points)
-			.ThenInclude(p => p.Category)
-			.Where(x => x.Date.Year == SelectedYear && x.Date <= tomorrow)
-			.GroupBy(
-				d => d.Date,
-				d => d.Points.FirstOrDefault(p => !p.Deleted && p.Category.Guid == _moodCategory.Guid)
-			).ToHashSet();
+		var query = db.Points
+			.Where(p => !p.Deleted && p.Day.Date.Year == SelectedYear && p.Day.Date <= tomorrow && p.Category.Guid == _moodCategory.Guid)
+			.Select(
+				p => new
+				{
+					Date = p.Day.Date,
+					Point = p,
+				}
+			);
 
 		// Sort into dictionary here instead of during the query so we can handle
-		// duplicate dates if the database has glitched and allowed that to happen.
-		var moodPointsByDate = new Dictionary<DateOnly, DataPoint>();
-		foreach (var d in query)
-			moodPointsByDate[d.Key] = d.FirstOrDefault();
+		// duplicate dates, if that has erroneously happened, without crashing.
+		var moodPoints = new Dictionary<DateOnly, DataPoint>();
+		foreach (var x in query)
+			moodPoints[x.Date] = x.Point;
 
-		logger.LogDebug($"Found {moodPointsByDate.Count} mood points");
+		logger.LogDebug($"Found {moodPoints.Count} mood points");
 
-		_gridYear = new GridYear(SelectedYear, System.Globalization.CultureInfo.CurrentCulture, moodPointsByDate);
+		_gridYear = new GridYear(SelectedYear, System.Globalization.CultureInfo.CurrentCulture, moodPoints);
 		logger.LogDebug("Created grid year");
 
-		sw.Stop();
 		logger.LogInformation($"Loaded {SelectedYear} in {sw.ElapsedMilliseconds}ms");
 	}
 

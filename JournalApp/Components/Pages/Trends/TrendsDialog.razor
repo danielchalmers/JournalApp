@@ -22,12 +22,12 @@
 			}
 		</div>
 
-		<TrendsSwitcher @bind-SelectedDates="SelectedDates" OpenToDate="OpenToDate" />
+		<TrendsSwitcher @bind-SelectedDates="SelectedDates" @bind-SelectedDates:after="LoadDates" OpenToDate="OpenToDate" />
 	</TitleContent>
 
 	<DialogContent>
 		<div id="trends-category-list">
-			@foreach (var (category, points) in AllPoints)
+			@foreach (var (category, points) in AllPoints.OrderBy(x => x.Key.Group).ThenBy(x => x.Key.Index))
 			{
 				<div class="trends-category">
 					<MudText Typo="Typo.h6">@(TrendCategoryView.GetHeaderText(category))</MudText>
@@ -48,25 +48,12 @@
 </MudDialog>
 
 @code {
-	IReadOnlyList<DateOnly> _selectedDates;
-
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
 	[Parameter]
 	public DateOnly OpenToDate { get; set; }
 
-	public IReadOnlyList<DateOnly> SelectedDates 
-	{
-		get => _selectedDates; 
-		set
-		{
-			logger.LogInformation($"Selected dates <{value[0]}..{value[^1]}>");
-
-			_selectedDates = value;
-
-			LoadDates();
-		}
-	}
+	public IReadOnlyList<DateOnly> SelectedDates { get; set; }
 
 	Dictionary<DataPointCategory, IReadOnlyDictionary<int, IReadOnlyCollection<DataPoint>>> AllPoints = new();
 
@@ -79,32 +66,39 @@
 		logger.LogInformation($"Opened to {OpenToDate}");
 	}
 
-	void LoadDates()
+	async Task LoadDates()
 	{
-		using var db = dbcf.CreateDbContext();
+		logger.LogInformation($"Loading dates <{SelectedDates[0]}..{SelectedDates[^1]}>");
+		var sw = Stopwatch.StartNew();
 
-		var query = db.Categories
-			.Include(c => c.Points)
-			.ThenInclude(p => p.Day)
-			.Where(x => x.Enabled && !x.Deleted)
-			.OrderBy(x => x.Group).ThenBy(x => x.Index)
-			.ToDictionary(
-				c => c,
-				c => c.Points.Where(p => !p.Deleted && p.Type == c.Type).ToHashSet()
+		await using var db = await dbcf.CreateDbContextAsync();
+
+		var query = db.Points
+			.Where(p => !p.Deleted && !p.Category.Deleted && p.Category.Enabled && SelectedDates.Contains(p.Day.Date))
+			.Include(p => p.Category)
+			.Include(p => p.Day)
+			.AsEnumerable()
+			.OrderBy(p => p.Day.Date)
+			.ThenBy(p => p.CreatedAt)
+			.GroupBy(
+				p => p.Category,
+				p => p
 			);
 
 		AllPoints.Clear();
-		foreach (var (category, points) in query)
+		foreach (var group in query)
 		{
-			var pointsByDay = new Dictionary<int, IReadOnlyCollection<DataPoint>>();
+			var pointsByDayNumber = new Dictionary<int, IReadOnlyCollection<DataPoint>>();
 
 			for (int i = 0; i < SelectedDates.Count; i++)
 			{
-				pointsByDay.Add(i, points.Where(p => p.Day.Date == SelectedDates[i]).ToHashSet());
+				pointsByDayNumber.Add(i + 1, group.Where(p => p.Day.Date == SelectedDates[i]).ToHashSet());
 			}
 
-			AllPoints.Add(category, pointsByDay);
+			AllPoints.Add(group.Key, pointsByDayNumber);
 		}
+
+		logger.LogInformation($"Loaded dates in {sw.ElapsedMilliseconds}ms");
 	}
 
 	void Close()

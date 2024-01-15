@@ -23,7 +23,7 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
         builder.Logging.SetMinimumLevel(LogLevel.Information);
-        builder.Logging.AddFilter("JournalApp", LogLevel.Debug);
+        builder.Logging.AddFilter(ThisAssembly.AssemblyTitle, LogLevel.Debug);
 
         builder.Services.AddMudServices(c =>
         {
@@ -45,6 +45,7 @@ public static class MauiProgram
         builder.Services.AddSingleton(Share.Default);
         builder.Services.AddSingleton(FilePicker.Default);
 
+        // Seed the database.
         using var provider = builder.Services.BuildServiceProvider();
         var dbSeeder = provider.GetService<AppDbSeeder>();
         dbSeeder.SeedDb();

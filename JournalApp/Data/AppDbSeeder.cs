@@ -23,18 +23,15 @@ public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeed
             throw;
         }
 
-        sw.Stop();
         _logger.LogInformation($"Migrated database in {sw.ElapsedMilliseconds}ms");
 
         sw.Restart();
         SeedCategories();
-        sw.Stop();
         _logger.LogInformation($"Seeded categories in {sw.ElapsedMilliseconds}ms");
 
 #if DEBUG
         sw.Restart();
         SeedDays();
-        sw.Stop();
         _logger.LogInformation($"Seeded days in {sw.ElapsedMilliseconds}ms");
 #endif
     }
@@ -256,14 +253,14 @@ public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeed
 
     private void SeedDays()
     {
-        var startDate = DateOnly.FromDateTime(DateTime.Now - TimeSpan.FromDays(120));
+        var startDate = DateOnly.FromDateTime(DateTime.Now - TimeSpan.FromDays(365 * 2));
         var endDate = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(7));
         var dates = new List<DateOnly>();
 
         dates.AddRange(startDate.DatesTo(endDate));
 
         // A few additional days to test multi-year features.
-        foreach (var relativeMonth in new int[] { -12, -18, -24, -30, -36, -42, -48 })
+        foreach (var relativeMonth in new int[] { -30, -36, -42, -48 })
             startDate.AddMonths(relativeMonth);
 
         SeedDays(dates);

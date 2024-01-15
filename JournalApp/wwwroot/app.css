@@ -98,17 +98,18 @@ button {
 	margin-top: 0 !important;
 }
 
-/* Adds space to make up for label. Only works on newer browsers. */
-.mud-input-control-input-container:has(.mud-input-label) {
-	margin: 1em 0 0 0 !important;
-}
-
-.mud-input > input.mud-input-root, div.mud-input-slot.mud-input-root {
-	padding: 0.375em 0 0.4375em;
-}
+/* .mud-input-root {
+	margin: 0 !important;
+	padding: 0.25em 0 !important;
+} */
 
 .mud-input-root-outlined {
-	margin: 0.5em !important;
+	margin: 0.25em !important;
+}
+
+/* Adds space to make up for label. Only works on newer browsers. */
+.mud-input-control-input-container:has(.mud-input-label) {
+	margin-top: 1em !important;
 }
 
 /* https://github.com/MudBlazor/MudBlazor/blob/dev/src/MudBlazor/Styles/components/_inputlabel.scss */
@@ -117,10 +118,6 @@ button {
 	left: 0;
 	position: absolute;
 	transform: translate(0, -0.75em) scale(0.75) !important;
-}
-
-.mud-input-root-outlined {
-	margin: 0.5em !important;
 }
 
 #blazor-error-ui {

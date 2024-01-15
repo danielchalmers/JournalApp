@@ -63,16 +63,16 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
             db.Days.RemoveRange(db.Days);
             db.Categories.RemoveRange(db.Categories);
             db.Points.RemoveRange(db.Points);
-            db.SaveChanges();
+            await db.SaveChangesAsync();
             logger.LogDebug("Cleared old db sets");
         }
 
         await using (var db = await dbcf.CreateDbContextAsync())
         {
-            db.Days.AddRange(backupFile.Days);
-            db.Categories.AddRange(backupFile.Categories);
-            db.Points.AddRange(backupFile.Points);
-            db.SaveChanges();
+            await db.Days.AddRangeAsync(backupFile.Days);
+            await db.Categories.AddRangeAsync(backupFile.Categories);
+            await db.Points.AddRangeAsync(backupFile.Points);
+            await db.SaveChangesAsync();
             logger.LogDebug("Added new data");
         }
 
@@ -84,33 +84,50 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
     public async Task StartExportWizard(IDialogService dialogService)
     {
         logger.LogInformation("Starting export wizard");
+
+        // Clean up old backups.
+        foreach (var f in Directory.EnumerateFiles(FileSystem.AppDataDirectory, "backup-*.journalapp"))
+        {
+            try
+            {
+                File.Delete(f);
+                logger.LogDebug($"Deleted old export <{f}>");
+            }
+            catch (IOException ex)
+            {
+                logger.LogError(ex, $"Tried to delete old export <{f}>");
+            }
+        }
+
+        // TODO: Show a message box but close it for the user afterwards if they don't https://github.com/MudBlazor/MudBlazor/issues/8048.
+        //_ = dialogService.ShowCustomMessageBox(string.Empty, "Please wait while the archive is created for you", showFeedbackLink: true);
+
+        logger.LogDebug("Constructing backup data");
         var sw = Stopwatch.StartNew();
 
         var preferenceBackups = new List<PreferenceBackup>();
         foreach (var key in new[] { "safety_plan", "mood_palette" })
             preferenceBackups.Add(new(key, Preferences.Get(key, string.Empty)));
 
-        // Clean up old backups.
-        foreach (var f in Directory.EnumerateFiles(FileSystem.AppDataDirectory, "backup-*.journalapp"))
+        BackupFile backupFile;
+        // TODO: Go from DBSet directly to Stream to avoid memory overhead.
+        await using (var db = await dbcf.CreateDbContextAsync())
         {
-            File.Delete(f);
-            logger.LogDebug($"Deleted old export <{f}>");
+            db.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
+            backupFile = new()
+            {
+                Days = db.Days.Include(d => d.Points).ToHashSet(),
+                Categories = db.Categories.Include(c => c.Points).ToHashSet(),
+                Points = db.Points.ToHashSet(),
+                PreferenceBackups = preferenceBackups,
+            };
         }
-
-        await using var db = await dbcf.CreateDbContextAsync();
-
-        var backupFile = new BackupFile
-        {
-            Days = db.Days,
-            Categories = db.Categories,
-            Points = db.Points,
-            PreferenceBackups = preferenceBackups,
-        };
 
         // Create the file and write the archive to it.
         // We don't write directly to a place the user picks because that requires the harsh WRITE_EXTERNAL_STORAGE permission.
         var filePath = Path.Combine(FileSystem.AppDataDirectory, $"backup-{DateTime.Now:yyyy-MM-dd}.journalapp");
-        logger.LogDebug($"Creating a file at {filePath} after {sw.ElapsedMilliseconds}ms");
+        logger.LogDebug($"Creating {filePath} after {sw.ElapsedMilliseconds}ms");
         sw.Restart();
         try
         {

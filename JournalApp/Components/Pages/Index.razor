@@ -23,14 +23,14 @@
 			<MudMenuItem Icon="@Icons.Material.Filled.Medication" OnAction="ManageMedications">Medications</MudMenuItem>
 			<MudMenuItem Icon="@Icons.Material.Filled.Comment" OnAction="NewNote">New note</MudMenuItem>
 			<MudMenuItem Icon="@Icons.Material.Filled.ShowChart" OnAction="OpenTrends">Trends</MudMenuItem>
-			<MudMenuItem Icon="@Icons.Material.Filled.Description" OnAction="OpenWorksheets">Worksheets</MudMenuItem>
+			<MudMenuItem Icon="@Icons.Material.Filled.Article" OnAction="OpenWorksheets">Worksheets</MudMenuItem>
 			<MudMenuItem Icon="@Icons.Material.Filled.HealthAndSafety" OnAction="OpenSafetyPlan">Safety Plan</MudMenuItem>
 
 			<MudDivider />
 
 			<MudMenuItem Icon="@Icons.Material.Filled.Download" OnAction="StartImport">Import</MudMenuItem>
 			<MudMenuItem Icon="@Icons.Material.Filled.Upload" OnAction="StartExport">Export</MudMenuItem>
-			
+
 			<MudDivider />
 
 			<MudMenuItem Icon="@Icons.Material.Filled.Campaign" OnAction="OpenFeedback">Feedback</MudMenuItem>
@@ -53,7 +53,7 @@
 
 <div class="page-body">
 	<div class="main-timeline">
-		@foreach (var group in db.Categories.GroupBy(x => x.Group))
+		@foreach (var group in db.Categories.Where(x => x.Enabled && !x.Deleted).GroupBy(x => x.Group))
 		{
 			<div class="data-point-group">
 				@if (!string.IsNullOrEmpty(group.Key))
@@ -70,7 +70,7 @@
 					</div>
 				}
 
-				@foreach (var category in group.Where(x => x.Enabled && !x.Deleted).OrderBy(x => x.Index).ThenBy(x => x.Name))
+				@foreach (var category in group.OrderBy(x => x.Index).ThenBy(x => x.Name))
 				{
 					@foreach (var point in _day.Points.Where(x => !x.Deleted && x.Category.Guid == category.Guid && x.Type == category.Type).OrderBy(x => x.CreatedAt))
 					{
@@ -143,7 +143,7 @@
 		// If no dialogs are open.
 		if (PageService.CurrentDepth == 0)
 		{
-			logger.LogInformation("Auto saving database because no pages are open");
+			logger.LogInformation("Auto saving database while no pages are open");
 
 			try
 			{
@@ -182,6 +182,10 @@
 
 				await AppDataService.ShowExportReminderIfDue(DialogService);
 			}
+			else
+			{
+				logger.LogDebug($"Not switching to current day because {PageService.CurrentDepth} pages are open");
+			}
 		}
 	}
 
@@ -201,11 +205,11 @@
 	{
 		var sw = Stopwatch.StartNew();
 
-		db.SaveChanges(); // Save any changes that could have been made from the DataPointViews.
-		_day = db.GetOrCreateDayAndAddPoints(date);
-		db.SaveChanges(); // Save potentially new day and points.
+		await db.SaveChangesAsync(); // Save any changes that could have been made from the DataPointViews.
+		_day = await db.GetOrCreateDayAndAddPoints(date);
+		await db.SaveChangesAsync(); // Save potentially new day and points.
 
-		logger.LogDebug($"Went to {_day} in {sw.ElapsedTicks} ticks");
+		logger.LogDebug($"Went to {_day} in {sw.ElapsedMilliseconds}ms ({sw.ElapsedTicks} ticks)");
 
 		if (scrollToTop)
 			await ScrollToTop();
@@ -228,7 +232,7 @@
 	async Task OpenMoodGrid()
 	{
 		logger.LogInformation("Opening Mood Grid");
-		db.SaveChanges();
+		await db.SaveChangesAsync();
 
 		var parameters = new DialogParameters<MoodGridDialog> { { x => x.OpenToDate, _day.Date } };
 		var result = await DialogService.Show<MoodGridDialog>(parameters, ComponentUtil.FullscreenDialogOptions).Result;
@@ -240,14 +244,14 @@
 		}
 	}
 
-	void FinalizeCategories()
+	async Task FinalizeCategories()
 	{
 		var points = db.GetMissingPoints(_day);
 
 		if (points.Count != 0)
 		{
-			db.Points.AddRange(points);
-			db.SaveChanges();
+			await db.Points.AddRangeAsync(points);
+			await db.SaveChangesAsync();
 			logger.LogInformation($"Added missing data points for {_day}");
 		}
 	}
@@ -255,28 +259,28 @@
 	async Task ManageCategories()
 	{
 		logger.LogInformation("Managing categories");
-		db.SaveChanges();
+		await db.SaveChangesAsync();
 
 		await DialogService.Show<ManageCategoriesDialog>(ComponentUtil.FullscreenDialogOptions).Result;
 
-		FinalizeCategories();
+		await FinalizeCategories();
 	}
 
 	async Task ManageMedications()
 	{
 		logger.LogInformation("Managing medications");
-		db.SaveChanges();
+		await db.SaveChangesAsync();
 
 		var parameters = new DialogParameters<ManageCategoriesDialog> { { x => x.Group, "Medications" } };
 		await DialogService.Show<ManageCategoriesDialog>(parameters, ComponentUtil.FullscreenDialogOptions).Result;
 
-		FinalizeCategories();
+		await FinalizeCategories();
 	}
 
 	async Task OpenTrends()
 	{
 		logger.LogInformation("Opening trends dialog");
-		db.SaveChanges();
+		await db.SaveChangesAsync();
 
 		var parameters = new DialogParameters<TrendsDialog> { { x => x.OpenToDate, _day.Date } };
 		var result = await DialogService.Show<TrendsDialog>(parameters, ComponentUtil.FullscreenDialogOptions).Result;
@@ -304,7 +308,7 @@
 
 	async Task StartImport()
 	{
-		await DialogService.ShowCustomMessageBox(string.Empty, "Import has not been fully implemented yet. Please check back in another update!");
+		await DialogService.ShowCustomMessageBox(string.Empty, "Import has not been implemented yet. Check back in another update!");
 		return;
 
 		// var date = _day.Date;
@@ -317,14 +321,14 @@
 
 	async Task StartExport()
 	{
-		db.SaveChanges();
+		await db.SaveChangesAsync();
 		await AppDataService.StartExportWizard(DialogService);
 	}
 
 	async Task OpenFeedback()
 	{
 		logger.LogInformation("Opening feedback link");
-		await Browser.Default.OpenAsync(FeedbackService.GenerateLink());
+		await Browser.Default.OpenAsync(Feedback.GenerateLink());
 	}
 
 	async Task OpenAbout()

@@ -49,7 +49,8 @@
 			}
 			
 			<MudTextField @bind-Value="Details" AutoGrow MaxLines="10"
-				Label="Additional details" Placeholder="@(Group == "Medications" ? "Start date, side effects, etc." : "Scoring criteria, etc.")"  />
+				Label="Additional details"
+				Placeholder="@(Group == "Medications" ? "Start date, side effects, etc." : "Scoring criteria, etc.")"  />
 		</MudForm>
 	</DialogContent>
 </MudDialog>
@@ -106,7 +107,7 @@
 	{
 		logger.LogDebug("Asking for deletion");
 
-		if (await DialogService.ShowCustomMessageBox(string.Empty, $"Are you sure you want to PERMANENTLY delete \"{Name}\"? This cannot be reversed.", yesText: "Delete", cancelText: "Cancel") != true)
+		if (await DialogService.ShowCustomMessageBox(string.Empty, $"Are you sure you want to PERMANENTLY delete \"{Name}\"? This cannot be undone.", yesText: "Delete", cancelText: "Cancel") != true)
 		{
 			logger.LogDebug("Deletion was canceled");
 			return;

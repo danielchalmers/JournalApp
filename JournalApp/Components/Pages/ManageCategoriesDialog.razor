@@ -27,9 +27,9 @@
 			@foreach (var c in Categories.OrderBy(c => c.Index))
 			{
 				<div class="category-view-compact">
-					<MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" Title="Move up" OnClick="() => MoveUp(c)" Edge="Edge.Start" Disabled="c.Index <= 1" />
+					<MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" Title="Move up" OnClick="async () => await MoveUp(c)" Edge="Edge.Start" Disabled="c.Index <= 1" />
 
-					<MudSwitch @bind-Value="c.Enabled" Color="Color.Primary" Style="margin-right: -0.125em;" title="Toggle enabled" />
+					<MudSwitch @bind-Value="c.Enabled" Color="Color.Primary" Style="margin-right: -0.125em;" title="Enabled" />
 
 					<div class="category-view-edit-button">
 						<MudButton Variant="Variant.Text" OnClick="async () => await Edit(c)" Disabled="c.ReadOnly" StartIcon="@Icons.Material.Filled.Edit" title="Edit" Size="Size.Large">@c.Name</MudButton>
@@ -52,15 +52,15 @@
 	{
 		base.OnInitialized();
 
-		PageService.EnteredPage(() => Submit());
+		PageService.EnteredPage(async () => await Submit());
 	}
 
-	void MoveUp(DataPointCategory category)
+	async Task MoveUp(DataPointCategory category)
 	{
-		db.MoveCategoryUp(category);
+		await db.MoveCategoryUp(category);
 		logger.LogInformation($"Moved category up: {category}, {category.Guid}");
 
-		db.SaveChanges();
+		await db.SaveChangesAsync();
 	}
 
 	async Task Edit(DataPointCategory category)
@@ -104,9 +104,10 @@
 		}
 	}
 
-	void Submit()
+	async Task Submit()
 	{
-		db.SaveChanges();
+		await db.SaveChangesAsync();
+
 		PageService.CloseDialog(MudDialog, true);
 	}
 }
