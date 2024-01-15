@@ -89,12 +89,13 @@ button {
 	gap: 0.75em;
 }
 
+/* https://github.com/MudBlazor/MudBlazor/blob/dev/src/MudBlazor/Styles/components/_input.scss */
 .mud-input {
-	margin: 0 !important;
+	margin-top: 0 !important;
 }
 
 .mud-input-control {
-	margin: 0 !important;
+	margin-top: 0 !important;
 }
 
 /* Adds space to make up for label. Only works on newer browsers. */
@@ -102,14 +103,21 @@ button {
 	margin: 1em 0 0 0 !important;
 }
 
-.mud-input-control-input-container {
-	/* margin: 0.375em 0 0 0 !important; */
-	margin: 0 !important;
+.mud-input > input.mud-input-root, div.mud-input-slot.mud-input-root {
+	padding: 0.375em 0 0.4375em;
 }
 
-	.mud-input-control-input-container > .mud-input-label {
-		margin: -0.75em 0 0 0 !important;
-	}
+.mud-input-root-outlined {
+	margin: 0.5em !important;
+}
+
+/* https://github.com/MudBlazor/MudBlazor/blob/dev/src/MudBlazor/Styles/components/_inputlabel.scss */
+.mud-input-label-inputcontrol {
+	top: 0;
+	left: 0;
+	position: absolute;
+	transform: translate(0, -0.75em) scale(0.75) !important;
+}
 
 .mud-input-root-outlined {
 	margin: 0.5em !important;

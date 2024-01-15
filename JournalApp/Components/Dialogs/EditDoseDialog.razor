@@ -16,14 +16,16 @@
 	</TitleContent>
 
 	<DialogContent>
-		<MudText Style="word-wrap: anywhere;">@Point.Category.Name:</MudText>
+		<MudForm>
+			<MudText Style="word-wrap: anywhere;">@Point.Category.Name:</MudText>
 
-		<MudNumericField @bind-Value="Dose" HideSpinButtons Label="@($"Dose ({Point.Day.Date:ddd, MMM d})")" MaxLength="6" Adornment="Adornment.End" AdornmentText="@Point.Category.MedicationUnit" />
+			<MudNumericField @bind-Value="Dose" HideSpinButtons Label="@($"Dose ({Point.Day.Date:ddd, MMM d})")" MaxLength="6" Adornment="Adornment.End" AdornmentText="@Point.Category.MedicationUnit" />
 
-		@if (!string.IsNullOrWhiteSpace(CategoryDetails))
-		{
-			<MudTextField Value="CategoryDetails" ReadOnly AutoGrow MaxLines="10" Label="Additional details" />
-		}
+			@if (!string.IsNullOrWhiteSpace(CategoryDetails))
+			{
+				<MudTextField Value="CategoryDetails" ReadOnly AutoGrow MaxLines="10" Label="Additional details" />
+			}
+		</MudForm>
 	</DialogContent>
 </MudDialog>
 
