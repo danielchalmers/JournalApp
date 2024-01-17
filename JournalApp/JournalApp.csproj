@@ -63,7 +63,6 @@
     <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
     <PackageReference Include="MudBlazor" Version="6.12.0" />
     <PackageReference Include="Nerdbank.GitVersioning" Version="3.6.133" PrivateAssets="All" />
-    <PackageReference Include="Plugin.LocalNotification" Version="10.1.8" />
   </ItemGroup>
 
 </Project>

@@ -2,7 +2,6 @@
 using CommunityToolkit.Maui;
 using MudBlazor;
 using MudBlazor.Services;
-using Plugin.LocalNotification;
 
 namespace JournalApp;
 
@@ -15,8 +14,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder()
             .UseMauiApp<App>()
             .UseMauiCommunityToolkit()
-            .ConfigureFonts(fonts => fonts.AddFont("Roboto-Regular.ttf", "RobotoRegular"))
-            .UseLocalNotification();
+            .ConfigureFonts(fonts => fonts.AddFont("Roboto-Regular.ttf", "RobotoRegular"));
 
         builder.Services.AddMauiBlazorWebView();
         builder.Logging.AddConsole();
@@ -46,7 +44,6 @@ public static class MauiProgram
         builder.Services.AddScoped<IPrintingService, PrintingService>();
         builder.Services.AddSingleton(Share.Default);
         builder.Services.AddSingleton(FilePicker.Default);
-        builder.Services.AddSingleton(LocalNotificationCenter.Current);
 
         // Seed the database.
         using var provider = builder.Services.BuildServiceProvider();

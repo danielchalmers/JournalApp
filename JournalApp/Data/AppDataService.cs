@@ -188,6 +188,6 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
                 return DateTimeOffset.Now;
             }
         }
-        set => Preferences.Set("last_export", value.ToString("O"));
+        set => Preferences.Set("last_export", DateTimeOffset.Now.ToString("O"));
     }
 }
