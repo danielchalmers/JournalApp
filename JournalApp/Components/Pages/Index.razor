@@ -1,6 +1,7 @@
 ﻿@namespace JournalApp
 @page "/"
 @using CommunityToolkit.Maui.Storage;
+@using Plugin.LocalNotification
 @inherits LayoutComponentBase
 @inject AppDbContext db
 @inject ILogger<Index> logger
@@ -9,6 +10,7 @@
 @inject PageService PageService
 @inject IScrollManager ScrollManager
 @inject AppDataService AppDataService
+@inject INotificationService NotifyService
 
 <div class="page-title">
 	<div class="page-header">
@@ -28,6 +30,7 @@
 
 			<MudDivider />
 
+			<MudMenuItem Icon="@Icons.Material.Filled.Schedule" OnAction="SetReminder">Remind Me</MudMenuItem>
 			<MudMenuItem Icon="@Icons.Material.Filled.Download" OnAction="StartImport">Import</MudMenuItem>
 			<MudMenuItem Icon="@Icons.Material.Filled.Upload" OnAction="StartExport">Export</MudMenuItem>
 
@@ -304,6 +307,74 @@
 	{
 		logger.LogInformation("Opening Worksheets dialog");
 		await DialogService.Show<WorksheetsDialog>(ComponentUtil.FullscreenDialogOptions).Result;
+	}
+
+	public TimeSpan? ReminderTime
+	{
+		get
+		{
+			var reminderTimeString = Preferences.Get("reminder_time", null);
+
+			if (TimeSpan.TryParse(reminderTimeString, out var parsed))
+			{
+				return parsed;
+			}
+			else
+			{
+				ReminderTime = null;
+				return null;
+			}
+		}
+		set => Preferences.Set("reminder_time", value.ToString());
+	}
+
+	async Task SetReminder()
+	{
+		const int reminderId = 191323883;
+
+		logger.LogInformation("Picking time to be reminded");
+		var selectedTime = await TimePickerDialog.ShowDialog(DialogService, ReminderTime);
+		logger.LogInformation($"Remind time is now {selectedTime} from {ReminderTime}");
+
+		ReminderTime = selectedTime;
+
+		if (selectedTime == null)
+		{
+			logger.LogDebug($"Clearing reminder notification <{reminderId}>");
+			NotifyService.Clear(reminderId);
+			return;
+		}
+
+		if (await NotifyService.AreNotificationsEnabled() == false)
+		{
+			logger.LogDebug($"Notifications are not enabled; asking for permission");
+
+			if (!await NotifyService.RequestNotificationPermission())
+			{
+				logger.LogDebug($"Permission was not granted");
+				return;
+			}
+		}
+
+		// Next day that the time occurs.
+		var scheduledDateTime = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, selectedTime.Value.Hours, selectedTime.Value.Minutes, selectedTime.Value.Seconds);
+		if (DateTime.Now >= scheduledDateTime)
+			scheduledDateTime = scheduledDateTime.AddDays(1);
+
+		var notification = new NotificationRequest
+			{
+				NotificationId = reminderId,
+				Title = "Daily reminder",
+				Schedule =
+				{
+					NotifyTime = scheduledDateTime,
+					RepeatType = NotificationRepeat.Daily,
+				}
+			};
+
+		logger.LogDebug($"Scheduling daily notification <{reminderId}> starting {scheduledDateTime}");
+
+		await NotifyService.Show(notification);
 	}
 
 	async Task StartImport()
