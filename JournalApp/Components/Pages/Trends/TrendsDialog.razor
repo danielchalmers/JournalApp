@@ -1,11 +1,9 @@
 ﻿@namespace JournalApp
 @using CommunityToolkit.Maui.Storage;
-@using Append.Blazor.Printing
 @inject IDbContextFactory<AppDbContext> dbcf
 @inject ILogger<TrendsDialog> logger
 @inject IDialogService DialogService
 @inject PageService PageService
-@inject IPrintingService PrintingService
 
 <MudDialog DefaultFocus="DefaultFocus.None">
 	<TitleContent>
@@ -14,11 +12,11 @@
 
 			<MudText Typo="Typo.h6">Trends</MudText>
 
-			<MudSpacer />
-
 			@if (Debugger.IsAttached)
 			{
-				<MudIconButton Icon="@Icons.Material.Filled.Print" Title="Print" OnClick="Print" />
+				<MudSpacer />
+
+				<MudIconButton Icon="@Icons.Material.Filled.PictureAsPdf" Title="Export as PDF" OnClick="Export" />
 			}
 		</div>
 
@@ -106,10 +104,10 @@
 		PageService.CloseDialog(MudDialog, true);
 	}
 
-	public async Task Print()
+	public async Task Export()
 	{
-		logger.LogInformation("Opening print dialog");
+		logger.LogInformation("Starting export");
 
-		await PrintingService.Print("trends-category-list", PrintType.Html);
+		await Task.CompletedTask;
 	}
 }
