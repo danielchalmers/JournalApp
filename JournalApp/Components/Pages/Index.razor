@@ -1,8 +1,9 @@
 ﻿@namespace JournalApp
 @page "/"
 @using CommunityToolkit.Maui.Storage;
+@implements IDisposable
 @inherits LayoutComponentBase
-@inject AppDbContext db
+@inject IDbContextFactory<AppDbContext> DbFactory
 @inject ILogger<Index> logger
 @inject ISnackbar SnackbarService
 @inject IDialogService DialogService
@@ -114,12 +115,15 @@
 </div>
 
 @code {
+	AppDbContext db;
+	bool _disposed;
 	Day _day;
 	DateTimeOffset _stoppedDate;
 
 	protected override async Task OnInitializedAsync()
 	{
 		logger.LogInformation("Initializing asynchronously");
+		db = await DbFactory.CreateDbContextAsync();
 		await base.OnInitializedAsync();
 
 		logger.LogInformation("Going to the current day");
@@ -140,23 +144,15 @@
 	{
 		logger.LogDebug("Window deactivated or destroying");
 
-		// If no dialogs are open.
-		if (PageService.CurrentDepth == 0)
+		if (_disposed && PageService.CurrentDepth == 0)
 		{
 			logger.LogInformation("Auto saving database while no pages are open");
 
-			try
-			{
-				db.SaveChanges();
-			}
-			catch (ObjectDisposedException)
-			{
-				// Ignore.
-			}
+			db.SaveChanges();
 		}
 		else
 		{
-			logger.LogDebug($"Not auto saving database because {PageService.CurrentDepth} pages are open");
+			logger.LogDebug($"Not auto saving database because {PageService.CurrentDepth} pages are open or this is disposed");
 		}
 	}
 
@@ -350,5 +346,11 @@
 		logger.LogInformation("Saving new note");
 		note.Category.Points.Add(note);
 		await db.SaveChangesAsync();
+	}
+
+	public void Dispose()
+	{
+		_disposed = true;
+		db?.Dispose();
 	}
 }

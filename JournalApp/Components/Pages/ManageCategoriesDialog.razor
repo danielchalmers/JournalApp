@@ -1,5 +1,6 @@
 ﻿@namespace JournalApp
-@inject AppDbContext db
+@implements IDisposable
+@inject IDbContextFactory<AppDbContext> DbFactory
 @inject ILogger<ManageCategoriesDialog> logger
 @inject IDialogService DialogService
 @inject PageService PageService
@@ -41,6 +42,8 @@
 </MudDialog>
 
 @code {
+	AppDbContext db;
+
 	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
 	[Parameter]
@@ -50,6 +53,7 @@
 
 	protected override void OnInitialized()
 	{
+		db = DbFactory.CreateDbContext();
 		base.OnInitialized();
 
 		PageService.EnteredPage(async () => await Submit());
@@ -109,5 +113,10 @@
 		await db.SaveChangesAsync();
 
 		PageService.CloseDialog(MudDialog, true);
+	}
+
+	public void Dispose()
+	{
+		db?.Dispose();
 	}
 }

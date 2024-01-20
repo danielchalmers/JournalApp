@@ -35,7 +35,11 @@ public static class MauiProgram
 
         builder.Services.AddDbContextFactory<AppDbContext>(options => options
             .UseLazyLoadingProxies()
-            .UseSqlite($"Data Source = {DbFilename}"));
+            .UseSqlite($"Data Source = {DbFilename}")
+#if DEBUG
+        .EnableSensitiveDataLogging()
+#endif
+        );
 
         builder.Services.AddSingleton<AppDataService>();
         builder.Services.AddSingleton<AppDbSeeder>();

@@ -1,6 +1,6 @@
 ﻿@namespace JournalApp
 @using CommunityToolkit.Maui.Storage;
-@inject IDbContextFactory<AppDbContext> dbcf
+@inject IDbContextFactory<AppDbContext> DbFactory
 @inject ILogger<TrendsDialog> logger
 @inject IDialogService DialogService
 @inject PageService PageService
@@ -69,7 +69,7 @@
 		logger.LogInformation($"Loading dates <{SelectedDates[0]}..{SelectedDates[^1]}>");
 		var sw = Stopwatch.StartNew();
 
-		await using var db = await dbcf.CreateDbContextAsync();
+		await using var db = await DbFactory.CreateDbContextAsync();
 
 		var query = db.Points
 			.Where(p => !p.Deleted && !p.Category.Deleted && p.Category.Enabled && SelectedDates.Contains(p.Day.Date))

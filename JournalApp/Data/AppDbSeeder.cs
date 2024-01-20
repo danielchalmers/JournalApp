@@ -1,12 +1,12 @@
 ﻿namespace JournalApp;
 
-public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeeder> _logger)
+public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbContext> dbFactory)
 {
     public void SeedDb()
     {
-        _logger.LogInformation("Seeding database");
+        logger.LogInformation("Seeding database");
 
-        using var db = dbcf.CreateDbContext();
+        using var db = dbFactory.CreateDbContext();
         var sw = Stopwatch.StartNew();
         try
         {
@@ -19,26 +19,26 @@ public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeed
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Database migration error");
+            logger.LogError(ex, "Database migration error");
             throw;
         }
 
-        _logger.LogInformation($"Migrated database in {sw.ElapsedMilliseconds}ms");
+        logger.LogInformation($"Migrated database in {sw.ElapsedMilliseconds}ms");
 
         sw.Restart();
         SeedCategories();
-        _logger.LogInformation($"Seeded categories in {sw.ElapsedMilliseconds}ms");
+        logger.LogInformation($"Seeded categories in {sw.ElapsedMilliseconds}ms");
 
 #if DEBUG
         sw.Restart();
         SeedDays();
-        _logger.LogInformation($"Seeded days in {sw.ElapsedMilliseconds}ms");
+        logger.LogInformation($"Seeded days in {sw.ElapsedMilliseconds}ms");
 #endif
     }
 
     private void SeedCategories()
     {
-        using var db = dbcf.CreateDbContext();
+        using var db = dbFactory.CreateDbContext();
 
         void AddOrUpdate(
             string guidString,
@@ -218,7 +218,7 @@ public class AppDbSeeder(IDbContextFactory<AppDbContext> dbcf, ILogger<AppDbSeed
 
     private void SeedDays(IEnumerable<DateOnly> dates)
     {
-        using var db = dbcf.CreateDbContext();
+        using var db = dbFactory.CreateDbContext();
 
         var categories = db.Categories.ToHashSet();
         var days = db.GetOrCreateDays(dates);

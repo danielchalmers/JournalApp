@@ -1,7 +1,7 @@
 ﻿@namespace JournalApp
 @using Color = Microsoft.Maui.Graphics.Color;
 @using MudBlazor.Utilities
-@inject IDbContextFactory<AppDbContext> dbcf
+@inject IDbContextFactory<AppDbContext> DbFactory
 @inject ILogger<MoodGridDialog> logger
 @inject IDialogService DialogService
 @inject IScrollManager ScrollManager
@@ -143,7 +143,7 @@
 		logger.LogDebug($"Loading year {SelectedYear}");
 		var sw = Stopwatch.StartNew();
 		var tomorrow = DateOnly.FromDateTime(DateTime.Now).Next();
-		await using var db = await dbcf.CreateDbContextAsync();
+		await using var db = await DbFactory.CreateDbContextAsync();
 
 		_moodCategory ??= await db.Categories.SingleOrDefaultAsync(x => x.Guid == new Guid("D90D89FB-F5B9-47CF-AE4E-3EC0D635E783"));
 

@@ -2,7 +2,7 @@
 
 namespace JournalApp;
 
-public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<AppDbContext> dbcf, IFilePicker filePicker, IShare share)
+public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<AppDbContext> dbFactory, IFilePicker filePicker, IShare share)
 {
     public async Task<bool> StartImportWizard(IDialogService dialogService)
     {
@@ -58,7 +58,7 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
         }
 
         // Apply the backup content to the database.
-        await using (var db = await dbcf.CreateDbContextAsync())
+        await using (var db = await dbFactory.CreateDbContextAsync())
         {
             db.Days.RemoveRange(db.Days);
             db.Categories.RemoveRange(db.Categories);
@@ -67,7 +67,7 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
             logger.LogDebug("Cleared old db sets");
         }
 
-        await using (var db = await dbcf.CreateDbContextAsync())
+        await using (var db = await dbFactory.CreateDbContextAsync())
         {
             await db.Days.AddRangeAsync(backupFile.Days);
             await db.Categories.AddRangeAsync(backupFile.Categories);
@@ -111,7 +111,7 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
 
         BackupFile backupFile;
         // TODO: Go from DBSet directly to Stream to avoid memory overhead.
-        await using (var db = await dbcf.CreateDbContextAsync())
+        await using (var db = await dbFactory.CreateDbContextAsync())
         {
             db.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 
