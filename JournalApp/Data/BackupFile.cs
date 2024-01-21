@@ -15,13 +15,13 @@ public class BackupFile
         WriteIndented = true,
     };
 
-    public IReadOnlyCollection<Day> Days { get; set; }
+    public IEnumerable<Day> Days { get; set; }
 
-    public IReadOnlyCollection<DataPointCategory> Categories { get; set; }
+    public IEnumerable<DataPointCategory> Categories { get; set; }
 
-    public IReadOnlyCollection<DataPoint> Points { get; set; }
+    public IEnumerable<DataPoint> Points { get; set; }
 
-    public IReadOnlyCollection<PreferenceBackup> PreferenceBackups { get; set; }
+    public IEnumerable<PreferenceBackup> PreferenceBackups { get; set; }
 
     public static async Task<BackupFile> ReadArchive(Stream stream)
     {

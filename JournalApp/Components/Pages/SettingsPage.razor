@@ -6,21 +6,47 @@
 @inject AppDataService AppDataService
 @inject IDialogService DialogService
 
-<div class="page-title">
-	<div class="page-header">
-		<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Close" OnClick="Close" />
-
-		<MudText Typo="Typo.h6">JournalApp v@(ThisAssembly.AssemblyFileVersion)</MudText>
+@if (_isBusy)
+{
+	<div class="d-flex justify-center">
+		<MudProgressCircular Color="Color.Primary" Style="height:33vw;width:33vw;" Indeterminate="true" />
 	</div>
-</div>
+}
+else
+{
+	<div class="page-title">
+		<div class="page-header">
+			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Close" OnClick="Close" />
 
-<div class="page-body">
-	<MudButton StartIcon="@Icons.Material.Filled.Upload" OnClick="StartExport" FullWidth>Export</MudButton>
+			<MudText Typo="Typo.h6">JournalApp v@(ThisAssembly.AssemblyFileVersion)</MudText>
+		</div>
+	</div>
 
-	<MudTextField T="string" Text="@CreditsText" AutoGrow ReadOnly DisableUnderLine />
-</div>
+	<div class="page-body">
+		<div class="settings-group-list">
+			<div class="settings-group">
+				<MudText Typo="Typo.h4">Data and backups</MudText>
+
+				<MudButton StartIcon="@Icons.Material.Filled.Upload" OnClick="StartExport" FullWidth Size="Size.Large">Export</MudButton>
+
+				@if (DeviceInfo.Current.Platform == DevicePlatform.WinUI)
+				{
+					<MudButton StartIcon="@Icons.Material.Filled.Download" OnClick="PickAndStartImport" FullWidth Size="Size.Large">Import</MudButton>
+				}
+			</div>
+
+			<div class="settings-group">
+				<MudText Typo="Typo.h4">Credits</MudText>
+
+				<MudTextField T="string" Text="@CreditsText" AutoGrow ReadOnly DisableUnderLine />
+			</div>
+		</div>
+	</div>
+}
 
 @code {
+	bool _isBusy;
+
 	protected override void OnInitialized()
 	{
 		base.OnInitialized();
@@ -39,13 +65,50 @@
 
 		await base.OnInitializedAsync();
 
-		if (ImportPath != null)
+		await StartImport();
+	}
+
+	async Task PickAndStartImport()
+	{
+		var pickResult = await FilePicker.Default.PickAsync();
+		ImportPath = Convert.ToBase64String(Encoding.UTF8.GetBytes(pickResult.FullPath));
+		await StartImport();
+	}
+
+	async Task StartImport()
+	{
+		if (ImportPath == null)
+			return;
+
+		// Warn the user of what's going to happen.
+		if (await DialogService.ShowCustomMessageBox(string.Empty, "Importing data will replace ALL existing notes, categories, medications, etc, and cannot be undone!", yesText: "OK", cancelText: "Cancel") == null)
+		{
+			logger.LogDebug("User declined to start importing data");
+			return;
+		}
+
+		try
+		{
+			_isBusy = true;
 			await AppDataService.StartImportWizard(DialogService, Encoding.UTF8.GetString(Convert.FromBase64String(ImportPath)));
+		}
+		finally
+		{
+			_isBusy = false;
+		}
 	}
 
 	async Task StartExport()
 	{
-		await AppDataService.StartExportWizard(DialogService);
+		try
+		{
+			_isBusy = true;
+			await AppDataService.StartExportWizard(DialogService);
+		}
+		finally
+		{
+			_isBusy = false;
+		}
 	}
 
 	public async Task<string> GetCreditsText()

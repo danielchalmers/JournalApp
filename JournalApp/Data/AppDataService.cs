@@ -8,13 +8,6 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
     {
         logger.LogInformation("Starting import wizard");
 
-        // Warn the user of what's going to happen.
-        if (await dialogService.ShowCustomMessageBox(string.Empty, "Importing data will replace ALL existing notes, categories, medications, etc, and cannot be undone!", yesText: "OK", cancelText: "Cancel") == null)
-        {
-            logger.LogDebug("User declined to start importing data");
-            return false;
-        }
-
         // Warn if an export wasn't done in the last week.
         if (DateTimeOffset.Now > LastExportDate.AddDays(7) && await dialogService.ShowCustomMessageBox(string.Empty, "It's recommended to export your data first", yesText: "Continue anyway", cancelText: "Go back") == null)
         {
@@ -77,24 +70,8 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
     {
         logger.LogInformation("Starting export wizard");
 
-        // Clean up old backups.
-        foreach (var f in Directory.EnumerateFiles(FileSystem.AppDataDirectory, "backup-*.journalapp"))
-        {
-            try
-            {
-                File.Delete(f);
-                logger.LogDebug($"Deleted old export <{f}>");
-            }
-            catch (IOException ex)
-            {
-                logger.LogError(ex, $"Tried to delete old export <{f}>");
-            }
-        }
-
-        // TODO: Show a message box but close it for the user afterwards if they don't https://github.com/MudBlazor/MudBlazor/issues/8048.
-        //_ = dialogService.ShowCustomMessageBox(string.Empty, "Please wait while the archive is created for you", showFeedbackLink: true);
-
         logger.LogDebug("Constructing backup data");
+        var filePath = Path.Combine(Path.GetTempPath(), $"backup-{DateTime.Now:yyyy-MM-dd}.journalapp");
         var sw = Stopwatch.StartNew();
 
         var preferenceBackups = new List<PreferenceBackup>();
@@ -102,39 +79,37 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
             preferenceBackups.Add(new(key, Preferences.Get(key, string.Empty)));
 
         BackupFile backupFile;
-        // TODO: Go from DBSet directly to Stream to avoid memory overhead.
         await using (var db = await dbFactory.CreateDbContextAsync())
         {
             db.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 
             backupFile = new()
             {
-                Days = db.Days.Include(d => d.Points).ToHashSet(),
-                Categories = db.Categories.Include(c => c.Points).ToHashSet(),
-                Points = db.Points.ToHashSet(),
+                Days = db.Days.Include(d => d.Points),
+                Categories = db.Categories.Include(c => c.Points),
+                Points = db.Points,
                 PreferenceBackups = preferenceBackups,
             };
-        }
 
-        // Create the file and write the archive to it.
-        // We don't write directly to a place the user picks because that requires the harsh WRITE_EXTERNAL_STORAGE permission.
-        var filePath = Path.Combine(FileSystem.AppDataDirectory, $"backup-{DateTime.Now:yyyy-MM-dd}.journalapp");
-        logger.LogDebug($"Creating {filePath} after {sw.ElapsedMilliseconds}ms");
-        sw.Restart();
-        try
-        {
-            await using (var stream = File.Create(filePath))
+            // Create the file and write the archive to it.
+            // We don't write directly to a place the user picks because that requires the harsh WRITE_EXTERNAL_STORAGE permission.
+            logger.LogDebug($"Creating {filePath} after {sw.ElapsedMilliseconds}ms");
+            sw.Restart();
+            try
             {
-                await backupFile.WriteArchive(stream);
+                await using (var stream = File.Create(filePath))
+                {
+                    await backupFile.WriteArchive(stream);
 
-                logger.LogDebug($"File created and archive written in {sw.ElapsedMilliseconds}ms");
+                    logger.LogDebug($"File created and archive written in {sw.ElapsedMilliseconds}ms");
+                }
             }
-        }
-        catch (Exception ex)
-        {
-            logger.LogInformation(ex, $"Failed to create archive after {sw.ElapsedMilliseconds}ms");
-            await dialogService.ShowCustomMessageBox(string.Empty, $"Nothing happened; Failed to create archive: {ex.Message}.", showFeedbackLink: true);
-            return;
+            catch (Exception ex)
+            {
+                logger.LogInformation(ex, $"Failed to create archive after {sw.ElapsedMilliseconds}ms");
+                await dialogService.ShowCustomMessageBox(string.Empty, $"Nothing happened; Failed to create archive: {ex.Message}.", showFeedbackLink: true);
+                return;
+            }
         }
 
         // Prompt the user to share the file.
@@ -180,6 +155,6 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
                 return DateTimeOffset.Now;
             }
         }
-        set => Preferences.Set("last_export", DateTimeOffset.Now.ToString("O"));
+        set => Preferences.Set("last_export", value.ToString("O"));
     }
 }
