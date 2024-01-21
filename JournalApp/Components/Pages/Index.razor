@@ -13,7 +13,9 @@
 
 <div class="page-title">
 	<div class="page-header">
-		<MudText Typo="Typo.h6">🙂 @ThisAssembly.AssemblyTitle BETA</MudText>
+		<MudButton OnClick="OnTitleClicked" DisableRipple Variant="Variant.Text">
+			<MudText Typo="Typo.h6">🙂 @ThisAssembly.AssemblyTitle BETA</MudText>
+		</MudButton>
 
 		<MudSpacer />
 
@@ -127,23 +129,22 @@
 		db = await DbFactory.CreateDbContextAsync();
 		await base.OnInitializedAsync();
 
-		// Switch back to the date we left from.
-		if (DateTimeOffset.TryParse(Preferences.Get("index_disposed_at", DateTimeOffset.Now.ToString("O")), out var disposedAt) && DateTimeOffset.Now - disposedAt < TimeSpan.FromHours(1))
-			OpenToDateString ??= Preferences.Get("last_date", null);
+		// Find the date we left the page from.
+		if (OpenToDateString == null &&
+			DateTimeOffset.TryParse(Preferences.Get("index_left_at", null), out var disposedAt) &&
+			DateTimeOffset.Now - disposedAt < TimeSpan.FromHours(1))
+			OpenToDateString = Preferences.Get("last_date", null);
 
+		// Go to the appropriate date.
 		var date = DateOnly.TryParseExact(OpenToDateString, "yyyyMMdd", out var parsed) ? parsed : DateOnly.FromDateTime(DateTime.Now);
-		logger.LogInformation($"Opening to {OpenToDateString}");
+		logger.LogInformation($"Opening to {date}");
 		await GoToDay(date);
 
 		// https://learn.microsoft.com/en-us/dotnet/maui/fundamentals/app-lifecycle
-		var window = App.Current.Windows.Single();
-		window.Deactivated += Window_DeactivatedOrDestroying;
-		window.Destroying += Window_DeactivatedOrDestroying;
-		window.Stopped += Window_Stopped;
-		window.Resumed += Window_Resumed;
-
-		// We're back on the index with no dialogs open so we can reset any that weren't handled.
-		KeyEventService.ResetStack();
+		App.Window.Deactivated += Window_DeactivatedOrDestroying;
+		App.Window.Destroying += Window_DeactivatedOrDestroying;
+		App.Window.Stopped += Window_Stopped;
+		App.Window.Resumed += Window_Resumed;
 	}
 
 	private void Window_DeactivatedOrDestroying(object sender, EventArgs e)
@@ -152,13 +153,12 @@
 
 		if (!_disposed && KeyEventService.CurrentDepth == 0)
 		{
-			logger.LogInformation("Auto saving database while no pages are open");
-
+			logger.LogInformation("Auto saving database while no dialogs are open");
 			db.SaveChanges();
 		}
 		else
 		{
-			logger.LogDebug($"Not auto saving database because {KeyEventService.CurrentDepth} pages are open or this is disposed");
+			logger.LogDebug($"Not auto saving database because {KeyEventService.CurrentDepth} dialogs are open or this is disposed");
 		}
 	}
 
@@ -170,7 +170,7 @@
 
 	private async void Window_Resumed(object sender, EventArgs e)
 	{
-		logger.LogInformation("Window resumed");
+		logger.LogDebug("Window resumed");
 
 		// Go to current day if user returns after a certain amount of time,
 		// but not on Windows because Resumed can occur without a corresponding Stopped for some reason.
@@ -186,9 +186,15 @@
 			}
 			else
 			{
-				logger.LogDebug($"Not switching to current day because {KeyEventService.CurrentDepth} pages are open");
+				logger.LogDebug($"Not switching to current day because {KeyEventService.CurrentDepth} dialogs are open");
 			}
 		}
+	}
+
+	async Task OnTitleClicked()
+	{
+		logger.LogDebug("Title clicked");
+		await GoToDay(DateOnly.FromDateTime(DateTime.Now), scrollToTop: true);
 	}
 
 	async Task ScrollToTop()
@@ -265,13 +271,6 @@
 	{
 		await DialogService.ShowCustomMessageBox(string.Empty, "Import has not been implemented yet. Check back in another update!");
 		return;
-
-		// var date = _day.Date;
-
-		// var imported = await AppDataService.StartImportWizard(DialogService);
-
-		// if (imported)
-		// 	await GoToDay(date, scrollToTop: true);
 	}
 
 	async Task StartExport()
@@ -314,8 +313,13 @@
 
 		_disposed = true;
 
+		App.Window.Deactivated -= Window_DeactivatedOrDestroying;
+		App.Window.Destroying -= Window_DeactivatedOrDestroying;
+		App.Window.Stopped -= Window_Stopped;
+		App.Window.Resumed -= Window_Resumed;
+
 		Preferences.Set("last_date", _day.Date.ToString("yyyyMMdd"));
-		Preferences.Set("index_disposed_at", DateTimeOffset.Now.ToString("O"));
+		Preferences.Set("index_left_at", DateTimeOffset.Now.ToString("O"));
 
 		if (db != null)
 		{

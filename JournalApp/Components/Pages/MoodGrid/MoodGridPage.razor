@@ -38,7 +38,6 @@
 	MoodGridSwitcher _switcher;
 	DataPointCategory _moodCategory;
 	GridYear? _gridYear = null;
-	Task _loadYearTask;
 
 	[Parameter]
 	public string OpenToDateString { get; set; }
@@ -80,22 +79,7 @@
 
 		GenerateColors();
 
-		_loadYearTask = LoadYear();
-	}
-
-	protected override async Task OnAfterRenderAsync(bool firstRender)
-	{
-		await base.OnAfterRenderAsync(firstRender);
-
-		if (firstRender)
-		{
-			if (!_loadYearTask.IsCompleted)
-			{
-				logger.LogDebug("Year wasn't loaded before render so we have to render again");
-				await _loadYearTask;
-				StateHasChanged();
-			}
-		}
+		await LoadYear();
 	}
 
 	async Task ScrollToMonth(int month)
