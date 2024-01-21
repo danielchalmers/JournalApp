@@ -1,7 +1,8 @@
 ﻿@namespace JournalApp
 @inherits MudComponentBase
+@inject KeyEventService KeyEventService
 
-<MudDialog @attributes="UserAttributes">
+<MudDialog @attributes="UserAttributes" OnBackdropClick="OnBackdropClick">
 	<TitleContent>
 		@if (TitleContent is null)
 		{

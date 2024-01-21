@@ -192,6 +192,9 @@ public partial class CustomMessageBox : MudComponentBase
     protected override void OnInitialized()
     {
         base.OnInitialized();
+
+        KeyEventService.Entered(() => OnCancelClicked());
+
         if (YesButton is not null)
             _yesCallback = new ActivatableCallback() { ActivateCallback = OnYesActivated };
         if (NoButton is not null)
@@ -206,11 +209,28 @@ public partial class CustomMessageBox : MudComponentBase
 
     private void OnCancelActivated(object arg1, MouseEventArgs arg2) => OnCancelClicked();
 
-    private void OnYesClicked() => DialogInstance?.Close(DialogResult.Ok(true));
+    private void OnYesClicked()
+    {
+        KeyEventService.Exited();
+        DialogInstance?.Close(DialogResult.Ok(true));
+    }
 
-    private void OnNoClicked() => DialogInstance?.Close(DialogResult.Ok(false));
+    private void OnNoClicked()
+    {
+        KeyEventService.Exited();
+        DialogInstance?.Close(DialogResult.Ok(false));
+    }
 
-    private void OnCancelClicked() => DialogInstance?.Close(DialogResult.Cancel());
+    private void OnCancelClicked()
+    {
+        KeyEventService.Exited();
+        DialogInstance?.Close(DialogResult.Cancel());
+    }
+
+    private void OnBackdropClick()
+    {
+        KeyEventService.Exited();
+    }
 
     private void HandleKeyDown(KeyboardEventArgs args)
     {
