@@ -45,7 +45,7 @@ runs:
     - name: Build for Android
       shell: bash
       run: >
-        dotnet publish .\JournalApp\JournalApp\JournalApp.csproj -o publish -c:Release -f:net8.0-android
+        dotnet publish ./JournalApp/JournalApp.csproj -o publish -c:Release -f:net8.0-android
         -p:AndroidKeyStore=True
         -p:AndroidSigningKeyStore="${{ steps.create_keystore.outputs.filePath }}"
         -p:AndroidSigningStorePass="${{ inputs.RELEASE_KEYSTORE_PASS }}"
