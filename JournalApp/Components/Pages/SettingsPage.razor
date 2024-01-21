@@ -25,6 +25,12 @@ else
 	<div class="page-body">
 		<div class="settings-group-list">
 			<div class="settings-group">
+				<MudText Typo="Typo.h4">Personalization</MudText>
+
+				<MudButton StartIcon="@Icons.Material.Filled.Upload" OnClick="SetUpSafetyPlan" FullWidth Size="Size.Large">Set Up Safety Plan</MudButton>
+			</div>
+
+			<div class="settings-group">
 				<MudText Typo="Typo.h4">Data and backups</MudText>
 
 				<MudButton StartIcon="@Icons.Material.Filled.Upload" OnClick="StartExport" FullWidth Size="Size.Large">Export</MudButton>
@@ -66,6 +72,12 @@ else
 		await base.OnInitializedAsync();
 
 		await StartImport();
+	}
+
+	void SetUpSafetyPlan()
+	{
+		logger.LogInformation("Setting up Safety Plan");
+		NavigationManager.NavigateTo($"/safetyplan");
 	}
 
 	async Task PickAndStartImport()

@@ -79,6 +79,10 @@
 
 	public void Dispose()
 	{
-		Preferences.Default.SetJson("safety_plan", Plan);
+		// Save the safety plan or discard if it's unchanged so it won't show in the main menu.
+		if (Plan == new SafetyPlan())
+			Preferences.Default.Set<string>("safety_plan", null);
+		else
+			Preferences.Default.SetJson("safety_plan", Plan);
 	}
 }

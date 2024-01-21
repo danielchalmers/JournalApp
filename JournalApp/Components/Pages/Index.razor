@@ -25,7 +25,11 @@
 			<MudMenuItem Icon="@Icons.Material.Filled.Comment" OnAction="NewNote">New note</MudMenuItem>
 			<MudMenuItem Icon="@Icons.Material.Filled.ShowChart" OnAction="OpenTrends">Trends</MudMenuItem>
 			<MudMenuItem Icon="@Icons.Material.Filled.Article" OnAction="OpenWorksheets">Worksheets</MudMenuItem>
-			<MudMenuItem Icon="@Icons.Material.Filled.HealthAndSafety" OnAction="OpenSafetyPlan">Safety Plan</MudMenuItem>
+
+			@if (Preferences.Get("safety_plan", null) != null)
+			{
+				<MudMenuItem Icon="@Icons.Material.Filled.HealthAndSafety" OnAction="OpenSafetyPlan">Safety Plan</MudMenuItem>
+			}
 
 			<MudDivider />
 
