@@ -1,7 +1,7 @@
 ﻿@namespace JournalApp
 @inject ILogger<EditCategoryDialog> logger
 @inject IDialogService DialogService
-@inject PageService PageService
+@inject KeyEventService KeyEventService
 
 <MudDialog DefaultFocus="DefaultFocus.FirstChild" OnBackdropClick="SubmitOrCancel">
 	<TitleContent>
@@ -82,6 +82,8 @@
 	{
 		await base.OnInitializedAsync();
 
+		KeyEventService.Entered(() => Cancel());
+
 		if (Category != null)
 		{
 			logger.LogDebug($"Using data from existing category <{Category}>");
@@ -94,13 +96,11 @@
 			MedicationEveryDay = Category.MedicationEveryDaySince != null;
 			Details = Category.Details;
 		}
-
-		PageService.EnteredPage(() => Cancel());
 	}
 
 	void Cancel()
 	{
-		PageService.CancelDialog(MudDialog);
+		KeyEventService.CancelDialog(MudDialog);
 	}
 
 	async Task Delete()
@@ -115,7 +115,7 @@
 
 		Category.Deleted = true;
 		logger.LogDebug($"Deleted {Category}");
-		PageService.CloseDialog(MudDialog, Category);
+		KeyEventService.CloseDialog(MudDialog, Category);
 	}
 
 	async Task<bool> Submit()
@@ -140,7 +140,7 @@
 
 		logger.LogDebug($"Created new category <Name: {Category.Name}, Type: {Category.Type}>");
 
-		PageService.CloseDialog(MudDialog, Category);
+		KeyEventService.CloseDialog(MudDialog, Category);
 		return true;
 	}
 

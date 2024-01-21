@@ -1,50 +1,48 @@
 ﻿@namespace JournalApp
+@page "/manage/{Group?}"
 @implements IDisposable
 @inject IDbContextFactory<AppDbContext> DbFactory
-@inject ILogger<ManageCategoriesDialog> logger
+@inject ILogger<ManageCategoriesPage> logger
 @inject IDialogService DialogService
-@inject PageService PageService
+@inject KeyEventService KeyEventService
+@inject NavigationManager NavigationManager
 
-<MudDialog DefaultFocus="DefaultFocus.Element">
-	<TitleContent>
-		<div class="page-header">
-			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Submit" OnClick="Submit" />
+<div class="page-title">
+	<div class="page-header">
+		<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Submit" OnClick="Submit" />
 
-			<MudText Typo="Typo.h6">@(Group == null ? "Categories" : Group)</MudText>
+		<MudText Typo="Typo.h6">@(Group == null ? "Categories" : Group)</MudText>
 
-			<MudSpacer />
+		<MudSpacer />
 
-			<MudIconButton Icon="@Icons.Material.Filled.Add" Title="New" OnClick="New" />
-		</div>
-	</TitleContent>
+		<MudIconButton Icon="@Icons.Material.Filled.Add" Title="New" OnClick="New" />
+	</div>
+</div>
 
-	<DialogContent>
-		@if (!Categories.Any())
+<div class="page-body">
+	@if (!Categories.Any())
+	{
+		<MudText Align="Align.Center">Use the plus button in the top right to add a new one.</MudText>
+	}
+	else
+	{
+		@foreach (var c in Categories.OrderBy(c => c.Index))
 		{
-			<MudText Align="Align.Center">Use the plus button in the top right to add a new one.</MudText>
-		}
-		else
-		{
-			@foreach (var c in Categories.OrderBy(c => c.Index))
-			{
-				<div class="category-view-compact">
-					<MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" Title="Move up" OnClick="async () => await MoveUp(c)" Edge="Edge.Start" Disabled="c.Index <= 1" />
+			<div class="category-view-compact">
+				<MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" Title="Move up" OnClick="async () => await MoveUp(c)" Edge="Edge.Start" Disabled="c.Index <= 1" />
 
-					<MudSwitch @bind-Value="c.Enabled" Color="Color.Primary" Style="margin-right: -0.125em;" title="Enabled" />
+				<MudSwitch @bind-Value="c.Enabled" Color="Color.Primary" Style="margin-right: -0.125em;" title="Enabled" />
 
-					<div class="category-view-edit-button">
-						<MudButton Variant="Variant.Text" OnClick="async () => await Edit(c)" Disabled="c.ReadOnly" StartIcon="@Icons.Material.Filled.Edit" title="Edit" Size="Size.Large">@c.Name</MudButton>
-					</div>
+				<div class="category-view-edit-button">
+					<MudButton Variant="Variant.Text" OnClick="async () => await Edit(c)" Disabled="c.ReadOnly" StartIcon="@Icons.Material.Filled.Edit" title="Edit" Size="Size.Large">@c.Name</MudButton>
 				</div>
-			}
+			</div>
 		}
-	</DialogContent>
-</MudDialog>
+	}
+</div>
 
 @code {
 	AppDbContext db;
-
-	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
 	[Parameter]
 	public string Group { get; set; }
@@ -56,7 +54,7 @@
 		db = DbFactory.CreateDbContext();
 		base.OnInitialized();
 
-		PageService.EnteredPage(async () => await Submit());
+		KeyEventService.Entered(() => Submit());
 	}
 
 	async Task MoveUp(DataPointCategory category)
@@ -108,15 +106,18 @@
 		}
 	}
 
-	async Task Submit()
+	void Submit()
 	{
-		await db.SaveChangesAsync();
-
-		PageService.CloseDialog(MudDialog, true);
+		KeyEventService.Exited();
+		NavigationManager.NavigateTo("/");
 	}
 
 	public void Dispose()
 	{
-		db?.Dispose();
+		if (db != null)
+		{
+			db.SaveChanges();
+			db.Dispose();
+		}
 	}
 }

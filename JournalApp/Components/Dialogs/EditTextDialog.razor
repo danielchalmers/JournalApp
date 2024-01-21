@@ -1,7 +1,7 @@
 ﻿@namespace JournalApp
 @inject ILogger<EditTextDialog> logger
 @inject IDialogService DialogService
-@inject PageService PageService
+@inject KeyEventService KeyEventService
 
 <MudDialog DefaultFocus="DefaultFocus.FirstChild" OnBackdropClick="Submit">
 	<TitleContent>
@@ -43,12 +43,12 @@
 	{
 		base.OnInitialized();
 
-		PageService.EnteredPage(() => Submit());
+		KeyEventService.Entered(() => Submit());
 	}
 
 	void Cancel()
 	{
-		PageService.CancelDialog(MudDialog);
+		KeyEventService.CancelDialog(MudDialog);
 	}
 
 	void Submit()
@@ -61,7 +61,7 @@
 			Point.Deleted = true;
 		}
 
-		PageService.CloseDialog(MudDialog, true);
+		KeyEventService.CloseDialog(MudDialog, true);
 	}
 
 	public static async Task<bool> ShowDialog(IDialogService dialogService, DataPoint point)

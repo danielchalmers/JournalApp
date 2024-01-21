@@ -1,0 +1,84 @@
+﻿@namespace JournalApp
+@page "/safetyplan"
+@using ApexCharts
+@implements IDisposable
+@inject ILogger<SafetyPlanPage> logger
+@inject KeyEventService KeyEventService
+@inject NavigationManager NavigationManager
+
+<div class="page-title">
+	<div class="page-header">
+		<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Submit" OnClick="Submit" />
+
+		<MudText Typo="Typo.h6">Safety Plan</MudText>
+	</div>
+</div>
+
+<div class="page-body">
+	<div class="safety-plan-items-container">
+		<MudText Align="MudBlazor.Align.Center">
+			Your coping strategies and sources of support that can be used before or during a crisis to help yourself stay safe.
+		</MudText>
+
+		<MudDivider />
+
+		<SafetyPlanItem Title="Warning Signs"
+						Subtitle="Signs that a crisis may be developing"
+						Placeholder="thoughts, images, situations, feelings, behaviors"
+						@bind-Text="Plan.WarningSigns" />
+
+		<SafetyPlanItem Title="Coping Strategies"
+						Subtitle="Things you can do on your own to feel better"
+						Placeholder="listening to music, relaxation techniques, physical activities"
+						@bind-Text="Plan.CopingStrategies" />
+
+		<SafetyPlanItem Title="Distractions"
+						Subtitle="People or places that take your mind off things"
+						Placeholder="family, friends, public places"
+						@bind-Text="Plan.SocialDistractions" />
+
+		<SafetyPlanItem Title="Social Supports"
+						Subtitle="People I can talk to or ask for help"
+						Placeholder="significant other, friends, relatives, religious leader"
+						@bind-Text="Plan.SocialContacts" />
+
+		<SafetyPlanItem Title="Professional Supports"
+						Subtitle="People or agencies that provide professional support"
+						Placeholder="psychiatrist, therapist, crisis hotline"
+						@bind-Text="Plan.ProfessionalContacts" />
+
+		<SafetyPlanItem Title="Environment Changes"
+						Subtitle="Ways to make the environment safer"
+						Placeholder="removing or securing items, going to another location"
+						@bind-Text="Plan.EnvironmentChanges" />
+
+		<SafetyPlanItem Title="Purpose"
+						Subtitle="Things that are most important to me"
+						Placeholder="family, friends, pets, health, faith"
+						@bind-Text="Plan.Purpose" />
+	</div>
+</div>
+
+@code {
+	public SafetyPlan Plan { get; set; }
+
+	protected override void OnInitialized()
+	{
+		Plan = Preferences.Default.GetJson<SafetyPlan>("safety_plan") ?? new();
+
+		base.OnInitialized();
+
+		KeyEventService.Entered(() => Submit());
+	}
+
+	void Submit()
+	{
+		KeyEventService.Exited();
+		NavigationManager.NavigateTo("/");
+	}
+
+	public void Dispose()
+	{
+		Preferences.Default.SetJson("safety_plan", Plan);
+	}
+}

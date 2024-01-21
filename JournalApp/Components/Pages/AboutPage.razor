@@ -1,0 +1,52 @@
+﻿@namespace JournalApp
+@page "/about"
+@inject ILogger<AboutPage> logger
+@inject KeyEventService KeyEventService
+@inject NavigationManager NavigationManager
+
+<div class="page-title">
+	<div class="page-header">
+		<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Close" OnClick="Close" />
+
+		<MudText Typo="Typo.h6">About JournalApp</MudText>
+	</div>
+</div>
+
+<div class="page-body">
+	<MudTextField T="string" Text="@CreditsText" AutoGrow ReadOnly DisableUnderLine />
+</div>
+
+@code {
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+
+		KeyEventService.Entered(Close);
+	}
+
+	public string CreditsText { get; private set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+
+		CreditsText = await GetCreditsText();
+	}
+
+	public async Task<string> GetCreditsText()
+	{
+		logger.LogDebug("Getting credits stream");
+
+		using var stream = await FileSystem.OpenAppPackageFileAsync("Credits.txt");
+		using var reader = new StreamReader(stream);
+
+		logger.LogDebug("Reading credits as text");
+		return reader.ReadToEnd();
+	}
+
+	void Close()
+	{
+		KeyEventService.Exited();
+		NavigationManager.NavigateTo("/");
+	}
+}

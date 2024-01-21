@@ -13,7 +13,7 @@ public class MainActivity : MauiAppCompatActivity
         {
             if (e.Action == KeyEventActions.Up)
             {
-                var service = IPlatformApplication.Current.Services.GetService<PageService>();
+                var service = IPlatformApplication.Current.Services.GetService<KeyEventService>();
 
                 // Consume the event if any subscriptions were invoked.
                 if (service.OnBackButtonPressed())

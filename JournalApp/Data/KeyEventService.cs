@@ -3,44 +3,44 @@ using MudBlazor;
 
 namespace JournalApp;
 
-public class PageService(ILogger<PageService> logger)
+public class KeyEventService(ILogger<KeyEventService> logger)
 {
-    private readonly Stack<Action> _backButtonPressedActions = [];
+    private readonly Stack<Action> _backButtonActions = [];
 
-    public int CurrentDepth => _backButtonPressedActions.Count;
+    public int CurrentDepth => _backButtonActions.Count;
 
-    public void ResetStack() => _backButtonPressedActions.Clear();
+    public void ResetStack() => _backButtonActions.Clear();
 
-    public void EnteredPage(Action backButtonAction, [CallerFilePath] string callerFilePath = "")
+    public void Entered(Action backButtonAction, [CallerFilePath] string callerFilePath = "")
     {
-        logger.LogDebug($"Entered page <{callerFilePath}>");
+        logger.LogDebug($"Entering at {CurrentDepth} depth <{callerFilePath}>");
 
-        lock (_backButtonPressedActions)
+        lock (_backButtonActions)
         {
-            _backButtonPressedActions.Push(backButtonAction);
+            _backButtonActions.Push(backButtonAction);
         }
     }
 
-    public void ExitedPage()
+    public void Exited([CallerFilePath] string callerFilePath = "")
     {
-        logger.LogDebug("Exited page");
+        logger.LogDebug($"Exiting at {CurrentDepth} depth <{callerFilePath}>");
 
-        lock (_backButtonPressedActions)
+        lock (_backButtonActions)
         {
             if (CurrentDepth != 0)
-                _backButtonPressedActions.Pop();
+                _backButtonActions.Pop();
         }
     }
 
     public void CancelDialog(MudDialogInstance dialogInstance)
     {
-        ExitedPage();
+        Exited();
         dialogInstance.Cancel();
     }
 
     public void CloseDialog<T>(MudDialogInstance dialogInstance, T returnValue)
     {
-        ExitedPage();
+        Exited();
         dialogInstance.Close(returnValue);
     }
 
@@ -50,7 +50,7 @@ public class PageService(ILogger<PageService> logger)
 
         var anyActions = CurrentDepth != 0;
         if (anyActions)
-            _backButtonPressedActions.Peek().Invoke();
+            _backButtonActions.Peek().Invoke();
 
         // Consider the event handled if there were any subscriptions.
         // ex: a dialog used the event to close itself; or none were open and therefore the platform decides what to do.

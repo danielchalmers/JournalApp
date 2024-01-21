@@ -1,6 +1,6 @@
 ﻿@namespace JournalApp
 @inject IDialogService DialogService
-@inject PageService PageService
+@inject KeyEventService KeyEventService
 
 <MudDialog DefaultFocus="DefaultFocus.FirstChild" OnBackdropClick="Submit">
 	<TitleContent>
@@ -57,12 +57,12 @@
 	{
 		base.OnInitialized();
 
-		PageService.EnteredPage(() => Cancel());
+		KeyEventService.Entered(() => Cancel());
 	}
 
 	void Cancel()
 	{
-		PageService.CancelDialog(MudDialog);
+		KeyEventService.CancelDialog(MudDialog);
 	}
 
 	void Submit()
@@ -80,7 +80,7 @@
 			Point.Bool = true;
 		}
 
-		PageService.CloseDialog(MudDialog, true);
+		KeyEventService.CloseDialog(MudDialog, true);
 	}
 
 	public static async Task ShowDialog(IDialogService dialogService, DataPoint point)

@@ -1,48 +1,48 @@
 ﻿@namespace JournalApp
+@page "/calendar/{OpenToDateString}"
 @using Color = Microsoft.Maui.Graphics.Color;
 @using MudBlazor.Utilities
 @inject IDbContextFactory<AppDbContext> DbFactory
-@inject ILogger<MoodGridDialog> logger
+@inject ILogger<MoodGridPage> logger
 @inject IDialogService DialogService
-@inject IScrollManager ScrollManager
 @inject IJSRuntime JSRuntime
-@inject PageService PageService
+@inject KeyEventService KeyEventService
+@inject NavigationManager NavigationManager
 
-<MudDialog DefaultFocus="DefaultFocus.Element">
-	<TitleContent>
-		<div class="page-header">
-			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Close" OnClick="Close" />
+<div class="page-title">
+	<div class="page-header">
+		<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Close" OnClick="Close" />
 
-			<MudText Typo="Typo.h6">Mood Grid</MudText>
+		<MudText Typo="Typo.h6">Mood Grid</MudText>
 
-			<MudSpacer />
+		<MudSpacer />
 
-			<MudIconButton Icon="@Icons.Material.Filled.Palette" Title="Pick color" OnClick="OpenColorPicker" />
+		<MudIconButton Icon="@Icons.Material.Filled.Palette" Title="Pick color" OnClick="OpenColorPicker" />
+	</div>
+
+	<MoodGridSwitcher @ref="_switcher" @bind-SelectedYear="SelectedYear" @bind-SelectedYear:after="LoadYear" HeaderClicked="HeaderClicked" />
+</div>
+
+<div class="page-body">
+	@if (_gridYear != null)
+	{
+		<div style="padding-bottom: 40vh;">
+			<MoodGridCalendar MoodColors="MoodColors" GridYear="_gridYear.Value" OpenToDate="OpenToDate"
+							  CalendarLoaded="ScrollToOpenToDate" DayClicked="@(d => Close(d))"
+							  PreviousMonthClicked="PreviousMonth" NextMonthClicked="NextMonth" />
 		</div>
-
-		<MoodGridSwitcher @ref="_switcher" @bind-SelectedYear="SelectedYear" @bind-SelectedYear:after="LoadYear" HeaderClicked="HeaderClicked" />
-	</TitleContent>
-
-	<DialogContent>
-		@if (_gridYear != null)
-		{
-			<div style="padding-bottom: 40vh;">
-				<MoodGridCalendar MoodColors="MoodColors" GridYear="_gridYear.Value" OpenToDate="OpenToDate"
-								CalendarLoaded="ScrollToOpenToDate" DayClicked="@(d => Close(d))" 
-								PreviousMonthClicked="PreviousMonth" NextMonthClicked="NextMonth" />
-			</div>
-		}
-	</DialogContent>
-</MudDialog>
+	}
+</div>
 
 @code {
 	MoodGridSwitcher _switcher;
 	DataPointCategory _moodCategory;
 	GridYear? _gridYear = null;
 	Task _loadYearTask;
-	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
 	[Parameter]
+	public string OpenToDateString { get; set; }
+
 	public DateOnly OpenToDate { get; set; }
 
 	public int SelectedYear { get; set; }
@@ -72,9 +72,10 @@
 	{
 		await base.OnInitializedAsync();
 
-		PageService.EnteredPage(() => Close());
+		KeyEventService.Entered(() => Close());
 
-		logger.LogInformation($"Opened to {OpenToDate}");
+		OpenToDate = DateOnly.ParseExact(OpenToDateString, "yyyyMMdd");
+		logger.LogInformation($"Opening to {OpenToDate}");
 		SelectedYear = OpenToDate.Year;
 
 		GenerateColors();
@@ -101,9 +102,7 @@
 	{
 		logger.LogDebug($"Scrolling to month {month}");
 
-		// TODO: Unsure why we need two calls.
-		await ScrollManager.ScrollToTopAsync($"#mood-grid-month-{month}", ScrollBehavior.Smooth);
-		await JSRuntime.InvokeVoidAsyncIgnoreErrors("scrollToNestedElement", ".mud-dialog", $"#mood-grid-month-{month}");
+		await JSRuntime.InvokeVoidAsync("scrollToTopOfNestedElement", ".mood-grid", $"#mood-grid-month-{month}");
 	}
 
 	async Task ScrollToOpenToDate() => await ScrollToMonth(OpenToDate.Month);
@@ -210,7 +209,8 @@
 
 	void Close()
 	{
-		PageService.CloseDialog(MudDialog, true);
+		KeyEventService.Exited();
+		NavigationManager.NavigateTo("/");
 	}
 
 	void Close(DateOnly? date)
@@ -218,6 +218,7 @@
 		if (date == null || date > DateOnly.FromDateTime(DateTime.Now).Next())
 			return;
 
-		PageService.CloseDialog(MudDialog, date);
+		KeyEventService.Exited();
+		NavigationManager.NavigateTo($"/{date:yyyyMMdd}");
 	}
 }

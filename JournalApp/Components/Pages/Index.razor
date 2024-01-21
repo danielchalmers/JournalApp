@@ -1,21 +1,19 @@
 ﻿@namespace JournalApp
-@page "/"
+@page "/{OpenToDateString?}"
 @using CommunityToolkit.Maui.Storage;
-@implements IDisposable
 @inherits LayoutComponentBase
-@inject IDbContextFactory<AppDbContext> DbFactory
+@implements IDisposable
 @inject ILogger<Index> logger
-@inject ISnackbar SnackbarService
-@inject IDialogService DialogService
-@inject PageService PageService
-@inject IScrollManager ScrollManager
+@inject IDbContextFactory<AppDbContext> DbFactory
 @inject AppDataService AppDataService
+@inject IDialogService DialogService
+@inject KeyEventService KeyEventService
+@inject NavigationManager NavigationManager
+@inject IScrollManager ScrollManager
 
 <div class="page-title">
 	<div class="page-header">
-		<MudButton OnClick="OnTitleClicked" DisableRipple Variant="Variant.Text">
-			<MudText Typo="Typo.h6">🙂 @ThisAssembly.AssemblyTitle BETA</MudText>
-		</MudButton>
+		<MudText Typo="Typo.h6">🙂 @ThisAssembly.AssemblyTitle BETA</MudText>
 
 		<MudSpacer />
 
@@ -120,14 +118,22 @@
 	Day _day;
 	DateTimeOffset _stoppedDate;
 
+	[Parameter]
+	public string OpenToDateString { get; set; }
+
 	protected override async Task OnInitializedAsync()
 	{
 		logger.LogInformation("Initializing asynchronously");
 		db = await DbFactory.CreateDbContextAsync();
 		await base.OnInitializedAsync();
 
-		logger.LogInformation("Going to the current day");
-		await GoToDay(DateOnly.FromDateTime(DateTime.Now));
+		// Switch back to the date we left from.
+		if (DateTimeOffset.TryParse(Preferences.Get("index_disposed_at", DateTimeOffset.Now.ToString("O")), out var disposedAt) && DateTimeOffset.Now - disposedAt < TimeSpan.FromHours(1))
+			OpenToDateString ??= Preferences.Get("last_date", null);
+
+		var date = DateOnly.TryParseExact(OpenToDateString, "yyyyMMdd", out var parsed) ? parsed : DateOnly.FromDateTime(DateTime.Now);
+		logger.LogInformation($"Opening to {OpenToDateString}");
+		await GoToDay(date);
 
 		// https://learn.microsoft.com/en-us/dotnet/maui/fundamentals/app-lifecycle
 		var window = App.Current.Windows.Single();
@@ -136,15 +142,15 @@
 		window.Stopped += Window_Stopped;
 		window.Resumed += Window_Resumed;
 
-		// Reset the count of nested pages. Relevant if a refresh happens and so the pages are never properly exited.
-		PageService.ResetStack();
+		// We're back on the index with no dialogs open so we can reset any that weren't handled.
+		KeyEventService.ResetStack();
 	}
 
 	private void Window_DeactivatedOrDestroying(object sender, EventArgs e)
 	{
 		logger.LogDebug("Window deactivated or destroying");
 
-		if (_disposed && PageService.CurrentDepth == 0)
+		if (!_disposed && KeyEventService.CurrentDepth == 0)
 		{
 			logger.LogInformation("Auto saving database while no pages are open");
 
@@ -152,7 +158,7 @@
 		}
 		else
 		{
-			logger.LogDebug($"Not auto saving database because {PageService.CurrentDepth} pages are open or this is disposed");
+			logger.LogDebug($"Not auto saving database because {KeyEventService.CurrentDepth} pages are open or this is disposed");
 		}
 	}
 
@@ -171,7 +177,7 @@
 		if (DeviceInfo.Current.Platform != DevicePlatform.WinUI && DateTimeOffset.Now - _stoppedDate > TimeSpan.FromHours(1))
 		{
 			// If no dialogs are open.
-			if (PageService.CurrentDepth == 0)
+			if (KeyEventService.CurrentDepth == 0)
 			{
 				logger.LogInformation($"Switching from {_day} to current day after user was gone since {_stoppedDate}");
 				await GoToDay(DateOnly.FromDateTime(DateTime.Now), scrollToTop: true);
@@ -180,15 +186,9 @@
 			}
 			else
 			{
-				logger.LogDebug($"Not switching to current day because {PageService.CurrentDepth} pages are open");
+				logger.LogDebug($"Not switching to current day because {KeyEventService.CurrentDepth} pages are open");
 			}
 		}
-	}
-
-	async Task OnTitleClicked()
-	{
-		logger.LogDebug("Title clicked");
-		await GoToDay(DateOnly.FromDateTime(DateTime.Now), scrollToTop: true);
 	}
 
 	async Task ScrollToTop()
@@ -225,81 +225,40 @@
 		await GoToDay(_day.Date.Next());
 	}
 
-	async Task OpenMoodGrid()
+	void OpenMoodGrid()
 	{
 		logger.LogInformation("Opening Mood Grid");
-		await db.SaveChangesAsync();
-
-		var parameters = new DialogParameters<MoodGridDialog> { { x => x.OpenToDate, _day.Date } };
-		var result = await DialogService.Show<MoodGridDialog>(parameters, ComponentUtil.FullscreenDialogOptions).Result;
-
-		if (result.Data is DateOnly date)
-		{
-			logger.LogInformation($"Selected {date} from the Mood Grid");
-			await GoToDay(date, scrollToTop: true);
-		}
+		NavigationManager.NavigateTo($"/calendar/{_day.Date:yyyyMMdd}");
 	}
 
-	async Task FinalizeCategories()
+	void ManageCategories()
 	{
-		var points = db.GetMissingPoints(_day);
-
-		if (points.Count != 0)
-		{
-			await db.Points.AddRangeAsync(points);
-			await db.SaveChangesAsync();
-			logger.LogInformation($"Added missing data points for {_day}");
-		}
+		logger.LogInformation("Opening category manager");
+		NavigationManager.NavigateTo($"/manage");
 	}
 
-	async Task ManageCategories()
+	void ManageMedications()
 	{
-		logger.LogInformation("Managing categories");
-		await db.SaveChangesAsync();
-
-		await DialogService.Show<ManageCategoriesDialog>(ComponentUtil.FullscreenDialogOptions).Result;
-
-		await FinalizeCategories();
+		logger.LogInformation("Opening medication manager");
+		NavigationManager.NavigateTo($"/manage/Medications");
 	}
 
-	async Task ManageMedications()
+	void OpenTrends()
 	{
-		logger.LogInformation("Managing medications");
-		await db.SaveChangesAsync();
-
-		var parameters = new DialogParameters<ManageCategoriesDialog> { { x => x.Group, "Medications" } };
-		await DialogService.Show<ManageCategoriesDialog>(parameters, ComponentUtil.FullscreenDialogOptions).Result;
-
-		await FinalizeCategories();
+		logger.LogInformation("Opening Trends");
+		NavigationManager.NavigateTo($"/trends/{_day.Date:yyyyMMdd}");
 	}
 
-	async Task OpenTrends()
-	{
-		logger.LogInformation("Opening trends dialog");
-		await db.SaveChangesAsync();
-
-		var parameters = new DialogParameters<TrendsDialog> { { x => x.OpenToDate, _day.Date } };
-		var result = await DialogService.Show<TrendsDialog>(parameters, ComponentUtil.FullscreenDialogOptions).Result;
-	}
-
-	async Task OpenSafetyPlan()
+	void OpenSafetyPlan()
 	{
 		logger.LogInformation("Opening Safety Plan");
-		var plan = Preferences.Default.GetJson<SafetyPlan>("safety_plan") ?? new();
-		var parameters = new DialogParameters<SafetyPlanDialog> { { x => x.Plan, plan } };
-		var result = await DialogService.Show<SafetyPlanDialog>(parameters, ComponentUtil.FullscreenDialogOptions).Result;
-
-		if (result.Canceled)
-			return;
-
-		logger.LogInformation("Saving Safety Plan");
-		Preferences.Default.SetJson("safety_plan", plan);
+		NavigationManager.NavigateTo($"/safetyplan");
 	}
 
-	async Task OpenWorksheets()
+	void OpenWorksheets()
 	{
-		logger.LogInformation("Opening Worksheets dialog");
-		await DialogService.Show<WorksheetsDialog>(ComponentUtil.FullscreenDialogOptions).Result;
+		logger.LogInformation("Opening Worksheets");
+		NavigationManager.NavigateTo($"/worksheets");
 	}
 
 	async Task StartImport()
@@ -327,10 +286,10 @@
 		await Browser.Default.OpenAsync(Feedback.GenerateLink());
 	}
 
-	async Task OpenAbout()
+	void OpenAbout()
 	{
-		logger.LogInformation("Opening About dialog");
-		await DialogService.Show<AboutDialog>(ComponentUtil.FullscreenDialogOptions).Result;
+		logger.LogInformation("Opening About");
+		NavigationManager.NavigateTo($"/about");
 	}
 
 	async Task NewNote()
@@ -350,7 +309,18 @@
 
 	public void Dispose()
 	{
+		if (_disposed)
+			return;
+
 		_disposed = true;
-		db?.Dispose();
+
+		Preferences.Set("last_date", _day.Date.ToString("yyyyMMdd"));
+		Preferences.Set("index_disposed_at", DateTimeOffset.Now.ToString("O"));
+
+		if (db != null)
+		{
+			db.SaveChanges();
+			db.Dispose();
+		}
 	}
 }

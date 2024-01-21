@@ -21,6 +21,9 @@
 		get => _selectedYear;
 		set
 		{
+			if (_selectedYear == value)
+				return;
+
 			_selectedYear = value;
 			SelectedYearChanged.InvokeAsync(value);
 		}

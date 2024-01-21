@@ -1,54 +1,53 @@
 ﻿@namespace JournalApp
+@page "/trends/{OpenToDateString}"
 @using CommunityToolkit.Maui.Storage;
 @inject IDbContextFactory<AppDbContext> DbFactory
-@inject ILogger<TrendsDialog> logger
-@inject IDialogService DialogService
-@inject PageService PageService
+@inject ILogger<TrendsPage> logger
+@inject KeyEventService KeyEventService
+@inject NavigationManager NavigationManager
 
-<MudDialog DefaultFocus="DefaultFocus.None">
-	<TitleContent>
-		<div class="page-header">
-			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Close" OnClick="Close" />
+<div class="page-title">
+	<div class="page-header">
+		<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Close" OnClick="Close" />
 
-			<MudText Typo="Typo.h6">Trends</MudText>
+		<MudText Typo="Typo.h6">Trends</MudText>
 
-			@if (Debugger.IsAttached)
-			{
-				<MudSpacer />
+		@if (Debugger.IsAttached)
+		{
+			<MudSpacer />
 
-				<MudIconButton Icon="@Icons.Material.Filled.PictureAsPdf" Title="Export as PDF" OnClick="Export" />
-			}
-		</div>
+			<MudIconButton Icon="@Icons.Material.Filled.PictureAsPdf" Title="Export as PDF" OnClick="Export" />
+		}
+	</div>
 
-		<TrendsSwitcher @bind-SelectedDates="SelectedDates" @bind-SelectedDates:after="LoadDates" OpenToDate="OpenToDate" />
-	</TitleContent>
+	<TrendsSwitcher @bind-SelectedDates="SelectedDates" @bind-SelectedDates:after="LoadDates" OpenToDate="OpenToDate" />
+</div>
 
-	<DialogContent>
-		<div id="trends-category-list">
-			@foreach (var (category, points) in AllPoints.OrderBy(x => x.Key.Group).ThenBy(x => x.Key.Index))
-			{
-				<div class="trends-category">
-					<MudText Typo="Typo.h6">@(TrendCategoryView.GetHeaderText(category))</MudText>
+<div class="page-body">
+	<div id="trends-category-list">
+		@foreach (var (category, points) in AllPoints.OrderBy(x => x.Key.Group).ThenBy(x => x.Key.Index))
+		{
+			<div class="trends-category">
+				<MudText Typo="Typo.h6">@(TrendCategoryView.GetHeaderText(category))</MudText>
 
-					<ErrorBoundary>
-						<ChildContent>
-							<TrendCategoryView Category="category" Dates="SelectedDates" PointsByDay="points" />
-						</ChildContent>
+				<ErrorBoundary>
+					<ChildContent>
+						<TrendCategoryView Category="category" Dates="SelectedDates" PointsByDay="points" />
+					</ChildContent>
 
-						<ErrorContent>
-							<MudText Color="Color.Error">💥 Failed to load.</MudText>
-						</ErrorContent>
-					</ErrorBoundary>
-				</div>
-			}
-		</div>
-	</DialogContent>
-</MudDialog>
+					<ErrorContent>
+						<MudText Color="Color.Error">💥 Failed to load.</MudText>
+					</ErrorContent>
+				</ErrorBoundary>
+			</div>
+		}
+	</div>
+</div>
 
 @code {
-	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
-
 	[Parameter]
+	public string OpenToDateString { get; set; }
+
 	public DateOnly OpenToDate { get; set; }
 
 	public IReadOnlyList<DateOnly> SelectedDates { get; set; }
@@ -59,9 +58,10 @@
 	{
 		base.OnInitialized();
 
-		PageService.EnteredPage(() => Close());
+		KeyEventService.Entered(() => Close());
 
-		logger.LogInformation($"Opened to {OpenToDate}");
+		OpenToDate = DateOnly.ParseExact(OpenToDateString, "yyyyMMdd");
+		logger.LogInformation($"Opening to {OpenToDate}");
 	}
 
 	async Task LoadDates()
@@ -101,7 +101,8 @@
 
 	void Close()
 	{
-		PageService.CloseDialog(MudDialog, true);
+		KeyEventService.Exited();
+		NavigationManager.NavigateTo("/");
 	}
 
 	public async Task Export()

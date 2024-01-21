@@ -3,7 +3,7 @@
 @using MudBlazor.Utilities
 @inject ILogger<ColorPickerDialog> logger
 @inject IDialogService DialogService
-@inject PageService PageService
+@inject KeyEventService KeyEventService
 
 <MudDialog DefaultFocus="DefaultFocus.Element" OnBackdropClick="Submit">
 	<DialogContent>
@@ -21,12 +21,12 @@
 	{
 		base.OnInitialized();
 
-		PageService.EnteredPage(() => Submit());
+		KeyEventService.Entered(() => Submit());
 	}
 
 	void Submit()
 	{
-		PageService.CloseDialog(MudDialog, SelectedColor);
+		KeyEventService.CloseDialog(MudDialog, SelectedColor);
 	}
 
 	public static async Task<MudColor> ShowDialog(IDialogService dialogService, MudColor color)

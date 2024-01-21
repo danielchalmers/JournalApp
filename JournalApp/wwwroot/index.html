@@ -32,8 +32,12 @@
 	<script src="_content/MudBlazor/MudBlazor.min.js"></script>
 
 	<script>
-		window.scrollToNestedElement = (ancestorSelector, descendantSelector) => {
-			document.querySelector(ancestorSelector).scrollTop = document.querySelector(descendantSelector).offsetTop;
+		window.scrollToAbsoluteTop = () => {
+			document.scrollingElement.scrollTop = 0
+		}
+
+		window.scrollToTopOfNestedElement = (ancestorSelector, descendantSelector) => {
+			document.scrollingElement.scrollTop = document.querySelector(descendantSelector).offsetTop - document.querySelector(ancestorSelector).offsetTop
 		}
 	</script>
 

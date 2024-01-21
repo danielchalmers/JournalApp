@@ -30,6 +30,9 @@
 		get => _selectedMonth;
 		set
 		{
+			if (_selectedMonth == value)
+				return;
+
 			_selectedMonth = value;
 
 			logger.LogDebug($"Selected date {value}");
@@ -72,6 +75,9 @@
 		get => _selectedDates;
 		set
 		{
+			if (_selectedDates == value)
+				return;
+
 			_selectedDates = value;
 			SelectedDatesChanged.InvokeAsync(SelectedDates);
 		}
