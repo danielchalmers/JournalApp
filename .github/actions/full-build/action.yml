@@ -2,6 +2,14 @@ name: Full build
 
 description: Builds and tests
 
+inputs:
+  RELEASE_KEYSTORE_BASE64:
+    description: 'RELEASE_KEYSTORE_BASE64'
+    required: true
+  RELEASE_KEYSTORE_PASS:
+    description: 'RELEASE_KEYSTORE_PASS'
+    required: true
+
 runs:
   using: "composite"
   steps:
@@ -28,7 +36,7 @@ runs:
       uses: timheuer/base64-to-file@v1.2
       with:
         fileName: release.keystore
-        encodedString: "${{ secrets.RELEASE_KEYSTORE_BASE64 }}"
+        encodedString: "${{ inputs.RELEASE_KEYSTORE_BASE64 }}"
 
     - name: Build for Android
       shell: bash
@@ -36,9 +44,9 @@ runs:
         dotnet publish JournalApp\JournalApp.csproj -o publish -c:Release -f:net8.0-android
         -p:AndroidKeyStore=True
         -p:AndroidSigningKeyStore="${{ steps.create_keystore.outputs.filePath }}"
-        -p:AndroidSigningStorePass="${{ secrets.RELEASE_KEYSTORE_PASS }}"
+        -p:AndroidSigningStorePass="${{ inputs.RELEASE_KEYSTORE_PASS }}"
         -p:AndroidSigningKeyAlias="key"
-        -p:AndroidSigningKeyPass="${{ secrets.RELEASE_KEYSTORE_PASS }}"
+        -p:AndroidSigningKeyPass="${{ inputs.RELEASE_KEYSTORE_PASS }}"
     
     - name: List build output
       shell: bash
