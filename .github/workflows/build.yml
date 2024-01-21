@@ -1,0 +1,23 @@
+name: Build
+
+on:
+  push:
+    branches-ignore:
+      - release
+  pull_request:
+
+jobs: 
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: ./.github/actions/full-build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          path: |
+            publish
+  #          publish/*.apk
+  #          publish/*.aab
+          if-no-files-found: error
