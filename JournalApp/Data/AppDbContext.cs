@@ -48,7 +48,7 @@ public class AppDbContext : DbContext
             Days.Add(day);
         }
 
-        var random =
+        Random random =
 #if DEBUG
             Random.Shared;
 #else
