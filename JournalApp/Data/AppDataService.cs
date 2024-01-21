@@ -2,9 +2,9 @@
 
 namespace JournalApp;
 
-public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<AppDbContext> dbFactory, IFilePicker filePicker, IShare share)
+public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<AppDbContext> dbFactory, IShare share)
 {
-    public async Task<bool> StartImportWizard(IDialogService dialogService)
+    public async Task<bool> StartImportWizard(IDialogService dialogService, string path)
     {
         logger.LogInformation("Starting import wizard");
 
@@ -22,24 +22,16 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
             return false;
         }
 
-        // Let user pick the file to import.
-        logger.LogInformation("Picking file to import");
-        var pickResult = await filePicker.PickAsync();
+        logger.LogInformation($"Reading file: {path}");
 
-        if (pickResult == null)
-        {
-            logger.LogInformation("Didn't pick file");
-            return false;
-        }
-
-        logger.LogInformation($"Reading file: {pickResult.FullPath}");
-        await using var stream = await pickResult.OpenReadAsync();
-
-        // Attempt to read the archive.
+        // Attempt to read the file and its archive.
         BackupFile backupFile;
         try
         {
-            backupFile = await BackupFile.ReadArchive(stream);
+            await using (var fs = File.Open(path, FileMode.Open))
+            {
+                backupFile = await BackupFile.ReadArchive(fs);
+            }
         }
         catch (Exception ex)
         {

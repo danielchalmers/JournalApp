@@ -1,18 +1,22 @@
 ﻿@namespace JournalApp
-@page "/about"
-@inject ILogger<AboutPage> logger
+@page "/settings/{ImportPath?}"
+@inject ILogger<SettingsPage> logger
 @inject KeyEventService KeyEventService
 @inject NavigationManager NavigationManager
+@inject AppDataService AppDataService
+@inject IDialogService DialogService
 
 <div class="page-title">
 	<div class="page-header">
 		<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Close" OnClick="Close" />
 
-		<MudText Typo="Typo.h6">About JournalApp</MudText>
+		<MudText Typo="Typo.h6">JournalApp v@(ThisAssembly.AssemblyFileVersion)</MudText>
 	</div>
 </div>
 
 <div class="page-body">
+	<MudButton StartIcon="@Icons.Material.Filled.Upload" OnClick="StartExport" FullWidth>Export</MudButton>
+
 	<MudTextField T="string" Text="@CreditsText" AutoGrow ReadOnly DisableUnderLine />
 </div>
 
@@ -24,13 +28,24 @@
 		KeyEventService.Entered(Close);
 	}
 
+	[Parameter]
+	public string ImportPath { get; set; }
+
 	public string CreditsText { get; private set; }
 
 	protected override async Task OnInitializedAsync()
 	{
+		CreditsText = await GetCreditsText();
+
 		await base.OnInitializedAsync();
 
-		CreditsText = await GetCreditsText();
+		if (ImportPath != null)
+			await AppDataService.StartImportWizard(DialogService, Encoding.UTF8.GetString(Convert.FromBase64String(ImportPath)));
+	}
+
+	async Task StartExport()
+	{
+		await AppDataService.StartExportWizard(DialogService);
 	}
 
 	public async Task<string> GetCreditsText()

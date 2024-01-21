@@ -29,13 +29,8 @@
 
 			<MudDivider />
 
-			<MudMenuItem Icon="@Icons.Material.Filled.Download" OnAction="StartImport">Import</MudMenuItem>
-			<MudMenuItem Icon="@Icons.Material.Filled.Upload" OnAction="StartExport">Export</MudMenuItem>
-
-			<MudDivider />
-
 			<MudMenuItem Icon="@Icons.Material.Filled.Campaign" OnAction="OpenFeedback">Feedback</MudMenuItem>
-			<MudMenuItem Icon="@Icons.Material.Filled.Info" OnAction="OpenAbout">v@(ThisAssembly.AssemblyFileVersion)</MudMenuItem>
+			<MudMenuItem Icon="@Icons.Material.Filled.Settings" OnAction="OpenSettings">Settings</MudMenuItem>
 		</MudMenu>
 	</div>
 
@@ -267,28 +262,16 @@
 		NavigationManager.NavigateTo($"/worksheets");
 	}
 
-	async Task StartImport()
-	{
-		await DialogService.ShowCustomMessageBox(string.Empty, "Import has not been implemented yet. Check back in another update!");
-		return;
-	}
-
-	async Task StartExport()
-	{
-		await db.SaveChangesAsync();
-		await AppDataService.StartExportWizard(DialogService);
-	}
-
 	async Task OpenFeedback()
 	{
 		logger.LogInformation("Opening feedback link");
 		await Browser.Default.OpenAsync(Feedback.GenerateLink());
 	}
 
-	void OpenAbout()
+	void OpenSettings()
 	{
-		logger.LogInformation("Opening About");
-		NavigationManager.NavigateTo($"/about");
+		logger.LogInformation("Opening Settings");
+		NavigationManager.NavigateTo($"/settings");
 	}
 
 	async Task NewNote()
