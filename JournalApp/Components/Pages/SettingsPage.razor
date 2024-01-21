@@ -1,5 +1,6 @@
 ﻿@namespace JournalApp
 @page "/settings/{ImportPath?}"
+@implements IDisposable
 @inject ILogger<SettingsPage> logger
 @inject KeyEventService KeyEventService
 @inject NavigationManager NavigationManager
@@ -27,17 +28,19 @@ else
 			<div class="settings-group">
 				<MudText Typo="Typo.h4">Personalization</MudText>
 
-				<MudButton StartIcon="@Icons.Material.Filled.Upload" OnClick="SetUpSafetyPlan" FullWidth Size="Size.Large">Set Up Safety Plan</MudButton>
+				<MudTextField T="string" @bind-Text="UserName" Label="Your name (used in Trends)" MaxLength="40" Immediate />
+
+				<MudButton StartIcon="@Icons.Material.Filled.HealthAndSafety" OnClick="SetUpSafetyPlan" Variant="Variant.Outlined" FullWidth>Set Up Safety Plan</MudButton>
 			</div>
 
 			<div class="settings-group">
-				<MudText Typo="Typo.h4">Data and backups</MudText>
+				<MudText Typo="Typo.h4">Data & backups</MudText>
 
-				<MudButton StartIcon="@Icons.Material.Filled.Upload" OnClick="StartExport" FullWidth Size="Size.Large">Export</MudButton>
+				<MudButton StartIcon="@Icons.Material.Filled.Upload" OnClick="StartExport" Variant="Variant.Outlined" FullWidth>Export</MudButton>
 
 				@if (DeviceInfo.Current.Platform == DevicePlatform.WinUI)
 				{
-					<MudButton StartIcon="@Icons.Material.Filled.Download" OnClick="PickAndStartImport" FullWidth Size="Size.Large">Import</MudButton>
+					<MudButton StartIcon="@Icons.Material.Filled.Download" OnClick="PickAndStartImport" Variant="Variant.Outlined" FullWidth>Import</MudButton>
 				}
 			</div>
 
@@ -53,23 +56,21 @@ else
 @code {
 	bool _isBusy;
 
-	protected override void OnInitialized()
-	{
-		base.OnInitialized();
-
-		KeyEventService.Entered(Close);
-	}
-
 	[Parameter]
 	public string ImportPath { get; set; }
 
 	public string CreditsText { get; private set; }
 
+	public string UserName { get; set; }
+
 	protected override async Task OnInitializedAsync()
 	{
+		UserName = Preferences.Get("name", null);
 		CreditsText = await GetCreditsText();
 
 		await base.OnInitializedAsync();
+
+		KeyEventService.Entered(Close);
 
 		await StartImport();
 	}
@@ -138,5 +139,10 @@ else
 	{
 		KeyEventService.Exited();
 		NavigationManager.NavigateTo("/");
+	}
+
+	public void Dispose()
+	{
+		Preferences.Set("name", UserName);
 	}
 }

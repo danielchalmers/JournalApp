@@ -10,7 +10,7 @@
 	<div class="page-header">
 		<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Close" OnClick="Close" />
 
-		<MudText Typo="Typo.h6">Trends</MudText>
+		<MudText Typo="Typo.h6">@("Trends" + (string.IsNullOrWhiteSpace(UserName) ? string.Empty : $" - {UserName}"))</MudText>
 
 		@if (Debugger.IsAttached)
 		{
@@ -54,8 +54,12 @@
 
 	Dictionary<DataPointCategory, IReadOnlyDictionary<int, IReadOnlyCollection<DataPoint>>> AllPoints = new();
 
+	public string UserName { get; private set; }
+
 	protected override void OnInitialized()
 	{
+		UserName = Preferences.Get("name", null);
+
 		base.OnInitialized();
 
 		KeyEventService.Entered(() => Close());
