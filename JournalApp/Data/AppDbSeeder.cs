@@ -5,9 +5,9 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
     public void SeedDb()
     {
         logger.LogInformation("Seeding database");
-
         using var db = dbFactory.CreateDbContext();
         var sw = Stopwatch.StartNew();
+
         try
         {
             db.Database.Migrate();
@@ -24,21 +24,13 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
         }
 
         logger.LogInformation($"Migrated database in {sw.ElapsedMilliseconds}ms");
-
-        sw.Restart();
-        SeedCategories();
-        logger.LogInformation($"Seeded categories in {sw.ElapsedMilliseconds}ms");
-
-#if DEBUG
-        sw.Restart();
-        SeedDays();
-        logger.LogInformation($"Seeded days in {sw.ElapsedMilliseconds}ms");
-#endif
     }
 
-    private void SeedCategories()
+    public void SeedCategories()
     {
+        logger.LogInformation("Seeding categories");
         using var db = dbFactory.CreateDbContext();
+        var sw = Stopwatch.StartNew();
 
         void AddOrUpdate(
             string guidString,
@@ -214,45 +206,62 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             medDose: 300,
             medUnit: "mg",
             medEveryDaySince: DateTimeOffset.Now);
+
+        logger.LogInformation($"Seeded categories in {sw.ElapsedMilliseconds}ms");
     }
 
-    private void SeedDays(IEnumerable<DateOnly> dates)
+    public void SeedDays(IEnumerable<DateOnly> dates)
     {
         using var db = dbFactory.CreateDbContext();
 
-        var categories = db.Categories.ToHashSet();
-        var days = db.GetOrCreateDays(dates);
+        // Select and create only new days.
+        var existingDates = db.Days.Where(d => dates.Contains(d.Date)).Select(d => d.Date).ToHashSet();
+        var newDays = dates.Except(existingDates).Order().Select(Day.Create).ToList();
+
+        if (newDays.Count == 0)
+            return; // We only want to seed new days but there aren't any.
+
         var newPoints = new List<DataPoint>();
 
-        var d = 0;
-        while (true)
+        foreach (var category in db.Categories)
         {
-            // Use the same seed over a random number of days to represent trends.
-            var chunkLength = Random.Shared.Next(1, 6);
-            var random = new Random(Guid.NewGuid().GetHashCode());
-
-            for (var i = 0; i < chunkLength; i++)
+            void SeedDaysWithCategory()
             {
-                // Sometimes don't even generate the day as if the user forgot.
-                var fillDay = Random.Shared.Next(0, 10) > 0;
-
-                // Get or create the day and fill in all missing points with the random seed.
-                newPoints.AddRange(db.GetMissingPoints(days[d], categories, fillDay ? random : null));
-
-                // Increment day and see if we're done.
-                d++;
-                if (d == days.Count)
+                var d = 0;
+                while (true)
                 {
-                    db.Points.AddRange(newPoints);
-                    db.SaveChanges();
-                    return;
+                    // Use the same seed over a random number of days to represent trends.
+                    var chunkLength = Random.Shared.Next(1, 6);
+                    var seed = Guid.NewGuid().GetHashCode();
+
+                    for (var i = 0; i < chunkLength; i++)
+                    {
+                        // Sometimes don't even generate the day as if the user forgot.
+                        var fill = Random.Shared.Next(0, 10) > 0;
+
+                        // Generate missing points with the random seed.
+                        newPoints.AddRange(db.GetMissingPoints(newDays[d], category, fill ? new(seed) : null));
+
+                        // Increment and end when we've gone through all the days.
+                        d++;
+                        if (d == newDays.Count)
+                            return;
+                    }
                 }
             }
+
+            SeedDaysWithCategory();
         }
+
+        db.Points.AddRange(newPoints);
+        db.Days.AddRange(newDays);
+        db.SaveChanges();
     }
 
-    private void SeedDays()
+    public void SeedDays()
     {
+        logger.LogInformation("Seeding days");
+        var sw = Stopwatch.StartNew();
         var startDate = DateOnly.FromDateTime(DateTime.Now - TimeSpan.FromDays(365 * 2));
         var endDate = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(7));
         var dates = new List<DateOnly>();
@@ -264,5 +273,7 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             startDate.AddMonths(relativeMonth);
 
         SeedDays(dates);
+
+        logger.LogInformation($"Seeded days in {sw.ElapsedMilliseconds}ms");
     }
 }

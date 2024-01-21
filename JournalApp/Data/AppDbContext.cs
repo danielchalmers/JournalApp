@@ -48,78 +48,54 @@ public class AppDbContext : DbContext
             Days.Add(day);
         }
 
-        var points = GetMissingPoints(day);
+        var random =
+#if DEBUG
+            Random.Shared;
+#else
+            null;
+#endif
 
-        if (points.Count != 0)
-            await Points.AddRangeAsync(points);
+        foreach (var category in Categories)
+            await Points.AddRangeAsync(GetMissingPoints(day, category, random));
 
         return day;
     }
 
-    public List<Day> GetOrCreateDays(IEnumerable<DateOnly> dates)
-    {
-        var existingDays = Days.Where(d => dates.Contains(d.Date)).Include(d => d.Points).ToHashSet();
-        var newDays = new HashSet<Day>();
-        var foundDays = new List<Day>();
-
-        foreach (var date in dates)
-        {
-            var day = existingDays.FirstOrDefault(x => x.Date == date);
-
-            if (day == null)
-            {
-                day = Day.Create(date);
-                newDays.Add(day);
-            }
-
-            foundDays.Add(day);
-        }
-
-        Days.AddRange(newDays);
-
-        return foundDays;
-    }
-
-    public HashSet<DataPoint> GetMissingPoints(Day day, IEnumerable<DataPointCategory> categories = null, Random random = null)
+    public HashSet<DataPoint> GetMissingPoints(Day day, DataPointCategory category, Random random)
     {
         var newPoints = new HashSet<DataPoint>();
 
-        foreach (var category in categories ?? Categories.AsEnumerable())
+        if (category.Group == "Notes")
         {
-            if (category.Group == "Notes")
+            if (random == null && category.Points.Count == 0)
             {
                 // First-launch example note.
-                if (category.Points.Count == 0)
-                {
-                    var note = CreateNote(day);
-                    note.Text = "I just started using JournalApp! 😎";
-                    newPoints.Add(note);
-                }
+                var note = CreateNote(day);
+                note.Text = "I just started using JournalApp! 😎";
+                newPoints.Add(note);
             }
-            else
+        }
+        else if (!day.Points.Any(x => x.Category.Guid == category.Guid && x.Type == category.Type))
+        {
+            // Create a new data point for this category if it doesn't have one already.
+            var point = DataPoint.Create(day, category);
+
+            // Randomize values.
+            if (random != null)
             {
-                // Create a new data point for this category if it doesn't have one already.
-                if (!day.Points.Any(x => x.Category.Guid == category.Guid && x.Type == category.Type))
-                {
-                    var point = DataPoint.Create(day, category);
-
-                    if (random != null)
-                    {
-                        point.Mood = DataPoint.Moods[random.Next(1, DataPoint.Moods.Count)];
-                        point.SleepHours = random.Next(0, 49) / 2.0m;
-                        point.ScaleIndex = random.Next(0, 6);
-                        point.Bool = Convert.ToBoolean(random.Next(0, 2));
-                        point.Number = random.Next(0, 1000);
-                    }
-
-                    // Automatically mark daily medications as taken.
-                    if (category.Enabled && category.MedicationEveryDaySince != null && day.Date >= DateOnly.FromDateTime(category.MedicationEveryDaySince.Value.Date))
-                        point.Bool = true;
-
-                    // Add to the database.
-                    newPoints.Add(point);
-                }
+                point.CreatedAt = new DateTime(day.Date, TimeOnly.FromTimeSpan(TimeSpan.FromHours(random.Next(1, 24))), DateTimeKind.Local);
+                point.Mood = DataPoint.Moods[random.Next(1, DataPoint.Moods.Count)];
+                point.SleepHours = random.Next(0, 49) / 2.0m;
+                point.ScaleIndex = random.Next(0, 6);
+                point.Bool = Convert.ToBoolean(random.Next(0, 2));
+                point.Number = random.Next(0, 1000);
             }
+
+            // Automatically mark "every day" medications as taken.
+            if (category.Enabled && category.MedicationEveryDaySince != null && day.Date >= DateOnly.FromDateTime(category.MedicationEveryDaySince.Value.Date))
+                point.Bool = true;
+
+            newPoints.Add(point);
         }
 
         return newPoints;
