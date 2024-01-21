@@ -4,21 +4,25 @@ description: Builds and tests
 
 inputs:
   RELEASE_KEYSTORE_BASE64:
-    description: 'RELEASE_KEYSTORE_BASE64'
+    description: "RELEASE_KEYSTORE_BASE64"
     required: true
   RELEASE_KEYSTORE_PASS:
-    description: 'RELEASE_KEYSTORE_PASS'
+    description: "RELEASE_KEYSTORE_PASS"
     required: true
 
 runs:
   using: "composite"
   steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0 # Need full history for git versioning
 
+    - name: List files
+      shell: bash
+      run: ls
+
     - uses: actions/setup-dotnet@v3
-    
+
     - name: Show .NET info
       shell: bash
       run: dotnet --info
@@ -41,13 +45,13 @@ runs:
     - name: Build for Android
       shell: bash
       run: >
-        dotnet publish JournalApp\JournalApp.csproj -o publish -c:Release -f:net8.0-android
+        dotnet publish .\JournalApp\JournalApp\JournalApp.csproj -o publish -c:Release -f:net8.0-android
         -p:AndroidKeyStore=True
         -p:AndroidSigningKeyStore="${{ steps.create_keystore.outputs.filePath }}"
         -p:AndroidSigningStorePass="${{ inputs.RELEASE_KEYSTORE_PASS }}"
         -p:AndroidSigningKeyAlias="key"
         -p:AndroidSigningKeyPass="${{ inputs.RELEASE_KEYSTORE_PASS }}"
-    
+
     - name: List build output
       shell: bash
       run: ls publish
