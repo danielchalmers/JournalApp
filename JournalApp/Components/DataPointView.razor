@@ -120,7 +120,7 @@ else if (Point.Type == PointType.Medication)
 
 	async Task EditTextInDialog()
 	{
-		await EditTextDialog.ShowDialog(DialogService, Point);
+		await EditNoteDialog.ShowDialog(DialogService, Point);
 		await DialogClosed.InvokeAsync();
 	}
 

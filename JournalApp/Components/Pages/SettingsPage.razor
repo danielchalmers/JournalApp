@@ -28,7 +28,7 @@ else
 			<div class="settings-group">
 				<MudText Typo="Typo.h4">Personalization</MudText>
 
-				<MudTextField T="string" @bind-Text="UserName" Label="Your name (used in Trends)" MaxLength="40" Immediate />
+				<MudButton StartIcon="@Icons.Material.Filled.Badge" OnClick="SetName" Variant="Variant.Outlined" FullWidth>Set Name (Used in Trends)</MudButton>
 
 				<MudButton StartIcon="@Icons.Material.Filled.HealthAndSafety" OnClick="SetUpSafetyPlan" Variant="Variant.Outlined" FullWidth>Set Up Safety Plan</MudButton>
 			</div>
@@ -58,11 +58,8 @@ else
 
 	public string CreditsText { get; private set; }
 
-	public string UserName { get; set; }
-
 	protected override async Task OnInitializedAsync()
 	{
-		UserName = Preferences.Get("name", null);
 		CreditsText = await GetCreditsText();
 
 		await base.OnInitializedAsync();
@@ -71,6 +68,13 @@ else
 
 		if (App.ActivatedFilePath != null)
 			await StartImport();
+	}
+
+	async Task SetName()
+	{
+		logger.LogInformation("Opening name editor");
+		
+		await DialogService.Show<EditNameDialog>().Result;
 	}
 
 	void SetUpSafetyPlan()
@@ -97,7 +101,7 @@ else
 		{
 			_isBusy = true;
 			StateHasChanged();
-			
+
 			var path = App.ActivatedFilePath;
 			await AppDataService.StartImportWizard(DialogService, App.ActivatedFilePath);
 		}
@@ -142,6 +146,5 @@ else
 	public void Dispose()
 	{
 		KeyEventService.Exited();
-		Preferences.Set("name", UserName);
 	}
 }

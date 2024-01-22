@@ -36,7 +36,7 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
         logger.LogDebug("Archive was read");
 
         // Warn the user of what's going to happen.
-        if (await dialogService.ShowCustomMessageBox(string.Empty, 
+        if (await dialogService.ShowCustomMessageBox(string.Empty,
             $"The selected backup contains {backup.Days.Count} days, {backup.Categories.Count} categories/medications, {backup.Points.Count} points, and {backup.PreferenceBackups.Count} preferences. " +
             "This will replace ALL existing data, cannot be undone, and may take a few minutes.",
             yesText: "Import data", cancelText: "Cancel") == null)
@@ -45,7 +45,8 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
             return false;
         }
 
-        // Set preferences.
+        // Restore preferences.
+        Preferences.Clear();
         foreach (var (key, value) in backup.PreferenceBackups)
         {
             Preferences.Set(key, value);
@@ -85,7 +86,7 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
         var sw = Stopwatch.StartNew();
 
         var preferenceBackups = new List<PreferenceBackup>();
-        foreach (var key in new[] { "safety_plan", "mood_palette" })
+        foreach (var key in new[] { "name", "safety_plan", "mood_palette", })
             preferenceBackups.Add(new(key, Preferences.Get(key, string.Empty)));
 
         BackupFile backupFile;

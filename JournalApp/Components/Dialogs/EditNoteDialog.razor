@@ -1,5 +1,5 @@
 ﻿@namespace JournalApp
-@inject ILogger<EditTextDialog> logger
+@inject ILogger<EditNoteDialog> logger
 @inject IDialogService DialogService
 @inject KeyEventService KeyEventService
 
@@ -66,10 +66,10 @@
 
 	public static async Task<bool> ShowDialog(IDialogService dialogService, DataPoint point)
 	{
-		var parameters = new DialogParameters<EditTextDialog> { { x => x.Point, point } };
+		var parameters = new DialogParameters<EditNoteDialog> { { x => x.Point, point } };
 		var options = new DialogOptions { FullWidth = true, };
 
-		var result = await dialogService.Show<EditTextDialog>(parameters, options).Result;
+		var result = await dialogService.Show<EditNoteDialog>(parameters, options).Result;
 
 		return !result.Canceled;
 	}
