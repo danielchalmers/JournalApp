@@ -9,6 +9,7 @@
 
 @if (_isBusy)
 {
+	@* TODO: Replace with separate page so we can change state of inline fields and have it updated properly in settings *@
 	<div class="d-flex justify-center">
 		<MudProgressCircular Color="Color.Primary" Style="height:33vw;width:33vw;margin-top:10vh;" Indeterminate="true" />
 	</div>
@@ -19,7 +20,7 @@ else
 		<div class="page-header">
 			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Back" OnClick="Close" />
 
-			<MudText Typo="Typo.h6">JournalApp v@(ThisAssembly.AssemblyFileVersion)</MudText>
+			<MudText Typo="Typo.h6">Settings</MudText>
 		</div>
 	</div>
 
@@ -40,6 +41,15 @@ else
 				{
 					<MudButton StartIcon="@Icons.Material.Filled.Download" OnClick="PickAndStartImport" Variant="Variant.Outlined" FullWidth>Import</MudButton>
 				}
+			</div>
+
+			<div class="settings-group">
+				<MudText Typo="Typo.h4">About</MudText>
+
+				<MudText>JournalApp @(ThisAssembly.AssemblyInformationalVersion)</MudText>
+				<MudText>@($"{DeviceInfo.Current.Platform} {DeviceInfo.Current.VersionString}")</MudText>
+
+				<MudLink Href="@(Feedback.GenerateLink())" Typo="Typo.subtitle2">Send feedback...</MudLink>
 			</div>
 
 			<div class="settings-group">
