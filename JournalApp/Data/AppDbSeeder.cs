@@ -55,13 +55,18 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             category.Group = group;
             category.ReadOnly = readOnly;
 
+            // Only set these properties if the category is new.
+            if (!doesExist)
+            {
+                category.Enabled = enabled;
+            }
+
             // Overwrite some flexible properties if it doesn't already exist OR is readonly and isn't allowed to change.
             if (!doesExist || readOnly)
             {
                 category.Type = type;
                 category.Name = name;
                 category.Details = details;
-                category.Enabled = enabled;
                 category.MedicationDose = medDose;
                 category.MedicationEveryDaySince = medEveryDaySince;
                 category.MedicationUnit = medUnit;
