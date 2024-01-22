@@ -124,6 +124,13 @@
 
 	protected override async Task OnInitializedAsync()
 	{
+		if (App.ActivatedFilePath != null)
+		{
+			logger.LogInformation($"File was activated so redirecting to settings page <{App.ActivatedFilePath}>");
+			NavigationManager.NavigateTo($"/settings");
+			return;
+		}
+
 		logger.LogInformation("Initializing asynchronously");
 		db = await DbFactory.CreateDbContextAsync();
 		await base.OnInitializedAsync();
@@ -298,6 +305,7 @@
 		if (_disposed)
 			return;
 
+		logger.LogDebug("Disposing");
 		_disposed = true;
 
 		App.Window.Deactivated -= Window_DeactivatedOrDestroying;

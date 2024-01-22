@@ -1,5 +1,5 @@
 ﻿@namespace JournalApp
-@page "/settings/{ImportPath?}"
+@page "/settings"
 @implements IDisposable
 @inject ILogger<SettingsPage> logger
 @inject KeyEventService KeyEventService
@@ -10,7 +10,7 @@
 @if (_isBusy)
 {
 	<div class="d-flex justify-center">
-		<MudProgressCircular Color="Color.Primary" Style="height:33vw;width:33vw;" Indeterminate="true" />
+		<MudProgressCircular Color="Color.Primary" Style="height:33vw;width:33vw;margin-top:10vh;" Indeterminate="true" />
 	</div>
 }
 else
@@ -56,9 +56,6 @@ else
 @code {
 	bool _isBusy;
 
-	[Parameter]
-	public string ImportPath { get; set; }
-
 	public string CreditsText { get; private set; }
 
 	public string UserName { get; set; }
@@ -72,7 +69,8 @@ else
 
 		KeyEventService.Entered(Close);
 
-		await StartImport();
+		if (App.ActivatedFilePath != null)
+			await StartImport();
 	}
 
 	void SetUpSafetyPlan()
@@ -88,24 +86,24 @@ else
 		if (pickResult == null)
 			return;
 
-		ImportPath = Convert.ToBase64String(Encoding.UTF8.GetBytes(pickResult.FullPath));
+		App.ActivatedFilePath = pickResult.FullPath;
+
 		await StartImport();
 	}
 
 	async Task StartImport()
 	{
-		if (ImportPath == null)
-			return;
-
 		try
 		{
 			_isBusy = true;
 			StateHasChanged();
-
-			await AppDataService.StartImportWizard(DialogService, Encoding.UTF8.GetString(Convert.FromBase64String(ImportPath)));
+			
+			var path = App.ActivatedFilePath;
+			await AppDataService.StartImportWizard(DialogService, App.ActivatedFilePath);
 		}
 		finally
 		{
+			App.ActivatedFilePath = null;
 			_isBusy = false;
 		}
 	}
@@ -138,12 +136,12 @@ else
 
 	void Close()
 	{
-		KeyEventService.Exited();
 		NavigationManager.NavigateTo("/");
 	}
 
 	public void Dispose()
 	{
+		KeyEventService.Exited();
 		Preferences.Set("name", UserName);
 	}
 }

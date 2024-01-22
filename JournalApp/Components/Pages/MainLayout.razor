@@ -1,5 +1,6 @@
 ﻿@namespace JournalApp
 @inherits LayoutComponentBase
+@implements IDisposable
 @inject NavigationManager NavigationManager
 
 <MudThemeProvider Theme="AppTheme" IsDarkMode />
@@ -17,20 +18,26 @@
 </div>
 
 @code {
-    MudTheme AppTheme { get; } = new()
+	MudTheme AppTheme { get; } = new()
 		{
 			PaletteDark = new PaletteDark() { TextDisabled = "#ffffffb2" },
 			LayoutProperties = new() { AppbarHeight = "4em" },
 		};
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
 
-        App.NewIntent += (s, e) =>
-        {
-            if (e != null)
-				NavigationManager.NavigateTo($"/settings/{Convert.ToBase64String(Encoding.UTF8.GetBytes(e))}", forceLoad: true);
-        };
+		App.NewIntent += NewIntent;
+	}
+
+	void NewIntent(object sender, EventArgs e)
+	{
+		NavigationManager.NavigateTo($"/settings", forceLoad: true);
+	}
+
+	public void Dispose()
+	{
+		App.NewIntent -= NewIntent;
 	}
 }

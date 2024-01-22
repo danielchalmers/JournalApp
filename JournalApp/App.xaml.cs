@@ -11,7 +11,9 @@ public partial class App : Application
 
     public static Window Window { get; private set; }
     
-    public static event EventHandler<string> NewIntent;
+    public static string ActivatedFilePath { get; set; }
+
+    public static event EventHandler NewIntent;
 
     protected override Window CreateWindow(IActivationState activationState)
     {
@@ -28,8 +30,8 @@ public partial class App : Application
         Preferences.Set("index_left_at", null);
     }
 
-    public static void OnNewIntent(object sender, string activatedFilePath)
+    public static void OnNewIntent(object sender)
     {
-        NewIntent?.Invoke(sender, activatedFilePath);
+        NewIntent?.Invoke(sender, EventArgs.Empty);
     }
 }
