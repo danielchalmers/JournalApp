@@ -84,6 +84,10 @@ else
 	async Task PickAndStartImport()
 	{
 		var pickResult = await FilePicker.Default.PickAsync();
+
+		if (pickResult == null)
+			return;
+
 		ImportPath = Convert.ToBase64String(Encoding.UTF8.GetBytes(pickResult.FullPath));
 		await StartImport();
 	}
@@ -93,16 +97,11 @@ else
 		if (ImportPath == null)
 			return;
 
-		// Warn the user of what's going to happen.
-		if (await DialogService.ShowCustomMessageBox(string.Empty, "Importing data will replace ALL existing notes, categories, medications, etc, and cannot be undone!", yesText: "OK", cancelText: "Cancel") == null)
-		{
-			logger.LogDebug("User declined to start importing data");
-			return;
-		}
-
 		try
 		{
 			_isBusy = true;
+			StateHasChanged();
+
 			await AppDataService.StartImportWizard(DialogService, Encoding.UTF8.GetString(Convert.FromBase64String(ImportPath)));
 		}
 		finally
@@ -116,6 +115,8 @@ else
 		try
 		{
 			_isBusy = true;
+			StateHasChanged();
+
 			await AppDataService.StartExportWizard(DialogService);
 		}
 		finally

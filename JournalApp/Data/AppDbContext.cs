@@ -48,11 +48,11 @@ public class AppDbContext : DbContext
             Days.Add(day);
         }
 
-        Random random =
+        var random =
 #if DEBUG
             Random.Shared;
 #else
-            null;
+            (Random)null;
 #endif
 
         foreach (var category in Categories)

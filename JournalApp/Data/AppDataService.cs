@@ -18,12 +18,12 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
         logger.LogInformation($"Reading file: {path}");
 
         // Attempt to read the file and its archive.
-        BackupFile backupFile;
+        BackupFile backup;
         try
         {
             await using (var fs = File.Open(path, FileMode.Open))
             {
-                backupFile = await BackupFile.ReadArchive(fs);
+                backup = await BackupFile.ReadArchive(fs);
             }
         }
         catch (Exception ex)
@@ -35,8 +35,18 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
 
         logger.LogDebug("Archive was read");
 
+        // Warn the user of what's going to happen.
+        if (await dialogService.ShowCustomMessageBox(string.Empty, 
+            $"The selected backup contains {backup.Days.Count} days, {backup.Categories.Count} categories/medications, {backup.Points.Count} points, and {backup.PreferenceBackups.Count} preferences. " +
+            "This will replace ALL existing data, cannot be undone, and may take a few minutes.",
+            yesText: "Import data", cancelText: "Cancel") == null)
+        {
+            logger.LogDebug("User declined to import data");
+            return false;
+        }
+
         // Set preferences.
-        foreach (var (key, value) in backupFile.PreferenceBackups)
+        foreach (var (key, value) in backup.PreferenceBackups)
         {
             Preferences.Set(key, value);
             logger.LogInformation($"Preference set: {key}");
@@ -54,9 +64,9 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
 
         await using (var db = await dbFactory.CreateDbContextAsync())
         {
-            await db.Days.AddRangeAsync(backupFile.Days);
-            await db.Categories.AddRangeAsync(backupFile.Categories);
-            await db.Points.AddRangeAsync(backupFile.Points);
+            await db.Days.AddRangeAsync(backup.Days);
+            await db.Categories.AddRangeAsync(backup.Categories);
+            await db.Points.AddRangeAsync(backup.Points);
             await db.SaveChangesAsync();
             logger.LogDebug("Added new data");
         }
@@ -81,35 +91,33 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
         BackupFile backupFile;
         await using (var db = await dbFactory.CreateDbContextAsync())
         {
-            db.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
-
             backupFile = new()
             {
-                Days = db.Days.Include(d => d.Points),
-                Categories = db.Categories.Include(c => c.Points),
-                Points = db.Points,
+                Days = await db.Days.Include(d => d.Points).ToListAsync(),
+                Categories = await db.Categories.Include(c => c.Points).ToListAsync(),
+                Points = await db.Points.ToListAsync(),
                 PreferenceBackups = preferenceBackups,
             };
+        }
 
-            // Create the file and write the archive to it.
-            // We don't write directly to a place the user picks because that requires the harsh WRITE_EXTERNAL_STORAGE permission.
-            logger.LogDebug($"Creating {filePath} after {sw.ElapsedMilliseconds}ms");
-            sw.Restart();
-            try
+        // Create the file and write the archive to it.
+        // We don't write directly to a place the user picks because that requires the harsh WRITE_EXTERNAL_STORAGE permission.
+        logger.LogDebug($"Creating {filePath} after {sw.ElapsedMilliseconds}ms");
+        sw.Restart();
+        try
+        {
+            await using (var stream = File.Create(filePath))
             {
-                await using (var stream = File.Create(filePath))
-                {
-                    await backupFile.WriteArchive(stream);
+                await backupFile.WriteArchive(stream);
 
-                    logger.LogDebug($"File created and archive written in {sw.ElapsedMilliseconds}ms");
-                }
+                logger.LogDebug($"File created and archive written in {sw.ElapsedMilliseconds}ms");
             }
-            catch (Exception ex)
-            {
-                logger.LogInformation(ex, $"Failed to create archive after {sw.ElapsedMilliseconds}ms");
-                await dialogService.ShowCustomMessageBox(string.Empty, $"Nothing happened; Failed to create archive: {ex.Message}.", showFeedbackLink: true);
-                return;
-            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex, $"Failed to create archive after {sw.ElapsedMilliseconds}ms");
+            await dialogService.ShowCustomMessageBox(string.Empty, $"Nothing happened; Failed to create archive: {ex.Message}.", showFeedbackLink: true);
+            return;
         }
 
         // Prompt the user to share the file.
