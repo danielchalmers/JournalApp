@@ -86,7 +86,7 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
         var sw = Stopwatch.StartNew();
 
         var preferenceBackups = new List<PreferenceBackup>();
-        foreach (var key in new[] { "name", "safety_plan", "mood_palette", })
+        foreach (var key in new[] { "safety_plan", "mood_palette", })
             preferenceBackups.Add(new(key, Preferences.Get(key, string.Empty)));
 
         BackupFile backupFile;

@@ -28,8 +28,6 @@ else
 			<div class="settings-group">
 				<MudText Typo="Typo.h4">Personalization</MudText>
 
-				<MudButton StartIcon="@Icons.Material.Filled.Badge" OnClick="SetName" Variant="Variant.Outlined" FullWidth>Set Name (Used in Trends)</MudButton>
-
 				<MudButton StartIcon="@Icons.Material.Filled.HealthAndSafety" OnClick="SetUpSafetyPlan" Variant="Variant.Outlined" FullWidth>Set Up Safety Plan</MudButton>
 			</div>
 
@@ -68,13 +66,6 @@ else
 
 		if (App.ActivatedFilePath != null)
 			await StartImport();
-	}
-
-	async Task SetName()
-	{
-		logger.LogInformation("Opening name editor");
-		
-		await DialogService.Show<EditNameDialog>().Result;
 	}
 
 	void SetUpSafetyPlan()
