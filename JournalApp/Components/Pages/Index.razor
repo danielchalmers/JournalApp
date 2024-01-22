@@ -124,13 +124,6 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		if (App.ActivatedFilePath != null)
-		{
-			logger.LogInformation($"File was activated so redirecting to settings page <{App.ActivatedFilePath}>");
-			NavigationManager.NavigateTo($"/settings");
-			return;
-		}
-
 		logger.LogInformation("Initializing asynchronously");
 		db = await DbFactory.CreateDbContextAsync();
 		await base.OnInitializedAsync();
@@ -170,8 +163,8 @@
 
 	private void Window_Stopped(object sender, EventArgs e)
 	{
+		logger.LogDebug("Window stopped");
 		_stoppedDate = DateTimeOffset.Now;
-		logger.LogDebug($"Window was stopped at {_stoppedDate}");
 	}
 
 	private async void Window_Resumed(object sender, EventArgs e)
@@ -205,7 +198,7 @@
 
 	async Task ScrollToTop()
 	{
-		logger.LogInformation($"Scrolling to the top");
+		logger.LogInformation("Scrolling to the top");
 		await ScrollManager.ScrollToTopAsync("main-body");
 	}
 
@@ -239,38 +232,42 @@
 
 	void OpenMoodGrid()
 	{
+		db.SaveChanges();
 		logger.LogInformation("Opening Mood Grid");
-		NavigationManager.NavigateTo($"/calendar/{_day.Date:yyyyMMdd}");
+		NavigationManager.NavigateTo($"/calendar/{_day.Date:yyyyMMdd}", false, true);
 	}
 
 	void ManageCategories()
 	{
+		db.SaveChanges();
 		logger.LogInformation("Opening category manager");
-		NavigationManager.NavigateTo($"/manage");
+		NavigationManager.NavigateTo($"/manage", false, true);
 	}
 
 	void ManageMedications()
 	{
+		db.SaveChanges();
 		logger.LogInformation("Opening medication manager");
-		NavigationManager.NavigateTo($"/manage/Medications");
+		NavigationManager.NavigateTo($"/manage/Medications", false, true);
 	}
 
 	void OpenTrends()
 	{
+		db.SaveChanges();
 		logger.LogInformation("Opening Trends");
-		NavigationManager.NavigateTo($"/trends/{_day.Date:yyyyMMdd}");
+		NavigationManager.NavigateTo($"/trends/{_day.Date:yyyyMMdd}", false, true);
 	}
 
 	void OpenSafetyPlan()
 	{
 		logger.LogInformation("Opening Safety Plan");
-		NavigationManager.NavigateTo($"/safetyplan");
+		NavigationManager.NavigateTo($"/safetyplan", false, true);
 	}
 
 	void OpenWorksheets()
 	{
 		logger.LogInformation("Opening Worksheets");
-		NavigationManager.NavigateTo($"/worksheets");
+		NavigationManager.NavigateTo($"/worksheets", false, true);
 	}
 
 	async Task OpenFeedback()
@@ -282,7 +279,7 @@
 	void OpenSettings()
 	{
 		logger.LogInformation("Opening Settings");
-		NavigationManager.NavigateTo($"/settings");
+		NavigationManager.NavigateTo($"/settings", false, true);
 	}
 
 	async Task NewNote()

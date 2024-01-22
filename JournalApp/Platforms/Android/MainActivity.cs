@@ -3,6 +3,8 @@ using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using Android.Views;
+using AndroidX.Activity;
+using JournalApp.Platforms.Android;
 
 namespace JournalApp;
 
@@ -25,26 +27,20 @@ namespace JournalApp;
 )]
 public class MainActivity : MauiAppCompatActivity
 {
-    public override bool DispatchKeyEvent(KeyEvent e)
-    {
-        if (e.KeyCode == Keycode.Back)
-        {
-            if (e.Action == KeyEventActions.Up)
-            {
-                var service = IPlatformApplication.Current.Services.GetService<KeyEventService>();
-
-                // Consume the event if any subscriptions were invoked.
-                if (service.OnBackButtonPressed())
-                    return true;
-            }
-        }
-
-        return base.DispatchKeyEvent(e);
-    }
-
     protected override void OnCreate(Bundle savedInstanceState)
     {
         base.OnCreate(savedInstanceState);
+
+        var backCallback = new OnBackPressedCallbackProxy(() =>
+        {
+            var service = IPlatformApplication.Current.Services.GetService<KeyEventService>();
+
+            // Finish the activity if no subscriptions were invoked.
+            if (!service.OnBackButtonPressed())
+                Finish();
+        });
+
+        OnBackPressedDispatcher.AddCallback(this, backCallback);
 
         OnNewIntent(Intent);
     }

@@ -1,5 +1,6 @@
 ﻿@namespace JournalApp
 @page "/worksheets"
+@implements IDisposable
 @inject ILogger<WorksheetsPage> logger
 @inject IJSRuntime JSRuntime
 @inject KeyEventService KeyEventService
@@ -7,7 +8,7 @@
 
 <div class="page-title">
 	<div class="page-header">
-		<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Close" OnClick="Close" />
+		<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Back" OnClick="Close" />
 
 		<MudText Typo="Typo.h6">Worksheets</MudText>
 	</div>
@@ -65,8 +66,7 @@
 
 	void Close()
 	{
-		KeyEventService.Exited();
-		NavigationManager.NavigateTo("/");
+		NavigationManager.NavigateTo("/", false, true);
 	}
 
 	async Task ScrollToTop()
@@ -79,5 +79,10 @@
 	{
 		logger.LogDebug($"Scrolling to group <{key}>");
 		await JSRuntime.InvokeVoidAsync("scrollToTopOfNestedElement", ".worksheet-group-list", $"#worksheet-group-key-{key}");
+	}
+
+	public void Dispose()
+	{
+		KeyEventService.Exited();
 	}
 }

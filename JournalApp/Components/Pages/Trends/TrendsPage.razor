@@ -1,6 +1,7 @@
 ﻿@namespace JournalApp
 @page "/trends/{OpenToDateString}"
 @using CommunityToolkit.Maui.Storage;
+@implements IDisposable
 @inject IDbContextFactory<AppDbContext> DbFactory
 @inject ILogger<TrendsPage> logger
 @inject KeyEventService KeyEventService
@@ -8,7 +9,7 @@
 
 <div class="page-title">
 	<div class="page-header">
-		<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Close" OnClick="Close" />
+		<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Back" OnClick="Close" />
 
 		<MudText Typo="Typo.h6">@("Trends" + (string.IsNullOrWhiteSpace(UserName) ? string.Empty : $" - {UserName}"))</MudText>
 
@@ -105,8 +106,7 @@
 
 	void Close()
 	{
-		KeyEventService.Exited();
-		NavigationManager.NavigateTo("/");
+		NavigationManager.NavigateTo("/", false, true);
 	}
 
 	public async Task Export()
@@ -114,5 +114,10 @@
 		logger.LogInformation("Starting export");
 
 		await Task.CompletedTask;
+	}
+
+	public void Dispose()
+	{
+		KeyEventService.Exited();
 	}
 }

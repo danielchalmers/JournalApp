@@ -17,7 +17,7 @@ else
 {
 	<div class="page-title">
 		<div class="page-header">
-			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Close" OnClick="Close" />
+			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Back" OnClick="Close" />
 
 			<MudText Typo="Typo.h6">JournalApp v@(ThisAssembly.AssemblyFileVersion)</MudText>
 		</div>
@@ -76,7 +76,7 @@ else
 	void SetUpSafetyPlan()
 	{
 		logger.LogInformation("Setting up Safety Plan");
-		NavigationManager.NavigateTo($"/safetyplan");
+		NavigationManager.NavigateTo($"/safetyplan", false, true);
 	}
 
 	async Task PickAndStartImport()
@@ -136,7 +136,7 @@ else
 
 	void Close()
 	{
-		NavigationManager.NavigateTo("/");
+		NavigationManager.NavigateTo("/", false, true);
 	}
 
 	public void Dispose()

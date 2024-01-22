@@ -2,6 +2,7 @@
 @page "/calendar/{OpenToDateString}"
 @using Color = Microsoft.Maui.Graphics.Color;
 @using MudBlazor.Utilities
+@implements IDisposable
 @inject IDbContextFactory<AppDbContext> DbFactory
 @inject ILogger<MoodGridPage> logger
 @inject IDialogService DialogService
@@ -11,7 +12,7 @@
 
 <div class="page-title">
 	<div class="page-header">
-		<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Close" OnClick="Close" />
+		<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Back" OnClick="Close" />
 
 		<MudText Typo="Typo.h6">Mood Grid</MudText>
 
@@ -193,8 +194,7 @@
 
 	void Close()
 	{
-		KeyEventService.Exited();
-		NavigationManager.NavigateTo("/");
+		NavigationManager.NavigateTo("/", false, true);
 	}
 
 	void Close(DateOnly? date)
@@ -202,7 +202,11 @@
 		if (date == null || date > DateOnly.FromDateTime(DateTime.Now).Next())
 			return;
 
+		NavigationManager.NavigateTo($"/{date:yyyyMMdd}", false, true);
+	}
+
+	public void Dispose()
+	{
 		KeyEventService.Exited();
-		NavigationManager.NavigateTo($"/{date:yyyyMMdd}");
 	}
 }

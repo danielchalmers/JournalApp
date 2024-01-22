@@ -1,6 +1,7 @@
 ﻿@namespace JournalApp
 @inherits LayoutComponentBase
 @implements IDisposable
+@inject KeyEventService KeyEventService
 @inject NavigationManager NavigationManager
 
 <MudThemeProvider Theme="AppTheme" IsDarkMode />
@@ -29,11 +30,20 @@
 		base.OnInitialized();
 
 		App.NewIntent += NewIntent;
+
+		// All pages have been reloaded so we should clear any leftover subscriptions.
+		KeyEventService.ResetStack();
+
+		// Start import.
+		if (App.ActivatedFilePath != null)
+		{
+			NavigationManager.NavigateTo($"/settings", false, true);
+		}
 	}
 
 	void NewIntent(object sender, EventArgs e)
 	{
-		NavigationManager.NavigateTo($"/settings", forceLoad: true);
+		NavigationManager.NavigateTo($"/settings", true, true);
 	}
 
 	public void Dispose()

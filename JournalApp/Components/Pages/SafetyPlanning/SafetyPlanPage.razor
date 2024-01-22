@@ -73,12 +73,13 @@
 
 	void Submit()
 	{
-		KeyEventService.Exited();
-		NavigationManager.NavigateTo("/");
+		NavigationManager.NavigateTo("/", false, true);
 	}
 
 	public void Dispose()
 	{
+		KeyEventService.Exited();
+
 		// Save the safety plan or discard if it's unchanged so it won't show in the main menu.
 		if (Plan == new SafetyPlan())
 			Preferences.Default.Set<string>("safety_plan", null);

@@ -108,12 +108,14 @@
 
 	void Submit()
 	{
-		KeyEventService.Exited();
-		NavigationManager.NavigateTo("/");
+		db.SaveChanges();
+		NavigationManager.NavigateTo("/", false, true);
 	}
 
 	public void Dispose()
 	{
+		KeyEventService.Exited();
+
 		if (db != null)
 		{
 			db.SaveChanges();
