@@ -37,10 +37,7 @@ else
 
 				<MudButton StartIcon="@Icons.Material.Filled.Upload" OnClick="StartExport" Variant="Variant.Outlined" FullWidth>Export</MudButton>
 
-				@if (DeviceInfo.Current.Platform == DevicePlatform.WinUI)
-				{
-					<MudButton StartIcon="@Icons.Material.Filled.Download" OnClick="PickAndStartImport" Variant="Variant.Outlined" FullWidth>Import</MudButton>
-				}
+				<MudButton StartIcon="@Icons.Material.Filled.Download" OnClick="PickAndStartImport" Variant="Variant.Outlined" FullWidth>Import</MudButton>
 			</div>
 
 			<div class="settings-group">
@@ -86,14 +83,24 @@ else
 
 	async Task PickAndStartImport()
 	{
-		var pickResult = await FilePicker.Default.PickAsync();
+		if (DeviceInfo.Current.Platform == DevicePlatform.WinUI)
+		{
+			logger.LogInformation("Picking import file");
 
-		if (pickResult == null)
-			return;
+			var pickResult = await FilePicker.Default.PickAsync();
 
-		App.ActivatedFilePath = pickResult.FullPath;
+			if (pickResult == null)
+				return;
 
-		await StartImport();
+			App.ActivatedFilePath = pickResult.FullPath;
+
+			await StartImport();
+		}
+		else
+		{
+			logger.LogInformation("Explaining how to import");
+			await DialogService.ShowCustomMessageBox(string.Empty, "Find the backup in your files app and either click it or choose Open With -> JournalApp. You can also directly share the file from any app.", showFeedbackLink: true);
+		}
 	}
 
 	async Task StartImport()

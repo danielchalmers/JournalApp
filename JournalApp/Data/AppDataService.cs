@@ -144,7 +144,7 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
         // We're going to show the message so let's not bug the user again until next interval.
         LastExportDate = DateTimeOffset.Now;
 
-        await dialogService.ShowCustomMessageBox(string.Empty, "Reminder: You haven't backed your data up in a while. You can do this by going to the dots menu and choosing \"Export\".");
+        await dialogService.ShowCustomMessageBox(string.Empty, "Reminder: You haven't backed your data up in a while. To keep your data safe, select \"Export\" in Settings.");
     }
 
     public DateTimeOffset LastExportDate
