@@ -12,6 +12,9 @@ public partial class CustomMessageBox : MudComponentBase
     private ActivatableCallback _yesCallback, _cancelCallback, _noCallback;
 
     [Inject]
+    private KeyEventService KeyEventService { get; set; } = null!;
+
+    [Inject]
     private IDialogService DialogService { get; set; } = null!;
 
     [CascadingParameter]
@@ -193,7 +196,7 @@ public partial class CustomMessageBox : MudComponentBase
     {
         base.OnInitialized();
 
-        KeyEventService.Entered(() => OnCancelClicked());
+        KeyEventService.Entered(OnCancelClicked);
 
         if (YesButton is not null)
             _yesCallback = new ActivatableCallback() { ActivateCallback = OnYesActivated };

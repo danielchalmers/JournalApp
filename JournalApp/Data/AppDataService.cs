@@ -16,6 +16,7 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
         }
 
         logger.LogInformation($"Reading file: {path}");
+        var sw = Stopwatch.StartNew();
 
         // Attempt to read the file and its archive.
         BackupFile backup;
@@ -25,23 +26,24 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
             {
                 backup = await BackupFile.ReadArchive(fs);
             }
+
+            logger.LogDebug($"Archive was read successfully after {sw.ElapsedMilliseconds}");
         }
         catch (Exception ex)
         {
-            logger.LogInformation(ex, "Failed to read archive");
+            logger.LogInformation(ex, $"Failed to read archive after {sw.ElapsedMilliseconds}");
             await dialogService.ShowCustomMessageBox(string.Empty, $"Nothing happened; Failed to read archive: {ex.Message}.", showFeedbackLink: true);
             return false;
         }
 
-        logger.LogDebug("Archive was read");
-
         // Warn the user of what's going to happen.
+        sw.Restart();
         if (await dialogService.ShowCustomMessageBox(string.Empty,
             $"The selected backup contains {backup.Days.Count} days, {backup.Categories.Count} categories/medications, {backup.Points.Count} points, and {backup.PreferenceBackups.Count} preferences. " +
             "This will replace ALL existing data, cannot be undone, and may take a few minutes.",
             yesText: "Import data", cancelText: "Cancel") == null)
         {
-            logger.LogDebug("User declined to import data");
+            logger.LogDebug($"User declined to import data after {sw.ElapsedMilliseconds}");
             return false;
         }
 
@@ -54,22 +56,24 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
         }
 
         // Apply the backup content to the database.
+        sw.Restart();
         await using (var db = await dbFactory.CreateDbContextAsync())
         {
             db.Days.RemoveRange(db.Days);
             db.Categories.RemoveRange(db.Categories);
             db.Points.RemoveRange(db.Points);
             await db.SaveChangesAsync();
-            logger.LogDebug("Cleared old db sets");
+            logger.LogDebug($"Cleared old db sets after {sw.ElapsedMilliseconds}");
         }
 
+        sw.Restart();
         await using (var db = await dbFactory.CreateDbContextAsync())
         {
             await db.Days.AddRangeAsync(backup.Days);
             await db.Categories.AddRangeAsync(backup.Categories);
             await db.Points.AddRangeAsync(backup.Points);
             await db.SaveChangesAsync();
-            logger.LogDebug("Added new data");
+            logger.LogDebug($"Added new data after {sw.ElapsedMilliseconds}");
         }
 
         logger.LogInformation("Finished import");

@@ -70,9 +70,20 @@ else
 		await base.OnInitializedAsync();
 
 		KeyEventService.Entered(Close);
+	}
 
-		if (App.ActivatedFilePath != null)
-			await StartImport();
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		await base.OnAfterRenderAsync(firstRender);
+
+		if (firstRender)
+		{
+			if (App.ActivatedFilePath != null)
+			{
+				await StartImport();
+				StateHasChanged();
+			}
+		}
 	}
 
 	void SetUpSafetyPlan()
@@ -99,7 +110,7 @@ else
 		else
 		{
 			logger.LogInformation("Explaining how to import");
-			await DialogService.ShowCustomMessageBox(string.Empty, "Find the backup in your files app and either click it or choose Open With -> JournalApp. You can also directly share the file from any app.", showFeedbackLink: true);
+			await DialogService.ShowCustomMessageBox(string.Empty, "Find the backup in your files app and click it or choose Open With -> JournalApp. You can also share the file directly from another app.", showFeedbackLink: true);
 		}
 	}
 
@@ -111,6 +122,7 @@ else
 			StateHasChanged();
 
 			var path = App.ActivatedFilePath;
+
 			await AppDataService.StartImportWizard(DialogService, App.ActivatedFilePath);
 		}
 		finally
@@ -137,12 +149,10 @@ else
 
 	public async Task<string> GetCreditsText()
 	{
-		logger.LogDebug("Getting credits stream");
+		logger.LogDebug("Reading credits file");
 
 		using var stream = await FileSystem.OpenAppPackageFileAsync("Credits.txt");
 		using var reader = new StreamReader(stream);
-
-		logger.LogDebug("Reading credits as text");
 		return reader.ReadToEnd();
 	}
 

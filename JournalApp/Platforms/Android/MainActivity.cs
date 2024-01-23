@@ -2,14 +2,12 @@
 using Android.Content;
 using Android.Content.PM;
 using Android.OS;
-using Android.Views;
 using AndroidX.Activity;
 using JournalApp.Platforms.Android;
 
 namespace JournalApp;
 
 [Activity(Theme = "@style/Maui.SplashTheme", LaunchMode = LaunchMode.SingleInstance, MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
-// TODO: Narrow the scope of these filters while being the default for .journalapp files and being a share target.
 [IntentFilter(
     [Intent.ActionSend, Intent.ActionView],
     Categories = [Intent.CategoryDefault],
@@ -17,12 +15,14 @@ namespace JournalApp;
     DataPathPatterns = [
         "/.*\\.journalapp",
         "/.*\\..*\\.journalapp",
-        "/.*\\..*\\..*\\.journalapp"
+        "/.*\\..*\\..*\\.journalapp",
+        "/.*\\..*\\..*\\..*\\.journalapp"
 ])]
+// Added because the above filter doesn't work in Samsung My Files - https://stackoverflow.com/questions/50407193/open-custom-filetype-in-samsung-file-explorer.
 [IntentFilter(
     [Intent.ActionSend, Intent.ActionView],
     Categories = [Intent.CategoryDefault],
-    DataScheme = "content",
+    DataSchemes = ["content", "file"],
     DataMimeType = "*/*"
 )]
 public class MainActivity : MauiAppCompatActivity

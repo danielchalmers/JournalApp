@@ -10,7 +10,7 @@ public partial class App : Application
     }
 
     public static Window Window { get; private set; }
-    
+
     public static string ActivatedFilePath { get; set; }
 
     public static event EventHandler NewIntent;
