@@ -46,7 +46,7 @@ else
 				<MudText>JournalApp @(ThisAssembly.AssemblyInformationalVersion)</MudText>
 				<MudText>@($"{DeviceInfo.Current.Platform} {DeviceInfo.Current.VersionString}")</MudText>
 
-				<MudLink Href="@(Feedback.GenerateLink())" Typo="Typo.subtitle2">Send feedback...</MudLink>
+				<MudLink Href="@(Feedback.GenerateLink())">Send feedback...</MudLink>
 			</div>
 
 			<div class="settings-group">
