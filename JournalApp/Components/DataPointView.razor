@@ -65,11 +65,14 @@ else if (Point.Type == PointType.Text)
 else if (Point.Type == PointType.Note)
 {
 	<div class="d-flex flex-column flex-grow-1">
-		<MudTextField @bind-Value="Point.Text"
-					  Placeholder="@(Point.Category.Group == "Notes" ? "What's on your mind?" : null)"
-					  Label="@(NoteLabel)"
-					  Immediate ReadOnly DisableUnderLine
-					  AutoGrow Lines="1" MaxLines="10" />
+		@if (!string.IsNullOrWhiteSpace(Point.Text))
+		{
+			<MudTextField @bind-Value="Point.Text"
+						  Placeholder="@(Point.Category.Group == "Notes" ? "What's on your mind?" : null)"
+						  Label="@(NoteLabel)"
+						  Immediate ReadOnly DisableUnderLine
+						  AutoGrow Lines="1" MaxLines="10" />
+		}
 
 		<MudLink OnClick="EditTextInDialog">Edit note</MudLink>
 	</div>
