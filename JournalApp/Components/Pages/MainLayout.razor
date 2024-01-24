@@ -27,12 +27,14 @@
 		{
 			Palette = new PaletteLight()
 			{
-				Primary = "#978dec",
-				PrimaryLighten = "#b6aff2",
+				Primary = "#776be7",
+				PrimaryLighten = "#978dec",
+				Background = "#f7f6fb",
 				TextDisabled = "#424242",
 			},
 			PaletteDark = new PaletteDark()
 			{
+				Primary = "#776be7",
 				TextDisabled = "#ffffffb2",
 			},
 			LayoutProperties = new() { AppbarHeight = "4em" },
@@ -43,7 +45,7 @@
 		base.OnInitialized();
 
 		AppThemeService.ThemeChanged += OnThemeChanged;
-		if (Enum.TryParse<AppTheme>(Preferences.Get("theme", "Dark"), out var parsed))
+		if (Enum.TryParse<AppTheme>(Preferences.Get("theme", "Unspecified"), out var parsed))
 			AppThemeService.SelectedAppTheme = parsed;
 
 		App.NewIntent += OnNewIntent;
