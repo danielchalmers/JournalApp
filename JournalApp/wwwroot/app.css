@@ -55,7 +55,7 @@ button {
 }
 
 .mud-dialog-title, .page-title {
-	z-index: +1;
+	z-index: 999;
 	display: flex;
 	flex-direction: column;
 	padding: 0 !important;
