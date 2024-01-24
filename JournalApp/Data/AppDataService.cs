@@ -90,8 +90,15 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
         var sw = Stopwatch.StartNew();
 
         var preferenceBackups = new List<PreferenceBackup>();
-        foreach (var key in new[] { "safety_plan", "mood_palette", })
+        foreach (var key in new[] {
+            "safety_plan",
+            "mood_palette",
+            "help_click_mood_grid_day",
+            "help_add_new_category",
+        })
+        {
             preferenceBackups.Add(new(key, Preferences.Get(key, string.Empty)));
+        }
 
         BackupFile backupFile;
         await using (var db = await dbFactory.CreateDbContextAsync())

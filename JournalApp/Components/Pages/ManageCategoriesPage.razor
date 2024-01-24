@@ -6,6 +6,7 @@
 @inject IDialogService DialogService
 @inject KeyEventService KeyEventService
 @inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
 
 <div class="page-title">
 	<div class="page-header">
@@ -55,6 +56,16 @@
 		base.OnInitialized();
 
 		KeyEventService.Entered(() => Submit());
+	}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		await base.OnAfterRenderAsync(firstRender);
+
+		if (firstRender)
+		{
+		Snackbar.ShowOneTimeTip("add_new_category", $"Click the '+' icon to add a new one");
+	}
 	}
 
 	async Task MoveUp(DataPointCategory category)
@@ -121,5 +132,7 @@
 			db.SaveChanges();
 			db.Dispose();
 		}
+
+		Snackbar.Clear();
 	}
 }

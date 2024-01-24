@@ -88,11 +88,14 @@
 	{
 		await base.OnAfterRenderAsync(firstRender);
 
-		Snackbar.ShowOneTimeTip("click_mood_grid_day", "Click a day to go to it");
+		if (firstRender)
+		{
+			Snackbar.ShowOneTimeTip("click_mood_grid_day", "Click a day to go to it");
+		}
 	}
 
-    async Task ScrollToMonth(int month)
-    {
+	async Task ScrollToMonth(int month)
+	{
 		logger.LogDebug($"Scrolling to month {month}");
 
 		await JSRuntime.InvokeVoidAsync("scrollToTopOfNestedElement", ".mood-grid", $"#mood-grid-month-{month}");
@@ -216,5 +219,6 @@
 	public void Dispose()
 	{
 		KeyEventService.Exited();
+		Snackbar.Clear();
 	}
 }
