@@ -9,6 +9,7 @@
 @inject IJSRuntime JSRuntime
 @inject KeyEventService KeyEventService
 @inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
 
 <div class="page-title">
 	<div class="page-header">
@@ -83,8 +84,15 @@
 		await LoadYear();
 	}
 
-	async Task ScrollToMonth(int month)
+	protected override async Task OnAfterRenderAsync(bool firstRender)
 	{
+		await base.OnAfterRenderAsync(firstRender);
+
+		Snackbar.ShowOneTimeTip("click_mood_grid_day", "Click a day to go to it");
+	}
+
+    async Task ScrollToMonth(int month)
+    {
 		logger.LogDebug($"Scrolling to month {month}");
 
 		await JSRuntime.InvokeVoidAsync("scrollToTopOfNestedElement", ".mood-grid", $"#mood-grid-month-{month}");
