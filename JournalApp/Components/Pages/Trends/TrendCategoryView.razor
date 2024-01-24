@@ -1,5 +1,6 @@
 ﻿@namespace JournalApp
 @using ApexCharts
+@inject AppThemeService AppThemeService
 
 @if (Category.Type is PointType.Text or PointType.Note)
 {
@@ -85,51 +86,7 @@ else
 	ApexChart<PointOnChart> _chart;
 	List<PointOnChart> _chartItems;
 
-	ApexChartOptions<PointOnChart> ChartOptions = new()
-		{
-			Theme = new Theme
-			{
-				Mode = Mode.Dark,
-				Monochrome = new ThemeMonochrome
-				{
-					Color = "#776be7",
-					Enabled = true,
-				},
-			},
-			Grid = new Grid
-			{
-				Padding = new Padding
-				{
-					Top = -15,
-				},
-			},
-			Chart = new Chart
-			{
-				Background = "transparent",
-				Height = "135px",
-				ParentHeightOffset = 0,
-				Zoom = new Zoom
-				{
-					Enabled = false,
-				},
-				Toolbar = new Toolbar
-				{
-					Show = false,
-				},
-				Animations = new Animations
-				{
-					Enabled = false,
-				},
-			},
-			Xaxis = new XAxis
-			{
-				TickAmount = 15,
-				Labels = new XAxisLabels
-				{
-					HideOverlappingLabels = true,
-				},
-			},
-		};
+	ApexChartOptions<PointOnChart> ChartOptions;
 
 	[Parameter]
 	public DataPointCategory Category { get; set; }
@@ -154,6 +111,57 @@ else
 
 		if (_chart != null)
 			await _chart.UpdateSeriesAsync(false);
+	}
+
+	protected override void OnInitialized()
+	{
+		base.OnInitialized();
+
+		ChartOptions = new()
+			{
+				Theme = new Theme
+				{
+					Mode = AppThemeService.IsDarkMode ? Mode.Dark : Mode.Light,
+					Monochrome = new ThemeMonochrome
+					{
+						Color = "#776be7",
+						Enabled = true,
+					},
+				},
+				Grid = new Grid
+				{
+					Padding = new Padding
+					{
+						Top = -15,
+					},
+				},
+				Chart = new Chart
+				{
+					Background = "transparent",
+					Height = "135px",
+					ParentHeightOffset = 0,
+					Zoom = new Zoom
+					{
+						Enabled = false,
+					},
+					Toolbar = new Toolbar
+					{
+						Show = false,
+					},
+					Animations = new Animations
+					{
+						Enabled = false,
+					},
+				},
+				Xaxis = new XAxis
+				{
+					TickAmount = 15,
+					Labels = new XAxisLabels
+					{
+						HideOverlappingLabels = true,
+					},
+				},
+			};
 	}
 
 	public static string GetHeaderText(DataPointCategory category)

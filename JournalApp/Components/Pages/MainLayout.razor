@@ -25,7 +25,16 @@
 	bool _hasRendered;
 	MudTheme _theme = new()
 		{
-			PaletteDark = new PaletteDark() { TextDisabled = "#ffffffb2" },
+			Palette = new PaletteLight()
+			{
+				Primary = "#978dec",
+				PrimaryLighten = "#b6aff2",
+				TextDisabled = "#424242",
+			},
+			PaletteDark = new PaletteDark()
+			{
+				TextDisabled = "#ffffffb2",
+			},
 			LayoutProperties = new() { AppbarHeight = "4em" },
 		};
 
@@ -75,7 +84,5 @@
 	{
 		AppThemeService.ThemeChanged -= OnThemeChanged;
 		App.NewIntent -= OnNewIntent;
-
-		Preferences.Set("theme", AppThemeService.SelectedAppTheme.ToString());
 	}
 }

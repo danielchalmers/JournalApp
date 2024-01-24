@@ -12,7 +12,7 @@ public class AppThemeService : IDisposable
     }
 
     public AppTheme SelectedAppTheme
-    {   
+    {
         get => _theme;
         set
         {
@@ -20,6 +20,13 @@ public class AppThemeService : IDisposable
             OnThemeChanged();
         }
     }
+
+    public bool IsDarkMode => _theme switch
+    {
+        AppTheme.Unspecified => Application.Current.RequestedTheme != AppTheme.Light,
+        AppTheme.Light => false,
+        _ => true,
+    };
 
     public event EventHandler<bool> ThemeChanged;
 
@@ -31,14 +38,7 @@ public class AppThemeService : IDisposable
 
     private void OnThemeChanged()
     {
-        var isDarkMode = _theme switch
-        {
-            AppTheme.Unspecified => Application.Current.RequestedTheme != AppTheme.Light,
-            AppTheme.Light => false,
-            _ => true,
-        };
-
-        ThemeChanged?.Invoke(this, isDarkMode);
+        ThemeChanged?.Invoke(this, IsDarkMode);
     }
 
     public void Dispose()
