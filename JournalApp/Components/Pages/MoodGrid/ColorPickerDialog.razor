@@ -35,7 +35,9 @@
 			{ x => x.SelectedColor, color }
 		};
 
-		var result = await dialogService.Show<ColorPickerDialog>(parameters).Result;
+		var options = new DialogOptions { FullWidth = false };
+
+		var result = await dialogService.Show<ColorPickerDialog>(parameters, options).Result;
 
 		return result.Data as MudColor;
 	}

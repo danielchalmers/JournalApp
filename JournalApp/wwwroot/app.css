@@ -112,6 +112,10 @@ button {
 	transform: translate(0, -0.75em) scale(0.75) !important;
 }
 
+.mud-dialog-width-full {
+	width: calc(100% - 16px) !important;
+}
+
 #blazor-error-ui {
 	background: darkorange;
 	bottom: 0;

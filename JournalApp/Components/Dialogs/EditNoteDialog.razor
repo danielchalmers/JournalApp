@@ -67,9 +67,8 @@
 	public static async Task<bool> ShowDialog(IDialogService dialogService, DataPoint point)
 	{
 		var parameters = new DialogParameters<EditNoteDialog> { { x => x.Point, point } };
-		var options = new DialogOptions { FullWidth = true, };
 
-		var result = await dialogService.Show<EditNoteDialog>(parameters, options).Result;
+		var result = await dialogService.Show<EditNoteDialog>(parameters).Result;
 
 		return !result.Canceled;
 	}
