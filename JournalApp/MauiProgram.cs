@@ -45,6 +45,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<AppDbSeeder>();
         builder.Services.AddSingleton<KeyEventService>();
         builder.Services.AddSingleton(Share.Default);
+        builder.Services.AddSingleton<AppThemeService>();
 
         // Seed the database.
         using var provider = builder.Services.BuildServiceProvider();

@@ -6,6 +6,7 @@
 @inject NavigationManager NavigationManager
 @inject AppDataService AppDataService
 @inject IDialogService DialogService
+@inject AppThemeService AppThemeService
 
 @if (_isBusy)
 {
@@ -28,6 +29,12 @@ else
 		<div class="settings-group-list">
 			<div class="settings-group">
 				<MudText Typo="Typo.h4">Personalization</MudText>
+
+				<MudRadioGroup @bind-Value="@SelectedTheme">
+					<MudRadio Value="@(AppTheme.Unspecified)">System</MudRadio>
+					<MudRadio Value="@(AppTheme.Light)">Light</MudRadio>
+					<MudRadio Value="@(AppTheme.Dark)">Dark</MudRadio>
+				</MudRadioGroup>
 
 				<MudButton StartIcon="@Icons.Material.Filled.HealthAndSafety" OnClick="SetUpSafetyPlan" Variant="Variant.Outlined" FullWidth>Set Up Safety Plan</MudButton>
 			</div>
@@ -60,6 +67,12 @@ else
 
 @code {
 	bool _isBusy;
+
+	public AppTheme SelectedTheme
+	{
+		get => AppThemeService.SelectedAppTheme;
+		set => AppThemeService.SelectedAppTheme = value;
+	}
 
 	public string CreditsText { get; private set; }
 

@@ -3,8 +3,9 @@
 @implements IDisposable
 @inject KeyEventService KeyEventService
 @inject NavigationManager NavigationManager
+@inject AppThemeService AppThemeService
 
-<MudThemeProvider Theme="AppTheme" IsDarkMode />
+<MudThemeProvider Theme="_theme" IsDarkMode="_isDarkMode" />
 
 <MudDialogProvider MaxWidth="MaxWidth.Small"
 				   FullWidth="true"
@@ -20,7 +21,9 @@
 </div>
 
 @code {
-	MudTheme AppTheme { get; } = new()
+	bool _isDarkMode = true;
+	bool _hasRendered;
+	MudTheme _theme = new()
 		{
 			PaletteDark = new PaletteDark() { TextDisabled = "#ffffffb2" },
 			LayoutProperties = new() { AppbarHeight = "4em" },
@@ -30,7 +33,12 @@
 	{
 		base.OnInitialized();
 
-		App.NewIntent += NewIntent;
+		AppThemeService.ThemeChanged += OnThemeChanged;
+		if (Enum.TryParse<AppTheme>(Preferences.Get("theme", "Dark"), out var parsed))
+			AppThemeService.SelectedAppTheme = parsed;
+
+		App.NewIntent += OnNewIntent;
+		App.Window.Destroying += (_, _) => Dispose();
 
 		// All pages have been reloaded so we should clear any leftover subscriptions.
 		KeyEventService.ResetStack();
@@ -42,13 +50,32 @@
 		}
 	}
 
-	void NewIntent(object sender, EventArgs e)
+	protected override void OnAfterRender(bool firstRender)
+	{
+		if (firstRender)
+		{
+			_hasRendered = true;
+		}
+	}
+
+	public void OnThemeChanged(object sender, bool isDarkMode)
+	{
+		_isDarkMode = isDarkMode;
+
+		if (_hasRendered)
+			StateHasChanged();
+	}
+
+	void OnNewIntent(object sender, EventArgs e)
 	{
 		NavigationManager.NavigateTo($"/settings", true, true);
 	}
 
 	public void Dispose()
 	{
-		App.NewIntent -= NewIntent;
+		AppThemeService.ThemeChanged -= OnThemeChanged;
+		App.NewIntent -= OnNewIntent;
+
+		Preferences.Set("theme", AppThemeService.SelectedAppTheme.ToString());
 	}
 }
