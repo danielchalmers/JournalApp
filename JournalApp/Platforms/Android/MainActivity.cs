@@ -59,7 +59,6 @@ public class MainActivity : MauiAppCompatActivity
             var file = intent.ClipData.GetItemAt(0);
             filePath = file.Uri.LastPathSegment;
             streamUri = file.Uri;
-
         }
         else if (intent.Action == Intent.ActionView)
         {

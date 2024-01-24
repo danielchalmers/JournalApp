@@ -27,11 +27,11 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
                 backup = await BackupFile.ReadArchive(fs);
             }
 
-            logger.LogDebug($"Archive was read successfully after {sw.ElapsedMilliseconds}");
+            logger.LogDebug($"Archive was read successfully after {sw.ElapsedMilliseconds}ms");
         }
         catch (Exception ex)
         {
-            logger.LogInformation(ex, $"Failed to read archive after {sw.ElapsedMilliseconds}");
+            logger.LogInformation(ex, $"Failed to read archive after {sw.ElapsedMilliseconds}ms");
             await dialogService.ShowCustomMessageBox(string.Empty, $"Nothing happened; Failed to read archive: {ex.Message}.", showFeedbackLink: true);
             return false;
         }
@@ -43,7 +43,7 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
             "This will replace ALL existing data, cannot be undone, and may take a few minutes.",
             yesText: "Import data", cancelText: "Cancel") == null)
         {
-            logger.LogDebug($"User declined to import data after {sw.ElapsedMilliseconds}");
+            logger.LogDebug($"User declined to import data after {sw.ElapsedMilliseconds}ms");
             return false;
         }
 
@@ -63,7 +63,7 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
             db.Categories.RemoveRange(db.Categories);
             db.Points.RemoveRange(db.Points);
             await db.SaveChangesAsync();
-            logger.LogDebug($"Cleared old db sets after {sw.ElapsedMilliseconds}");
+            logger.LogDebug($"Cleared old db sets after {sw.ElapsedMilliseconds}ms");
         }
 
         sw.Restart();
@@ -73,7 +73,7 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
             await db.Categories.AddRangeAsync(backup.Categories);
             await db.Points.AddRangeAsync(backup.Points);
             await db.SaveChangesAsync();
-            logger.LogDebug($"Added new data after {sw.ElapsedMilliseconds}");
+            logger.LogDebug($"Added new data after {sw.ElapsedMilliseconds}ms");
         }
 
         logger.LogInformation("Finished import");

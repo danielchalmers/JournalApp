@@ -45,12 +45,12 @@
 					<MudTextField @bind-Value="MedicationUnit" Label="Unit" MaxLength="8" Required Immediate Disabled="@(Category != null)" />
 				</div>
 
-				<MudSwitch @bind-Value="MedicationEveryDay" Label="Taken every day" Color="Color.Primary" />
+				<MudSwitch @bind-Value="MedicationEveryDay" Label="Taken every day" title="Auto checks 'yes' every day" Color="Color.Primary" />
 			}
-			
+
 			<MudTextField @bind-Value="Details" AutoGrow MaxLines="10"
-				Label="Additional details"
-				Placeholder="@(Group == "Medications" ? "Start date, side effects, etc." : "Scoring criteria, etc.")"  />
+						  Label="Additional details"
+						  Placeholder="@(Group == "Medications" ? "Start date, side effects, etc" : "Scoring criteria, etc")" />
 		</MudForm>
 	</DialogContent>
 </MudDialog>
