@@ -35,9 +35,9 @@ public class MainActivity : MauiAppCompatActivity
         {
             var service = IPlatformApplication.Current.Services.GetService<KeyEventService>();
 
-            // Finish the activity if no subscriptions were invoked.
+            // Go back to the last app if no dialogs or pages were handled.
             if (!service.OnBackButtonPressed())
-                Finish();
+                MoveTaskToBack(false);
         });
 
         OnBackPressedDispatcher.AddCallback(this, backCallback);
