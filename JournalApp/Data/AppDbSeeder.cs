@@ -146,13 +146,14 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             "C871C9F7-1A6E-4EA2-ACC9-94A256C9E2CC",
             PointType.Bool,
             name: "Therapy",
+            details: "Did I participate in group or individual therapy?",
             enabled: false
         );
         AddOrUpdate(
             "480DC07D-1330-486F-9B30-EC83A3D4E6F0",
             PointType.Number,
             name: "Weight",
-            details: "My weight in any measurement I prefer"
+            details: "My weight in the measurement I prefer"
         );
         AddOrUpdate(
             "2EEA42EE-4586-4E7D-ABF1-012BED1C0753",
@@ -186,7 +187,7 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             PointType.Medication,
             group: "Medications",
             name: "Cetirizine",
-            details: "A second-generation antihistamine",
+            details: "A second-generation antihistamine primarily used to treat hay fever and other allergies.",
             enabled: false,
             medDose: 10,
             medUnit: "mg",
@@ -196,7 +197,7 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             PointType.Medication,
             group: "Medications",
             name: "Trazadone",
-            details: "Used to treat depression, anxiety, and insomnia",
+            details: "An antidepressant primarily used to treat depression, anxiety, and insomnia",
             enabled: false,
             medDose: 50,
             medUnit: "mg",
@@ -206,7 +207,7 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             PointType.Medication,
             group: "Medications",
             name: "Gabapentin",
-            details: "An anticonvulsant that's primarily used to treat partial seizures and neuropathic pain",
+            details: "An anticonvulsant primarily used to treat partial seizures and neuropathic pain",
             enabled: false,
             medDose: 300,
             medUnit: "mg",

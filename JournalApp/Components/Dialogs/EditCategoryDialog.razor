@@ -27,7 +27,7 @@
 
 			@if (Group == null)
 			{
-				<MudSelect Label="Type of data" @bind-Value="Type" Disabled="@(Category != null)">
+				<MudSelect Label="Type" @bind-Value="Type" Disabled="@(Category != null)" TransformOrigin="Origin.CenterCenter">
 					<MudSelectItem Value="PointType.Bool">Yes or no</MudSelectItem>
 					<MudSelectItem Value="PointType.LowToHigh">Low to high</MudSelectItem>
 					<MudSelectItem Value="PointType.MildToSevere">Mild to severe</MudSelectItem>
@@ -48,8 +48,8 @@
 			}
 
 			<MudTextField @bind-Value="Details" AutoGrow MaxLines="10"
-						  Label="Additional details"
-						  Placeholder="@(Group == "Medications" ? "Start date, side effects, etc" : "Scoring criteria, etc")" />
+						  Label="Details"
+						  Placeholder="@(Group == "Medications" ? "Start date, side effects, etc" : "Explanation, scoring criteria, etc")" />
 		</MudForm>
 	</DialogContent>
 </MudDialog>
