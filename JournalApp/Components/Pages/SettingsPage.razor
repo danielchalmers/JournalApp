@@ -30,7 +30,7 @@ else
 			<div class="settings-group">
 				<MudText Typo="Typo.h4">Personalization</MudText>
 
-				<MudRadioGroup @bind-Value="@SelectedTheme">
+				<MudRadioGroup T="AppTheme" Value="AppThemeService.SelectedAppTheme" ValueChanged="SelectedAppThemeChanged">
 					<MudRadio Value="@(AppTheme.Unspecified)">System</MudRadio>
 					<MudRadio Value="@(AppTheme.Light)">Light</MudRadio>
 					<MudRadio Value="@(AppTheme.Dark)">Dark</MudRadio>
@@ -68,12 +68,6 @@ else
 @code {
 	bool _isBusy;
 
-	public AppTheme SelectedTheme
-	{
-		get => AppThemeService.SelectedAppTheme;
-		set => AppThemeService.SelectedAppTheme = value;
-	}
-
 	public string CreditsText { get; private set; }
 
 	protected override async Task OnInitializedAsync()
@@ -97,6 +91,12 @@ else
 				StateHasChanged();
 			}
 		}
+	}
+
+	void SelectedAppThemeChanged(AppTheme newTheme)
+	{
+		AppThemeService.SelectedAppTheme = newTheme;
+		Preferences.Set("theme", newTheme.ToString());
 	}
 
 	void SetUpSafetyPlan()
