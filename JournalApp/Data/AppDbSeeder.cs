@@ -10,6 +10,10 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
 
         try
         {
+#if DEBUG && false
+            // This is so dangerous that it's kept in a block instead of me adding it and removing it as needed.
+            db.Database.EnsureDeleted();
+#endif
             db.Database.Migrate();
             db.SaveChanges();
         }
@@ -137,6 +141,13 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             name: "Physical activity"
         );
         AddOrUpdate(
+            "14A348F7-139F-44A4-B032-1D11EBB63F90",
+            PointType.LowToHigh,
+            name: "Physical pain",
+            details: "The amount of physical pain I experienced today",
+            enabled: false
+        );
+        AddOrUpdate(
             "EE8DE4D0-3A87-4CA4-B384-81BD7508A19F",
             PointType.Bool,
             name: "Menstruating",
@@ -154,6 +165,13 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             PointType.Number,
             name: "Weight",
             details: "My weight in the measurement I prefer"
+        );
+        AddOrUpdate(
+            "3EA2D087-9D4C-4110-9B96-0A52FDA6BFD2",
+            PointType.Note,
+            name: "Day summary",
+            details: "A summary of the whole day's events including any notes that were written",
+            enabled: false
         );
         AddOrUpdate(
             "2EEA42EE-4586-4E7D-ABF1-012BED1C0753",
