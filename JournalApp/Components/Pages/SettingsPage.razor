@@ -53,7 +53,10 @@ else
 				<MudText>JournalApp @(ThisAssembly.AssemblyInformationalVersion)</MudText>
 				<MudText>@($"{DeviceInfo.Current.Platform} {DeviceInfo.Current.VersionString}")</MudText>
 
-				<MudLink Href="@(Feedback.GenerateLink())">Send feedback...</MudLink>
+				<MudLink Href="@(Feedback.GenerateLink())">Send feedback by email</MudLink>
+				<MudLink Href="https://github.com/danielchalmers/JournalApp/issues">Send feedback on GitHub</MudLink>
+				<MudLink Href="https://play.google.com/store/apps/details?id=com.danielchalmers.journalapp">View on Play Store</MudLink>
+				<MudLink Href="https://github.com/danielchalmers/JournalApp">View source code</MudLink>
 			</div>
 
 			<div class="settings-group">

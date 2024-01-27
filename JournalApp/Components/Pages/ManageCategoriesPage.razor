@@ -70,6 +70,7 @@
 
 	async Task OnEnabledChanged(DataPointCategory c, bool newValue)
 	{
+		logger.LogInformation($"Toggled category enabled <{c}, {newValue}>");
 		c.Enabled = newValue;
 		await db.SaveChangesAsync();
 	}

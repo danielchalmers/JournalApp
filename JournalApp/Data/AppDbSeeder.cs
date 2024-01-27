@@ -11,7 +11,7 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
         try
         {
 #if DEBUG && false
-            // This is so dangerous that it's kept in a block instead of me adding it and removing it as needed.
+            // This is so dangerous that it's kept in a block instead of being added and removed as needed.
             db.Database.EnsureDeleted();
 #endif
             db.Database.Migrate();

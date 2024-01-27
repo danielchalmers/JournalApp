@@ -9,18 +9,26 @@ public partial class App : Application
         MainPage = new MainPage();
     }
 
+    public static event EventHandler NewIntent;
+
     public static Window Window { get; private set; }
 
     public static string ActivatedFilePath { get; set; }
 
     public static (DateTimeOffset LeftAt, DateOnly LastDate)? IndexDateState { get; set; }
 
-    public static event EventHandler NewIntent;
+    public int LaunchCount
+    {
+        get => Preferences.Get("launches", 0);
+        set => Preferences.Set("launches", value);
+    }
 
     protected override Window CreateWindow(IActivationState activationState)
     {
         var window = base.CreateWindow(activationState);
         Window = window;
+
+        LaunchCount++;
 
         return window;
     }

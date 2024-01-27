@@ -83,7 +83,7 @@ public class AppDbContext : DbContext
             // Randomize values.
             if (random != null)
             {
-                point.CreatedAt = new DateTime(day.Date, TimeOnly.FromTimeSpan(TimeSpan.FromHours(random.Next(1, 24))), DateTimeKind.Local);
+                point.CreatedAt = new DateTime(day.Date, TimeOnly.FromTimeSpan(TimeSpan.FromMinutes(random.Next(1, 1440))), DateTimeKind.Local);
                 point.Mood = DataPoint.Moods[random.Next(1, DataPoint.Moods.Count)];
                 point.SleepHours = random.Next(0, 49) / 2.0m;
                 point.ScaleIndex = random.Next(0, 6);
