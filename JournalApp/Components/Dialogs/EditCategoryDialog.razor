@@ -6,7 +6,7 @@
 <MudDialog DefaultFocus="DefaultFocus.FirstChild" OnBackdropClick="SubmitOrCancel">
 	<TitleContent>
 		<div class="page-header">
-			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Cancel" OnClick="Cancel" />
+			<MudIconButton Icon="@Icons.Material.Filled.Close" Title="Cancel" OnClick="Cancel" />
 
 			<MudText Typo="Typo.h6">@(Category == null ? "New" : "Edit") @(Group == "Medications" ? "medication" : "category")</MudText>
 
