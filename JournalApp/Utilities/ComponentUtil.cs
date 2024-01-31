@@ -46,13 +46,18 @@ internal static class ComponentUtil
         return data;
     }
 
-    public static void ShowOneTimeTip(this ISnackbar snackbar, string name, string text)
+    public static void ShowTeachingTip(this ISnackbar snackbar, string name, string text)
     {
         if (Preferences.Get($"help_{name}", false))
             return;
 
-        Preferences.Set($"help_{name}", true);
+        snackbar.Add(text, Severity.Info);
+    }
 
-        snackbar.Add(text, Severity.Normal, config => config.Icon = Icons.Material.Filled.Info);
+    public static void TeachingTipActionTaken(this ISnackbar snackbar, string name)
+    {
+        snackbar.Clear();
+
+        Preferences.Set($"help_{name}", true);
     }
 }

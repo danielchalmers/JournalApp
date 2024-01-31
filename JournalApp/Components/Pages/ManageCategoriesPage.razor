@@ -64,7 +64,7 @@
 
 		if (firstRender)
 		{
-			Snackbar.ShowOneTimeTip("add_new_category", $"Click the '+' icon to add a new one");
+			Snackbar.ShowTeachingTip("add_new_category", $"Click the '+' icon to add a new one");
 		}
 	}
 
@@ -121,6 +121,7 @@
 			db.AddCategory(newCategory);
 			await db.SaveChangesAsync();
 			logger.LogInformation($"Added new category <{newCategory}>");
+			Snackbar.TeachingTipActionTaken("add_new_category");
 		}
 	}
 

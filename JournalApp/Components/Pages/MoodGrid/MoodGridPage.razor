@@ -90,7 +90,7 @@
 
 		if (firstRender)
 		{
-			Snackbar.ShowOneTimeTip("click_mood_grid_day", "Click a day to go to it");
+			Snackbar.ShowTeachingTip("click_mood_grid_day", "Click a day to go to it");
 		}
 	}
 
@@ -213,6 +213,7 @@
 		if (date == null || date > DateOnly.FromDateTime(DateTime.Now).Next())
 			return;
 
+		Snackbar.TeachingTipActionTaken("click_mood_grid_day");
 		NavigationManager.NavigateTo($"/{date:yyyyMMdd}", false, true);
 	}
 

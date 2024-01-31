@@ -31,7 +31,7 @@ public static class MauiProgram
             c.SnackbarConfiguration.HideTransitionDuration = 300;
             c.SnackbarConfiguration.ShowTransitionDuration = 300;
             c.SnackbarConfiguration.VisibleStateDuration = 8_000;
-            c.SnackbarConfiguration.SnackbarVariant = Variant.Text;
+            c.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
         });
 
         builder.Services.AddDbContextFactory<AppDbContext>(options => options
