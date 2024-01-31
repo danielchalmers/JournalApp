@@ -35,7 +35,7 @@
 			_point = value;
 			Text = value?.Text;
 			IsTimestampedNote = value?.Category?.Group == "Notes";
-			Title = IsTimestampedNote ? value.CreatedAt.ToString("MMM d h:mm tt") : $"Edit {value.Category.Name}";
+			Title = IsTimestampedNote ? value.CreatedAt.ToString("MMM d h:mm tt") : "Edit note";
 		}
 	}
 
