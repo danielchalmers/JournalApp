@@ -17,7 +17,7 @@
 	</TitleContent>
 
 	<DialogContent>
-		<MudTextField @bind-Value="Text" AutoGrow Lines="10" DisableUnderLine />
+		<MudTextField @bind-Value="Text" Placeholder="@Placeholder" AutoGrow Lines="10" DisableUnderLine />
 	</DialogContent>
 </MudDialog>
 
@@ -36,6 +36,7 @@
 			Text = value?.Text;
 			IsTimestampedNote = value?.Category?.Group == "Notes";
 			Title = IsTimestampedNote ? value.CreatedAt.ToString("MMM d h:mm tt") : "Edit note";
+			Placeholder = IsTimestampedNote ? "What's on your mind?" : value?.Category?.Name;
 		}
 	}
 
@@ -44,6 +45,8 @@
 	public bool IsTimestampedNote { get; set; }
 
 	public string Title { get; set; }
+
+	public string Placeholder { get; set; }
 
 	protected override void OnInitialized()
 	{
