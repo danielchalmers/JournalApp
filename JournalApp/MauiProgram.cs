@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Maui;
 using MudBlazor;
 using MudBlazor.Services;
-using Plugin.Maui.AppRating;
 
 namespace JournalApp;
 
@@ -48,8 +47,6 @@ public static class MauiProgram
         builder.Services.AddSingleton<KeyEventService>();
         builder.Services.AddSingleton(Share.Default);
         builder.Services.AddSingleton<AppThemeService>();
-        builder.Services.AddSingleton(AppRating.Default);
-        builder.Services.AddSingleton<AppRatingService>();
 
         // Seed the database.
         using var provider = builder.Services.BuildServiceProvider();
