@@ -10,6 +10,7 @@
 @inject KeyEventService KeyEventService
 @inject NavigationManager NavigationManager
 @inject IScrollManager ScrollManager
+@inject AppRatingService AppRatingService
 
 <div class="page-title">
 	<div class="page-header">
@@ -291,6 +292,9 @@
 		logger.LogInformation("Saving new note");
 		note.Category.Points.Add(note);
 		await db.SaveChangesAsync();
+
+		// Better to ask for a rating after a pleasant event like finishing a note than obstructively like on launch.
+		await AppRatingService.TryShowInAppRatingDialog();
 	}
 
 	ValueTask OnLocationChanging(LocationChangingContext e)

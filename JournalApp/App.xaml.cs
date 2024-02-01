@@ -17,7 +17,7 @@ public partial class App : Application
 
     public static (DateTimeOffset LeftAt, DateOnly LastDate)? IndexDateState { get; set; }
 
-    public int LaunchCount
+    public static int LaunchCount
     {
         get => Preferences.Get("launches", 0);
         set => Preferences.Set("launches", value);
