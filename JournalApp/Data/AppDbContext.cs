@@ -65,6 +65,10 @@ public class AppDbContext : DbContext
     {
         var newPoints = new HashSet<DataPoint>();
 
+        // Skip disabled categories to save database space.
+        if (!category.Enabled || category.Deleted)
+            return newPoints;
+
         if (category.Group == "Notes")
         {
             if (random == null && category.Points.Count == 0)
@@ -92,7 +96,7 @@ public class AppDbContext : DbContext
             }
 
             // Automatically mark "every day" medications as taken.
-            if (category.Enabled && category.MedicationEveryDaySince != null && day.Date >= DateOnly.FromDateTime(category.MedicationEveryDaySince.Value.Date))
+            if (category.MedicationEveryDaySince != null && day.Date >= DateOnly.FromDateTime(category.MedicationEveryDaySince.Value.Date))
                 point.Bool = true;
 
             newPoints.Add(point);
