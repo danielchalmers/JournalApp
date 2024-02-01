@@ -48,7 +48,7 @@ internal static class ComponentUtil
 
     public static void ShowTeachingTip(this ISnackbar snackbar, string name, string text)
     {
-        if (Preferences.Get($"help_{name}", false))
+        if (Preferences.Get($"tip_{name}", string.Empty) == "seen")
             return;
 
         snackbar.Add(text, Severity.Info);
@@ -58,6 +58,6 @@ internal static class ComponentUtil
     {
         snackbar.Clear();
 
-        Preferences.Set($"help_{name}", true);
+        Preferences.Set($"tip_{name}", "seen");
     }
 }

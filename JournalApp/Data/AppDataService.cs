@@ -93,8 +93,8 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
         foreach (var key in new[] {
             "safety_plan",
             "mood_palette",
-            "help_click_mood_grid_day",
-            "help_add_new_category",
+            "tip_click_mood_grid_day",
+            "tip_add_new_category",
         })
         {
             preferenceBackups.Add(new(key, Preferences.Get(key, string.Empty)));
