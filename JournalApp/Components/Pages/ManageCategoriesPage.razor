@@ -104,6 +104,8 @@
 
 	async Task New()
 	{
+		Snackbar.TeachingTipActionTaken("add_new_category");
+
 		var parameters = new DialogParameters<EditCategoryDialog> { { x => x.Group, Group } };
 		var result = await DialogService.Show<EditCategoryDialog>(parameters).Result;
 
@@ -121,7 +123,6 @@
 			db.AddCategory(newCategory);
 			await db.SaveChangesAsync();
 			logger.LogInformation($"Added new category <{newCategory}>");
-			Snackbar.TeachingTipActionTaken("add_new_category");
 		}
 	}
 
