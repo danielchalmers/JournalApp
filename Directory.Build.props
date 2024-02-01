@@ -2,7 +2,6 @@
 
   <!-- Build -->
   <PropertyGroup>
-    <TargetFrameworks>$(TargetFrameworks);net8.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <Deterministic>true</Deterministic>
     <NoWarn>BL0007,CA1822,CA2254,IDE0079,IDE0305</NoWarn>
