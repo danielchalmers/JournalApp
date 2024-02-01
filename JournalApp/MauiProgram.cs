@@ -30,7 +30,6 @@ public static class MauiProgram
             c.SnackbarConfiguration.NewestOnTop = true;
             c.SnackbarConfiguration.HideTransitionDuration = 300;
             c.SnackbarConfiguration.ShowTransitionDuration = 300;
-            c.SnackbarConfiguration.VisibleStateDuration = 8_000;
             c.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
         });
 
