@@ -12,6 +12,7 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
         {
 #if DEBUG && false
             // This is so dangerous that it's kept in a block instead of being added and removed as needed.
+            logger.LogCritical("ERASING DATABASE");
             db.Database.EnsureDeleted();
 #endif
             db.Database.Migrate();
