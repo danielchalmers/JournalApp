@@ -21,7 +21,7 @@ runs:
       shell: bash
       run: ls
 
-    - uses: actions/setup-dotnet@v3
+    - uses: actions/setup-dotnet@v4
 
     - name: Show .NET info
       shell: bash
