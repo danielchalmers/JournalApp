@@ -8,6 +8,9 @@ public static class PreferenceUtil
     {
         var jsonString = preferences.Get(key, "");
 
+        if (string.IsNullOrWhiteSpace(jsonString))
+            return default;
+
         try
         {
             return JsonSerializer.Deserialize<T>(jsonString);
