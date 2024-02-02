@@ -24,7 +24,7 @@ else
 			{
 				case PointType.Mood:
 					<ApexPointSeries TItem="PointOnChart"
-									 Name="Mood (1=saddest, 7=happiest)"
+									 Name="Mood (1=low, 7=high)"
 									 Items="_chartItems"
 									 SeriesType="SeriesType.Line"
 									 XValue="e => e.Day"
@@ -44,7 +44,7 @@ else
 				case PointType.LowToHigh:
 				case PointType.MildToSevere:
 					<ApexPointSeries TItem="PointOnChart"
-									 Name="Scale (0=lowest, 5=highest)"
+									 Name="Scale (0=low, 5=high)"
 									 Items="_chartItems"
 									 SeriesType="SeriesType.Line"
 									 XValue="e => e.Day"
