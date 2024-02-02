@@ -10,7 +10,7 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
 
         // Warn if an export wasn't done in the last week.
         if (DateTimeOffset.Now > LastExportDate.AddDays(7) &&
-            await dialogService.ShowCustomMessageBox(string.Empty, "It's recommended to export your data first. You can do this in Settings.", yesText: "Continue anyway", cancelText: "Go back") == null)
+            await dialogService.ShowCustomMessageBox(string.Empty, "It's recommended to export your data first in case there are any issues; You can do this in Settings.", yesText: "Continue anyway", cancelText: "Go back") == null)
         {
             logger.LogDebug("User didn't want to import after being warned about export");
             return false;
@@ -56,25 +56,33 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
             logger.LogInformation($"Preference set: {key}");
         }
 
-        // Apply the backup content to the database.
-        sw.Restart();
-        await using (var db = await dbFactory.CreateDbContextAsync())
+        try
         {
-            db.Days.RemoveRange(db.Days);
-            db.Categories.RemoveRange(db.Categories);
-            db.Points.RemoveRange(db.Points);
-            await db.SaveChangesAsync();
-            logger.LogDebug($"Cleared old db sets after {sw.ElapsedMilliseconds}ms");
-        }
+            sw.Restart();
+            await using (var db = await dbFactory.CreateDbContextAsync())
+            {
+                db.Days.RemoveRange(db.Days);
+                db.Categories.RemoveRange(db.Categories);
+                db.Points.RemoveRange(db.Points);
+                await db.SaveChangesAsync();
+                logger.LogDebug($"Cleared old db sets after {sw.ElapsedMilliseconds}ms");
+            }
 
-        sw.Restart();
-        await using (var db = await dbFactory.CreateDbContextAsync())
+            sw.Restart();
+            await using (var db = await dbFactory.CreateDbContextAsync())
+            {
+                await db.Days.AddRangeAsync(backup.Days);
+                await db.Categories.AddRangeAsync(backup.Categories);
+                await db.Points.AddRangeAsync(backup.Points);
+                await db.SaveChangesAsync();
+                logger.LogDebug($"Added new data after {sw.ElapsedMilliseconds}ms");
+            }
+        }
+        catch (Exception ex)
         {
-            await db.Days.AddRangeAsync(backup.Days);
-            await db.Categories.AddRangeAsync(backup.Categories);
-            await db.Points.AddRangeAsync(backup.Points);
-            await db.SaveChangesAsync();
-            logger.LogDebug($"Added new data after {sw.ElapsedMilliseconds}ms");
+            logger.LogError(ex, $"Import failed during database changes after {sw.ElapsedMilliseconds}ms");
+            await dialogService.ShowCustomMessageBox(string.Empty, $"Import critically failed; Database is potentially corrupt and app may need to be reinstalled due to error: {ex}.", showFeedbackLink: true);
+            return false;
         }
 
         LastExportDate = DateTimeOffset.Now;
