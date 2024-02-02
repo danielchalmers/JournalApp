@@ -9,7 +9,8 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
         logger.LogInformation("Starting import wizard");
 
         // Warn if an export wasn't done in the last week.
-        if (DateTimeOffset.Now > LastExportDate.AddDays(7) && await dialogService.ShowCustomMessageBox(string.Empty, "It's recommended to export your data first", yesText: "Continue anyway", cancelText: "Go back") == null)
+        if (DateTimeOffset.Now > LastExportDate.AddDays(7) &&
+            await dialogService.ShowCustomMessageBox(string.Empty, "It's recommended to export your data first. You can do this in Settings.", yesText: "Continue anyway", cancelText: "Go back") == null)
         {
             logger.LogDebug("User didn't want to import after being warned about export");
             return false;
