@@ -77,6 +77,7 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
             logger.LogDebug($"Added new data after {sw.ElapsedMilliseconds}ms");
         }
 
+        LastExportDate = DateTimeOffset.Now;
         logger.LogInformation("Finished import");
         return true;
     }
@@ -141,8 +142,7 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
             File = new ShareFile(filePath)
         });
 
-        Preferences.Set("last_export", DateTimeOffset.Now.ToString());
-
+        LastExportDate = DateTimeOffset.Now;
         logger.LogInformation("Finished export");
     }
 
