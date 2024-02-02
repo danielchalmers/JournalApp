@@ -1,4 +1,4 @@
-﻿﻿# 🙂 JournalApp
+﻿# 🙂 JournalApp
 
 **✨ Stay on top of your wellness goals with JournalApp, your personal diary and mood tracker! 📝 Write yourself notes and record things like mood, sleep, medications, or your own custom categories.**
 
