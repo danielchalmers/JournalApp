@@ -35,8 +35,21 @@
 			_point = value;
 			Text = value?.Text;
 			IsTimestampedNote = value?.Category?.Group == "Notes";
-			Title = IsTimestampedNote ? value.CreatedAt.ToString("MMM d h:mm tt") : "Edit note";
-			Placeholder = IsTimestampedNote ? "What's on your mind?" : value?.Category?.Name;
+
+			if (IsTimestampedNote)
+			{
+				Title = value.CreatedAt.ToString("MMM d h:mm tt");
+				Placeholder = "What's on your mind?";
+
+				logger.LogDebug($"Using timestamped note <{value.CreatedAt}>");
+			}
+			else
+			{
+				Title = "Edit note";
+				Placeholder = value?.Category?.Name;
+
+				logger.LogDebug($"Using category note <{Placeholder}>");
+			}
 		}
 	}
 
@@ -66,8 +79,12 @@
 
 		if (IsTimestampedNote && string.IsNullOrWhiteSpace(Text))
 		{
-			logger.LogInformation("Deleting note point with empty text");
+			logger.LogInformation("Deleting timestamped note because it has no text");
 			Point.Deleted = true;
+		}
+		else
+		{
+			logger.LogInformation("Submitting note");
 		}
 
 		KeyEventService.CloseDialog(MudDialog, true);
@@ -76,9 +93,7 @@
 	public static async Task<bool> ShowDialog(IDialogService dialogService, DataPoint point)
 	{
 		var parameters = new DialogParameters<EditNoteDialog> { { x => x.Point, point } };
-
 		var result = await dialogService.Show<EditNoteDialog>(parameters).Result;
-
 		return !result.Canceled;
 	}
 }

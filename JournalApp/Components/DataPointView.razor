@@ -1,5 +1,6 @@
 ﻿@namespace JournalApp
 @using System.Text
+@inject ILogger<DataPointView> logger
 @inject IDialogService DialogService
 
 @if (Point.Type == PointType.Mood)
@@ -113,23 +114,29 @@ else if (Point.Type == PointType.Medication)
 
 	void DecrementSleep()
 	{
+		logger.LogDebug("Decrementing sleep");
 		Point.SleepHours = Math.Max(0m, (Point.SleepHours ?? 0) - 0.5m);
 	}
 
 	void IncrementSleep()
 	{
+		logger.LogDebug("Incrementing sleep");
 		Point.SleepHours = Math.Min(24m, (Point.SleepHours ?? 0) + 0.5m);
 	}
 
 	async Task EditTextInDialog()
 	{
+		logger.LogDebug("Editing note in dialog");
 		await EditNoteDialog.ShowDialog(DialogService, Point);
+		logger.LogDebug("Finished editing note in dialog");
 		await DialogClosed.InvokeAsync();
 	}
 
 	async Task EditDose()
 	{
+		logger.LogDebug("Editing dose in dialog");
 		await EditDoseDialog.ShowDialog(DialogService, Point);
+		logger.LogDebug("Finished editing dose in dialog");
 		await DialogClosed.InvokeAsync();
 	}
 

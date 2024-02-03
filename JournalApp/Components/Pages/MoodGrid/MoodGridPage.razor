@@ -109,12 +109,16 @@
 	{
 		if (month == 1)
 		{
+			logger.LogDebug("Switching to previous month from previous year");
+
 			_switcher.PreviousYear();
 
 			await ScrollToMonth(12);
 		}
 		else
 		{
+			logger.LogDebug("Switching to previous month from same year");
+
 			await ScrollToMonth(month - 1);
 		}
 	}
@@ -123,12 +127,16 @@
 	{
 		if (month == 12)
 		{
+			logger.LogDebug("Switching to next month from next year");
+
 			_switcher.NextYear();
 
 			await ScrollToMonth(1);
 		}
 		else
 		{
+			logger.LogDebug("Switching to next month from same year");
+
 			await ScrollToMonth(month + 1);
 		}
 	}
@@ -200,11 +208,13 @@
 		}
 		MoodColors = emojiColors;
 
+		logger.LogInformation($"Primary color: {primary.ToHex()}");
 		logger.LogInformation($"Palette: {string.Join(",", emojiColors)}");
 	}
 
 	void Close()
 	{
+		logger.LogInformation("Going to index");
 		NavigationManager.NavigateTo("/", false, true);
 	}
 

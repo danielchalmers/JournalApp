@@ -2,11 +2,13 @@
 
 public class AppThemeService : IDisposable
 {
+    private readonly ILogger<AppThemeService> _logger;
     private readonly Application _application;
     private AppTheme _theme;
 
-    public AppThemeService()
+    public AppThemeService(ILogger<AppThemeService> logger)
     {
+        _logger = logger;
         _application = Application.Current;
         _application.RequestedThemeChanged += Application_RequestedThemeChanged;
     }
@@ -16,6 +18,7 @@ public class AppThemeService : IDisposable
         get => _theme;
         set
         {
+            _logger.LogInformation($"Changing theme from {_theme} to {value}");
             _theme = value;
             OnThemeChanged();
         }

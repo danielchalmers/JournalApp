@@ -66,6 +66,7 @@
 
 	void Close()
 	{
+		logger.LogInformation("Going to index");
 		NavigationManager.NavigateTo("/", false, true);
 	}
 

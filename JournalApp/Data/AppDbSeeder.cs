@@ -80,9 +80,16 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
                 category.Deleted = false;
             }
 
-            // Add the new category.
-            if (!doesExist)
+            if (doesExist)
+            {
+                logger.LogDebug($"Updating category <{guidString}>");
+            }
+            else
+            {
+                // Add the new category.
+                logger.LogDebug($"Adding category <{guidString}>");
                 db.AddCategory(category);
+            }
 
             // Save all the changed properties or the new category itself.
             db.SaveChanges();
@@ -306,7 +313,6 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
 
     public void SeedDays()
     {
-        logger.LogInformation("Seeding days");
         var sw = Stopwatch.StartNew();
         var startDate = DateOnly.FromDateTime(DateTime.Now - TimeSpan.FromDays(365 * 5));
         var endDate = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(7));
@@ -317,6 +323,8 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
         // A few additional days to test multi-year features.
         foreach (var relativeMonth in new int[] { -30, -36, -42, -48 })
             startDate.AddMonths(relativeMonth);
+
+        logger.LogInformation($"Seeding up to {dates.Count} days");
 
         SeedDays(dates);
 

@@ -1,4 +1,5 @@
 ﻿@namespace JournalApp
+@inject ILogger<WorksheetView> logger
 
 <div class="worksheet-view">
 	<MudButton OnClick="OnResourceClick" StartIcon="@Icons.Material.Filled.Link" Color="Color.Primary" Disabled="@IsLinkDisabled">
@@ -24,6 +25,7 @@
 
 	async Task OnResourceClick()
 	{
+		logger.LogInformation($"Clicked <{Worksheet.Title}> and going to <{Worksheet.Uri}>");
 		await Browser.Default.OpenAsync(Worksheet.Uri);
 	}
 }

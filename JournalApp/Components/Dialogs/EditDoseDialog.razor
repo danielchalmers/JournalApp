@@ -1,4 +1,5 @@
 ﻿@namespace JournalApp
+@inject ILogger<EditDoseDialog> logger
 @inject IDialogService DialogService
 @inject KeyEventService KeyEventService
 
@@ -46,6 +47,8 @@
 			_point = value;
 			Dose = value?.MedicationDose;
 			CategoryDetails = value?.Category?.Details;
+
+			logger.LogDebug($"Using point from category <{value?.Category?.Name}>");
 		}
 	}
 
@@ -72,12 +75,16 @@
 			// Restore default dose but mark as not taken.
 			Point.MedicationDose = Point.Category.MedicationDose;
 			Point.Bool = false;
+
+			logger.LogDebug("Restoring default dose but marking as not taken");
 		}
 		else if (Dose != Point.MedicationDose)
 		{
 			// Update with new dose.
 			Point.MedicationDose = Dose;
 			Point.Bool = true;
+
+			logger.LogDebug("Updating with new dose and marking as taken");
 		}
 
 		KeyEventService.CloseDialog(MudDialog, true);
