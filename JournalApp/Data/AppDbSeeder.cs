@@ -308,7 +308,7 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
     {
         logger.LogInformation("Seeding days");
         var sw = Stopwatch.StartNew();
-        var startDate = DateOnly.FromDateTime(DateTime.Now - TimeSpan.FromDays(365));
+        var startDate = DateOnly.FromDateTime(DateTime.Now - TimeSpan.FromDays(365 * 5));
         var endDate = DateOnly.FromDateTime(DateTime.Now + TimeSpan.FromDays(7));
         var dates = new List<DateOnly>();
 

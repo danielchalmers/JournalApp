@@ -61,9 +61,9 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
             sw.Restart();
             await using (var db = await dbFactory.CreateDbContextAsync())
             {
-                db.Days.RemoveRange(db.Days);
-                db.Categories.RemoveRange(db.Categories);
-                db.Points.RemoveRange(db.Points);
+                await db.Points.ExecuteDeleteAsync();
+                await db.Days.ExecuteDeleteAsync();
+                await db.Categories.ExecuteDeleteAsync();
                 await db.SaveChangesAsync();
                 logger.LogDebug($"Cleared old db sets after {sw.ElapsedMilliseconds}ms");
             }

@@ -24,6 +24,9 @@ public static class MauiProgram
         builder.Logging.SetMinimumLevel(LogLevel.Information);
         builder.Logging.AddFilter(ThisAssembly.AssemblyTitle, LogLevel.Debug);
 
+        // EF Core logs massively slow down seeding and import in particular.
+        builder.Logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Warning);
+
         builder.Services.AddMudServices(c =>
         {
             c.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomCenter;
