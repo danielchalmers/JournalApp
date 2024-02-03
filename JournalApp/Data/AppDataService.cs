@@ -156,7 +156,7 @@ public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<Ap
 
     public async Task ShowExportReminderIfDue(IDialogService dialogService)
     {
-        if (LastExportDate.AddDays(180) > DateTimeOffset.Now)
+        if (LastExportDate.AddDays(90) > DateTimeOffset.Now)
             return;
 
         logger.LogInformation($"It's been a while since last export <{LastExportDate}>");
