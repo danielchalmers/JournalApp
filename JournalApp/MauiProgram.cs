@@ -16,16 +16,15 @@ public static class MauiProgram
             .ConfigureFonts(fonts => fonts.AddFont("Roboto-Regular.ttf", "RobotoRegular"));
 
         builder.Services.AddMauiBlazorWebView();
-        builder.Logging.AddConsole();
 #if DEBUG
         builder.Services.AddBlazorWebViewDeveloperTools();
         builder.Logging.AddDebug();
+#else
+        builder.Logging.AddConsole();
 #endif
         builder.Logging.SetMinimumLevel(LogLevel.Information);
         builder.Logging.AddFilter(ThisAssembly.AssemblyTitle, LogLevel.Debug);
-
-        // EF Core logs massively slow down seeding and import in particular.
-        builder.Logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Warning);
+        builder.Logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Warning); // Hugely slows down seed and import.
 
         builder.Services.AddMudServices(c =>
         {
@@ -40,7 +39,8 @@ public static class MauiProgram
             .UseLazyLoadingProxies()
             .UseSqlite($"Data Source = {DbFilename}")
 #if DEBUG
-        .EnableSensitiveDataLogging()
+            .EnableSensitiveDataLogging()
+            .EnableDetailedErrors()
 #endif
         );
 
