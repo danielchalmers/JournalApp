@@ -95,7 +95,8 @@
 
 		if (category.Deleted)
 		{
-			logger.LogInformation("Category was deleted so now we're fixing indexes.");
+			logger.LogInformation("Category was deleted; deleting points and fixing indexes.");
+			db.Points.RemoveRange(category.Points);
 			db.FixCategoryIndexes();
 		}
 
