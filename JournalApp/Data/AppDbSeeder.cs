@@ -4,12 +4,10 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
 {
     public void SeedDb()
     {
-        logger.LogInformation("Seeding database");
+        logger.LogInformation("Preparing database");
         using var db = dbFactory.CreateDbContext();
         var sw = Stopwatch.StartNew();
 
-        try
-        {
 #if DEBUG && false
             // So dangerous that it's kept in a block with a long delay instead of being added and removed as needed.
             logger.LogCritical("ERASING DATABASE AND PREFERENCES");
@@ -17,12 +15,14 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             Preferences.Clear();
             db.Database.EnsureDeleted();
 #endif
+        try
+        {
             db.Database.Migrate();
-            db.SaveChanges();
         }
         catch (Microsoft.Data.Sqlite.SqliteException ex) when (ex.SqliteErrorCode == 14)
         {
             // https://stackoverflow.com/a/38562947.
+            logger.LogError(ex, "Sqlite Error Code 14");
         }
         catch (Exception ex)
         {
@@ -30,7 +30,9 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             throw;
         }
 
-        logger.LogInformation($"Migrated database in {sw.ElapsedMilliseconds}ms");
+        db.SaveChanges();
+
+        logger.LogInformation($"Prepared database in {sw.ElapsedMilliseconds}ms");
     }
 
     public void SeedCategories()
