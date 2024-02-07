@@ -73,7 +73,7 @@
 	async Task ScrollToTop()
 	{
 		logger.LogDebug("Scrolling to top");
-		await JSRuntime.InvokeVoidAsync("scrollToTopOfPage");
+		await JSRuntime.InvokeVoidAsync("scrollToAbsoluteTop");
 	}
 
 	async Task ScrollToGroup(string key)

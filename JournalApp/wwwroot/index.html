@@ -32,13 +32,12 @@
 	<script src="_content/MudBlazor/MudBlazor.min.js"></script>
 
 	<script>
-		window.scrollToTopOfPage = () => {
-			document.scrollingElement.scrollTo({ top: 0, behavior: 'smooth' })
+		window.scrollToAbsoluteTop = () => {
+			document.scrollingElement.scrollTop = 0
 		}
 
 		window.scrollToTopOfNestedElement = (ancestorSelector, descendantSelector) => {
-			var elementTop = document.querySelector(descendantSelector).offsetTop - document.querySelector(ancestorSelector).offsetTop;
-			document.scrollingElement.scrollTo({ top: elementTop, behavior: 'smooth' })
+			document.scrollingElement.scrollTop = document.querySelector(descendantSelector).offsetTop - document.querySelector(ancestorSelector).offsetTop
 		}
 	</script>
 
