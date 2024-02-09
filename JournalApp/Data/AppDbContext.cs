@@ -75,7 +75,12 @@ public class AppDbContext : DbContext
             {
                 // First-launch example note.
                 var note = CreateNote(day);
-                note.Text = "I just started using JournalApp! 😎";
+                var sb = new StringBuilder();
+                sb.AppendLine("I just started using JournalApp! 😎");
+                sb.AppendLine();
+                sb.AppendLine("Click the date to go to the calendar");
+                sb.Append("Find more features in the top right menu");
+                note.Text = sb.ToString();
                 newPoints.Add(note);
             }
         }
