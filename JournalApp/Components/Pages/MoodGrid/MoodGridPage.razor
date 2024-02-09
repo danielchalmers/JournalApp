@@ -71,6 +71,7 @@
 
 	protected override async Task OnInitializedAsync()
 	{
+		logger.LogDebug("Initializing asynchronously");
 		await base.OnInitializedAsync();
 
 		KeyEventService.Entered(() => Close());

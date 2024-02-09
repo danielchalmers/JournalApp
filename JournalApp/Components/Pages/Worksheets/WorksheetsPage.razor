@@ -59,6 +59,7 @@
 
 	protected override void OnInitialized()
 	{
+		logger.LogDebug("Initializing");
 		base.OnInitialized();
 
 		KeyEventService.Entered(() => Close());

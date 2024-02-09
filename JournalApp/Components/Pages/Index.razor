@@ -1,7 +1,6 @@
 ﻿@namespace JournalApp
 @page "/{OpenToDateString?}"
 @using CommunityToolkit.Maui.Storage;
-@inherits LayoutComponentBase
 @implements IDisposable
 @inject ILogger<Index> logger
 @inject IDbContextFactory<AppDbContext> DbFactory
@@ -125,7 +124,7 @@
 
 	protected override async Task OnInitializedAsync()
 	{
-		logger.LogInformation("Initializing asynchronously");
+		logger.LogDebug("Initializing asynchronously"); 
 		db = await DbFactory.CreateDbContextAsync();
 		await base.OnInitializedAsync();
 

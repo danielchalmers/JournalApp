@@ -75,6 +75,7 @@ else
 
 	protected override async Task OnInitializedAsync()
 	{
+		logger.LogDebug("Initializing asynchronously");
 		CreditsText = await GetCreditsText();
 
 		await base.OnInitializedAsync();

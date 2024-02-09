@@ -1,6 +1,7 @@
 ﻿@namespace JournalApp
 @inherits LayoutComponentBase
 @implements IDisposable
+@inject ILogger<MainLayout> logger
 @inject KeyEventService KeyEventService
 @inject NavigationManager NavigationManager
 @inject AppThemeService AppThemeService
@@ -42,6 +43,7 @@
 
 	protected override void OnInitialized()
 	{
+		logger.LogDebug("Initializing");
 		base.OnInitialized();
 
 		AppThemeService.ThemeChanged += OnThemeChanged;
@@ -57,6 +59,7 @@
 		// Start import.
 		if (App.ActivatedFilePath != null)
 		{
+			logger.LogDebug($"Activated by file <{App.ActivatedFilePath}>");
 			NavigationManager.NavigateTo($"/settings", false, true);
 		}
 	}
@@ -79,6 +82,7 @@
 
 	void OnNewIntent(object sender, EventArgs e)
 	{
+		logger.LogDebug("New intent");
 		NavigationManager.NavigateTo($"/settings", true, true);
 	}
 

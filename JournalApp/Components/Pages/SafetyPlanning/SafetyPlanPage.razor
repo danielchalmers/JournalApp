@@ -64,6 +64,7 @@
 
 	protected override void OnInitialized()
 	{
+		logger.LogDebug("Initializing");
 		Plan = Preferences.Default.GetJson<SafetyPlan>("safety_plan") ?? new();
 
 		base.OnInitialized();
