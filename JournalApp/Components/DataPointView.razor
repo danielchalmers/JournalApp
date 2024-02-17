@@ -81,7 +81,7 @@ else if (Point.Type == PointType.Note)
 else if (Point.Type == PointType.Medication)
 {
 	<div class="d-flex flex-grow-1 justify-space-between align-center" style="gap: 0.5em">
-		<ButtonGroupCheckBox @bind-SelectedValue="Point.Bool" />
+		<ButtonGroupCheckBox @bind-SelectedValue="Point.Bool" @bind-SelectedValue:after="OnMedicationTakenChanged" />
 
 		<MudLink OnClick="EditDose">Edit dose</MudLink>
 	</div>
@@ -92,7 +92,7 @@ else if (Point.Type == PointType.Medication)
 	public DataPoint Point { get; set; }
 
 	[Parameter]
-	public EventCallback DialogClosed { get; set; }
+	public EventCallback StateChanged { get; set; }
 
 	public int ScaleIndexForMudRating
 	{
@@ -129,7 +129,17 @@ else if (Point.Type == PointType.Medication)
 		logger.LogDebug("Editing note in dialog");
 		await EditNoteDialog.ShowDialog(DialogService, Point);
 		logger.LogDebug("Finished editing note in dialog");
-		await DialogClosed.InvokeAsync();
+		await StateChanged.InvokeAsync();
+	}
+
+	async Task OnMedicationTakenChanged()
+	{
+		// If the medication wasn't taken then having a custom dose doesn't make any sense.
+		// This also allows for an easier way to reset the dose by just clicking the button twice.
+		if (Point.Bool != true)
+			Point.MedicationDose = Point.Category.MedicationDose;
+
+		await StateChanged.InvokeAsync();
 	}
 
 	async Task EditDose()
@@ -137,7 +147,7 @@ else if (Point.Type == PointType.Medication)
 		logger.LogDebug("Editing dose in dialog");
 		await EditDoseDialog.ShowDialog(DialogService, Point);
 		logger.LogDebug("Finished editing dose in dialog");
-		await DialogClosed.InvokeAsync();
+		await StateChanged.InvokeAsync();
 	}
 
 	public static string GetHeaderText(DataPoint point)
