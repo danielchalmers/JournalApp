@@ -27,7 +27,7 @@
 
 			@if (Group == null)
 			{
-				<MudSelect Label="Type" @bind-Value="Type" Disabled="@(Category != null)" TransformOrigin="Origin.CenterCenter">
+				<MudSelect Label="Type" @bind-Value="Type" Disabled="@(Category != null)" TransformOrigin="Origin.CenterCenter" Immediate>
 					<MudSelectItem Value="PointType.Bool">Yes or no</MudSelectItem>
 					<MudSelectItem Value="PointType.LowToHigh">Low to high</MudSelectItem>
 					<MudSelectItem Value="PointType.MildToSevere">Mild to severe</MudSelectItem>
@@ -47,7 +47,7 @@
 				<MudSwitch @bind-Value="MedicationEveryDay" Label="Taken every day" title="Auto checks 'yes' every day" Color="Color.Primary" />
 			}
 
-			<MudTextField @bind-Value="Details" AutoGrow MaxLines="10"
+			<MudTextField @bind-Value="Details" Immediate AutoGrow MaxLines="10"
 						  Label="Details"
 						  Placeholder="@(Group == "Medications" ? "Start date, side effects, etc" : "Explanation, scoring criteria, etc")" />
 		</MudForm>
@@ -81,7 +81,7 @@
 	{
 		await base.OnInitializedAsync();
 
-		KeyEventService.Entered(() => Cancel());
+		KeyEventService.Entered(async () => await Submit());
 
 		if (Category != null)
 		{

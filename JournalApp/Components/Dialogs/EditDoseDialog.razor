@@ -23,7 +23,7 @@
 			<MudNumericField @bind-Value="Dose"
 							 Label="@($"Dose ({Point.Day.Date:ddd, MMM d})")"
 							 AdornmentText="@Point.Category.MedicationUnit" Adornment="Adornment.End"
-							 MaxLength="6" HideSpinButtons />
+							 MaxLength="6" HideSpinButtons Immediate />
 
 			@if (!string.IsNullOrWhiteSpace(CategoryDetails))
 			{
@@ -60,7 +60,7 @@
 	{
 		base.OnInitialized();
 
-		KeyEventService.Entered(() => Cancel());
+		KeyEventService.Entered(() => Submit());
 	}
 
 	void Cancel()
