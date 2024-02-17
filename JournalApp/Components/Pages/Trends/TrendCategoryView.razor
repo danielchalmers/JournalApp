@@ -10,7 +10,7 @@
 			foreach (var point in points.Where(x => !string.IsNullOrEmpty(x.Text)))
 			{
 				<MudTextField Value="point.Text"
-							  Label="@($"{day} @ {point.CreatedAt.ToString("M/d/yy h:mm tt")}")"
+							  Label="@GetNoteLabel(point, day)"
 							  ReadOnly DisableUnderLine AutoGrow />
 			}
 		}
@@ -175,6 +175,29 @@ else
 
 		if (category.Type == PointType.Medication)
 			sb.Append($" ({category.MedicationUnit?.Trim()})");
+
+		return sb.ToString();
+	}
+
+	string GetNoteLabel(DataPoint point, int day)
+	{
+		var isTimestampedNote = point.Category.Group == "Notes";
+
+		var sb = new StringBuilder();
+
+		// The date the note was created if it's timestamped, otherwise the actual day assigned to the point.
+		// If you just use the creation date you'll get the date the point was first created which could be anything depending on what the user does.
+		sb.Append($"{(isTimestampedNote ? point.CreatedAt : point.Day.Date):M/d/yy}");
+
+		if (isTimestampedNote)
+		{
+			// Add the time.
+			sb.Append($" {point.CreatedAt:h:mm tt}");
+
+			// Denote that it was created from a future date.
+			if (DateOnly.FromDateTime(point.CreatedAt.Date) != point.Day.Date)
+				sb.Append($" ({point.Day.Date:M/d/yy})");
+		}
 
 		return sb.ToString();
 	}
