@@ -23,7 +23,7 @@
 <div class="page-body">
 	@if (!Categories.Any())
 	{
-		<MudText Align="Align.Center">Use the plus button in the top right to add a new one.</MudText>
+		<MudText Align="Align.Center">Click the '+' icon to add a new one.</MudText>
 	}
 	else
 	{
@@ -65,7 +65,7 @@
 
 		if (firstRender)
 		{
-			Snackbar.ShowTeachingTip("add_new_category", $"Click the '+' icon to add a new one");
+			Snackbar.ShowTeachingTip("add_new_category", "Click the '+' icon to add a new one");
 		}
 	}
 
