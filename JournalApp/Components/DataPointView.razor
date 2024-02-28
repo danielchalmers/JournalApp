@@ -35,25 +35,28 @@ else if (Point.Type == PointType.Scale)
 }
 else if (Point.Type == PointType.LowToHigh)
 {
-	<MudRadioButtonGroup @bind-SelectedOption="Point.ScaleIndex">
-		<MudRadioButton T="Nullable<Int32>" Color="Color.Primary" Size="Size.Small" Option="0"><MudText Typo="Typo.subtitle2">None</MudText></MudRadioButton>
-		<MudRadioButton T="Nullable<Int32>" Color="Color.Primary" Size="Size.Small" Option="1"><MudText Typo="Typo.subtitle2">Low</MudText></MudRadioButton>
-		<MudRadioButton T="Nullable<Int32>" Color="Color.Primary" Size="Size.Small" Option="3"><MudText Typo="Typo.subtitle2">Medium</MudText></MudRadioButton>
-		<MudRadioButton T="Nullable<Int32>" Color="Color.Primary" Size="Size.Small" Option="5"><MudText Typo="Typo.subtitle2">High</MudText></MudRadioButton>
-	</MudRadioButtonGroup>
+	<MudToggleGroup T="int?" @bind-Value="Point.ScaleIndex" SelectionMode="SelectionMode.ToggleSelection" Color="Color.Primary">
+		<MudToggleItem T="int?" Value="0"><MudText Typo="Typo.subtitle2">None</MudText></MudToggleItem>
+		<MudToggleItem T="int?" Value="1"><MudText Typo="Typo.subtitle2">Low</MudText></MudToggleItem>
+		<MudToggleItem T="int?" Value="3"><MudText Typo="Typo.subtitle2">Medium</MudText></MudToggleItem>
+		<MudToggleItem T="int?" Value="5"><MudText Typo="Typo.subtitle2">High</MudText></MudToggleItem>
+	</MudToggleGroup>
 }
 else if (Point.Type == PointType.MildToSevere)
 {
-	<MudRadioButtonGroup @bind-SelectedOption="Point.ScaleIndex">
-		<MudRadioButton T="Nullable<Int32>" Color="Color.Primary" Size="Size.Small" Option="0"><MudText Typo="Typo.subtitle2">None</MudText></MudRadioButton>
-		<MudRadioButton T="Nullable<Int32>" Color="Color.Primary" Size="Size.Small" Option="1"><MudText Typo="Typo.subtitle2">Mild</MudText></MudRadioButton>
-		<MudRadioButton T="Nullable<Int32>" Color="Color.Primary" Size="Size.Small" Option="3"><MudText Typo="Typo.subtitle2">Moderate</MudText></MudRadioButton>
-		<MudRadioButton T="Nullable<Int32>" Color="Color.Primary" Size="Size.Small" Option="5"><MudText Typo="Typo.subtitle2">Severe</MudText></MudRadioButton>
-	</MudRadioButtonGroup>
+	<MudToggleGroup T="int?" @bind-Value="Point.ScaleIndex" SelectionMode="SelectionMode.ToggleSelection" Color="Color.Primary">
+		<MudToggleItem T="int?" Value="0"><MudText Typo="Typo.subtitle2">None</MudText></MudToggleItem>
+		<MudToggleItem T="int?" Value="1"><MudText Typo="Typo.subtitle2">Mild</MudText></MudToggleItem>
+		<MudToggleItem T="int?" Value="3"><MudText Typo="Typo.subtitle2">Moderate</MudText></MudToggleItem>
+		<MudToggleItem T="int?" Value="5"><MudText Typo="Typo.subtitle2">Severe</MudText></MudToggleItem>
+	</MudToggleGroup>
 }
 else if (Point.Type == PointType.Bool)
 {
-	<ButtonGroupCheckBox @bind-SelectedValue="Point.Bool" />
+	<MudToggleGroup T="bool?" @bind-Value="Point.Bool" SelectionMode="SelectionMode.ToggleSelection" Color="Color.Primary">
+		<MudToggleItem T="bool?" Value="false"><MudText Typo="Typo.subtitle2">No</MudText></MudToggleItem>
+		<MudToggleItem T="bool?" Value="true"><MudText Typo="Typo.subtitle2">Yes</MudText></MudToggleItem>
+	</MudToggleGroup>
 }
 else if (Point.Type == PointType.Number)
 {
@@ -81,7 +84,10 @@ else if (Point.Type == PointType.Note)
 else if (Point.Type == PointType.Medication)
 {
 	<div class="d-flex flex-grow-1 justify-space-between align-center" style="gap: 0.5em">
-		<ButtonGroupCheckBox @bind-SelectedValue="Point.Bool" @bind-SelectedValue:after="OnMedicationTakenChanged" />
+		<MudToggleGroup T="bool?" @bind-Value="Point.Bool" @bind-Value:after="OnMedicationTakenChanged" SelectionMode="SelectionMode.ToggleSelection" Color="Color.Primary">
+			<MudToggleItem T="bool?" Value="false"><MudText Typo="Typo.subtitle2">No</MudText></MudToggleItem>
+			<MudToggleItem T="bool?" Value="true"><MudText Typo="Typo.subtitle2">Yes</MudText></MudToggleItem>
+		</MudToggleGroup>
 
 		<MudLink OnClick="EditDose">Edit dose</MudLink>
 	</div>

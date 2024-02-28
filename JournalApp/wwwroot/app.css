@@ -124,6 +124,14 @@ button {
 	width: calc(100% - 16px) !important;
 }
 
+.mud-toggle-group {
+	flex-grow: 1;
+}
+
+.mud-toggle-item.mud-toggle-item-primary {
+	padding: 3px !important;
+}
+
 #blazor-error-ui {
 	background: darkorange;
 	bottom: 0;
