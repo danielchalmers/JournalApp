@@ -1,6 +1,6 @@
 ﻿namespace JournalApp;
 
-internal record PointOnChart(int Day, DataPoint Point)
+internal record PointOnChart(string Day, DataPoint Point)
 {
     private static readonly List<string> ChartEmojis = ["😭", "😢", "😕", "😐", "🙂", "😀", "🤩"];
 

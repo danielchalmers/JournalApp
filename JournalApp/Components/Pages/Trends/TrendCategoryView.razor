@@ -106,7 +106,7 @@ else
 		_chartItems = new();
 		foreach (var (day, point) in pointByDay)
 		{
-			_chartItems.Add(new(day, point));
+			_chartItems.Add(new(day.ToString(), point));
 		}
 
 		if (_chart != null)

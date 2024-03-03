@@ -17,7 +17,7 @@
 	DateOnly _selectedMonth;
 	IReadOnlyList<DateOnly> _selectedDates;
 
-	string HeaderText => SelectedMonth == MonthAfterCurrent ? "Last 30 Days" : SelectedMonth.ToString("MMM yyyy");
+	string HeaderText => SelectedMonth == MonthAfterCurrent ? "Last Month" : SelectedMonth.ToString("MMM yyyy");
 
 	DateOnly CurrentMonth => new DateOnly(DateTime.Now.Year, DateTime.Now.Month, 1);
 	DateOnly MonthAfterCurrent => CurrentMonth.AddMonths(1);
@@ -34,25 +34,20 @@
 				return;
 
 			_selectedMonth = value;
-
 			logger.LogDebug($"Selected date {value}");
 
 			var dates = new List<DateOnly>();
 
 			if (SelectedMonth == MonthAfterCurrent)
 			{
-				logger.LogDebug($"Returning last 30 days");
-
 				var nowDate = DateOnly.FromDateTime(DateTime.Now);
 
-				for (int i = -29; i <= 0; i++)
-					dates.Add(nowDate.AddDays(i));
+				// All the days between a month ago and now, excluding the first day as two days can't have the same number.
+				dates.AddRange(nowDate.AddMonths(-1).Next().DatesTo(nowDate));
 			}
 			else
 			{
 				var days = DateTime.DaysInMonth(value.Year, value.Month);
-
-				logger.LogDebug($"Returning {days} in month of {value.Year}-{value.Month}");
 
 				for (int i = 1; i <= days; i++)
 					dates.Add(new DateOnly(value.Year, value.Month, i));
@@ -92,7 +87,7 @@
 
 		if (OpenToDate >= CurrentMonth)
 		{
-			logger.LogDebug($"Started at most recent month so switching to Last 30 Days");
+			logger.LogDebug($"Started at most recent month so switching to Last Month");
 			SelectedMonth = MonthAfterCurrent;
 		}
 		else
