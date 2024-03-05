@@ -39,6 +39,8 @@
 </div>
 
 @code {
+	bool _leaving;
+
 	[Parameter]
 	public string OpenToDateString { get; set; }
 
@@ -99,6 +101,7 @@
 	void Close()
 	{
 		logger.LogInformation("Going to index");
+		_leaving = true;
 		NavigationManager.NavigateTo("/", false, true);
 	}
 
@@ -106,4 +109,6 @@
 	{
 		KeyEventService.Exited();
 	}
+
+	protected override bool ShouldRender() => !_leaving;
 }

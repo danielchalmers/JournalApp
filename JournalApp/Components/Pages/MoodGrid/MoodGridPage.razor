@@ -37,9 +37,10 @@
 </div>
 
 @code {
-	MoodGridSwitcher _switcher;
-	DataPointCategory _moodCategory;
 	GridYear? _gridYear = null;
+	bool _leaving;
+	DataPointCategory _moodCategory;
+	MoodGridSwitcher _switcher;
 
 	[Parameter]
 	public string OpenToDateString { get; set; }
@@ -217,6 +218,7 @@
 	void Close()
 	{
 		logger.LogInformation("Going to index");
+		_leaving = true;
 		NavigationManager.NavigateTo("/", false, true);
 	}
 
@@ -226,6 +228,7 @@
 			return;
 
 		Snackbar.TeachingTipActionTaken("click_mood_grid_day");
+		_leaving = true;
 		NavigationManager.NavigateTo($"/{date:yyyyMMdd}", false, true);
 	}
 
@@ -234,4 +237,6 @@
 		KeyEventService.Exited();
 		Snackbar.Clear();
 	}
+
+	protected override bool ShouldRender() => !_leaving;
 }

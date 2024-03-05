@@ -116,15 +116,16 @@
 	AppDbContext db;
 	bool _disposed;
 	Day _day;
-	DateTimeOffset _stoppedDate;
+	bool _leaving;
 	IDisposable locationChangingRegistration;
+	DateTimeOffset _stoppedDate;
 
 	[Parameter]
 	public string OpenToDateString { get; set; }
 
 	protected override async Task OnInitializedAsync()
 	{
-		logger.LogDebug("Initializing asynchronously"); 
+		logger.LogDebug("Initializing asynchronously");
 		db = await DbFactory.CreateDbContextAsync();
 		await base.OnInitializedAsync();
 
@@ -294,6 +295,7 @@
 
 	ValueTask OnLocationChanging(LocationChangingContext e)
 	{
+		_leaving = true;
 		SavePage();
 		return ValueTask.CompletedTask;
 	}
@@ -322,4 +324,7 @@
 		locationChangingRegistration?.Dispose();
 		db?.Dispose();
 	}
+
+	// https://github.com/dotnet/aspnetcore/issues/53863
+	protected override bool ShouldRender() => !_leaving;
 }

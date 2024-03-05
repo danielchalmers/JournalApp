@@ -8,7 +8,7 @@
 @inject IDialogService DialogService
 @inject AppThemeService AppThemeService
 
-@if (_isBusy)
+@if (_busy)
 {
 	@* TODO: Replace with separate page so we can change state of inline fields and have it updated properly in settings *@
 	<div class="d-flex justify-center">
@@ -69,7 +69,8 @@ else
 }
 
 @code {
-	bool _isBusy;
+	bool _leaving;
+	bool _busy;
 
 	public string CreditsText { get; private set; }
 
@@ -106,6 +107,7 @@ else
 	void SetUpSafetyPlan()
 	{
 		logger.LogInformation("Setting up Safety Plan");
+		_leaving = true;
 		NavigationManager.NavigateTo($"/safetyplan", false, true);
 	}
 
@@ -135,7 +137,7 @@ else
 	{
 		try
 		{
-			_isBusy = true;
+			_busy = true;
 			StateHasChanged();
 
 			var path = App.ActivatedFilePath;
@@ -145,7 +147,7 @@ else
 		finally
 		{
 			App.ActivatedFilePath = null;
-			_isBusy = false;
+			_busy = false;
 		}
 	}
 
@@ -153,14 +155,14 @@ else
 	{
 		try
 		{
-			_isBusy = true;
+			_busy = true;
 			StateHasChanged();
 
 			await AppDataService.StartExportWizard(DialogService);
 		}
 		finally
 		{
-			_isBusy = false;
+			_busy = false;
 		}
 	}
 
@@ -176,6 +178,7 @@ else
 	void Close()
 	{
 		logger.LogInformation("Going to index");
+		_leaving = true;
 		NavigationManager.NavigateTo("/", false, true);
 	}
 
@@ -183,4 +186,6 @@ else
 	{
 		KeyEventService.Exited();
 	}
+
+	protected override bool ShouldRender() => !_leaving;
 }

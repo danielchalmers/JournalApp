@@ -44,6 +44,7 @@
 
 @code {
 	AppDbContext db;
+	bool _leaving;
 
 	[Parameter]
 	public string Group { get; set; }
@@ -131,6 +132,7 @@
 	void Submit()
 	{
 		logger.LogInformation("Going to index");
+		_leaving = true;
 		NavigationManager.NavigateTo("/", false, true);
 	}
 
@@ -140,4 +142,6 @@
 		db?.Dispose();
 		Snackbar.Clear();
 	}
+
+	protected override bool ShouldRender() => !_leaving;
 }

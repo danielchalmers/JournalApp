@@ -60,6 +60,8 @@
 </div>
 
 @code {
+	bool _leaving;
+
 	public SafetyPlan Plan { get; set; }
 
 	protected override void OnInitialized()
@@ -75,6 +77,7 @@
 	void Submit()
 	{
 		logger.LogInformation("Going to index");
+		_leaving = true;
 		NavigationManager.NavigateTo("/", false, true);
 	}
 
@@ -88,4 +91,6 @@
 		else
 			Preferences.Default.SetJson("safety_plan", Plan);
 	}
+
+	protected override bool ShouldRender() => !_leaving;
 }
