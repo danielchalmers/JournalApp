@@ -23,7 +23,8 @@
 
 @code {
 	bool _isDarkMode = true;
-	bool _hasRendered;
+	bool _hasInitiallyRendered;
+
 	MudTheme _theme = new()
 		{
 			Palette = new PaletteLight()
@@ -70,7 +71,7 @@
 	{
 		if (firstRender)
 		{
-			_hasRendered = true;
+			_hasInitiallyRendered = true;
 		}
 	}
 
@@ -78,7 +79,7 @@
 	{
 		_isDarkMode = isDarkMode;
 
-		if (_hasRendered)
+		if (_hasInitiallyRendered)
 			StateHasChanged();
 	}
 

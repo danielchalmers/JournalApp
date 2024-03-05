@@ -66,6 +66,7 @@
 
 		await using var db = await DbFactory.CreateDbContextAsync();
 
+		// All the points we want to show.
 		var query = db.Points
 			.Where(p => !p.Deleted && !p.Category.Deleted && p.Category.Enabled && SelectedDates.Contains(p.Day.Date))
 			.Include(p => p.Category)
@@ -78,6 +79,7 @@
 				p => p
 			);
 
+		// Group points by category then day number.
 		AllPoints.Clear();
 		foreach (var group in query)
 		{
@@ -98,13 +100,6 @@
 	{
 		logger.LogInformation("Going to index");
 		NavigationManager.NavigateTo("/", false, true);
-	}
-
-	public async Task Export()
-	{
-		logger.LogInformation("Starting export");
-
-		await Task.CompletedTask;
 	}
 
 	public void Dispose()

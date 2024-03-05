@@ -72,7 +72,7 @@ else if (Point.Type == PointType.Note)
 		@if (!string.IsNullOrWhiteSpace(Point.Text))
 		{
 			<MudTextField @bind-Value="Point.Text"
-						  Placeholder="@(Point.Category.Group == "Notes" ? "What's on your mind?" : null)"
+						  Placeholder="@(Point.IsTimestampedNote ? "What's on your mind?" : null)"
 						  Label="@(NoteLabel)"
 						  Immediate ReadOnly DisableUnderLine
 						  AutoGrow Lines="1" MaxLines="10" />
@@ -111,7 +111,7 @@ else if (Point.Type == PointType.Medication)
 		get
 		{
 			// Only include a label if we're in the general notes group. If this is a custom category it will be covered by its own label.
-			if (Point.Category.Group == "Notes")
+			if (Point.IsTimestampedNote)
 				return Point.CreatedAt.ToString(DateOnly.FromDateTime(Point.CreatedAt.Date) == Point.Day.Date ? "h:mm tt" : "M/d/yy h:mm tt");
 
 			return null;
@@ -135,13 +135,14 @@ else if (Point.Type == PointType.Medication)
 		logger.LogDebug("Editing note in dialog");
 		await EditNoteDialog.ShowDialog(DialogService, Point);
 		logger.LogDebug("Finished editing note in dialog");
+
 		await StateChanged.InvokeAsync();
 	}
 
 	async Task OnMedicationTakenChanged()
 	{
 		// If the medication wasn't taken then having a custom dose doesn't make any sense.
-		// This also allows for an easier way to reset the dose by just clicking the button twice.
+		// Also allows for an easier way to reset the dose by just clicking the button twice.
 		if (Point.Bool != true)
 			Point.MedicationDose = Point.Category.MedicationDose;
 
@@ -153,9 +154,13 @@ else if (Point.Type == PointType.Medication)
 		logger.LogDebug("Editing dose in dialog");
 		await EditDoseDialog.ShowDialog(DialogService, Point);
 		logger.LogDebug("Finished editing dose in dialog");
+
 		await StateChanged.InvokeAsync();
 	}
 
+	/// <summary>
+	/// Returns a header to be shown above the view for the point on the main timeline.
+	/// </summary>
 	public static string GetHeaderText(DataPoint point)
 	{
 		var category = point.Category;
@@ -163,11 +168,13 @@ else if (Point.Type == PointType.Medication)
 
 		sb.Append(category.Name);
 
-		@if (point.Type == PointType.Medication)
+		if (point.Type == PointType.Medication)
 		{
+			// The default dose and unit.
 			sb.Append($" {category.MedicationDose:0.##}{category.MedicationUnit}");
 
-			if ((point.MedicationDose != category.MedicationDose || category.MedicationUnit != category.MedicationUnit) && point.MedicationDose != null && category.MedicationUnit != null)
+			// Show the dose if it's different from the category default.
+			if (point.MedicationDose != category.MedicationDose && point.MedicationDose != null && category.MedicationUnit != null)
 			{
 				sb.Append($" - {point.MedicationDose:0.##}{category.MedicationUnit}");
 			}

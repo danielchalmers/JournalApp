@@ -2,7 +2,7 @@
 
 namespace JournalApp;
 
-public class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<AppDbContext> dbFactory, IShare share)
+public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<AppDbContext> dbFactory, IShare share)
 {
     public async Task<bool> StartImportWizard(IDialogService dialogService, string path)
     {

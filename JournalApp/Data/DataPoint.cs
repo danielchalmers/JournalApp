@@ -83,9 +83,13 @@ public class DataPoint
     public string Text { get; set; }
     public decimal? MedicationDose { get; set; }
 
-    public override string ToString() => $"{Type}, {Category}, {Day}";
+    [JsonIgnore]
+    public bool IsTimestampedNote => Category?.Group == "Notes";
 
+    [JsonIgnore]
     public static IReadOnlyList<string> Moods { get; } = ["🤔", "🤩", "😀", "🙂", "😐", "😕", "😢", "😭"];
+
+    public override string ToString() => $"{Type}, {Category}, {Day}";
 
     public static DataPoint Create(Day day, DataPointCategory category)
     {

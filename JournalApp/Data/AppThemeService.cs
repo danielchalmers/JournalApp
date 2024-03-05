@@ -1,6 +1,6 @@
 ﻿namespace JournalApp;
 
-public class AppThemeService : IDisposable
+public sealed class AppThemeService : IDisposable
 {
     private readonly ILogger<AppThemeService> _logger;
     private readonly Application _application;

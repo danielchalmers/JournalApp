@@ -19,12 +19,11 @@
 else
 {
 	<div class="trend-view-chart">
-		<ApexChart @ref="_chart" TItem="PointOnChart" Options="ChartOptions">
+		<ApexChart @ref="_chart" TItem="TrendChartPoint" Options="ChartOptions">
 			@switch (Category.Type)
 			{
 				case PointType.Mood:
-					<ApexPointSeries TItem="PointOnChart"
-									 Name="Mood (1=low, 7=high)"
+					<ApexPointSeries Name="Mood (1=low, 7=high)"
 									 Items="_chartItems"
 									 SeriesType="SeriesType.Line"
 									 XValue="e => e.Day"
@@ -32,8 +31,7 @@ else
 					break;
 
 				case PointType.Sleep:
-					<ApexPointSeries TItem="PointOnChart"
-									 Name="Hours"
+					<ApexPointSeries Name="Hours"
 									 Items="_chartItems"
 									 SeriesType="SeriesType.Line"
 									 XValue="e => e.Day"
@@ -43,8 +41,7 @@ else
 				case PointType.Scale:
 				case PointType.LowToHigh:
 				case PointType.MildToSevere:
-					<ApexPointSeries TItem="PointOnChart"
-									 Name="Scale (0=low, 5=high)"
+					<ApexPointSeries Name="Scale (0=low, 5=high)"
 									 Items="_chartItems"
 									 SeriesType="SeriesType.Line"
 									 XValue="e => e.Day"
@@ -52,8 +49,7 @@ else
 					break;
 
 				case PointType.Bool:
-					<ApexPointSeries TItem="PointOnChart"
-									 Name="Bool (0=no, 1=yes)"
+					<ApexPointSeries Name="Bool (0=no, 1=yes)"
 									 Items="_chartItems"
 									 SeriesType="SeriesType.Line"
 									 XValue="e => e.Day"
@@ -61,8 +57,7 @@ else
 					break;
 
 				case PointType.Medication:
-					<ApexPointSeries TItem="PointOnChart"
-									 Name="Dose"
+					<ApexPointSeries Name="Dose"
 									 Items="_chartItems"
 									 SeriesType="SeriesType.Line"
 									 XValue="e => e.Day"
@@ -70,8 +65,7 @@ else
 					break;
 
 				case PointType.Number:
-					<ApexPointSeries TItem="PointOnChart"
-									 Name="Number"
+					<ApexPointSeries Name="Number"
 									 Items="_chartItems"
 									 SeriesType="SeriesType.Line"
 									 XValue="e => e.Day"
@@ -83,10 +77,10 @@ else
 }
 
 @code {
-	ApexChart<PointOnChart> _chart;
-	List<PointOnChart> _chartItems;
+	ApexChart<TrendChartPoint> _chart;
+	List<TrendChartPoint> _chartItems;
 
-	ApexChartOptions<PointOnChart> ChartOptions;
+	ApexChartOptions<TrendChartPoint> ChartOptions;
 
 	[Parameter]
 	public DataPointCategory Category { get; set; }
@@ -101,12 +95,10 @@ else
 	{
 		await base.OnParametersSetAsync();
 
-		var pointByDay = PointsByDay.ToDictionary(x => x.Key, x => x.Value.LastOrDefault());
-
 		_chartItems = new();
-		foreach (var (day, point) in pointByDay)
+		foreach (var (day, points) in PointsByDay)
 		{
-			_chartItems.Add(new(day.ToString(), point));
+			_chartItems.Add(new(day.ToString(), points.LastOrDefault()));
 		}
 
 		if (_chart != null)
@@ -164,15 +156,20 @@ else
 			};
 	}
 
+	/// <summary>
+	/// Returns a header to be shown above the view on the trends page.
+	/// </summary>
 	public static string GetHeaderText(DataPointCategory category)
 	{
 		var sb = new StringBuilder();
 
+		// Show the name if there is one; otherwise the group title.
 		if (string.IsNullOrEmpty(category.Name))
 			sb.Append(category.Group);
 		else
 			sb.Append(category.Name);
 
+		// Append the unit if it's a medication category.
 		if (category.Type == PointType.Medication)
 			sb.Append($" ({category.MedicationUnit?.Trim()})");
 
@@ -181,15 +178,13 @@ else
 
 	string GetNoteLabel(DataPoint point, int day)
 	{
-		var isTimestampedNote = point.Category.Group == "Notes";
-
 		var sb = new StringBuilder();
 
 		// The date the note was created if it's timestamped, otherwise the actual day assigned to the point.
 		// If you just use the creation date you'll get the date the point was first created which could be anything depending on what the user does.
-		sb.Append($"{(isTimestampedNote ? point.CreatedAt : point.Day.Date):M/d/yy}");
+		sb.Append($"{(point.IsTimestampedNote ? point.CreatedAt : point.Day.Date):M/d/yy}");
 
-		if (isTimestampedNote)
+		if (point.IsTimestampedNote)
 		{
 			// Add the time.
 			sb.Append($" {point.CreatedAt:h:mm tt}");

@@ -56,7 +56,7 @@ public class MoodGridTests
         {
             var gridMonth = gridYear.GridMonths[i];
 
-            Assert.Equal(new List<DayOfWeek> {
+            Assert.Equal([
                 DayOfWeek.Sunday,
                 DayOfWeek.Monday,
                 DayOfWeek.Tuesday,
@@ -64,7 +64,7 @@ public class MoodGridTests
                 DayOfWeek.Thursday,
                 DayOfWeek.Friday,
                 DayOfWeek.Saturday,
-            }, gridMonth.DaysOfWeek);
+            ], gridMonth.DaysOfWeek);
         }
     }
 }

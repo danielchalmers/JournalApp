@@ -3,7 +3,7 @@ using MudBlazor;
 
 namespace JournalApp;
 
-public class KeyEventService(ILogger<KeyEventService> logger)
+public sealed class KeyEventService(ILogger<KeyEventService> logger)
 {
     private readonly Stack<Action> _backButtonActions = [];
 
