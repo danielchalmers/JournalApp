@@ -96,14 +96,14 @@
 		}
 	}
 
-	async Task ScrollToMonth(int month)
+	async Task ScrollToMonth(int month, bool smooth = false)
 	{
-		logger.LogDebug($"Scrolling to month {month}");
+		logger.LogDebug($"Scrolling to month {month}, smooth: {smooth}");
 
-		await JSRuntime.InvokeVoidAsync("scrollToTopOfNestedElement", ".mood-grid", $"#mood-grid-month-{month}");
+        await JSRuntime.InvokeVoidAsync("scrollToTopOfNestedElement", ".page-body", $"#mood-grid-month-{month}", smooth ? "smooth" : "instant");
 	}
 
-	async Task ScrollToOpenToDate() => await ScrollToMonth(OpenToDate.Month);
+	async Task ScrollToOpenToDate() => await ScrollToMonth(OpenToDate.Month, true);
 
 	async Task HeaderClicked() => await ScrollToMonth(DateTime.Now.Month);
 

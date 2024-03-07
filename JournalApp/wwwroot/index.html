@@ -33,11 +33,12 @@
 
 	<script>
 		window.scrollToAbsoluteTop = () => {
-			document.scrollingElement.scrollTop = 0
+			document.scrollingElement.scrollTo({ top: 0, behavior: 'smooth' });
 		}
 
-		window.scrollToTopOfNestedElement = (ancestorSelector, descendantSelector) => {
-			document.scrollingElement.scrollTop = document.querySelector(descendantSelector).offsetTop - document.querySelector(ancestorSelector).offsetTop
+		window.scrollToTopOfNestedElement = (ancestorSelector, descendantSelector, scrollBehavior = 'smooth') => {
+			var elementTop = document.querySelector(descendantSelector).offsetTop - document.querySelector(ancestorSelector).offsetTop;
+			document.scrollingElement.scrollTo({ top: elementTop, behavior: scrollBehavior });
 		}
 	</script>
 
