@@ -11,320 +11,323 @@
 @inject IScrollManager ScrollManager
 
 <div class="page-title">
-	<div class="page-header">
-		<MudButton OnClick="OnTitleClicked" DisableRipple Variant="Variant.Text">
-			<MudText Typo="Typo.h6">🙂 @ThisAssembly.AssemblyTitle</MudText>
-		</MudButton>
+    <div class="page-header">
+        <MudButton OnClick="OnTitleClicked" DisableRipple Variant="Variant.Text">
+            <MudText Typo="Typo.h6">🙂 @ThisAssembly.AssemblyTitle</MudText>
+        </MudButton>
 
-		<MudSpacer />
+        <MudSpacer />
 
-		<MudMenu Icon="@Icons.Material.Filled.MoreVert" title="More" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
-			<MudMenuItem Icon="@Icons.Material.Filled.Category" OnAction="ManageCategories">Categories</MudMenuItem>
-			<MudMenuItem Icon="@Icons.Material.Filled.Medication" OnAction="ManageMedications">Medications</MudMenuItem>
-			<MudMenuItem Icon="@Icons.Material.Filled.Comment" OnAction="NewNote">New note</MudMenuItem>
-			<MudMenuItem Icon="@Icons.Material.Filled.ShowChart" OnAction="OpenTrends">Trends</MudMenuItem>
-			<MudMenuItem Icon="@Icons.Material.Filled.Article" OnAction="OpenWorksheets">Worksheets</MudMenuItem>
+        <MudMenu Icon="@Icons.Material.Filled.MoreVert" title="More" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
+            <MudMenuItem Icon="@Icons.Material.Filled.Category" OnAction="ManageCategories">Categories</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Medication" OnAction="ManageMedications">Medications</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Comment" OnAction="NewNote">New note</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.ShowChart" OnAction="OpenTrends">Trends</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Article" OnAction="OpenWorksheets">Worksheets</MudMenuItem>
 
-			@if (Preferences.Get("safety_plan", null) != null)
-			{
-				<MudMenuItem Icon="@Icons.Material.Filled.HealthAndSafety" OnAction="OpenSafetyPlan">Safety Plan</MudMenuItem>
-			}
+            @if (Preferences.Get("safety_plan", null) != null)
+            {
+                <MudMenuItem Icon="@Icons.Material.Filled.HealthAndSafety" OnAction="OpenSafetyPlan">Safety Plan</MudMenuItem>
+            }
 
-			<MudDivider />
+            <MudDivider />
 
-			<MudMenuItem Icon="@Icons.Material.Filled.Campaign" OnAction="OpenFeedback">Feedback</MudMenuItem>
-			<MudMenuItem Icon="@Icons.Material.Filled.Settings" OnAction="OpenSettings">Settings</MudMenuItem>
-		</MudMenu>
-	</div>
+            <MudMenuItem Icon="@Icons.Material.Filled.Campaign" OnAction="OpenFeedback">Feedback</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Settings" OnAction="OpenSettings">Settings</MudMenuItem>
+        </MudMenu>
+    </div>
 
-	<div class="switcher">
-		<MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" Title="Previous day" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
+    <div class="switcher">
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" Title="Previous day" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
 
-		<div class="switcher-header">
-			<MudButton OnClick="OpenMoodGrid" title="Open Mood Grid">
-				<MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false">@_day.Date.ToString("ddd, MMM d")</MudText>
-			</MudButton>
-		</div>
+        <div class="switcher-header">
+            <MudButton OnClick="OpenMoodGrid" title="Open Mood Grid">
+                <MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false">@_day.Date.ToString("ddd, MMM d")</MudText>
+            </MudButton>
+        </div>
 
-		<MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" Title="Next day" OnClick="NextDay" Disabled="@(_day.Date > DateOnly.FromDateTime(DateTime.Now))" />
-	</div>
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" Title="Next day" OnClick="NextDay" Disabled="@(_day.Date > DateOnly.FromDateTime(DateTime.Now))" />
+    </div>
 </div>
 
 <div class="page-body">
-	<div class="main-timeline">
-		@foreach (var group in db.Categories.Where(x => x.Enabled && !x.Deleted).GroupBy(x => x.Group))
-		{
-			<div class="data-point-group">
-				@if (!string.IsNullOrEmpty(group.Key))
-				{
-					<div class="data-point-group-header">
-						@if (group.Key == "Medications")
-						{
-							<MudText Typo="Typo.h5">Medications taken</MudText>
-						}
-						else if (group.Key == "Notes")
-						{
-							<MudText Typo="Typo.h5">Today's notes</MudText>
-						}
-					</div>
-				}
+    <div class="main-timeline">
+        @foreach (var group in db.Categories.Where(x => x.Enabled && !x.Deleted).GroupBy(x => x.Group))
+        {
+            <div class="data-point-group">
+                @if (!string.IsNullOrEmpty(group.Key))
+                {
+                    <div class="data-point-group-header">
+                        @if (group.Key == "Medications")
+                        {
+                            <MudText Typo="Typo.h5">Medications taken</MudText>
+                        }
+                        else if (group.Key == "Notes")
+                        {
+                            <MudText Typo="Typo.h5">Today's notes</MudText>
+                        }
+                    </div>
+                }
 
-				@foreach (var category in group.OrderBy(x => x.Index).ThenBy(x => x.Name))
-				{
-					@foreach (var point in _day.Points.Where(x => !x.Deleted && x.Category.Guid == category.Guid && x.Type == category.Type).OrderBy(x => x.CreatedAt))
-					{
-						<div class="data-point-container">
-							@if (!string.IsNullOrEmpty(category.Name))
-							{
-								<div class="data-point-header">
-									<MudText>@(DataPointView.GetHeaderText(point))</MudText>
-								</div>
-							}
+                @foreach (var category in group.OrderBy(x => x.Index).ThenBy(x => x.Name))
+                {
+                    @foreach (var point in _day.Points.Where(x => !x.Deleted && x.Category.Guid == category.Guid && x.Type == category.Type).OrderBy(x => x.CreatedAt))
+                    {
+                        <div class="data-point-container">
+                            @if (!string.IsNullOrEmpty(category.Name))
+                            {
+                                <div class="data-point-header">
+                                    <MudText>@(DataPointView.GetHeaderText(point))</MudText>
+                                </div>
+                            }
 
-							@if (!category.SingleLine)
-							{
-								<div class="break-flex-column" />
-							}
+                            @if (!category.SingleLine)
+                            {
+                                <div class="break-flex-column" />
+                            }
 
-							<div class="data-point-view">
-								<DataPointView Point="point" StateChanged="_ => StateHasChanged()" />
-							</div>
-						</div>
-					}
-				}
+                            <div class="data-point-view">
+                                <DataPointView Point="point" StateChanged="_ => StateHasChanged()" />
+                            </div>
+                        </div>
+                    }
+                }
 
-				<div class="data-point-group-footer">
-					@if (group.Key == null)
-					{
-						<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Category" OnClick="ManageCategories" FullWidth>Choose categories</MudButton>
-					}
-					else if (group.Key == "Medications")
-					{
-						<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Medication" OnClick="ManageMedications" FullWidth>Choose medications</MudButton>
-					}
-					else if (group.Key == "Notes")
-					{
-						<MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote" FullWidth>New note</MudButton>
-					}
-				</div>
-			</div>
-		}
-	</div>
+                <div class="data-point-group-footer">
+                    @if (group.Key == null)
+                    {
+                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Category" OnClick="ManageCategories" FullWidth>Choose categories</MudButton>
+                    }
+                    else if (group.Key == "Medications")
+                    {
+                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Medication" OnClick="ManageMedications" FullWidth>Choose medications</MudButton>
+                    }
+                    else if (group.Key == "Notes")
+                    {
+                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote" FullWidth>New note</MudButton>
+                    }
+                </div>
+            </div>
+        }
+    </div>
 </div>
 
 @code {
-	AppDbContext db;
-	bool _disposed;
-	Day _day;
-	bool _leaving;
-	IDisposable locationChangingRegistration;
-	DateTimeOffset _stoppedDate;
+    AppDbContext db;
+    bool _disposed;
+    Day _day;
+    bool _leaving;
+    IDisposable locationChangingRegistration;
+    DateTimeOffset _stoppedDate;
 
-	[Parameter]
-	public string OpenToDateString { get; set; }
+    [Parameter]
+    public string OpenToDateString { get; set; }
 
-	protected override async Task OnInitializedAsync()
-	{
-		logger.LogDebug("Initializing asynchronously");
-		db = await DbFactory.CreateDbContextAsync();
-		await base.OnInitializedAsync();
+    protected override async Task OnInitializedAsync()
+    {
+        logger.LogDebug("Initializing asynchronously");
+        db = await DbFactory.CreateDbContextAsync();
+        await base.OnInitializedAsync();
 
-		DateOnly date = DateOnly.FromDateTime(DateTime.Now);
-		if (DateOnly.TryParseExact(OpenToDateString, "yyyyMMdd", out var parsed))
-		{
-			// Use the parameter date (from when you click a day in the mood grid, etc).
-			date = parsed;
-		}
-		else if (App.IndexDateState.HasValue)
-		{
-			// If we recently navigated away from the index, restore the date it was on before.
-			if (DateTimeOffset.Now - App.IndexDateState.Value.LeftAt < TimeSpan.FromHours(1))
-				date = App.IndexDateState.Value.LastDate;
-		}
+        DateOnly date = DateOnly.FromDateTime(DateTime.Now);
+        if (DateOnly.TryParseExact(OpenToDateString, "yyyyMMdd", out var parsed))
+        {
+            // Use the parameter date (from when you click a day in the mood grid, etc).
+            date = parsed;
+        }
+        else if (App.IndexDateState.HasValue)
+        {
+            // If we recently navigated away from the index, restore the date it was on before.
+            if (DateTimeOffset.Now - App.IndexDateState.Value.LeftAt < TimeSpan.FromHours(1))
+                date = App.IndexDateState.Value.LastDate;
+        }
 
-		logger.LogInformation($"Opening to {date}");
-		await GoToDay(date);
+        logger.LogInformation($"Opening to {date}");
+        await GoToDay(date);
 
-		// https://learn.microsoft.com/en-us/dotnet/maui/fundamentals/app-lifecycle
-		App.Window.Deactivated += Window_DeactivatedOrDestroying;
-		App.Window.Destroying += Window_DeactivatedOrDestroying;
-		App.Window.Resumed += Window_Resumed;
+        // https://learn.microsoft.com/en-us/dotnet/maui/fundamentals/app-lifecycle
+        App.Window.Deactivated += Window_DeactivatedOrDestroying;
+        App.Window.Destroying += Window_DeactivatedOrDestroying;
+        App.Window.Resumed += Window_Resumed;
 
-		locationChangingRegistration = NavigationManager.RegisterLocationChangingHandler(OnLocationChanging);
-	}
+        locationChangingRegistration = NavigationManager.RegisterLocationChangingHandler(OnLocationChanging);
+    }
 
-	private void Window_DeactivatedOrDestroying(object sender, EventArgs e)
-	{
-		logger.LogDebug("Window deactivated or destroying");
-		_stoppedDate = DateTimeOffset.Now;
+    private void Window_DeactivatedOrDestroying(object sender, EventArgs e)
+    {
+        logger.LogDebug("Window deactivated or destroying");
+        _stoppedDate = DateTimeOffset.Now;
 
-		if (_disposed)
-		{
-			logger.LogDebug("Not auto saving page because it's disposed");
-		}
-		else
-		{
-			SavePage();
-		}
-	}
+        if (_disposed)
+        {
+            logger.LogDebug("Not auto saving page because it's disposed");
+        }
+        else
+        {
+            SavePage();
+        }
+    }
 
-	private async void Window_Resumed(object sender, EventArgs e)
-	{
-		logger.LogDebug("Window resumed");
+    private async void Window_Resumed(object sender, EventArgs e)
+    {
+        logger.LogDebug("Window resumed");
 
-		// Go to current day if user returns after a certain amount of time,
-		if (DateTimeOffset.Now - _stoppedDate >= TimeSpan.FromHours(1))
-		{
-			// If no dialogs are open.
-			if (KeyEventService.CurrentDepth == 0)
-			{
-				logger.LogInformation($"Switching from {_day} to current day after user was gone since {_stoppedDate}");
-				await GoToDay(DateOnly.FromDateTime(DateTime.Now), scrollToTop: true);
+        // Go to current day if user returns after a certain amount of time,
+        if (DateTimeOffset.Now - _stoppedDate >= TimeSpan.FromHours(1))
+        {
+            // If no dialogs are open.
+            if (KeyEventService.CurrentDepth == 0)
+            {
+                logger.LogInformation($"Switching from {_day} to current day after user was gone since {_stoppedDate}");
+                await GoToDay(DateOnly.FromDateTime(DateTime.Now), scrollToTop: true);
 
-				await AppDataService.ShowExportReminderIfDue(DialogService);
-			}
-			else
-			{
-				logger.LogDebug($"Not switching to current day because {KeyEventService.CurrentDepth} dialogs are open");
-			}
-		}
-	}
+                await AppDataService.ShowExportReminderIfDue(DialogService);
+            }
+            else
+            {
+                logger.LogDebug($"Not switching to current day because {KeyEventService.CurrentDepth} dialogs are open");
+            }
+        }
+    }
 
-	async Task OnTitleClicked()
-	{
-		logger.LogDebug("Title clicked");
-		await GoToDay(DateOnly.FromDateTime(DateTime.Now), scrollToTop: true);
-	}
+    async Task OnTitleClicked(MouseEventArgs e)
+    {
+        if (e.Detail == 2)
+        {
+            logger.LogDebug("Title clicked twice so going to now");
+            await GoToDay(DateOnly.FromDateTime(DateTime.Now), scrollToTop: true);
+        }
+    }
 
-	async Task ScrollToTop()
-	{
-		logger.LogInformation("Scrolling to the top");
-		await ScrollManager.ScrollToTopAsync("main-body");
-	}
+    async Task ScrollToTop()
+    {
+        logger.LogInformation("Scrolling to the top");
+        await ScrollManager.ScrollToTopAsync("main-body");
+    }
 
-	async Task GoToDay(DateOnly date, bool scrollToTop = false)
-	{
-		var sw = Stopwatch.StartNew();
+    async Task GoToDay(DateOnly date, bool scrollToTop = false)
+    {
+        var sw = Stopwatch.StartNew();
 
-		await db.SaveChangesAsync(); // Save any changes that could have been made from the DataPointViews.
-		_day = await db.GetOrCreateDayAndAddPoints(date);
-		await db.SaveChangesAsync(); // Save potentially new day and points.
+        await db.SaveChangesAsync(); // Save any changes that could have been made from the DataPointViews.
+        _day = await db.GetOrCreateDayAndAddPoints(date);
+        await db.SaveChangesAsync(); // Save potentially new day and points.
 
-		logger.LogDebug($"Went to {_day} in {sw.ElapsedMilliseconds}ms ({sw.ElapsedTicks} ticks)");
+        logger.LogDebug($"Went to {_day} in {sw.ElapsedMilliseconds}ms ({sw.ElapsedTicks} ticks)");
 
-		if (scrollToTop)
-			await ScrollToTop();
+        if (scrollToTop)
+            await ScrollToTop();
 
-		StateHasChanged();
-	}
+        StateHasChanged();
+    }
 
-	async Task PreviousDay()
-	{
-		logger.LogInformation($"Going to the previous day from {_day}");
-		await GoToDay(_day.Date.Previous());
-	}
+    async Task PreviousDay()
+    {
+        logger.LogInformation($"Going to the previous day from {_day}");
+        await GoToDay(_day.Date.Previous());
+    }
 
-	async Task NextDay()
-	{
-		logger.LogInformation($"Going to the next day from {_day}");
-		await GoToDay(_day.Date.Next());
-	}
+    async Task NextDay()
+    {
+        logger.LogInformation($"Going to the next day from {_day}");
+        await GoToDay(_day.Date.Next());
+    }
 
-	void OpenMoodGrid()
-	{
-		logger.LogInformation("Opening Mood Grid");
-		NavigationManager.NavigateTo($"/calendar/{_day.Date:yyyyMMdd}", false, true);
-	}
+    void OpenMoodGrid()
+    {
+        logger.LogInformation("Opening Mood Grid");
+        NavigationManager.NavigateTo($"/calendar/{_day.Date:yyyyMMdd}", false, true);
+    }
 
-	void ManageCategories()
-	{
-		logger.LogInformation("Opening category manager");
-		NavigationManager.NavigateTo($"/manage", false, true);
-	}
+    void ManageCategories()
+    {
+        logger.LogInformation("Opening category manager");
+        NavigationManager.NavigateTo($"/manage", false, true);
+    }
 
-	void ManageMedications()
-	{
-		logger.LogInformation("Opening medication manager");
-		NavigationManager.NavigateTo($"/manage/Medications", false, true);
-	}
+    void ManageMedications()
+    {
+        logger.LogInformation("Opening medication manager");
+        NavigationManager.NavigateTo($"/manage/Medications", false, true);
+    }
 
-	void OpenTrends()
-	{
-		logger.LogInformation("Opening Trends");
-		NavigationManager.NavigateTo($"/trends/{_day.Date:yyyyMMdd}", false, true);
-	}
+    void OpenTrends()
+    {
+        logger.LogInformation("Opening Trends");
+        NavigationManager.NavigateTo($"/trends/{_day.Date:yyyyMMdd}", false, true);
+    }
 
-	void OpenSafetyPlan()
-	{
-		logger.LogInformation("Opening Safety Plan");
-		NavigationManager.NavigateTo($"/safetyplan", false, true);
-	}
+    void OpenSafetyPlan()
+    {
+        logger.LogInformation("Opening Safety Plan");
+        NavigationManager.NavigateTo($"/safetyplan", false, true);
+    }
 
-	void OpenWorksheets()
-	{
-		logger.LogInformation("Opening Worksheets");
-		NavigationManager.NavigateTo($"/worksheets", false, true);
-	}
+    void OpenWorksheets()
+    {
+        logger.LogInformation("Opening Worksheets");
+        NavigationManager.NavigateTo($"/worksheets", false, true);
+    }
 
-	async Task OpenFeedback()
-	{
-		logger.LogInformation("Opening feedback link");
-		await Browser.Default.OpenAsync(Feedback.GenerateLink());
-	}
+    async Task OpenFeedback()
+    {
+        logger.LogInformation("Opening feedback link");
+        await Browser.Default.OpenAsync(Feedback.GenerateLink());
+    }
 
-	void OpenSettings()
-	{
-		logger.LogInformation("Opening Settings");
-		NavigationManager.NavigateTo($"/settings", false, true);
-	}
+    void OpenSettings()
+    {
+        logger.LogInformation("Opening Settings");
+        NavigationManager.NavigateTo($"/settings", false, true);
+    }
 
-	async Task NewNote()
-	{
-		logger.LogInformation("Creating new note");
+    async Task NewNote()
+    {
+        logger.LogInformation("Creating new note");
 
-		var note = db.CreateNote(_day);
+        var note = db.CreateNote(_day);
 
-		var dialogSubmitted = await EditNoteDialog.ShowDialog(DialogService, note);
-		if (!dialogSubmitted || note.Deleted)
-			return;
+        var dialogSubmitted = await EditNoteDialog.ShowDialog(DialogService, note);
+        if (!dialogSubmitted || note.Deleted)
+            return;
 
-		logger.LogInformation("Saving new note");
-		note.Category.Points.Add(note);
-		await db.SaveChangesAsync();
-	}
+        logger.LogInformation("Saving new note");
+        note.Category.Points.Add(note);
+        await db.SaveChangesAsync();
+    }
 
-	ValueTask OnLocationChanging(LocationChangingContext e)
-	{
-		_leaving = true;
-		SavePage();
-		return ValueTask.CompletedTask;
-	}
+    ValueTask OnLocationChanging(LocationChangingContext e)
+    {
+        _leaving = true;
+        SavePage();
+        return ValueTask.CompletedTask;
+    }
 
-	void SavePage()
-	{
-		logger.LogDebug("Saving page");
+    void SavePage()
+    {
+        logger.LogDebug("Saving page");
 
-		App.IndexDateState = (DateTimeOffset.Now, _day.Date);
+        App.IndexDateState = (DateTimeOffset.Now, _day.Date);
 
-		db.SaveChanges();
-	}
+        db.SaveChanges();
+    }
 
-	public void Dispose()
-	{
-		if (_disposed)
-			return;
+    public void Dispose()
+    {
+        if (_disposed)
+            return;
 
-		logger.LogDebug("Disposing");
-		_disposed = true;
+        logger.LogDebug("Disposing");
+        _disposed = true;
 
-		App.Window.Deactivated -= Window_DeactivatedOrDestroying;
-		App.Window.Destroying -= Window_DeactivatedOrDestroying;
-		App.Window.Resumed -= Window_Resumed;
+        App.Window.Deactivated -= Window_DeactivatedOrDestroying;
+        App.Window.Destroying -= Window_DeactivatedOrDestroying;
+        App.Window.Resumed -= Window_Resumed;
 
-		locationChangingRegistration?.Dispose();
-		db?.Dispose();
-	}
+        locationChangingRegistration?.Dispose();
+        db?.Dispose();
+    }
 
-	// https://github.com/dotnet/aspnetcore/issues/53863
-	protected override bool ShouldRender() => !_leaving;
+    // https://github.com/dotnet/aspnetcore/issues/53863
+    protected override bool ShouldRender() => !_leaving;
 }
