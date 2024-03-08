@@ -10,7 +10,7 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
 
         // Warn if an export wasn't done in the last week.
         if (DateTimeOffset.Now > LastExportDate.AddDays(7) &&
-            await dialogService.ShowCustomMessageBox(string.Empty, "It's recommended to export your data first in case there are any issues; You can do this in Settings.", yesText: "Continue anyway", cancelText: "Go back") == null)
+            await dialogService.ShowCustomMessageBox("It's recommended to export your data first in case there are any issues; You can do this in Settings.", yesText: "Continue anyway", cancelText: "Go back") == null)
         {
             logger.LogDebug("User didn't want to import after being warned about export");
             return false;
@@ -33,13 +33,13 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
         catch (Exception ex)
         {
             logger.LogInformation(ex, $"Failed to read archive after {sw.ElapsedMilliseconds}ms");
-            await dialogService.ShowCustomMessageBox(string.Empty, $"Nothing happened; Failed to read archive: {ex.Message}.", showFeedbackLink: true);
+            await dialogService.ShowCustomMessageBox($"Nothing happened; Failed to read archive: {ex.Message}.");
             return false;
         }
 
         // Warn the user of what's going to happen.
         sw.Restart();
-        if (await dialogService.ShowCustomMessageBox(string.Empty,
+        if (await dialogService.ShowCustomMessageBox(
             $"The selected backup contains {backup.Days.Count} days, {backup.Categories.Count} categories/medications, {backup.Points.Count} points, and {backup.PreferenceBackups.Count} preferences. " +
             "This will replace ALL existing data, cannot be undone, and may take a few minutes.",
             yesText: "Import data", cancelText: "Cancel") == null)
@@ -81,7 +81,7 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
         catch (Exception ex)
         {
             logger.LogError(ex, $"Import failed during database changes after {sw.ElapsedMilliseconds}ms");
-            await dialogService.ShowCustomMessageBox(string.Empty, $"Import critically failed; Database is potentially corrupt and app may need to be reinstalled due to error: {ex}.", showFeedbackLink: true);
+            await dialogService.ShowCustomMessageBox($"Import critically failed; Database is potentially corrupt and app may need to be reinstalled due to error: {ex}.");
             return false;
         }
 
@@ -138,7 +138,7 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
         catch (Exception ex)
         {
             logger.LogInformation(ex, $"Failed to create archive after {sw.ElapsedMilliseconds}ms");
-            await dialogService.ShowCustomMessageBox(string.Empty, $"Nothing happened; Failed to create archive: {ex.Message}.", showFeedbackLink: true);
+            await dialogService.ShowCustomMessageBox($"Nothing happened; Failed to create archive: {ex.Message}.");
             return;
         }
 
@@ -164,7 +164,7 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
         // We're going to show the message so let's not bug the user again until next interval.
         LastExportDate = DateTimeOffset.Now;
 
-        await dialogService.ShowCustomMessageBox(string.Empty, "Reminder: You haven't backed your data up in a while. To keep your data safe, select \"Export\" in Settings.");
+        await dialogService.ShowCustomMessageBox("Reminder: You haven't backed your data up in a while. To keep your data safe, select \"Export\" in Settings.");
     }
 
     public DateTimeOffset LastExportDate

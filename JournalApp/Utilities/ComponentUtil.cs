@@ -14,12 +14,12 @@ internal static class ComponentUtil
     public static IDialogReference Show<TComponent>(this IDialogService dialogService, DialogParameters parameters, DialogOptions options) where TComponent : ComponentBase =>
         dialogService.Show<TComponent>(string.Empty, parameters, options);
 
-    public static async Task<bool?> ShowCustomMessageBox(this IDialogService dialogService, string title, string message, string yesText = "OK",
+    public static async Task<bool?> ShowCustomMessageBox(this IDialogService dialogService, string message, string yesText = "OK",
         string noText = null, string cancelText = null, DialogOptions options = null, bool showFeedbackLink = true)
     {
         var messageBoxOptions = new MessageBoxOptions
         {
-            Title = title,
+            Title = string.Empty,
             Message = message,
             YesText = yesText,
             NoText = noText,

@@ -106,7 +106,7 @@
     {
         logger.LogDebug("Asking for deletion");
 
-        if (await DialogService.ShowCustomMessageBox(string.Empty, $"Are you sure you want to PERMANENTLY delete \"{Name}\"? This cannot be undone.", yesText: "Delete", cancelText: "Cancel") != true)
+        if (await DialogService.ShowCustomMessageBox($"Are you sure you want to PERMANENTLY delete \"{Name}\" and its data across all days? This cannot be undone.", yesText: "Delete", cancelText: "Cancel") != true)
         {
             logger.LogDebug("Deletion was canceled");
             return;

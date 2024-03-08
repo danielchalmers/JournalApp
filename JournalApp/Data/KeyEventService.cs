@@ -13,20 +13,20 @@ public sealed class KeyEventService(ILogger<KeyEventService> logger)
 
     public void Entered(Action backButtonAction, [CallerFilePath] string callerFilePath = "")
     {
-        logger.LogDebug($"Entering at {CurrentDepth} depth <{callerFilePath}>");
-
         lock (_backButtonActions)
         {
+            logger.LogDebug($"Entering at {CurrentDepth} depth <{callerFilePath}>");
+
             _backButtonActions.Push(backButtonAction);
         }
     }
 
     public void Exited([CallerFilePath] string callerFilePath = "")
     {
-        logger.LogDebug($"Exiting at {CurrentDepth} depth <{callerFilePath}>");
-
         lock (_backButtonActions)
         {
+            logger.LogDebug($"Exiting at {CurrentDepth} depth <{callerFilePath}>");
+
             if (CurrentDepth != 0)
                 _backButtonActions.Pop();
         }

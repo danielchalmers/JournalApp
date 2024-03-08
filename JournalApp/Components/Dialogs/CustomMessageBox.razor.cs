@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
+using MudBlazor.Utilities;
 using CategoryAttribute = MudBlazor.CategoryAttribute;
 
 namespace JournalApp;
@@ -161,6 +162,10 @@ public partial class CustomMessageBox : MudComponentBase
 
     private bool IsInline => DialogInstance == null;
 
+    protected string Classname =>
+        new CssBuilder("mud-message-box")
+        .Build();
+
     public async Task<bool?> Show(DialogOptions options = null)
     {
         var parameters = new DialogParameters
@@ -233,6 +238,7 @@ public partial class CustomMessageBox : MudComponentBase
     private void OnBackdropClick()
     {
         KeyEventService.Exited();
+        DialogInstance?.Close(DialogResult.Cancel());
     }
 
     private void HandleKeyDown(KeyboardEventArgs args)
