@@ -3,149 +3,148 @@
 @inject IDialogService DialogService
 @inject KeyEventService KeyEventService
 
-<MudDialog DefaultFocus="DefaultFocus.FirstChild" OnBackdropClick="SubmitOrCancel">
-	<TitleContent>
-		<div class="page-header">
-			<MudIconButton Icon="@Icons.Material.Filled.Close" Title="Cancel" OnClick="Cancel" />
+<MudDialog DefaultFocus="DefaultFocus.FirstChild" OnBackdropClick="Submit">
+    <TitleContent>
+        <div class="page-header">
+            <MudIconButton Icon="@Icons.Material.Filled.Close" Title="Cancel" OnClick="Cancel" />
 
-			<MudText Typo="Typo.h6">@(Category == null ? "New" : "Edit") @(Group == "Medications" ? "medication" : "category")</MudText>
+            <MudText Typo="Typo.h6">@(Category == null ? "New" : "Edit") @(Group == "Medications" ? "medication" : "category")</MudText>
 
-			<MudSpacer />
+            <MudSpacer />
 
-			@if (Category != null)
-			{
-				<MudIconButton Icon="@Icons.Material.Filled.DeleteForever" Title="Delete forever" OnClick="Delete" />
-			}
+            @if (Category != null)
+            {
+                <MudIconButton Icon="@Icons.Material.Filled.DeleteForever" Title="Delete forever" OnClick="Delete" />
+            }
 
-			<MudIconButton Icon="@Icons.Material.Filled.Check" Title="Submit" OnClick="Submit" />
-		</div>
-	</TitleContent>
+            <MudIconButton Icon="@Icons.Material.Filled.Check" Title="Submit" OnClick="Submit" />
+        </div>
+    </TitleContent>
 
-	<DialogContent>
-		<MudForm @ref="_form" ValidationDelay="0">
-			<MudTextField Label="Name" @bind-Value="Name" Immediate Required MaxLength="200" />
+    <DialogContent>
+        <MudForm @ref="_form" ValidationDelay="0">
+            <MudTextField Label="Name" @bind-Value="Name" Immediate Required MaxLength="200" />
 
-			@if (Group == null)
-			{
-				<MudSelect Label="Type" @bind-Value="Type" Disabled="@(Category != null)" TransformOrigin="Origin.CenterCenter" Immediate>
-					<MudSelectItem Value="PointType.Bool">Yes or no</MudSelectItem>
-					<MudSelectItem Value="PointType.LowToHigh">Low to high</MudSelectItem>
-					<MudSelectItem Value="PointType.MildToSevere">Mild to severe</MudSelectItem>
-					<MudSelectItem Value="PointType.Number">Number</MudSelectItem>
-					<MudSelectItem Value="PointType.Text">Text</MudSelectItem>
-					<MudSelectItem Value="PointType.Note">Note</MudSelectItem>
-				</MudSelect>
-			}
-			else if (Group == "Medications")
-			{
-				<div class="d-flex flex-row flex-grow-1" style="gap: 0.75em">
-					<MudNumericField @bind-Value="MedicationDose" HideSpinButtons Label="Dose" MaxLength="6" Required Immediate />
+            @if (Group == null)
+            {
+                <MudSelect Label="Type" @bind-Value="Type" Disabled="@(Category != null)" TransformOrigin="Origin.CenterCenter" Immediate>
+                    <MudSelectItem Value="PointType.Bool">Yes or no</MudSelectItem>
+                    <MudSelectItem Value="PointType.LowToHigh">Low to high</MudSelectItem>
+                    <MudSelectItem Value="PointType.MildToSevere">Mild to severe</MudSelectItem>
+                    <MudSelectItem Value="PointType.Number">Number</MudSelectItem>
+                    <MudSelectItem Value="PointType.Text">Text</MudSelectItem>
+                    <MudSelectItem Value="PointType.Note">Note</MudSelectItem>
+                </MudSelect>
+            }
+            else if (Group == "Medications")
+            {
+                <div class="d-flex flex-row flex-grow-1" style="gap: 0.75em">
+                    <MudNumericField @bind-Value="MedicationDose" HideSpinButtons Label="Dose" MaxLength="6" Required Immediate />
 
-					<MudTextField @bind-Value="MedicationUnit" Label="Unit" MaxLength="8" Required Immediate Disabled="@(Category != null)" />
-				</div>
+                    <MudTextField @bind-Value="MedicationUnit" Label="Unit" MaxLength="8" Required Immediate Disabled="@(Category != null)" />
+                </div>
 
-				<MudSwitch @bind-Value="MedicationEveryDay" Label="Taken every day" title="Auto checks 'yes' every day" Color="Color.Primary" />
-			}
+                <MudSwitch @bind-Value="MedicationEveryDay" Label="Taken every day" title="Auto checks 'yes' every day" Color="Color.Primary" />
+            }
 
-			<MudTextField @bind-Value="Details" Immediate AutoGrow MaxLines="10"
-						  Label="Details"
-						  Placeholder="@(Group == "Medications" ? "Start date, side effects, etc" : "Explanation, scoring criteria, etc")" />
-		</MudForm>
-	</DialogContent>
+            <MudTextField @bind-Value="Details" Immediate AutoGrow MaxLines="10"
+                          Label="Details"
+                          Placeholder="@(Group == "Medications" ? "Start date, side effects, etc" : "Explanation, scoring criteria, etc")" />
+        </MudForm>
+    </DialogContent>
 </MudDialog>
 
 @code {
-	MudForm _form;
+    MudForm _form;
 
-	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
-	[Parameter]
-	public string Group { get; set; }
+    [Parameter]
+    public string Group { get; set; }
 
-	[Parameter]
-	public DataPointCategory Category { get; set; }
+    [Parameter]
+    public DataPointCategory Category { get; set; }
 
-	public string Name { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
 
-	public PointType Type { get; set; } = PointType.Bool;
+    public PointType Type { get; set; } = PointType.Bool;
 
-	public decimal? MedicationDose { get; set; }
+    public decimal? MedicationDose { get; set; }
 
-	public string MedicationUnit { get; set; } = "mg";
+    public string MedicationUnit { get; set; } = "mg";
 
-	public bool MedicationEveryDay { get; set; } = true;
+    public bool MedicationEveryDay { get; set; } = true;
 
-	public string Details { get; set; }
+    public string Details { get; set; }
 
-	protected override async Task OnInitializedAsync()
-	{
-		await base.OnInitializedAsync();
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
 
-		KeyEventService.Entered(async () => await Submit());
+        KeyEventService.Entered(async () => await Submit());
 
-		if (Category != null)
-		{
-			logger.LogDebug($"Using data from existing category <{Category}>");
+        if (Category != null)
+        {
+            logger.LogDebug($"Using data from existing category <{Category}>");
 
-			Group = Category.Group;
-			Name = Category.Name;
-			Type = Category.Type;
-			MedicationDose = Category.MedicationDose;
-			MedicationUnit = Category.MedicationUnit;
-			MedicationEveryDay = Category.MedicationEveryDaySince != null;
-			Details = Category.Details;
-		}
-	}
+            Group = Category.Group;
+            Name = Category.Name;
+            Type = Category.Type;
+            MedicationDose = Category.MedicationDose;
+            MedicationUnit = Category.MedicationUnit;
+            MedicationEveryDay = Category.MedicationEveryDaySince != null;
+            Details = Category.Details;
+        }
+    }
 
-	void Cancel()
-	{
-		KeyEventService.CancelDialog(MudDialog);
-	}
+    void Cancel()
+    {
+        KeyEventService.CancelDialog(MudDialog);
+    }
 
-	async Task Delete()
-	{
-		logger.LogDebug("Asking for deletion");
+    async Task Delete()
+    {
+        logger.LogDebug("Asking for deletion");
 
-		if (await DialogService.ShowCustomMessageBox(string.Empty, $"Are you sure you want to PERMANENTLY delete \"{Name}\"? This cannot be undone.", yesText: "Delete", cancelText: "Cancel") != true)
-		{
-			logger.LogDebug("Deletion was canceled");
-			return;
-		}
+        if (await DialogService.ShowCustomMessageBox(string.Empty, $"Are you sure you want to PERMANENTLY delete \"{Name}\"? This cannot be undone.", yesText: "Delete", cancelText: "Cancel") != true)
+        {
+            logger.LogDebug("Deletion was canceled");
+            return;
+        }
 
-		Category.Deleted = true;
-		logger.LogDebug($"Deleted {Category}");
-		KeyEventService.CloseDialog(MudDialog, Category);
-	}
+        Category.Deleted = true;
+        logger.LogDebug($"Deleted {Category}");
+        KeyEventService.CloseDialog(MudDialog, Category);
+    }
 
-	async Task<bool> Submit()
-	{
-		logger.LogDebug("Submitting");
+    async Task<bool> Submit()
+    {
+        logger.LogDebug("Submitting");
 
-		await _form.Validate();
-		if (!_form.IsValid)
-		{
-			logger.LogDebug("Form was not valid");
-			return false;
-		}
+        await _form.Validate();
 
-		Category ??= new();
-		Category.Group = Group;
-		Category.Name = Name.Trim();
-		Category.Type = Group == "Medications" ? PointType.Medication : Type;
-		Category.MedicationDose = MedicationDose;
-		Category.MedicationUnit = MedicationUnit?.TrimEnd(); // Allow spaces before, but not after the unit.
-		Category.MedicationEveryDaySince = MedicationEveryDay ? DateTimeOffset.Now : null;
-		Category.Details = Details;
+        if (!_form.IsValid)
+        {
+            logger.LogDebug("Form was not valid");
 
-		logger.LogDebug($"Created new category <Name: {Category.Name}, Type: {Category.Type}>");
+            if (Category == null)
+                Cancel();
 
-		KeyEventService.CloseDialog(MudDialog, Category);
-		return true;
-	}
+            return false;
+        }
 
-	async Task SubmitOrCancel()
-	{
-		if (!await Submit())
-			Cancel();
-	}
+        Category ??= new();
+        Category.Group = Group;
+        Category.Name = Name.Trim();
+        Category.Type = Group == "Medications" ? PointType.Medication : Type;
+        Category.MedicationDose = MedicationDose;
+        Category.MedicationUnit = MedicationUnit?.TrimEnd(); // Allow spaces before, but not after the unit.
+        Category.MedicationEveryDaySince = MedicationEveryDay ? DateTimeOffset.Now : null;
+        Category.Details = Details;
+
+        logger.LogDebug($"Created new category <Name: {Category.Name}, Type: {Category.Type}>");
+
+        KeyEventService.CloseDialog(MudDialog, Category);
+        return true;
+    }
 }
