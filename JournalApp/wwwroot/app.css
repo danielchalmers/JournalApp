@@ -140,6 +140,14 @@ button {
 	padding: 3px !important;
 }
 
+.mud-input-text > textarea {
+	font-family: var(--mud-typography-default-family) !important;
+	font-size: var(--mud-typography-default-size) !important;
+	font-weight: var(--mud-typography-default-weight) !important;
+	line-height: var(--mud-typography-default-lineheight) !important;
+	letter-spacing: var(--mud-typography-default-letterspacing) !important;
+}
+
 #blazor-error-ui {
 	background: darkorange;
 	bottom: 0;
