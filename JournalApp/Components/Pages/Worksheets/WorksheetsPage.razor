@@ -5,86 +5,98 @@
 @inject IJSRuntime JSRuntime
 @inject KeyEventService KeyEventService
 @inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
 
 <div class="page-title">
-	<div class="page-header">
-		<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Back" OnClick="Close" />
+    <div class="page-header">
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Back" OnClick="Close" />
 
-		<MudText Typo="Typo.h6">Worksheets</MudText>
-	</div>
+        <MudText Typo="Typo.h6">Worksheets</MudText>
+    </div>
 </div>
 
 <div class="page-body">
-	<div class="worksheet-group-list">
-		<div class="worksheet-group">
-			<MudText Typo="Typo.h4">Table of Contents</MudText>
+    <div class="worksheet-group-list">
+        <div class="worksheet-group">
+            <MudText Typo="Typo.h4">Table of Contents</MudText>
 
-			<div class="worksheet-group-toc">
-				@foreach (var group in WorksheetGroups)
-				{
-					@if (!string.IsNullOrEmpty(group.Key))
-					{
-						<div class="worksheet-group-toc-item">
-							<MudLink OnClick="async () => await ScrollToGroup(MarkupUtil.ToClassName(group.Key))">• @group.Key</MudLink>
-						</div>
-					}
-				}
-			</div>
-		</div>
+            <div class="worksheet-group-toc">
+                @foreach (var group in WorksheetGroups)
+                {
+                    @if (!string.IsNullOrEmpty(group.Key))
+                    {
+                        <div class="worksheet-group-toc-item">
+                            <MudLink OnClick="async () => await ScrollToGroup(MarkupUtil.ToClassName(group.Key))" title="Scroll to group">• @group.Key</MudLink>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
 
-		@foreach (var group in WorksheetGroups)
-		{
-			<div class="worksheet-group" id="worksheet-group-key-@(MarkupUtil.ToClassName(group.Key))">
-				@if (!string.IsNullOrEmpty(group.Key))
-				{
-					<div class="d-flex align-center">
-						<MudText Typo="Typo.h4">@group.Key</MudText>
-						<MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" OnClick="ScrollToTop" title="Scroll to top" />
-					</div>
-				}
+        @foreach (var group in WorksheetGroups)
+        {
+            <div class="worksheet-group" id="worksheet-group-key-@(MarkupUtil.ToClassName(group.Key))">
+                @if (!string.IsNullOrEmpty(group.Key))
+                {
+                    <div class="d-flex align-center">
+                        <MudText Typo="Typo.h4">@group.Key</MudText>
+                        <MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" OnClick="ScrollToTop" title="Scroll to top" />
+                    </div>
+                }
 
-				<div class="worksheet-group-items">
-					@foreach (var ws in group)
-					{
-						<WorksheetView Worksheet="ws" />
-					}
-				</div>
-			</div>
-		}
-	</div>
+                <div class="worksheet-group-items">
+                    @foreach (var ws in group)
+                    {
+                        <WorksheetView Worksheet="ws" />
+                    }
+                </div>
+            </div>
+        }
+    </div>
 </div>
 
 @code {
-	public IEnumerable<IGrouping<string, Worksheet>> WorksheetGroups => WorksheetData.AllWorksheets.GroupBy(x => x.Category);
+    public IEnumerable<IGrouping<string, Worksheet>> WorksheetGroups => WorksheetData.AllWorksheets.GroupBy(x => x.Category);
 
-	protected override void OnInitialized()
-	{
-		logger.LogDebug("Initializing");
-		base.OnInitialized();
+    protected override void OnInitialized()
+    {
+        logger.LogDebug("Initializing");
+        base.OnInitialized();
 
-		KeyEventService.Entered(() => Close());
-	}
+        KeyEventService.Entered(() => Close());
+    }
 
-	void Close()
-	{
-		logger.LogInformation("Going to index");
-		NavigationManager.NavigateTo("/", false, true);
-	}
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
 
-	async Task ScrollToTop()
-	{
-		logger.LogDebug("Scrolling to top");
-		await JSRuntime.InvokeVoidAsync("scrollToAbsoluteTop");
-	}
+        if (firstRender)
+        {
+            Snackbar.ShowTeachingTip("worksheets", "Tap the title of a worksheet to view it", true);
+        }
+    }
 
-	async Task ScrollToGroup(string key)
-	{
-		logger.LogDebug($"Scrolling to group <{key}>");
-		await JSRuntime.InvokeVoidAsync("scrollToTopOfNestedElement", ".worksheet-group-list", $"#worksheet-group-key-{key}");
-	}
+    void Close()
+    {
+        logger.LogInformation("Going to index");
+        NavigationManager.NavigateTo("/", false, true);
+    }
 
-	public void Dispose()
-	{
-		KeyEventService.Exited();
-	}
+    async Task ScrollToTop()
+    {
+        logger.LogDebug("Scrolling to top");
+        await JSRuntime.InvokeVoidAsync("scrollToAbsoluteTop");
+    }
+
+    async Task ScrollToGroup(string key)
+    {
+        logger.LogDebug($"Scrolling to group <{key}>");
+        await JSRuntime.InvokeVoidAsync("scrollToTopOfNestedElement", ".worksheet-group-list", $"#worksheet-group-key-{key}");
+    }
+
+    public void Dispose()
+    {
+        KeyEventService.Exited();
+        Snackbar.Clear();
+    }
 }
