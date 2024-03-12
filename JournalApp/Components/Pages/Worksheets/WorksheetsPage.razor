@@ -47,7 +47,7 @@
                 <div class="worksheet-group-items">
                     @foreach (var ws in group)
                     {
-                        <WorksheetView Worksheet="ws" />
+                        <WorksheetView Worksheet="ws" OnResourceClick="ResourceClickHandler" />
                     }
                 </div>
             </div>
@@ -72,8 +72,13 @@
 
         if (firstRender)
         {
-            Snackbar.ShowTeachingTip("worksheets", "Tap the title of a worksheet to view it", true);
+            Snackbar.ShowTeachingTip("worksheets", "Tap the title of a worksheet to view it");
         }
+    }
+
+    void ResourceClickHandler()
+    {
+        Snackbar.ActionTaken("worksheets");
     }
 
     void Close()

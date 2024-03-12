@@ -2,7 +2,7 @@
 @inject ILogger<WorksheetView> logger
 
 <div class="worksheet-view">
-    <MudButton OnClick="OnResourceClick" StartIcon="@Icons.Material.Filled.Link" Color="Color.Primary" Disabled="@IsLinkDisabled" title="View worksheet">
+    <MudButton OnClick="ResourceClickHandler" StartIcon="@Icons.Material.Filled.Link" Color="Color.Primary" Disabled="@IsLinkDisabled" title="View worksheet">
         <MudText Typo="Typo.h5">@Worksheet.Title</MudText>
     </MudButton>
 
@@ -21,13 +21,19 @@
     [Parameter]
     public Worksheet Worksheet { get; set; }
 
+    [Parameter]
+    public EventCallback OnResourceClick { get; set; }
+
     public bool IsLinkDisabled => string.IsNullOrWhiteSpace(Worksheet.Uri);
 
     public string PrettySourceUri => Worksheet.SourceUri.Replace("http://", "").Replace("https://", "").Replace("www.", "");
 
-    async Task OnResourceClick()
+    async Task ResourceClickHandler()
     {
         logger.LogInformation($"Clicked <{Worksheet.Title}> and going to <{Worksheet.Uri}>");
         await Browser.Default.OpenAsync(Worksheet.Uri);
+
+        if (OnResourceClick.HasDelegate)
+            await OnResourceClick.InvokeAsync();
     }
 }
