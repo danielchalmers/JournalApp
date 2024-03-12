@@ -54,6 +54,11 @@
     <div class="main-timeline">
         @foreach (var group in db.Categories.Where(x => x.Enabled && !x.Deleted).GroupBy(x => x.Group))
         {
+            @if (group.Key == "Notes" && Preferences.Get("hide_notes", false))
+            {
+                continue;
+            }
+
             <div class="data-point-group">
                 @if (!string.IsNullOrEmpty(group.Key))
                 {

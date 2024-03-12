@@ -10,182 +10,190 @@
 
 @if (_busy)
 {
-	@* TODO: Replace with separate page so we can change state of inline fields and have it updated properly in settings *@
-	<div class="d-flex justify-center">
-		<MudProgressCircular Color="Color.Primary" Style="height:33vw;width:33vw;margin-top:10vh;" Indeterminate="true" />
-	</div>
+    @* TODO: Replace with separate page so we can change state of inline fields and have it updated properly in settings *@
+    <div class="d-flex justify-center">
+        <MudProgressCircular Color="Color.Primary" Style="height:33vw;width:33vw;margin-top:10vh;" Indeterminate="true" />
+    </div>
 }
 else
 {
-	<div class="page-title">
-		<div class="page-header">
-			<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Back" OnClick="Close" />
+    <div class="page-title">
+        <div class="page-header">
+            <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Back" OnClick="Close" />
 
-			<MudText Typo="Typo.h6">Settings</MudText>
-		</div>
-	</div>
+            <MudText Typo="Typo.h6">Settings</MudText>
+        </div>
+    </div>
 
-	<div class="page-body">
-		<div class="settings-group-list">
-			<div class="settings-group">
-				<MudText Typo="Typo.h4">Personalization</MudText>
+    <div class="page-body">
+        <div class="settings-group-list">
+            <div class="settings-group">
+                <MudText Typo="Typo.h4">Personalization</MudText>
 
-				<MudRadioGroup T="AppTheme" Value="AppThemeService.SelectedAppTheme" ValueChanged="SelectedAppThemeChanged">
-					<MudRadio Value="@(AppTheme.Unspecified)">System</MudRadio>
-					<MudRadio Value="@(AppTheme.Light)">Light</MudRadio>
-					<MudRadio Value="@(AppTheme.Dark)">Dark</MudRadio>
-				</MudRadioGroup>
+                <MudRadioGroup T="AppTheme" Value="AppThemeService.SelectedAppTheme" ValueChanged="SelectedAppThemeChanged">
+                    <MudRadio Value="@(AppTheme.Unspecified)">System</MudRadio>
+                    <MudRadio Value="@(AppTheme.Light)">Light</MudRadio>
+                    <MudRadio Value="@(AppTheme.Dark)">Dark</MudRadio>
+                </MudRadioGroup>
 
-				<MudButton StartIcon="@Icons.Material.Filled.HealthAndSafety" OnClick="SetUpSafetyPlan" Variant="Variant.Outlined" FullWidth>Set Up Safety Plan</MudButton>
-			</div>
+                <MudCheckBox @bind-Value="HideNotes">Hide "Today's notes"</MudCheckBox>
 
-			<div class="settings-group">
-				<MudText Typo="Typo.h4">Data & backups</MudText>
+                <MudButton StartIcon="@Icons.Material.Filled.HealthAndSafety" OnClick="SetUpSafetyPlan" Variant="Variant.Outlined" FullWidth>Set Up Safety Plan</MudButton>
+            </div>
 
-				<MudButton StartIcon="@Icons.Material.Filled.Upload" OnClick="StartExport" Variant="Variant.Outlined" FullWidth>Export</MudButton>
+            <div class="settings-group">
+                <MudText Typo="Typo.h4">Data & backups</MudText>
 
-				<MudButton StartIcon="@Icons.Material.Filled.Download" OnClick="PickAndStartImport" Variant="Variant.Outlined" FullWidth>Import</MudButton>
-			</div>
+                <MudButton StartIcon="@Icons.Material.Filled.Upload" OnClick="StartExport" Variant="Variant.Outlined" FullWidth>Export</MudButton>
 
-			<div class="settings-group">
-				<MudText Typo="Typo.h4">About</MudText>
+                <MudButton StartIcon="@Icons.Material.Filled.Download" OnClick="PickAndStartImport" Variant="Variant.Outlined" FullWidth>Import</MudButton>
+            </div>
 
-				<MudText>JournalApp @(ThisAssembly.AssemblyInformationalVersion)</MudText>
-				<MudText>@($"{DeviceInfo.Current.Platform} {DeviceInfo.Current.VersionString}")</MudText>
+            <div class="settings-group">
+                <MudText Typo="Typo.h4">About</MudText>
 
-				<MudLink Href="@(Feedback.GenerateLink())">Send feedback by email</MudLink>
-				<MudLink Href="https://github.com/danielchalmers/JournalApp/issues">Send feedback on GitHub</MudLink>
-				<MudLink Href="https://play.google.com/store/apps/details?id=com.danielchalmers.journalapp">View on Play Store</MudLink>
-				<MudLink Href="https://github.com/danielchalmers/JournalApp">View source code</MudLink>
-			</div>
+                <MudText>JournalApp @(ThisAssembly.AssemblyInformationalVersion)</MudText>
+                <MudText>@($"{DeviceInfo.Current.Platform} {DeviceInfo.Current.VersionString}")</MudText>
 
-			<div class="settings-group">
-				<MudText Typo="Typo.h4">Credits</MudText>
+                <MudLink Href="@(Feedback.GenerateLink())">Send feedback by email</MudLink>
+                <MudLink Href="https://github.com/danielchalmers/JournalApp/issues">Send feedback on GitHub</MudLink>
+                <MudLink Href="https://play.google.com/store/apps/details?id=com.danielchalmers.journalapp">View on Play Store</MudLink>
+                <MudLink Href="https://github.com/danielchalmers/JournalApp">View source code</MudLink>
+            </div>
 
-				<MudTextField T="string" Text="@CreditsText" AutoGrow ReadOnly DisableUnderLine />
-			</div>
-		</div>
-	</div>
+            <div class="settings-group">
+                <MudText Typo="Typo.h4">Credits</MudText>
+
+                <MudTextField T="string" Text="@CreditsText" AutoGrow ReadOnly DisableUnderLine />
+            </div>
+        </div>
+    </div>
 }
 
 @code {
-	bool _leaving;
-	bool _busy;
+    bool _leaving;
+    bool _busy;
 
-	public string CreditsText { get; private set; }
+    public string CreditsText { get; private set; }
 
-	protected override async Task OnInitializedAsync()
-	{
-		logger.LogDebug("Initializing asynchronously");
-		CreditsText = await GetCreditsText();
+    public bool HideNotes
+    {
+        get => Preferences.Get("hide_notes", false);
+        set => Preferences.Set("hide_notes", value);
+    }
 
-		await base.OnInitializedAsync();
+    protected override async Task OnInitializedAsync()
+    {
+        logger.LogDebug("Initializing asynchronously");
+        CreditsText = await GetCreditsText();
 
-		KeyEventService.Entered(Close);
-	}
+        await base.OnInitializedAsync();
 
-	protected override async Task OnAfterRenderAsync(bool firstRender)
-	{
-		await base.OnAfterRenderAsync(firstRender);
+        KeyEventService.Entered(Close);
+    }
 
-		if (firstRender)
-		{
-			if (App.ActivatedFilePath != null)
-			{
-				await StartImport();
-				StateHasChanged();
-			}
-		}
-	}
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
 
-	void SelectedAppThemeChanged(AppTheme newTheme)
-	{
-		AppThemeService.SelectedAppTheme = newTheme;
-		Preferences.Set("theme", newTheme.ToString());
-	}
+        if (firstRender)
+        {
+            if (App.ActivatedFilePath != null)
+            {
+                await StartImport();
+                StateHasChanged();
+            }
+        }
+    }
 
-	void SetUpSafetyPlan()
-	{
-		logger.LogInformation("Setting up Safety Plan");
-		_leaving = true;
-		NavigationManager.NavigateTo($"/safetyplan", false, true);
-	}
+    void SelectedAppThemeChanged(AppTheme newTheme)
+    {
+        AppThemeService.SelectedAppTheme = newTheme;
+        Preferences.Set("theme", newTheme.ToString());
+    }
 
-	async Task PickAndStartImport()
-	{
-		if (DeviceInfo.Current.Platform == DevicePlatform.WinUI)
-		{
-			logger.LogInformation("Picking import file");
+    void SetUpSafetyPlan()
+    {
+        logger.LogInformation("Setting up Safety Plan");
+        _leaving = true;
+        NavigationManager.NavigateTo($"/safetyplan", false, true);
+    }
 
-			var pickResult = await FilePicker.Default.PickAsync();
+    async Task PickAndStartImport()
+    {
+        if (DeviceInfo.Current.Platform == DevicePlatform.WinUI)
+        {
+            logger.LogInformation("Picking import file");
 
-			if (pickResult == null)
-				return;
+            var pickResult = await FilePicker.Default.PickAsync();
 
-			App.ActivatedFilePath = pickResult.FullPath;
+            if (pickResult == null)
+                return;
 
-			await StartImport();
-		}
-		else
-		{
-			logger.LogInformation("Explaining how to import");
-			await DialogService.ShowCustomMessageBox("Find the backup in your files app and click it or choose Open With -> JournalApp. You can also share the file directly from another app.");
-		}
-	}
+            App.ActivatedFilePath = pickResult.FullPath;
 
-	async Task StartImport()
-	{
-		try
-		{
-			_busy = true;
-			StateHasChanged();
+            await StartImport();
+        }
+        else
+        {
+            logger.LogInformation("Explaining how to import");
+            await DialogService.ShowCustomMessageBox("Find the backup in your files app and click it or choose Open With -> JournalApp. You can also share the file directly from another app.");
+        }
+    }
 
-			var path = App.ActivatedFilePath;
+    async Task StartImport()
+    {
+        try
+        {
+            _busy = true;
+            StateHasChanged();
 
-			await AppDataService.StartImportWizard(DialogService, App.ActivatedFilePath);
-		}
-		finally
-		{
-			App.ActivatedFilePath = null;
-			_busy = false;
-		}
-	}
+            var path = App.ActivatedFilePath;
 
-	async Task StartExport()
-	{
-		try
-		{
-			_busy = true;
-			StateHasChanged();
+            await AppDataService.StartImportWizard(DialogService, App.ActivatedFilePath);
+        }
+        finally
+        {
+            App.ActivatedFilePath = null;
+            _busy = false;
+        }
+    }
 
-			await AppDataService.StartExportWizard(DialogService);
-		}
-		finally
-		{
-			_busy = false;
-		}
-	}
+    async Task StartExport()
+    {
+        try
+        {
+            _busy = true;
+            StateHasChanged();
 
-	public async Task<string> GetCreditsText()
-	{
-		logger.LogDebug("Reading credits file");
+            await AppDataService.StartExportWizard(DialogService);
+        }
+        finally
+        {
+            _busy = false;
+        }
+    }
 
-		using var stream = await FileSystem.OpenAppPackageFileAsync("Credits.txt");
-		using var reader = new StreamReader(stream);
-		return reader.ReadToEnd();
-	}
+    public async Task<string> GetCreditsText()
+    {
+        logger.LogDebug("Reading credits file");
 
-	void Close()
-	{
-		logger.LogInformation("Going to index");
-		_leaving = true;
-		NavigationManager.NavigateTo("/", false, true);
-	}
+        using var stream = await FileSystem.OpenAppPackageFileAsync("Credits.txt");
+        using var reader = new StreamReader(stream);
+        return reader.ReadToEnd();
+    }
 
-	public void Dispose()
-	{
-		KeyEventService.Exited();
-	}
+    void Close()
+    {
+        logger.LogInformation("Going to index");
+        _leaving = true;
+        NavigationManager.NavigateTo("/", false, true);
+    }
 
-	protected override bool ShouldRender() => !_leaving;
+    public void Dispose()
+    {
+        KeyEventService.Exited();
+    }
+
+    protected override bool ShouldRender() => !_leaving;
 }
