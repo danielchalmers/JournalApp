@@ -6,92 +6,92 @@
 @inject NavigationManager NavigationManager
 @inject AppThemeService AppThemeService
 
-<MudThemeProvider Theme="_theme" IsDarkMode="_isDarkMode" />
+<MudThemeProvider Theme="_theme" IsDarkMode="_isDarkMode" DefaultScrollbar />
 
 <MudDialogProvider MaxWidth="MaxWidth.Small"
-				   FullWidth="true"
-				   NoHeader="false"
-				   CloseButton="false"
-				   CloseOnEscapeKey="false"
-				   Position="DialogPosition.Center" />
+                   FullWidth="true"
+                   NoHeader="false"
+                   CloseButton="false"
+                   CloseOnEscapeKey="false"
+                   Position="DialogPosition.Center" />
 
 <MudSnackbarProvider />
 
 <div class="page">
-	@Body
+    @Body
 </div>
 
 @code {
-	bool _isDarkMode = true;
-	bool _hasInitiallyRendered;
+    bool _isDarkMode = true;
+    bool _hasInitiallyRendered;
 
-	MudTheme _theme = new()
-		{
-			Palette = new PaletteLight()
-			{
-				Primary = "#776be7",
-				PrimaryLighten = "#978dec",
-				Info = "#776be7",
-				Background = "#f7f6fb",
-				TextDisabled = "#424242",
-			},
-			PaletteDark = new PaletteDark()
-			{
-				Primary = "#776be7",
-				Info = "#776be7",
-				TextDisabled = "#ffffffb2",
-			},
-			LayoutProperties = new() { AppbarHeight = "4em" },
-		};
+    MudTheme _theme = new()
+        {
+            Palette = new PaletteLight()
+            {
+                Primary = "#776be7",
+                PrimaryLighten = "#978dec",
+                Info = "#776be7",
+                Background = "#f7f6fb",
+                TextDisabled = "#424242",
+            },
+            PaletteDark = new PaletteDark()
+            {
+                Primary = "#776be7",
+                Info = "#776be7",
+                TextDisabled = "#ffffffb2",
+            },
+            LayoutProperties = new() { AppbarHeight = "4em" },
+        };
 
-	protected override void OnInitialized()
-	{
-		logger.LogDebug("Initializing");
-		base.OnInitialized();
+    protected override void OnInitialized()
+    {
+        logger.LogDebug("Initializing");
+        base.OnInitialized();
 
-		AppThemeService.ThemeChanged += OnThemeChanged;
-		if (Enum.TryParse<AppTheme>(Preferences.Get("theme", "Unspecified"), out var parsed))
-			AppThemeService.SelectedAppTheme = parsed;
+        AppThemeService.ThemeChanged += OnThemeChanged;
+        if (Enum.TryParse<AppTheme>(Preferences.Get("theme", "Unspecified"), out var parsed))
+            AppThemeService.SelectedAppTheme = parsed;
 
-		App.NewIntent += OnNewIntent;
-		App.Window.Destroying += (_, _) => Dispose();
+        App.NewIntent += OnNewIntent;
+        App.Window.Destroying += (_, _) => Dispose();
 
-		// All pages have been reloaded so we should clear any leftover subscriptions.
-		KeyEventService.ResetStack();
+        // All pages have been reloaded so we should clear any leftover subscriptions.
+        KeyEventService.ResetStack();
 
-		// Start import.
-		if (App.ActivatedFilePath != null)
-		{
-			logger.LogDebug($"Activated by file <{App.ActivatedFilePath}>");
-			NavigationManager.NavigateTo($"/settings", false, true);
-		}
-	}
+        // Start import.
+        if (App.ActivatedFilePath != null)
+        {
+            logger.LogDebug($"Activated by file <{App.ActivatedFilePath}>");
+            NavigationManager.NavigateTo($"/settings", false, true);
+        }
+    }
 
-	protected override void OnAfterRender(bool firstRender)
-	{
-		if (firstRender)
-		{
-			_hasInitiallyRendered = true;
-		}
-	}
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _hasInitiallyRendered = true;
+        }
+    }
 
-	public void OnThemeChanged(object sender, bool isDarkMode)
-	{
-		_isDarkMode = isDarkMode;
+    public void OnThemeChanged(object sender, bool isDarkMode)
+    {
+        _isDarkMode = isDarkMode;
 
-		if (_hasInitiallyRendered)
-			StateHasChanged();
-	}
+        if (_hasInitiallyRendered)
+            StateHasChanged();
+    }
 
-	void OnNewIntent(object sender, EventArgs e)
-	{
-		logger.LogDebug("New intent");
-		NavigationManager.NavigateTo($"/settings", true, true);
-	}
+    void OnNewIntent(object sender, EventArgs e)
+    {
+        logger.LogDebug("New intent");
+        NavigationManager.NavigateTo($"/settings", true, true);
+    }
 
-	public void Dispose()
-	{
-		AppThemeService.ThemeChanged -= OnThemeChanged;
-		App.NewIntent -= OnNewIntent;
-	}
+    public void Dispose()
+    {
+        AppThemeService.ThemeChanged -= OnThemeChanged;
+        App.NewIntent -= OnNewIntent;
+    }
 }
