@@ -41,7 +41,7 @@
         <MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" Title="Previous day" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
 
         <div class="switcher-header">
-            <MudButton OnClick="OpenMoodGrid" title="Open Mood Grid">
+            <MudButton OnClick="OpenCalendar" title="Open Calendar">
                 <MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false">@_day.Date.ToString("ddd, MMM d")</MudText>
             </MudButton>
         </div>
@@ -132,7 +132,7 @@
         DateOnly date = DateOnly.FromDateTime(DateTime.Now);
         if (DateOnly.TryParseExact(OpenToDateString, "yyyyMMdd", out var parsed))
         {
-            // Use the parameter date (from when you click a day in the mood grid, etc).
+            // Use the parameter date (from when you click a day in the calendar, etc).
             date = parsed;
         }
         else if (App.IndexDateState.HasValue)
@@ -233,9 +233,9 @@
         await GoToDay(_day.Date.Next());
     }
 
-    void OpenMoodGrid()
+    void OpenCalendar()
     {
-        logger.LogInformation("Opening Mood Grid");
+        logger.LogInformation("Opening Calendar");
         NavigationManager.NavigateTo($"/calendar/{_day.Date:yyyyMMdd}", false, true);
     }
 

@@ -1,11 +1,11 @@
 ﻿@namespace JournalApp
-@inject ILogger<MoodGridCalendar> logger
+@inject ILogger<CalendarView> logger
 
-<div class="mood-grid">
+<div class="calendar-view">
 	@foreach (var month in GridYear.GridMonths)
 	{
-		<div class="mood-grid-month" id="mood-grid-month-@(month.Month)">
-			<div class="mood-grid-month-header">
+		<div class="calendar-month" id="calendar-month-@(month.Month)">
+			<div class="calendar-month-header">
 				<MudIconButton Icon="@Icons.Material.Filled.ArrowLeft" OnClick="async () => await PreviousMonthClicked.InvokeAsync(month.Month)" title="Previous month" />
 				<MudText Typo="Typo.h4">@(month.Name)</MudText>
 				<MudIconButton Icon="@Icons.Material.Filled.ArrowRight" OnClick="async () => await NextMonthClicked.InvokeAsync(month.Month)" title="Next month" Disabled="@(month.Month == 12 && month.Year == DateTime.Now.Year)" />
@@ -26,7 +26,7 @@
 					<div class="mood-blocks-week">
 						@foreach (var day in row)
 						{
-							<div class="@(day.Date == OpenToDate ? "mood-block-container current-mood-block-container" : "mood-block-container")" style="background-color: @(GetMoodColor(day.Emoji));">
+							<div class="@(day.Date == OpenToDate ? "mood-block-container mood-block-container-current" : "mood-block-container")" style="background-color: @(GetMoodColor(day.Emoji));">
 								<div class="mood-block" onclick="@(async () => await DayClicked.InvokeAsync(day.Date))">
 									@if (day.Date != null)
 									{

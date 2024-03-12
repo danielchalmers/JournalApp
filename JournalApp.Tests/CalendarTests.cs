@@ -1,6 +1,6 @@
 ﻿namespace JournalApp.Tests;
 
-public class MoodGridTests
+public class CalendarTests
 {
     [Fact]
     [Description("Are the number of years, and months in the grid correct?")]
