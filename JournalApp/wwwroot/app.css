@@ -56,9 +56,10 @@ button {
 	box-shadow: none;
 	min-height: calc(var(--mud-appbar-height) - var(--mud-appbar-height) / 4);
 	background-color: var(--mud-palette-primary);
+	--mud-palette-action-default: var(--mud-palette-appbar-text);
 }
 
-	.page-header * {
+	.page-header *.mud-typography {
 		color: var(--mud-palette-appbar-text);
 	}
 
@@ -71,9 +72,10 @@ button {
 	top: 0 !important;
 	position: sticky !important;
 	background-color: var(--mud-palette-primary-lighten);
+	--mud-palette-action-default: var(--mud-palette-appbar-text);
 }
 
-	.mud-dialog .mud-dialog-title, .page-title * {
+	.mud-dialog .mud-dialog-title, .page-title *.mud-typography {
 		color: var(--mud-palette-appbar-text);
 	}
 
