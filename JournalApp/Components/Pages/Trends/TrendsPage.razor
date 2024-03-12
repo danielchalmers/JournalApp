@@ -8,107 +8,112 @@
 @inject NavigationManager NavigationManager
 
 <div class="page-title">
-	<div class="page-header">
-		<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Back" OnClick="Close" />
+    <div class="page-header">
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Back" OnClick="Close" />
 
-		<MudText Typo="Typo.h6">Trends</MudText>
-	</div>
+        <MudText Typo="Typo.h6">Trends</MudText>
+    </div>
 
-	<TrendsSwitcher @bind-SelectedDates="SelectedDates" @bind-SelectedDates:after="LoadDates" OpenToDate="OpenToDate" />
+    <TrendsSwitcher @bind-SelectedDates="SelectedDates" @bind-SelectedDates:after="LoadDates" OpenToDate="OpenToDate" />
 </div>
 
 <div class="page-body">
-	<div id="trends-category-list">
-		@foreach (var (category, points) in AllPoints.OrderBy(x => x.Key.Group).ThenBy(x => x.Key.Index))
-		{
-			<div class="trends-category">
-				<MudText Typo="Typo.h6">@(TrendCategoryView.GetHeaderText(category))</MudText>
+    <div id="trends-category-list">
+        @foreach (var (category, points) in AllPoints.OrderBy(x => x.Key.Group).ThenBy(x => x.Key.Index))
+        {
+            @if (category.Group == "Notes" && Preferences.Get("hide_notes", false))
+            {
+                continue;
+            }
 
-				<ErrorBoundary>
-					<ChildContent>
-						<TrendCategoryView Category="category" Dates="SelectedDates" PointsByDay="points" />
-					</ChildContent>
+            <div class="trends-category">
+                <MudText Typo="Typo.h6">@(TrendCategoryView.GetHeaderText(category))</MudText>
 
-					<ErrorContent>
-						<MudText Color="Color.Error">💥 Failed to load.</MudText>
-					</ErrorContent>
-				</ErrorBoundary>
-			</div>
-		}
-	</div>
+                <ErrorBoundary>
+                    <ChildContent>
+                        <TrendCategoryView Category="category" Dates="SelectedDates" PointsByDay="points" />
+                    </ChildContent>
+
+                    <ErrorContent>
+                        <MudText Color="Color.Error">💥 Failed to load.</MudText>
+                    </ErrorContent>
+                </ErrorBoundary>
+            </div>
+        }
+    </div>
 </div>
 
 @code {
-	bool _leaving;
+    bool _leaving;
 
-	[Parameter]
-	public string OpenToDateString { get; set; }
+    [Parameter]
+    public string OpenToDateString { get; set; }
 
-	public DateOnly OpenToDate { get; set; }
+    public DateOnly OpenToDate { get; set; }
 
-	public IReadOnlyList<DateOnly> SelectedDates { get; set; }
+    public IReadOnlyList<DateOnly> SelectedDates { get; set; }
 
-	Dictionary<DataPointCategory, IReadOnlyDictionary<int, IReadOnlyCollection<DataPoint>>> AllPoints = new();
+    Dictionary<DataPointCategory, IReadOnlyDictionary<int, IReadOnlyCollection<DataPoint>>> AllPoints = new();
 
-	protected override void OnInitialized()
-	{
-		logger.LogDebug("Initializing");
-		base.OnInitialized();
+    protected override void OnInitialized()
+    {
+        logger.LogDebug("Initializing");
+        base.OnInitialized();
 
-		KeyEventService.Entered(() => Close());
+        KeyEventService.Entered(() => Close());
 
-		OpenToDate = DateOnly.ParseExact(OpenToDateString, "yyyyMMdd");
-		logger.LogInformation($"Opening to {OpenToDate}");
-	}
+        OpenToDate = DateOnly.ParseExact(OpenToDateString, "yyyyMMdd");
+        logger.LogInformation($"Opening to {OpenToDate}");
+    }
 
-	async Task LoadDates()
-	{
-		logger.LogInformation($"Loading dates <{SelectedDates[0]}..{SelectedDates[^1]}>");
-		var sw = Stopwatch.StartNew();
+    async Task LoadDates()
+    {
+        logger.LogInformation($"Loading dates <{SelectedDates[0]}..{SelectedDates[^1]}>");
+        var sw = Stopwatch.StartNew();
 
-		await using var db = await DbFactory.CreateDbContextAsync();
+        await using var db = await DbFactory.CreateDbContextAsync();
 
-		// All the points we want to show.
-		var query = db.Points
-			.Where(p => !p.Deleted && !p.Category.Deleted && p.Category.Enabled && SelectedDates.Contains(p.Day.Date))
-			.Include(p => p.Category)
-			.Include(p => p.Day)
-			.AsEnumerable()
-			.OrderBy(p => p.Day.Date)
-			.ThenBy(p => p.CreatedAt)
-			.GroupBy(
-				p => p.Category,
-				p => p
-			);
+        // All the points we want to show.
+        var query = db.Points
+            .Where(p => !p.Deleted && !p.Category.Deleted && p.Category.Enabled && SelectedDates.Contains(p.Day.Date))
+            .Include(p => p.Category)
+            .Include(p => p.Day)
+            .AsEnumerable()
+            .OrderBy(p => p.Day.Date)
+            .ThenBy(p => p.CreatedAt)
+            .GroupBy(
+                p => p.Category,
+                p => p
+            );
 
-		// Group points by category then day number.
-		AllPoints.Clear();
-		foreach (var group in query)
-		{
-			var pointsByDayNumber = new Dictionary<int, IReadOnlyCollection<DataPoint>>();
+        // Group points by category then day number.
+        AllPoints.Clear();
+        foreach (var group in query)
+        {
+            var pointsByDayNumber = new Dictionary<int, IReadOnlyCollection<DataPoint>>();
 
-			foreach (var date in SelectedDates)
-			{
-				pointsByDayNumber.Add(date.Day, group.Where(p => p.Day.Date == date).ToHashSet());
-			}
+            foreach (var date in SelectedDates)
+            {
+                pointsByDayNumber.Add(date.Day, group.Where(p => p.Day.Date == date).ToHashSet());
+            }
 
-			AllPoints.Add(group.Key, pointsByDayNumber);
-		}
+            AllPoints.Add(group.Key, pointsByDayNumber);
+        }
 
-		logger.LogInformation($"Loaded dates in {sw.ElapsedMilliseconds}ms");
-	}
+        logger.LogInformation($"Loaded dates in {sw.ElapsedMilliseconds}ms");
+    }
 
-	void Close()
-	{
-		logger.LogInformation("Going to index");
-		_leaving = true;
-		NavigationManager.NavigateTo("/", false, true);
-	}
+    void Close()
+    {
+        logger.LogInformation("Going to index");
+        _leaving = true;
+        NavigationManager.NavigateTo("/", false, true);
+    }
 
-	public void Dispose()
-	{
-		KeyEventService.Exited();
-	}
+    public void Dispose()
+    {
+        KeyEventService.Exited();
+    }
 
-	protected override bool ShouldRender() => !_leaving;
+    protected override bool ShouldRender() => !_leaving;
 }
