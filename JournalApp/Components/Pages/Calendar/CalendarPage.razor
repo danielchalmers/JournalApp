@@ -227,7 +227,7 @@
         if (date == null || date > DateOnly.FromDateTime(DateTime.Now).Next())
             return;
 
-        Snackbar.TeachingTipActionTaken("click_mood_grid_day");
+        Snackbar.ActionTaken("click_mood_grid_day");
         _leaving = true;
         NavigationManager.NavigateTo($"/{date:yyyyMMdd}", false, true);
     }

@@ -9,139 +9,139 @@
 @inject ISnackbar Snackbar
 
 <div class="page-title">
-	<div class="page-header">
-		<MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Submit" OnClick="Submit" />
+    <div class="page-header">
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Submit" OnClick="Submit" />
 
-		<MudText Typo="Typo.h6">@(Group == null ? "Categories" : Group)</MudText>
+        <MudText Typo="Typo.h6">@(Group == null ? "Categories" : Group)</MudText>
 
-		<MudSpacer />
+        <MudSpacer />
 
-		<MudIconButton Icon="@Icons.Material.Filled.Add" Title="New" OnClick="New" />
-	</div>
+        <MudIconButton Icon="@Icons.Material.Filled.Add" Title="New" OnClick="New" />
+    </div>
 </div>
 
 <div class="page-body">
-	@if (!Categories.Any())
-	{
-		<MudText Align="Align.Center">Click the '+' icon to add a new one.</MudText>
-	}
-	else
-	{
-		@foreach (var c in Categories.OrderBy(c => c.Index))
-		{
-			<div class="category-view-compact">
-				<MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" Title="Move up" OnClick="async () => await MoveUp(c)" Edge="Edge.Start" Disabled="c.Index <= 1" />
+    @if (!Categories.Any())
+    {
+        <MudText Align="Align.Center">Click the '+' icon to add a new one.</MudText>
+    }
+    else
+    {
+        @foreach (var c in Categories.OrderBy(c => c.Index))
+        {
+            <div class="category-view-compact">
+                <MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" Title="Move up" OnClick="async () => await MoveUp(c)" Edge="Edge.Start" Disabled="c.Index <= 1" />
 
-				<MudSwitch T="bool" Value="c.Enabled" ValueChanged="async (v) => await OnEnabledChanged(c, v)" Color="Color.Primary" Style="margin-right: -0.125em;" title="Enabled" />
+                <MudSwitch T="bool" Value="c.Enabled" ValueChanged="async (v) => await OnEnabledChanged(c, v)" Color="Color.Primary" Style="margin-right: -0.125em;" title="Enabled" />
 
-				<div class="category-view-edit-button">
-					<MudButton Variant="Variant.Text" OnClick="async () => await Edit(c)" Disabled="c.ReadOnly" StartIcon="@Icons.Material.Filled.Edit" title="Edit" Size="Size.Large">@c.Name</MudButton>
-				</div>
-			</div>
-		}
-	}
+                <div class="category-view-edit-button">
+                    <MudButton Variant="Variant.Text" OnClick="async () => await Edit(c)" Disabled="c.ReadOnly" StartIcon="@Icons.Material.Filled.Edit" title="Edit" Size="Size.Large">@c.Name</MudButton>
+                </div>
+            </div>
+        }
+    }
 </div>
 
 @code {
-	AppDbContext db;
-	bool _leaving;
+    AppDbContext db;
+    bool _leaving;
 
-	[Parameter]
-	public string Group { get; set; }
+    [Parameter]
+    public string Group { get; set; }
 
-	public IQueryable<DataPointCategory> Categories => db.Categories.Where(c => c.Group == Group && !c.Deleted);
+    public IQueryable<DataPointCategory> Categories => db.Categories.Where(c => c.Group == Group && !c.Deleted);
 
-	protected override void OnInitialized()
-	{
-		logger.LogDebug("Initializing");
-		db = DbFactory.CreateDbContext();
-		base.OnInitialized();
+    protected override void OnInitialized()
+    {
+        logger.LogDebug("Initializing");
+        db = DbFactory.CreateDbContext();
+        base.OnInitialized();
 
-		KeyEventService.Entered(() => Submit());
-	}
+        KeyEventService.Entered(() => Submit());
+    }
 
-	protected override async Task OnAfterRenderAsync(bool firstRender)
-	{
-		await base.OnAfterRenderAsync(firstRender);
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
 
-		if (firstRender)
-		{
-			Snackbar.ShowTeachingTip("add_new_category", "Click the '+' icon to add a new one");
-		}
-	}
+        if (firstRender)
+        {
+            Snackbar.ShowTeachingTip("add_new_category", "Click the '+' icon to add a new one");
+        }
+    }
 
-	async Task OnEnabledChanged(DataPointCategory c, bool newValue)
-	{
-		logger.LogInformation($"Toggled category enabled <{c}, {newValue}>");
-		c.Enabled = newValue;
-		await db.SaveChangesAsync();
-	}
+    async Task OnEnabledChanged(DataPointCategory c, bool newValue)
+    {
+        logger.LogInformation($"Toggled category enabled <{c}, {newValue}>");
+        c.Enabled = newValue;
+        await db.SaveChangesAsync();
+    }
 
-	async Task MoveUp(DataPointCategory category)
-	{
-		await db.MoveCategoryUp(category);
-		logger.LogInformation($"Moved category up: {category}, {category.Guid}");
+    async Task MoveUp(DataPointCategory category)
+    {
+        await db.MoveCategoryUp(category);
+        logger.LogInformation($"Moved category up: {category}, {category.Guid}");
 
-		await db.SaveChangesAsync();
-	}
+        await db.SaveChangesAsync();
+    }
 
-	async Task Edit(DataPointCategory category)
-	{
-		var parameters = new DialogParameters<EditCategoryDialog> { { x => x.Group, Group }, { x => x.Category, category } };
-		var result = await DialogService.Show<EditCategoryDialog>(parameters).Result;
+    async Task Edit(DataPointCategory category)
+    {
+        var parameters = new DialogParameters<EditCategoryDialog> { { x => x.Group, Group }, { x => x.Category, category } };
+        var result = await DialogService.Show<EditCategoryDialog>(parameters).Result;
 
-		if (result.Canceled)
-			return;
+        if (result.Canceled)
+            return;
 
-		logger.LogInformation($"Edited category: {category}, {category.Guid}");
+        logger.LogInformation($"Edited category: {category}, {category.Guid}");
 
-		if (category.Deleted)
-		{
-			logger.LogInformation("Category was deleted; deleting points and fixing indexes.");
-			db.Points.RemoveRange(category.Points);
-			db.FixCategoryIndexes();
-		}
+        if (category.Deleted)
+        {
+            logger.LogInformation("Category was deleted; deleting points and fixing indexes.");
+            db.Points.RemoveRange(category.Points);
+            db.FixCategoryIndexes();
+        }
 
-		await db.SaveChangesAsync();
-	}
+        await db.SaveChangesAsync();
+    }
 
-	async Task New()
-	{
-		Snackbar.TeachingTipActionTaken("add_new_category");
+    async Task New()
+    {
+        Snackbar.ActionTaken("add_new_category");
 
-		var parameters = new DialogParameters<EditCategoryDialog> { { x => x.Group, Group } };
-		var result = await DialogService.Show<EditCategoryDialog>(parameters).Result;
+        var parameters = new DialogParameters<EditCategoryDialog> { { x => x.Group, Group } };
+        var result = await DialogService.Show<EditCategoryDialog>(parameters).Result;
 
-		if (result.Canceled)
-			return;
+        if (result.Canceled)
+            return;
 
-		var newCategory = (DataPointCategory)result.Data;
+        var newCategory = (DataPointCategory)result.Data;
 
-		if (string.IsNullOrWhiteSpace(newCategory.Name))
-		{
-			logger.LogInformation($"Not adding new category with empty name");
-		}
-		else
-		{
-			db.AddCategory(newCategory);
-			await db.SaveChangesAsync();
-			logger.LogInformation($"Added new category <{newCategory}>");
-		}
-	}
+        if (string.IsNullOrWhiteSpace(newCategory.Name))
+        {
+            logger.LogInformation($"Not adding new category with empty name");
+        }
+        else
+        {
+            db.AddCategory(newCategory);
+            await db.SaveChangesAsync();
+            logger.LogInformation($"Added new category <{newCategory}>");
+        }
+    }
 
-	void Submit()
-	{
-		logger.LogInformation("Going to index");
-		_leaving = true;
-		NavigationManager.NavigateTo("/", false, true);
-	}
+    void Submit()
+    {
+        logger.LogInformation("Going to index");
+        _leaving = true;
+        NavigationManager.NavigateTo("/", false, true);
+    }
 
-	public void Dispose()
-	{
-		KeyEventService.Exited();
-		db?.Dispose();
-		Snackbar.Clear();
-	}
+    public void Dispose()
+    {
+        KeyEventService.Exited();
+        db?.Dispose();
+        Snackbar.Clear();
+    }
 
-	protected override bool ShouldRender() => !_leaving;
+    protected override bool ShouldRender() => !_leaving;
 }

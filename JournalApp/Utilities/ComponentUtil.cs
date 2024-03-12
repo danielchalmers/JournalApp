@@ -45,22 +45,4 @@ internal static class ComponentUtil
 
         return data;
     }
-
-    public static void ShowTeachingTip(this ISnackbar snackbar, string name, string text, bool oneTime = false)
-    {
-        if (Preferences.Get($"tip_{name}", string.Empty) == "seen")
-            return;
-
-        snackbar.Add(text, Severity.Info);
-
-        if (oneTime)
-            Preferences.Set($"tip_{name}", "seen");
-    }
-
-    public static void TeachingTipActionTaken(this ISnackbar snackbar, string name)
-    {
-        snackbar.Clear();
-
-        Preferences.Set($"tip_{name}", "seen");
-    }
 }
