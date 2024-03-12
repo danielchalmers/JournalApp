@@ -4,196 +4,202 @@
 
 @if (Category.Type is PointType.Text or PointType.Note)
 {
-	<div class="trend-view-notes">
-		@foreach (var (day, points) in PointsByDay)
-		{
-			foreach (var point in points.Where(x => !string.IsNullOrEmpty(x.Text)))
-			{
-				<MudTextField Value="point.Text"
-							  Label="@GetNoteLabel(point, day)"
-							  ReadOnly DisableUnderLine AutoGrow />
-			}
-		}
-	</div>
+    <div class="trend-view-notes">
+        @foreach (var (day, points) in PointsByDay)
+        {
+            foreach (var point in points.Where(x => !string.IsNullOrEmpty(x.Text)))
+            {
+                <MudTextField Value="point.Text"
+                              Label="@GetNoteLabel(point, day)"
+                              ReadOnly DisableUnderLine AutoGrow />
+            }
+        }
+    </div>
 }
 else
 {
-	<div class="trend-view-chart">
-		<ApexChart @ref="_chart" TItem="TrendChartPoint" Options="ChartOptions">
-			@switch (Category.Type)
-			{
-				case PointType.Mood:
-					<ApexPointSeries Name="Mood (1=low, 7=high)"
-									 Items="_chartItems"
-									 SeriesType="SeriesType.Line"
-									 XValue="e => e.Day"
-									 YValue="e => e.Mood" />
-					break;
+    <div class="trend-view-chart">
+        <ApexChart @ref="_chart" TItem="TrendChartPoint" Options="ChartOptions">
+            @switch (Category.Type)
+            {
+                case PointType.Mood:
+                    <ApexPointSeries Name="Mood (1=low, 7=high)"
+                                     Items="_chartItems"
+                                     SeriesType="SeriesType.Line"
+                                     XValue="e => e.Day"
+                                     YValue="e => e.Mood" />
+                    break;
 
-				case PointType.Sleep:
-					<ApexPointSeries Name="Hours"
-									 Items="_chartItems"
-									 SeriesType="SeriesType.Line"
-									 XValue="e => e.Day"
-									 YValue="e => e.SleepHours" />
-					break;
+                case PointType.Sleep:
+                    <ApexPointSeries Name="Hours"
+                                     Items="_chartItems"
+                                     SeriesType="SeriesType.Line"
+                                     XValue="e => e.Day"
+                                     YValue="e => e.SleepHours" />
+                    break;
 
-				case PointType.Scale:
-				case PointType.LowToHigh:
-				case PointType.MildToSevere:
-					<ApexPointSeries Name="Scale (0=low, 5=high)"
-									 Items="_chartItems"
-									 SeriesType="SeriesType.Line"
-									 XValue="e => e.Day"
-									 YValue="e => e.Scale" />
-					break;
+                case PointType.Scale:
+                case PointType.LowToHigh:
+                case PointType.MildToSevere:
+                    <ApexPointSeries Name="Scale (0=low, 5=high)"
+                                     Items="_chartItems"
+                                     SeriesType="SeriesType.Line"
+                                     XValue="e => e.Day"
+                                     YValue="e => e.Scale" />
+                    break;
 
-				case PointType.Bool:
-					<ApexPointSeries Name="Bool (0=no, 1=yes)"
-									 Items="_chartItems"
-									 SeriesType="SeriesType.Line"
-									 XValue="e => e.Day"
-									 YValue="e => e.Bool" />
-					break;
+                case PointType.Bool:
+                    <ApexPointSeries Name="Bool (0=no, 1=yes)"
+                                     Items="_chartItems"
+                                     SeriesType="SeriesType.Line"
+                                     XValue="e => e.Day"
+                                     YValue="e => e.Bool" />
+                    break;
 
-				case PointType.Medication:
-					<ApexPointSeries Name="Dose"
-									 Items="_chartItems"
-									 SeriesType="SeriesType.Line"
-									 XValue="e => e.Day"
-									 YValue="e => e.MedDose" />
-					break;
+                case PointType.Medication:
+                    <ApexPointSeries Name="Dose"
+                                     Items="_chartItems"
+                                     SeriesType="SeriesType.Line"
+                                     XValue="e => e.Day"
+                                     YValue="e => e.MedDose" />
+                    break;
 
-				case PointType.Number:
-					<ApexPointSeries Name="Number"
-									 Items="_chartItems"
-									 SeriesType="SeriesType.Line"
-									 XValue="e => e.Day"
-									 YValue="e => e.Number" />
-					break;
-			}
-		</ApexChart>
-	</div>
+                case PointType.Number:
+                    <ApexPointSeries Name="Number"
+                                     Items="_chartItems"
+                                     SeriesType="SeriesType.Line"
+                                     XValue="e => e.Day"
+                                     YValue="e => e.Number" />
+                    break;
+            }
+        </ApexChart>
+    </div>
 }
 
 @code {
-	ApexChart<TrendChartPoint> _chart;
-	List<TrendChartPoint> _chartItems;
+    ApexChart<TrendChartPoint> _chart;
+    List<TrendChartPoint> _chartItems;
 
-	ApexChartOptions<TrendChartPoint> ChartOptions;
+    ApexChartOptions<TrendChartPoint> ChartOptions;
 
-	[Parameter]
-	public DataPointCategory Category { get; set; }
+    [Parameter]
+    public DataPointCategory Category { get; set; }
 
-	[Parameter]
-	public IReadOnlyList<DateOnly> Dates { get; set; }
+    [Parameter]
+    public IReadOnlyList<DateOnly> Dates { get; set; }
 
-	[Parameter]
-	public IReadOnlyDictionary<int, IReadOnlyCollection<DataPoint>> PointsByDay { get; set; }
+    [Parameter]
+    public IReadOnlyDictionary<int, IReadOnlyCollection<DataPoint>> PointsByDay { get; set; }
 
-	protected override async Task OnParametersSetAsync()
-	{
-		await base.OnParametersSetAsync();
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
 
-		_chartItems = new();
-		foreach (var (day, points) in PointsByDay)
-		{
-			_chartItems.Add(new(day.ToString(), points.LastOrDefault()));
-		}
+        _chartItems = new();
+        foreach (var (day, points) in PointsByDay)
+        {
+            _chartItems.Add(new(day.ToString(), points.LastOrDefault()));
+        }
 
-		if (_chart != null)
-			await _chart.UpdateSeriesAsync(false);
-	}
+        if (_chart != null)
+            await _chart.UpdateSeriesAsync(false);
+    }
 
-	protected override void OnInitialized()
-	{
-		base.OnInitialized();
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
 
-		ChartOptions = new()
-			{
-				Theme = new Theme
-				{
-					Mode = AppThemeService.IsDarkMode ? Mode.Dark : Mode.Light,
-					Monochrome = new ThemeMonochrome
-					{
-						Color = "#776be7",
-						Enabled = true,
-					},
-				},
-				Grid = new Grid
-				{
-					Padding = new Padding
-					{
-						Top = -15,
-					},
-				},
-				Chart = new Chart
-				{
-					Background = "transparent",
-					Height = "135px",
-					ParentHeightOffset = 0,
-					Zoom = new Zoom
-					{
-						Enabled = false,
-					},
-					Toolbar = new Toolbar
-					{
-						Show = false,
-					},
-					Animations = new Animations
-					{
-						Enabled = false,
-					},
-				},
-				Xaxis = new XAxis
-				{
-					TickAmount = 15,
-					Labels = new XAxisLabels
-					{
-						HideOverlappingLabels = true,
-					},
-				},
-			};
-	}
+        ChartOptions = new()
+            {
+                Theme = new Theme
+                {
+                    Mode = AppThemeService.IsDarkMode ? Mode.Dark : Mode.Light,
+                    Monochrome = new ThemeMonochrome
+                    {
+                        Color = "#776be7",
+                        Enabled = true,
+                    },
+                },
+                Grid = new Grid
+                {
+                    Padding = new Padding
+                    {
+                        Top = -15,
+                    },
+                    BorderColor = "var(--mud-palette-action-default)",
+                },
+                Chart = new Chart
+                {
+                    Background = "transparent",
+                    Height = "100%",
+                    ParentHeightOffset = 0,
+                    OffsetX = -15,
+                    Zoom = new Zoom
+                    {
+                        Enabled = false,
+                    },
+                    Toolbar = new Toolbar
+                    {
+                        Show = false,
+                    },
+                    Animations = new Animations
+                    {
+                        Enabled = false,
+                    },
+                },
+                Xaxis = new XAxis
+                {
+                    TickAmount = 15,
+                    Labels = new XAxisLabels
+                    {
+                        HideOverlappingLabels = true,
+                    },
+                },
+                Markers = new Markers
+                {
+                    ShowNullDataPoints = false,
+                },
+            };
+    }
 
-	/// <summary>
-	/// Returns a header to be shown above the view on the trends page.
-	/// </summary>
-	public static string GetHeaderText(DataPointCategory category)
-	{
-		var sb = new StringBuilder();
+    /// <summary>
+    /// Returns a header to be shown above the view on the trends page.
+    /// </summary>
+    public static string GetHeaderText(DataPointCategory category)
+    {
+        var sb = new StringBuilder();
 
-		// Show the name if there is one; otherwise the group title.
-		if (string.IsNullOrEmpty(category.Name))
-			sb.Append(category.Group);
-		else
-			sb.Append(category.Name);
+        // Show the name if there is one; otherwise the group title.
+        if (string.IsNullOrEmpty(category.Name))
+            sb.Append(category.Group);
+        else
+            sb.Append(category.Name);
 
-		// Append the unit if it's a medication category.
-		if (category.Type == PointType.Medication)
-			sb.Append($" ({category.MedicationUnit?.Trim()})");
+        // Append the unit if it's a medication category.
+        if (category.Type == PointType.Medication)
+            sb.Append($" ({category.MedicationUnit?.Trim()})");
 
-		return sb.ToString();
-	}
+        return sb.ToString();
+    }
 
-	string GetNoteLabel(DataPoint point, int day)
-	{
-		var sb = new StringBuilder();
+    string GetNoteLabel(DataPoint point, int day)
+    {
+        var sb = new StringBuilder();
 
-		// The date the note was created if it's timestamped, otherwise the actual day assigned to the point.
-		// If you just use the creation date you'll get the date the point was first created which could be anything depending on what the user does.
-		sb.Append($"{(point.IsTimestampedNote ? point.CreatedAt : point.Day.Date):M/d/yy}");
+        // The date the note was created if it's timestamped, otherwise the actual day assigned to the point.
+        // If you just use the creation date you'll get the date the point was first created which could be anything depending on what the user does.
+        sb.Append($"{(point.IsTimestampedNote ? point.CreatedAt : point.Day.Date):M/d/yy}");
 
-		if (point.IsTimestampedNote)
-		{
-			// Add the time.
-			sb.Append($" {point.CreatedAt:h:mm tt}");
+        if (point.IsTimestampedNote)
+        {
+            // Add the time.
+            sb.Append($" {point.CreatedAt:h:mm tt}");
 
-			// Denote that it was created from a future date.
-			if (DateOnly.FromDateTime(point.CreatedAt.Date) != point.Day.Date)
-				sb.Append($" ({point.Day.Date:M/d/yy})");
-		}
+            // Denote that it was created from a future date.
+            if (DateOnly.FromDateTime(point.CreatedAt.Date) != point.Day.Date)
+                sb.Append($" ({point.Day.Date:M/d/yy})");
+        }
 
-		return sb.ToString();
-	}
+        return sb.ToString();
+    }
 }

@@ -1,7 +1,5 @@
 ﻿.trend-view-chart {
-	display: flex;
-	flex-direction: column;
-	flex: 1 1 0;
+	height: 10em;
 }
 
 .trend-view-notes {
