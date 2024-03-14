@@ -25,10 +25,8 @@
 							 AdornmentText="@Point.Category.MedicationUnit" Adornment="Adornment.End"
 							 MaxLength="6" HideSpinButtons Immediate />
 
-			@if (!string.IsNullOrWhiteSpace(CategoryDetails))
-			{
-				<MudTextField Value="CategoryDetails" Label="Details" ReadOnly AutoGrow MaxLines="10" />
-			}
+
+            <MudText title="Details">@CategoryDetails</MudText>
 		</MudForm>
 	</DialogContent>
 </MudDialog>
