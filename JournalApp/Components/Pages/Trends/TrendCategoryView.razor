@@ -124,6 +124,9 @@ else
                 {
                     Padding = new Padding
                     {
+                        Bottom = 0,
+                        Left = 0,
+                        Right = 0,
                         Top = -15,
                     },
                     BorderColor = "var(--mud-palette-action-default)",
@@ -133,7 +136,6 @@ else
                     Background = "transparent",
                     Height = "100%",
                     ParentHeightOffset = 0,
-                    OffsetX = -15,
                     Zoom = new Zoom
                     {
                         Enabled = false,
@@ -153,7 +155,30 @@ else
                     Labels = new XAxisLabels
                     {
                         HideOverlappingLabels = true,
+                        Rotate = 0,
+                        Style = new AxisLabelStyle
+                        {
+                            FontSize = "var(--mud-typography-caption-size)",
+                            FontFamily = "var(--mud-typography-caption-family)",
+                            FontWeight = "var(--mud-typography-caption-weight)",
+                        },
                     },
+                },
+                Yaxis = new List<YAxis>
+                {
+                   new YAxis
+                   {
+                        Labels = new YAxisLabels
+                        {
+                            OffsetX = -15,
+                            Style = new AxisLabelStyle
+                            {
+                                FontSize = "var(--mud-typography-caption-size)",
+                                FontFamily = "var(--mud-typography-caption-family)",
+                                FontWeight = "var(--mud-typography-caption-weight)",
+                            },
+                        },
+                   },
                 },
                 Markers = new Markers
                 {
