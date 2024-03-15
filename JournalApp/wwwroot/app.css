@@ -93,6 +93,10 @@ button {
 	padding-bottom: 25vh !important;
 }
 
+.mud-dialog-width-full {
+	width: calc(100% - 1em) !important;
+}
+
 .mud-form {
 	display: flex;
 	flex-direction: column;
@@ -107,11 +111,6 @@ button {
 .mud-input-control {
 	margin-top: 0 !important;
 }
-
-/* .mud-input-root {
-	margin: 0 !important;
-	padding: 0.25em 0 !important;
-} */
 
 .mud-input-root-outlined {
 	margin: 0.25em !important;
@@ -130,19 +129,8 @@ button {
 	transform: translate(0, -0.75em) scale(0.75) !important;
 }
 
-.mud-dialog-width-full {
-	width: calc(100% - 16px) !important;
-}
-
-.mud-toggle-group {
-	flex-grow: 1;
-}
-
-.mud-toggle-item.mud-toggle-item-primary {
-	padding: 3px !important;
-}
-
 .mud-input-text > textarea {
+	margin: 0.25em 0 0 0 !important;
 	font-family: var(--mud-typography-default-family) !important;
 	font-size: var(--mud-typography-default-size) !important;
 	font-weight: var(--mud-typography-default-weight) !important;
@@ -150,32 +138,17 @@ button {
 	letter-spacing: var(--mud-typography-default-letterspacing) !important;
 }
 
-.mud-radio-content-placement-start {
-	margin-left: 0 !important;
-	margin-right: 0 !important;
-	margin-inline-start: 0 !important;
-	margin-inline-end: 0 !important;
+.mud-toggle-group {
+	flex-grow: 1;
 }
 
-.mud-radio-content-placement-end {
-	margin-left: 0 !important;
-	margin-right: 0 !important;
-	margin-inline-start: 0 !important;
-	margin-inline-end: 0 !important;
+.mud-toggle-group .mud-toggle-item {
+	padding: 0.25em !important;
 }
 
-.mud-radio-content-placement-top {
-	margin-left: 0 !important;
-	margin-right: 0 !important;
-	margin-inline-start: 0 !important;
-	margin-inline-end: 0 !important;
-}
-
-.mud-radio-content-placement-bottom {
-	margin-left: 0 !important;
-	margin-right: 0 !important;
-	margin-inline-start: 0 !important;
-	margin-inline-end: 0 !important;
+.mud-radio {
+	margin: 0 !important;
+	margin-inline: 0 !important;
 }
 
 #blazor-error-ui {
