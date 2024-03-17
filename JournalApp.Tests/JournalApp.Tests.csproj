@@ -1,20 +1,30 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="bunit" Version="1.27.17" />
+    <PackageReference Include="FluentAssertions" Version="6.12.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageReference Include="xunit" Version="2.7.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.7" PrivateAssets="all">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    
+
     <ProjectReference Include="..\JournalApp\JournalApp.csproj" />
-    
+
     <Using Include="System.ComponentModel" />
     <Using Include="System.Globalization" />
+    <Using Include="AngleSharp.Dom" />
+    <Using Include="AngleSharp.Html.Dom" />
+    <Using Include="Bunit" />
+    <Using Include="FluentAssertions" />
+    <Using Include="Microsoft.AspNetCore.Components.Web" />
+    <Using Include="MudBlazor" />
+    <Using Include="MudBlazor.Services" />
     <Using Include="Xunit" />
   </ItemGroup>
 
