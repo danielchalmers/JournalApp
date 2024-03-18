@@ -4,93 +4,93 @@
 @inject KeyEventService KeyEventService
 
 <MudDialog DefaultFocus="DefaultFocus.FirstChild" OnBackdropClick="Submit">
-	<TitleContent>
-		<div class="page-header">
-			<MudIconButton Icon="@Icons.Material.Filled.Close" Title="Cancel" OnClick="Cancel" />
+    <TitleContent>
+        <div class="page-header">
+            <MudIconButton Icon="@Icons.Material.Filled.Close" Title="Cancel" OnClick="Cancel" />
 
-			<MudText Typo="Typo.h6">@Title</MudText>
+            <MudText Typo="Typo.h6">@Title</MudText>
 
-			<MudSpacer />
+            <MudSpacer />
 
-			<MudIconButton Icon="@Icons.Material.Filled.Check" Title="Submit" OnClick="Submit" />
-		</div>
-	</TitleContent>
+            <MudIconButton Icon="@Icons.Material.Filled.Check" Title="Submit" OnClick="Submit" />
+        </div>
+    </TitleContent>
 
-	<DialogContent>
-		<MudTextField @bind-Value="Text" Placeholder="@Placeholder" Lines="10" AutoGrow DisableUnderLine Immediate />
-	</DialogContent>
+    <DialogContent>
+        <MudTextField @bind-Value="Text" Placeholder="@Placeholder" Lines="10" AutoGrow DisableUnderLine Immediate />
+    </DialogContent>
 </MudDialog>
 
 @code {
-	DataPoint _point;
+    DataPoint _point;
 
-	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
-	[Parameter]
-	public DataPoint Point
-	{
-		get => _point;
-		set
-		{
-			_point = value;
-			Text = value?.Text;
+    [Parameter]
+    public DataPoint Point
+    {
+        get => _point;
+        set
+        {
+            _point = value;
+            Text = value?.Text;
 
-			if (value?.IsTimestampedNote == true)
-			{
-				Title = value.CreatedAt.ToString("MMM d h:mm tt");
-				Placeholder = "What's on your mind?";
+            if (value?.IsTimestampedNote == true)
+            {
+                Title = value.CreatedAt.ToString("MMM d h:mm tt");
+                Placeholder = "What's on your mind?";
 
-				logger.LogDebug($"Using timestamped note <{value.CreatedAt}>");
-			}
-			else
-			{
-				Title = "Edit note";
-				Placeholder = value?.Category?.Name;
+                logger.LogDebug($"Using timestamped note <{value.CreatedAt}>");
+            }
+            else
+            {
+                Title = "Edit note";
+                Placeholder = value?.Category?.Name;
 
-				logger.LogDebug($"Using category note <{Placeholder}>");
-			}
-		}
-	}
+                logger.LogDebug($"Using category note <{Placeholder}>");
+            }
+        }
+    }
 
-	public string Text { get; set; }
+    public string Text { get; set; }
 
-	public string Title { get; set; }
+    public string Title { get; set; }
 
-	public string Placeholder { get; set; }
+    public string Placeholder { get; set; }
 
-	protected override void OnInitialized()
-	{
-		base.OnInitialized();
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
 
-		KeyEventService.Entered(() => Submit());
-	}
+        KeyEventService.Entered(() => Submit());
+    }
 
-	void Cancel()
-	{
-		KeyEventService.CancelDialog(MudDialog);
-	}
+    void Cancel()
+    {
+        KeyEventService.CancelDialog(MudDialog);
+    }
 
-	void Submit()
-	{
-		Point.Text = Text;
+    void Submit()
+    {
+        Point.Text = Text;
 
-		if (Point.IsTimestampedNote && string.IsNullOrWhiteSpace(Text))
-		{
-			logger.LogInformation("Deleting timestamped note because it has no text");
-			Point.Deleted = true;
-		}
-		else
-		{
-			logger.LogInformation("Submitting note");
-		}
+        if (Point.IsTimestampedNote && string.IsNullOrWhiteSpace(Text))
+        {
+            logger.LogInformation("Deleting timestamped note because it has no text");
+            Point.Deleted = true;
+        }
+        else
+        {
+            logger.LogInformation("Submitting note");
+        }
 
-		KeyEventService.CloseDialog(MudDialog, true);
-	}
+        KeyEventService.CloseDialog(MudDialog, true);
+    }
 
-	public static async Task<bool> ShowDialog(IDialogService dialogService, DataPoint point)
-	{
-		var parameters = new DialogParameters<EditNoteDialog> { { x => x.Point, point } };
-		var result = await dialogService.Show<EditNoteDialog>(parameters).Result;
-		return !result.Canceled;
-	}
+    public static async Task<bool> ShowDialog(IDialogService dialogService, DataPoint point)
+    {
+        var parameters = new DialogParameters<EditNoteDialog> { { x => x.Point, point } };
+        var result = await dialogService.Show<EditNoteDialog>(parameters).Result;
+        return !result.Canceled;
+    }
 }

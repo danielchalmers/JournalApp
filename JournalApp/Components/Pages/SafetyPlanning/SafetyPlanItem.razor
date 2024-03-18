@@ -1,39 +1,39 @@
 ﻿@namespace JournalApp
 
 <div class="safety-plan-item">
-	<MudText Typo="Typo.h5">@Title</MudText>
-	<MudText Typo="Typo.caption">@Subtitle</MudText>
-	<MudTextField T="string" @bind-Text="Text" Placeholder="@Placeholder" Variant="Variant.Outlined" DisableUnderLine AutoGrow Lines="3" MaxLines="10" />
+    <MudText Typo="Typo.h5">@Title</MudText>
+    <MudText Typo="Typo.caption">@Subtitle</MudText>
+    <MudTextField T="string" @bind-Text="Text" Placeholder="@Placeholder" Variant="Variant.Outlined" DisableUnderLine AutoGrow Lines="3" MaxLines="10" />
 </div>
 
 @code {
-	string _text;
+    string _text;
 
-	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
-	[Parameter]
-	public string Title { get; set; }
+    [Parameter]
+    public string Title { get; set; }
 
-	[Parameter]
-	public string Subtitle { get; set; }
+    [Parameter]
+    public string Subtitle { get; set; }
 
-	[Parameter]
-	public string Placeholder { get; set; }
+    [Parameter]
+    public string Placeholder { get; set; }
 
-	[Parameter]
-	public string Text
-	{
-		get => _text;
-		set
-		{
-			if (_text == value)
-				return;
+    [Parameter]
+    public string Text
+    {
+        get => _text;
+        set
+        {
+            if (_text == value)
+                return;
 
-			_text = value;
-			TextChanged.InvokeAsync(value);
-		}
-	}
+            _text = value;
+            TextChanged.InvokeAsync(value);
+        }
+    }
 
-	[Parameter]
-	public EventCallback<string> TextChanged { get; set; }
+    [Parameter]
+    public EventCallback<string> TextChanged { get; set; }
 }

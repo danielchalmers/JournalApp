@@ -2,107 +2,107 @@
 @inject ILogger<TrendsSwitcher> logger
 
 <div class="switcher">
-	<MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" Title="Previous month" OnClick="GoPrevious" />
+    <MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" Title="Previous month" OnClick="GoPrevious" />
 
-	<div class="switcher-header">
-		<MudButton OnClick="() => SelectedMonth = MonthAfterCurrent">
-			<MudText Typo="Typo.h5">@(HeaderText)</MudText>
-		</MudButton>
-	</div>
+    <div class="switcher-header">
+        <MudButton OnClick="() => SelectedMonth = MonthAfterCurrent">
+            <MudText Typo="Typo.h5">@(HeaderText)</MudText>
+        </MudButton>
+    </div>
 
-	<MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" Title="Next month" OnClick="GoNext" Disabled="@(NextSelectedMonth > MonthAfterCurrent)" />
+    <MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" Title="Next month" OnClick="GoNext" Disabled="@(NextSelectedMonth > MonthAfterCurrent)" />
 </div>
 
 @code {
-	DateOnly _selectedMonth;
-	IReadOnlyList<DateOnly> _selectedDates;
+    DateOnly _selectedMonth;
+    IReadOnlyList<DateOnly> _selectedDates;
 
-	string HeaderText => SelectedMonth == MonthAfterCurrent ? "Last Month" : SelectedMonth.ToString("MMM yyyy");
+    string HeaderText => SelectedMonth == MonthAfterCurrent ? "Last Month" : SelectedMonth.ToString("MMM yyyy");
 
-	DateOnly CurrentMonth => new DateOnly(DateTime.Now.Year, DateTime.Now.Month, 1);
-	DateOnly MonthAfterCurrent => CurrentMonth.AddMonths(1);
-	DateOnly LastSelectedMonth => _selectedMonth.AddMonths(-1);
-	DateOnly NextSelectedMonth => _selectedMonth.AddMonths(1);
+    DateOnly CurrentMonth => new DateOnly(DateTime.Now.Year, DateTime.Now.Month, 1);
+    DateOnly MonthAfterCurrent => CurrentMonth.AddMonths(1);
+    DateOnly LastSelectedMonth => _selectedMonth.AddMonths(-1);
+    DateOnly NextSelectedMonth => _selectedMonth.AddMonths(1);
 
-	[Parameter]
-	public DateOnly SelectedMonth
-	{
-		get => _selectedMonth;
-		set
-		{
-			if (_selectedMonth == value)
-				return;
+    [Parameter]
+    public DateOnly SelectedMonth
+    {
+        get => _selectedMonth;
+        set
+        {
+            if (_selectedMonth == value)
+                return;
 
-			_selectedMonth = value;
-			logger.LogDebug($"Selected date {value}");
+            _selectedMonth = value;
+            logger.LogDebug($"Selected date {value}");
 
-			var dates = new List<DateOnly>();
+            var dates = new List<DateOnly>();
 
-			if (SelectedMonth == MonthAfterCurrent)
-			{
-				var nowDate = DateOnly.FromDateTime(DateTime.Now);
+            if (SelectedMonth == MonthAfterCurrent)
+            {
+                var nowDate = DateOnly.FromDateTime(DateTime.Now);
 
-				// All the days between a month ago and now, excluding the first day as two days can't have the same number.
-				dates.AddRange(nowDate.AddMonths(-1).Next().DatesTo(nowDate));
-			}
-			else
-			{
-				var days = DateTime.DaysInMonth(value.Year, value.Month);
+                // All the days between a month ago and now, excluding the first day as two days can't have the same number.
+                dates.AddRange(nowDate.AddMonths(-1).Next().DatesTo(nowDate));
+            }
+            else
+            {
+                var days = DateTime.DaysInMonth(value.Year, value.Month);
 
-				for (int i = 1; i <= days; i++)
-					dates.Add(new DateOnly(value.Year, value.Month, i));
-			}
+                for (int i = 1; i <= days; i++)
+                    dates.Add(new DateOnly(value.Year, value.Month, i));
+            }
 
-			SelectedDates = dates;
-			SelectedMonthChanged.InvokeAsync(value);
-		}
-	}
+            SelectedDates = dates;
+            SelectedMonthChanged.InvokeAsync(value);
+        }
+    }
 
-	[Parameter]
-	public EventCallback<DateOnly> SelectedMonthChanged { get; set; }
+    [Parameter]
+    public EventCallback<DateOnly> SelectedMonthChanged { get; set; }
 
-	[Parameter]
-	public DateOnly OpenToDate { get; set; }
+    [Parameter]
+    public DateOnly OpenToDate { get; set; }
 
-	[Parameter]
-	public IReadOnlyList<DateOnly> SelectedDates
-	{
-		get => _selectedDates;
-		set
-		{
-			if (_selectedDates == value)
-				return;
+    [Parameter]
+    public IReadOnlyList<DateOnly> SelectedDates
+    {
+        get => _selectedDates;
+        set
+        {
+            if (_selectedDates == value)
+                return;
 
-			_selectedDates = value;
-			SelectedDatesChanged.InvokeAsync(SelectedDates);
-		}
-	}
+            _selectedDates = value;
+            SelectedDatesChanged.InvokeAsync(SelectedDates);
+        }
+    }
 
-	[Parameter]
-	public EventCallback<IReadOnlyList<DateOnly>> SelectedDatesChanged { get; set; }
+    [Parameter]
+    public EventCallback<IReadOnlyList<DateOnly>> SelectedDatesChanged { get; set; }
 
-	protected override void OnInitialized()
-	{
-		base.OnInitialized();
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
 
-		if (OpenToDate >= CurrentMonth)
-		{
-			logger.LogDebug($"Started at most recent month so switching to Last Month");
-			SelectedMonth = MonthAfterCurrent;
-		}
-		else
-		{
-			SelectedMonth = new DateOnly(OpenToDate.Year, OpenToDate.Month, 1);
-		}
-	}
+        if (OpenToDate >= CurrentMonth)
+        {
+            logger.LogDebug($"Started at most recent month so switching to Last Month");
+            SelectedMonth = MonthAfterCurrent;
+        }
+        else
+        {
+            SelectedMonth = new DateOnly(OpenToDate.Year, OpenToDate.Month, 1);
+        }
+    }
 
-	void GoPrevious()
-	{
-		SelectedMonth = LastSelectedMonth;
-	}
+    void GoPrevious()
+    {
+        SelectedMonth = LastSelectedMonth;
+    }
 
-	void GoNext()
-	{
-		SelectedMonth = NextSelectedMonth;
-	}
+    void GoNext()
+    {
+        SelectedMonth = NextSelectedMonth;
+    }
 }

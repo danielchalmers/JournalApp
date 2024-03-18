@@ -1,34 +1,34 @@
 .worksheet-group-list {
-	display: flex;
-	flex-direction: column;
-	gap: 1.5em;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5em;
 }
 
 .worksheet-group {
-	display: flex;
-	flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .worksheet-group-items {
-	display: flex;
-	flex-direction: column;
-	gap: 0.5em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
 }
 
 .worksheet-group-toc {
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-	gap: 0.5em;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.5em;
 }
 
 .worksheet-group-toc-item {
-	white-space: nowrap;
-	align-items: start;
+  white-space: nowrap;
+  align-items: start;
 }
 
 ::deep .worksheet-view {
-	display: flex;
-	flex-direction: column;
-	align-items: start;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
 }

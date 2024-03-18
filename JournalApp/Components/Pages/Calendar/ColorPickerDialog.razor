@@ -6,39 +6,39 @@
 @inject KeyEventService KeyEventService
 
 <MudDialog DefaultFocus="DefaultFocus.Element" OnBackdropClick="Submit">
-	<DialogContent>
-		<MudColorPicker Label="Primary" PickerVariant="PickerVariant.Static" @bind-Value="SelectedColor" DisableToolbar DisableAlpha />
-	</DialogContent>
+    <DialogContent>
+        <MudColorPicker Label="Primary" PickerVariant="PickerVariant.Static" @bind-Value="SelectedColor" DisableToolbar DisableAlpha />
+    </DialogContent>
 </MudDialog>
 
 @code {
-	[CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
-	[Parameter]
-	public MudColor SelectedColor { get; set; }
+    [Parameter]
+    public MudColor SelectedColor { get; set; }
 
-	protected override void OnInitialized()
-	{
-		base.OnInitialized();
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
 
-		KeyEventService.Entered(() => Submit());
-	}
+        KeyEventService.Entered(() => Submit());
+    }
 
-	void Submit()
-	{
-		KeyEventService.CloseDialog(MudDialog, SelectedColor);
-	}
+    void Submit()
+    {
+        KeyEventService.CloseDialog(MudDialog, SelectedColor);
+    }
 
-	public static async Task<MudColor> ShowDialog(IDialogService dialogService, MudColor color)
-	{
-		var parameters = new DialogParameters<ColorPickerDialog> {
-			{ x => x.SelectedColor, color }
-		};
+    public static async Task<MudColor> ShowDialog(IDialogService dialogService, MudColor color)
+    {
+        var parameters = new DialogParameters<ColorPickerDialog> {
+            { x => x.SelectedColor, color }
+        };
 
-		var options = new DialogOptions { FullWidth = false };
+        var options = new DialogOptions { FullWidth = false };
 
-		var result = await dialogService.Show<ColorPickerDialog>(parameters, options).Result;
+        var result = await dialogService.Show<ColorPickerDialog>(parameters, options).Result;
 
-		return result.Data as MudColor;
-	}
+        return result.Data as MudColor;
+    }
 }

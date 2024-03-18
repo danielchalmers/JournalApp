@@ -1,18 +1,18 @@
 .category-view-compact {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	gap: 0.1em;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.1em;
 }
 
 .category-view-edit-button {
-	display: flex;
-	flex-grow: 1;
-	overflow-x: clip;
+  display: flex;
+  flex-grow: 1;
+  overflow-x: clip;
 }
 
 ::deep .category-view-edit-button > .mud-button {
-	justify-content: start !important;
-	flex-grow: 1 !important;
-	word-wrap: anywhere;
+  justify-content: start !important;
+  flex-grow: 1 !important;
+  word-wrap: anywhere;
 }

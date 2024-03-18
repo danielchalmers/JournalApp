@@ -9,7 +9,7 @@ public static class WorksheetData
     private static IEnumerable<Worksheet> GetAllWorksheets()
     {
         // All are sourced from https://www.nimh.nih.gov/health/publications/brochures-and-fact-sheets-in-english.
-        // The information is in the public domain and may be reused or copied without permission. However, you may not reuse or copy the images. 
+        // The information is in the public domain and may be reused or copied without permission. However, you may not reuse or copy the images.
 
         yield return new()
         {

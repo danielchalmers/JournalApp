@@ -1,183 +1,183 @@
 ﻿* {
-	-webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
-	user-select: none;
+  user-select: none;
 }
 
-	body::-webkit-scrollbar {
-		display: none;
-	}
+body::-webkit-scrollbar {
+  display: none;
+}
 
 #splash-screen {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background-color: #776be7;
-	position: fixed;
-	width: 100%;
-	height: 100%
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #776be7;
+  position: fixed;
+  width: 100%;
+  height: 100%
 }
 
 #loading-text {
-	font-family: sans-serif;
-	font-size: 8vw;
-	color: white;
+  font-family: sans-serif;
+  font-size: 8vw;
+  color: white;
 }
 
 button {
-	text-transform: none !important;
+  text-transform: none !important;
 }
 
 .switcher {
-	display: flex;
-	justify-content: center;
-	align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .switcher-header {
-	display: flex;
-	justify-content: center;
-	width: 55vw;
+  display: flex;
+  justify-content: center;
+  width: 55vw;
 }
 
 .break-flex-column {
-	flex-basis: 100%;
-	width: 0;
+  flex-basis: 100%;
+  width: 0;
 }
 
 .page-header {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	gap: 0.5em;
-	padding: 0;
-	box-shadow: none;
-	min-height: calc(var(--mud-appbar-height) - var(--mud-appbar-height) / 4);
-	background-color: var(--mud-palette-primary);
-	--mud-palette-action-default: var(--mud-palette-appbar-text);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0;
+  box-shadow: none;
+  min-height: calc(var(--mud-appbar-height) - var(--mud-appbar-height) / 4);
+  background-color: var(--mud-palette-primary);
+  --mud-palette-action-default: var(--mud-palette-appbar-text);
 }
 
-	.page-header *.mud-typography {
-		color: var(--mud-palette-appbar-text);
-	}
+.page-header *.mud-typography {
+  color: var(--mud-palette-appbar-text);
+}
 
 .mud-dialog .mud-dialog-title, .page-title {
-	z-index: 999;
-	display: flex;
-	flex-direction: column;
-	padding: 0 !important;
-	margin: 0 !important;
-	top: 0 !important;
-	position: sticky !important;
-	background-color: var(--mud-palette-primary-lighten);
-	--mud-palette-action-default: var(--mud-palette-appbar-text);
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  padding: 0 !important;
+  margin: 0 !important;
+  top: 0 !important;
+  position: sticky !important;
+  background-color: var(--mud-palette-primary-lighten);
+  --mud-palette-action-default: var(--mud-palette-appbar-text);
 }
 
-	.mud-dialog .mud-dialog-title, .page-title *.mud-typography {
-		color: var(--mud-palette-appbar-text);
-	}
+.mud-dialog .mud-dialog-title, .page-title *.mud-typography {
+  color: var(--mud-palette-appbar-text);
+}
 
 .mud-dialog .mud-dialog-content, .page-body {
-	max-width: 960px;
-	margin: 0 auto !important;
-	padding: 0.25em 0.5em !important;
+  max-width: 960px;
+  margin: 0 auto !important;
+  padding: 0.25em 0.5em !important;
 }
 
 .mud-dialog .mud-dialog-actions {
-	padding: 0.25em 0.5em !important;
+  padding: 0.25em 0.5em !important;
 }
 
 .page-body {
-	padding-bottom: 25vh !important;
+  padding-bottom: 25vh !important;
 }
 
 .mud-dialog-width-full {
-	width: calc(100% - 1em) !important;
+  width: calc(100% - 1em) !important;
 }
 
 .mud-form {
-	display: flex;
-	flex-direction: column;
-	gap: 0.75em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75em;
 }
 
 /* https://github.com/MudBlazor/MudBlazor/blob/dev/src/MudBlazor/Styles/components/_input.scss */
 .mud-input {
-	margin-top: 0 !important;
+  margin-top: 0 !important;
 }
 
 .mud-input-control {
-	margin-top: 0 !important;
+  margin-top: 0 !important;
 }
 
 .mud-input-root-outlined {
-	margin: 0.25em !important;
+  margin: 0.25em !important;
 }
 
 /* Adds space to make up for label. Only works on newer browsers. */
 .mud-input-control-input-container:has(.mud-input-label) {
-	margin-top: 1em !important;
+  margin-top: 1em !important;
 }
 
 /* https://github.com/MudBlazor/MudBlazor/blob/dev/src/MudBlazor/Styles/components/_inputlabel.scss */
 .mud-input-label-inputcontrol {
-	top: 0;
-	left: 0;
-	position: absolute;
-	transform: translate(0, -0.75em) scale(0.75) !important;
+  top: 0;
+  left: 0;
+  position: absolute;
+  transform: translate(0, -0.75em) scale(0.75) !important;
 }
 
-.mud-input-text > textarea {
-	margin: 0.25em 0 0 0 !important;
-	font-family: var(--mud-typography-default-family) !important;
-	font-size: var(--mud-typography-default-size) !important;
-	font-weight: var(--mud-typography-default-weight) !important;
-	line-height: var(--mud-typography-default-lineheight) !important;
-	letter-spacing: var(--mud-typography-default-letterspacing) !important;
+.mud-input-text>textarea {
+  margin: 0.25em 0 0 0 !important;
+  font-family: var(--mud-typography-default-family) !important;
+  font-size: var(--mud-typography-default-size) !important;
+  font-weight: var(--mud-typography-default-weight) !important;
+  line-height: var(--mud-typography-default-lineheight) !important;
+  letter-spacing: var(--mud-typography-default-letterspacing) !important;
 }
 
 .mud-toggle-group {
-	flex-grow: 1;
+  flex-grow: 1;
 }
 
 .mud-toggle-group .mud-toggle-item {
-	padding: 0.25em !important;
+  padding: 0.25em !important;
 }
 
 .mud-radio {
-	margin: 0 !important;
-	margin-inline: 0 !important;
+  margin: 0 !important;
+  margin-inline: 0 !important;
 }
 
 #blazor-error-ui {
-	background: darkorange;
-	bottom: 0;
-	display: none;
-	left: 0;
-	padding: 1.25rem;
-	position: fixed;
-	width: 100%;
-	z-index: 1000;
+  background: darkorange;
+  bottom: 0;
+  display: none;
+  left: 0;
+  padding: 1.25rem;
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
 }
 
 .status-bar-safe-area {
-	display: none;
+  display: none;
 }
 
 @supports (-webkit-touch-callout: none) {
-	.status-bar-safe-area {
-		display: flex;
-		position: sticky;
-		top: 0;
-		height: env(safe-area-inset-top);
-		background-color: #f7f7f7;
-		width: 100%;
-		z-index: 1;
-	}
+  .status-bar-safe-area {
+    display: flex;
+    position: sticky;
+    top: 0;
+    height: env(safe-area-inset-top);
+    background-color: #f7f7f7;
+    width: 100%;
+    z-index: 1;
+  }
 
-	.flex-column, .navbar-brand {
-		padding-left: env(safe-area-inset-left);
-	}
+  .flex-column, .navbar-brand {
+    padding-left: env(safe-area-inset-left);
+  }
 }
