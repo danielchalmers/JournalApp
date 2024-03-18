@@ -3,14 +3,15 @@
 public class DataPointViewTests : JaTestContext
 {
     [Fact]
-    public async Task Mood()
+    public void Mood()
     {
-        // TODO: Don't use DB, or maybe initialize all the properties below at the start.
+        var category = new DataPointCategory
+        {
+            Guid = Guid.NewGuid(),
+            Type = PointType.Mood,
+        };
 
-        AddDbContext();
-        var db = Services.GetService<AppDbContext>();
-        var category = db.Categories.Single(c => c.Guid.ToString() == "D90D89FB-F5B9-47CF-AE4E-3EC0D635E783");
-        var day = await db.GetOrCreateDayAndAddPoints(new(2024, 01, 01));
+        var day = Day.Create(new(2024, 01, 01));
         var point = DataPoint.Create(day, category);
         point.Mood = "🤩";
 
@@ -21,19 +22,21 @@ public class DataPointViewTests : JaTestContext
         cut.Find(".mud-menu-activator").Click();
 
         // TODO: Add a razor file with a popover provider so we can check for it.
+        // Could we make a generic wrapper and pass the DataPointView as a ChildContent?
         // https://github.com/MudBlazor/MudBlazor/blob/1607b06f596bd1ca11bcbfe6c1c4b26e064f9551/src/MudBlazor.UnitTests.Viewer/TestComponents/Menu/MenuTest1.razor
-        //cut.FindAll("div.mud-popover-open").Count.Should().Be(1);
+        // cut.FindAll("div.mud-popover-open").Count.Should().Be(1);
     }
 
     [Fact]
-    public async Task Sleep()
+    public void Sleep()
     {
-        // TODO: Don't use DB.
+        var category = new DataPointCategory
+        {
+            Guid = Guid.NewGuid(),
+            Type = PointType.Sleep,
+        };
 
-        AddDbContext();
-        var db = Services.GetService<AppDbContext>();
-        var category = db.Categories.Single(c => c.Guid.ToString() == "D8657B36-F3A0-486F-BF80-0CF057919C7D");
-        var day = await db.GetOrCreateDayAndAddPoints(new(2024, 01, 01));
+        var day = Day.Create(new(2024, 01, 01));
         var point = DataPoint.Create(day, category);
         point.SleepHours = 8.5m;
 
@@ -41,10 +44,19 @@ public class DataPointViewTests : JaTestContext
             p.Add(x => x.Point, point)
         );
 
-        // TODO: Test slider.
-        //var slider = cut.FindComponent<MudSlider<decimal>>();
-        //slider.Instance.Min.Should().Be(0m);
-        //slider.Instance.Max.Should().Be(24m);
+        cut.Find(".sleep-hours").TextContent.Should().Be("08.5");
+
+        for (var i = 0; i < 50; i++)
+            cut.Find(".less-sleep").Click();
+
+        point.SleepHours.Should().Be(0);
+        cut.Find(".sleep-hours").TextContent.Should().Be("00.0");
+
+        for (var i = 0; i < 50; i++)
+            cut.Find(".more-sleep").Click();
+
+        point.SleepHours.Should().Be(24);
+        cut.Find(".sleep-hours").TextContent.Should().Be("24.0");
     }
 
     [Fact]
@@ -76,7 +88,7 @@ public class DataPointViewTests : JaTestContext
     [Theory]
     [InlineData(PointType.LowToHigh)]
     [InlineData(PointType.MildToSevere)]
-    public void LowToHighMildToSevere(PointType type)
+    public void ScaleEnums(PointType type)
     {
         var category = new DataPointCategory
         {
@@ -183,6 +195,7 @@ public class DataPointViewTests : JaTestContext
         {
             Guid = Guid.NewGuid(),
             Type = PointType.Medication,
+            MedicationDose = 1,
         };
 
         var day = Day.Create(new(2024, 01, 01));
@@ -201,17 +214,21 @@ public class DataPointViewTests : JaTestContext
         cut.FindAll(".mud-toggle-item").Count.Should().Be(2);
         cut.FindAll(".mud-toggle-item-selected-border").Count.Should().Be(0);
 
+        // A changed dose should get reset to default when clicking No.
+        point.MedicationDose--;
+
         cut.FindAll(".mud-toggle-item")[0].Click();
         cut.FindAll(".mud-toggle-item")[0].ClassList.Should().Contain("mud-toggle-item-selected-border");
         point.Bool.Should().Be(false);
+
+        point.MedicationDose.Should().Be(point.Category.MedicationDose);
 
         cut.FindAll(".mud-toggle-item")[1].Click();
         cut.FindAll(".mud-toggle-item")[1].ClassList.Should().Contain("mud-toggle-item-selected-border");
         point.Bool.Should().Be(true);
 
-        // Different dose should be reset.
-        point.Category.MedicationDose = 1;
-        point.MedicationDose = 2;
+        // A changed dose should get reset to default when unselecting.
+        point.MedicationDose--;
 
         cut.FindAll(".mud-toggle-item")[1].Click();
         cut.FindAll(".mud-toggle-item")[1].ClassList.Should().NotContain("mud-toggle-item-selected-border");
