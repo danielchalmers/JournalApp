@@ -1,11 +1,8 @@
 ﻿@namespace JournalApp
 @page "/worksheets"
+@inherits JaPage
 @implements IDisposable
 @inject ILogger<WorksheetsPage> logger
-@inject IJSRuntime JSRuntime
-@inject KeyEventService KeyEventService
-@inject NavigationManager NavigationManager
-@inject ISnackbar Snackbar
 
 <div class="page-title">
     <div class="page-header">
@@ -47,7 +44,7 @@
                 <div class="worksheet-group-items">
                     @foreach (var ws in group)
                     {
-                        <WorksheetView Worksheet="ws" OnResourceClick="ResourceClickHandler" />
+                        <WorksheetView Worksheet="ws" ResourceClicked="OnResourceClicked" />
                     }
                 </div>
             </div>
@@ -72,13 +69,13 @@
 
         if (firstRender)
         {
-            Snackbar.ShowTeachingTip("worksheets", "Tap the title of a worksheet to view it");
+            ShowTeachingTip("worksheets", "Tap the title of a worksheet to view it");
         }
     }
 
-    void ResourceClickHandler()
+    void OnResourceClicked()
     {
-        Snackbar.ActionTaken("worksheets");
+        ActionTaken("worksheets");
     }
 
     void Close()

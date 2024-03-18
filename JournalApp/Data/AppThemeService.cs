@@ -10,7 +10,8 @@ public sealed class AppThemeService : IDisposable
     {
         _logger = logger;
         _application = Application.Current;
-        _application.RequestedThemeChanged += Application_RequestedThemeChanged;
+        if (_application != null) // Unit testing?
+            _application.RequestedThemeChanged += Application_RequestedThemeChanged;
     }
 
     public AppTheme SelectedAppTheme
@@ -46,6 +47,7 @@ public sealed class AppThemeService : IDisposable
 
     public void Dispose()
     {
-        _application.RequestedThemeChanged -= Application_RequestedThemeChanged;
+        if (_application != null) // Unit testing?
+            _application.RequestedThemeChanged -= Application_RequestedThemeChanged;
     }
 }

@@ -1,7 +1,41 @@
-﻿namespace JournalApp.Tests;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 
-public class CalendarTests
+namespace JournalApp.Tests;
+
+public class CalendarTests : JaTestContext
 {
+    public override async Task InitializeAsync()
+    {
+        await base.InitializeAsync();
+
+        AddDbContext();
+
+        var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDbSeeder = new AppDbSeeder(new NullLogger<AppDbSeeder>(), dbf);
+
+        var dates = new DateOnly(2024, 01, 01).DatesTo(new(2025, 01, 01));
+        appDbSeeder.SeedDays(dates);
+    }
+
+    public override async Task DisposeAsync()
+    {
+        await base.DisposeAsync();
+    }
+
+    [Fact]
+    public void SwitchToCurrentYear()
+    {
+        var cut = RenderComponent<CalendarPage>(p =>
+            p.Add(x => x.OpenToDateString, "20000101")
+        );
+
+        cut.Instance.SelectedYear.Should().NotBe(DateTime.Now.Year);
+        cut.WaitForAssertion(() => cut.Find(".calendar-view"));
+        cut.Find(".year-button").Click();
+        cut.Instance.SelectedYear.Should().Be(DateTime.Now.Year);
+    }
+
     [Fact]
     [Description("Are the number of years, and months in the grid correct?")]
     public void YearsAndMonths()

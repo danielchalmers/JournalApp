@@ -1,11 +1,9 @@
 ﻿@namespace JournalApp
 @page "/trends/{OpenToDateString}"
 @using CommunityToolkit.Maui.Storage;
+@inherits JaPage
 @implements IDisposable
-@inject IDbContextFactory<AppDbContext> DbFactory
 @inject ILogger<TrendsPage> logger
-@inject KeyEventService KeyEventService
-@inject NavigationManager NavigationManager
 
 <div class="page-title">
     <div class="page-header">

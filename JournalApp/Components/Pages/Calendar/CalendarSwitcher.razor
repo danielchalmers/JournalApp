@@ -1,55 +1,55 @@
 ﻿@namespace JournalApp
 
 <div class="switcher">
-	<MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" Title="Previous year" OnClick="PreviousYear" />
+    <MudIconButton Class="previous-button" Icon="@Icons.Material.Filled.ArrowBackIos" Title="Previous year" OnClick="PreviousYear" />
 
-	<div class="switcher-header">
-		<MudButton OnClick="OnHeaderClicked">
-			<MudText Typo="Typo.h5">@SelectedYear</MudText>
-		</MudButton>
-	</div>
+    <div class="switcher-header">
+        <MudButton Class="year-button" OnClick="OnYearClicked">
+            <MudText Typo="Typo.h5">@SelectedYear</MudText>
+        </MudButton>
+    </div>
 
-	<MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" Title="Next year" OnClick="NextYear" Disabled="@(SelectedYear >= DateTime.Now.Year)" />
+    <MudIconButton Class="next-button" Icon="@Icons.Material.Filled.ArrowForwardIos" Title="Next year" OnClick="NextYear" Disabled="@(SelectedYear >= DateTime.Now.Year)" />
 </div>
 
 @code {
-	int _selectedYear;
+    int _selectedYear;
 
-	[Parameter]
-	public int SelectedYear
-	{
-		get => _selectedYear;
-		set
-		{
-			if (_selectedYear == value)
-				return;
+    [Parameter]
+    public int SelectedYear
+    {
+        get => _selectedYear;
+        set
+        {
+            if (_selectedYear == value)
+                return;
 
-			_selectedYear = value;
-			SelectedYearChanged.InvokeAsync(value);
-		}
-	}
+            _selectedYear = value;
+            SelectedYearChanged.InvokeAsync(value);
+        }
+    }
 
-	[Parameter]
-	public EventCallback<int> SelectedYearChanged { get; set; }
+    [Parameter]
+    public EventCallback<int> SelectedYearChanged { get; set; }
 
-	[Parameter]
-	public EventCallback HeaderClicked { get; set; }
+    [Parameter]
+    public EventCallback YearClicked { get; set; }
 
-	void OnHeaderClicked()
-	{
-		SelectedYear = DateTime.Now.Year;
-		HeaderClicked.InvokeAsync();
-	}
+    void OnYearClicked()
+    {
+        SelectedYear = DateTime.Now.Year;
+        YearClicked.InvokeAsync();
+    }
 
-	public void NextYear()
-	{
-		SelectedYear++;
-		StateHasChanged();
-	}
+    public void NextYear()
+    {
+        SelectedYear++;
+        StateHasChanged();
+    }
 
-	public void PreviousYear()
-	{
-		SelectedYear--;
-		StateHasChanged();
-	}
+    public void PreviousYear()
+    {
+        SelectedYear--;
+        StateHasChanged();
+    }
 }

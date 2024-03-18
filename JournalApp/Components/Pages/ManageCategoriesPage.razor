@@ -1,12 +1,8 @@
 ﻿@namespace JournalApp
 @page "/manage/{Group?}"
+@inherits JaPage
 @implements IDisposable
-@inject IDbContextFactory<AppDbContext> DbFactory
 @inject ILogger<ManageCategoriesPage> logger
-@inject IDialogService DialogService
-@inject KeyEventService KeyEventService
-@inject NavigationManager NavigationManager
-@inject ISnackbar Snackbar
 
 <div class="page-title">
     <div class="page-header">
@@ -66,7 +62,7 @@
 
         if (firstRender)
         {
-            Snackbar.ShowTeachingTip("add_new_category", "Click the '+' icon to add a new one");
+            ShowTeachingTip("add_new_category", "Click the '+' icon to add a new one");
         }
     }
 
@@ -107,7 +103,7 @@
 
     async Task New()
     {
-        Snackbar.ActionTaken("add_new_category");
+        ActionTaken("add_new_category");
 
         var parameters = new DialogParameters<EditCategoryDialog> { { x => x.Group, Group } };
         var result = await DialogService.Show<EditCategoryDialog>(parameters).Result;

@@ -2,7 +2,7 @@
 
 namespace JournalApp;
 
-public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<AppDbContext> dbFactory, IShare share)
+public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<AppDbContext> dbFactory, IShare share, IPreferences preferences)
 {
     public async Task<bool> StartImportWizard(IDialogService dialogService, string path)
     {
@@ -49,10 +49,10 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
         }
 
         // Restore preferences.
-        Preferences.Clear();
+        preferences.Clear();
         foreach (var (key, value) in backup.PreferenceBackups)
         {
-            Preferences.Set(key, value);
+            preferences.Set(key, value);
             logger.LogInformation($"Preference set: {key}");
         }
 
@@ -107,7 +107,7 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
             "tip_add_new_category",
         })
         {
-            preferenceBackups.Add(new(key, Preferences.Get(key, string.Empty)));
+            preferenceBackups.Add(new(key, preferences.Get(key, string.Empty)));
         }
 
         BackupFile backupFile;
@@ -171,7 +171,7 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
     {
         get
         {
-            var lastExportString = Preferences.Get("last_export", null);
+            var lastExportString = preferences.Get<string>("last_export", null);
 
             if (DateTimeOffset.TryParse(lastExportString, out var parsed))
             {
@@ -184,6 +184,6 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
                 return DateTimeOffset.Now;
             }
         }
-        set => Preferences.Set("last_export", value.ToString("O"));
+        set => preferences.Set("last_export", value.ToString("O"));
     }
 }

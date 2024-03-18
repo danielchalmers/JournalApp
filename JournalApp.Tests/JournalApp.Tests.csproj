@@ -22,6 +22,7 @@
     <Using Include="AngleSharp.Html.Dom" />
     <Using Include="Bunit" />
     <Using Include="FluentAssertions" />
+    <Using Include="JournalApp.Tests.Data" />
     <Using Include="Microsoft.AspNetCore.Components.Web" />
     <Using Include="MudBlazor" />
     <Using Include="MudBlazor.Services" />

@@ -2,14 +2,9 @@
 @page "/calendar/{OpenToDateString}"
 @using Color = Microsoft.Maui.Graphics.Color;
 @using MudBlazor.Utilities
+@inherits JaPage
 @implements IDisposable
-@inject IDbContextFactory<AppDbContext> DbFactory
 @inject ILogger<CalendarPage> logger
-@inject IDialogService DialogService
-@inject IJSRuntime JSRuntime
-@inject KeyEventService KeyEventService
-@inject NavigationManager NavigationManager
-@inject ISnackbar Snackbar
 
 <div class="page-title">
     <div class="page-header">
@@ -22,7 +17,7 @@
         <MudIconButton Icon="@Icons.Material.Filled.Palette" Title="Pick color" OnClick="OpenColorPicker" />
     </div>
 
-    <CalendarSwitcher @ref="_switcher" @bind-SelectedYear="SelectedYear" @bind-SelectedYear:after="LoadYear" HeaderClicked="HeaderClicked" />
+    <CalendarSwitcher @ref="_switcher" @bind-SelectedYear="SelectedYear" @bind-SelectedYear:after="LoadYear" YearClicked="OnYearClicked" />
 </div>
 
 <div class="page-body">
@@ -53,7 +48,7 @@
     {
         get
         {
-            var palette = Preferences.Get("mood_palette", null);
+            var palette = Preferences.Get("mood_palette", string.Empty);
 
             if (string.IsNullOrEmpty(palette))
                 palette = "#6bdbe7"; // Tetradic to our primary purple.
@@ -92,7 +87,7 @@
 
         if (firstRender)
         {
-            Snackbar.ShowTeachingTip("click_mood_grid_day", "Tap a day to go to it");
+            ShowTeachingTip("click_mood_grid_day", "Tap a day to go to it");
         }
     }
 
@@ -105,7 +100,7 @@
 
     async Task ScrollToOpenToDate() => await ScrollToMonth(OpenToDate.Month, true);
 
-    async Task HeaderClicked() => await ScrollToMonth(DateTime.Now.Month);
+    async Task OnYearClicked() => await ScrollToMonth(DateTime.Now.Month);
 
     async Task PreviousMonth(int month)
     {
@@ -227,7 +222,7 @@
         if (date == null || date > DateOnly.FromDateTime(DateTime.Now).Next())
             return;
 
-        Snackbar.ActionTaken("click_mood_grid_day");
+        ActionTaken("click_mood_grid_day");
         _leaving = true;
         NavigationManager.NavigateTo($"/{date:yyyyMMdd}", false, true);
     }

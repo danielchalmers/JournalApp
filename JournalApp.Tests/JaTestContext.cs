@@ -1,32 +1,38 @@
 ﻿using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace JournalApp.Tests;
 
-public class JaTestContext : TestContext, IAsyncLifetime
+public abstract class JaTestContext : TestContext, IAsyncLifetime
 {
     private SqliteConnection _dbConnection;
 
-    //public DateOnly SeededDate { get; } = new(2024, 01, 01);
-
-    public Task InitializeAsync()
+    public virtual Task InitializeAsync()
     {
-        JSInterop.Mode = JSRuntimeMode.Loose;
         Services.AddLogging();
         Services.AddMudServices();
+        Services.AddSingleton<AppDataService>();
+        Services.AddSingleton<AppDbSeeder>();
+        Services.AddSingleton<KeyEventService>();
+        Services.AddSingleton<AppThemeService>();
+        Services.AddSingleton<IPreferences, FakePreferences>();
+        JSInterop.Mode = JSRuntimeMode.Loose;
         return Task.CompletedTask;
     }
 
-    public Task DisposeAsync()
+    public virtual async Task DisposeAsync()
     {
-        return Task.CompletedTask;
+        if (_dbConnection != null)
+        {
+            await _dbConnection.CloseAsync();
+            await _dbConnection.DisposeAsync();
+        }
     }
 
-    public void AddDbContext(bool seed = true)
+    public void AddDbContext()
     {
         if (_dbConnection == null)
-        { 
+        {
             _dbConnection = new SqliteConnection("Filename=:memory:");
             _dbConnection.Open();
         }
@@ -36,14 +42,9 @@ public class JaTestContext : TestContext, IAsyncLifetime
             .UseSqlite(_dbConnection)
         );
 
-        if (seed)
-        {
-            var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
-            var logger = new NullLogger<AppDbSeeder>();
-            var appDbSeeder = new AppDbSeeder(logger, dbf);
-            appDbSeeder.SeedDb();
-            appDbSeeder.SeedCategories();
-            //appDbSeeder.SeedDays(SeededDate);
-        }
+        var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var dbSeeder = Services.GetService<AppDbSeeder>();
+        dbSeeder.SeedDb();
+        dbSeeder.SeedCategories();
     }
 }

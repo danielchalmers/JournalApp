@@ -1,14 +1,12 @@
 ﻿@namespace JournalApp
 @page "/{OpenToDateString?}"
 @using CommunityToolkit.Maui.Storage;
+@inherits JaPage
 @implements IDisposable
 @inject ILogger<Index> logger
-@inject IDbContextFactory<AppDbContext> DbFactory
 @inject AppDataService AppDataService
-@inject IDialogService DialogService
-@inject KeyEventService KeyEventService
-@inject NavigationManager NavigationManager
-@inject IScrollManager ScrollManager
+@inject IShare Share
+@inject IBrowser Browser
 
 <div class="page-title">
     <div class="page-header">
@@ -25,7 +23,7 @@
             <MudMenuItem Icon="@Icons.Material.Filled.ShowChart" OnAction="OpenTrends">Trends</MudMenuItem>
             <MudMenuItem Icon="@Icons.Material.Filled.Article" OnAction="OpenWorksheets">Worksheets</MudMenuItem>
 
-            @if (Preferences.Get("safety_plan", null) != null)
+            @if (Preferences.Get<string>("safety_plan", null) != null)
             {
                 <MudMenuItem Icon="@Icons.Material.Filled.HealthAndSafety" OnAction="OpenSafetyPlan">Safety Plan</MudMenuItem>
             }
@@ -278,13 +276,13 @@
     async Task OpenFeedback()
     {
         logger.LogInformation("Opening feedback link");
-        await Browser.Default.OpenAsync(Feedback.GenerateLink());
+        await Browser.OpenAsync(Feedback.GenerateLink());
     }
 
     async Task OpenShare()
     {
         logger.LogInformation("Opening share link");
-        await Share.Default.RequestAsync("Stay on top of your wellness goals with JournalApp, your personal diary and mood tracker! https://play.google.com/store/apps/details?id=com.danielchalmers.journalapp");
+        await Share.RequestAsync("Stay on top of your wellness goals with JournalApp, your personal diary and mood tracker! https://play.google.com/store/apps/details?id=com.danielchalmers.journalapp");
     }
 
     void OpenSettings()

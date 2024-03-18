@@ -1,10 +1,9 @@
 ﻿@namespace JournalApp
 @page "/safetyplan"
 @using ApexCharts
+@inherits JaPage
 @implements IDisposable
 @inject ILogger<SafetyPlanPage> logger
-@inject KeyEventService KeyEventService
-@inject NavigationManager NavigationManager
 
 <div class="page-title">
 	<div class="page-header">
@@ -67,7 +66,7 @@
 	protected override void OnInitialized()
 	{
 		logger.LogDebug("Initializing");
-		Plan = Preferences.Default.GetJson<SafetyPlan>("safety_plan") ?? new();
+		Plan = Preferences.GetJson<SafetyPlan>("safety_plan") ?? new();
 
 		base.OnInitialized();
 
@@ -87,9 +86,9 @@
 
 		// Save the safety plan or discard if it's unchanged so it won't show in the main menu.
 		if (Plan == new SafetyPlan())
-			Preferences.Default.Set<string>("safety_plan", null);
+			Preferences.Set<string>("safety_plan", null);
 		else
-			Preferences.Default.SetJson("safety_plan", Plan);
+			Preferences.SetJson("safety_plan", Plan);
 	}
 
 	protected override bool ShouldRender() => !_leaving;
