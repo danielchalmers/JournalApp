@@ -6,9 +6,9 @@ body {
   user-select: none;
 }
 
-body::-webkit-scrollbar {
-  display: none;
-}
+  body::-webkit-scrollbar {
+    display: none;
+  }
 
 #splash-screen {
   display: flex;
@@ -59,9 +59,9 @@ button {
   --mud-palette-action-default: var(--mud-palette-appbar-text);
 }
 
-.page-header *.mud-typography {
-  color: var(--mud-palette-appbar-text);
-}
+  .page-header *.mud-typography {
+    color: var(--mud-palette-appbar-text);
+  }
 
 .mud-dialog .mud-dialog-title, .page-title {
   z-index: 999;
@@ -75,9 +75,9 @@ button {
   --mud-palette-action-default: var(--mud-palette-appbar-text);
 }
 
-.mud-dialog .mud-dialog-title, .page-title *.mud-typography {
-  color: var(--mud-palette-appbar-text);
-}
+  .mud-dialog .mud-dialog-title, .page-title *.mud-typography {
+    color: var(--mud-palette-appbar-text);
+  }
 
 .mud-dialog .mud-dialog-content, .page-body {
   max-width: 960px;
@@ -90,7 +90,7 @@ button {
 }
 
 .page-body {
-  padding-bottom: 25vh !important;
+  padding-bottom: 20vh !important;
 }
 
 .mud-dialog-width-full {
@@ -129,7 +129,7 @@ button {
   transform: translate(0, -0.75em) scale(0.75) !important;
 }
 
-.mud-input-text>textarea {
+.mud-input-text > textarea {
   margin: 0.25em 0 0 0 !important;
   font-family: var(--mud-typography-default-family) !important;
   font-size: var(--mud-typography-default-size) !important;
@@ -142,9 +142,9 @@ button {
   flex-grow: 1;
 }
 
-.mud-toggle-group .mud-toggle-item {
-  padding: 0.25em !important;
-}
+  .mud-toggle-group .mud-toggle-item {
+    padding: 0.25em !important;
+  }
 
 .mud-radio {
   margin: 0 !important;
