@@ -129,7 +129,7 @@ button {
   transform: translate(0, -0.75em) scale(0.75) !important;
 }
 
-.mud-input-text > textarea {
+.text-field-small textarea {
   margin: 0.25em 0 0 0 !important;
   font-family: var(--mud-typography-default-family) !important;
   font-size: var(--mud-typography-default-size) !important;

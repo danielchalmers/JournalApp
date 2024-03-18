@@ -71,7 +71,7 @@ else if (Point.Type == PointType.Note)
     <div class="d-flex flex-column flex-grow-1">
         @if (!string.IsNullOrWhiteSpace(Point.Text))
         {
-            <MudTextField @bind-Value="Point.Text"
+            <MudTextField @bind-Value="Point.Text" Class="text-field-small"
                           Placeholder="@(Point.IsTimestampedNote ? "What's on your mind?" : null)"
                           Label="@(NoteLabel)"
                           Immediate ReadOnly DisableUnderLine
