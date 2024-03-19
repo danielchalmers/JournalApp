@@ -15,6 +15,7 @@ public abstract class JaTestContext : TestContext, IAsyncLifetime
         Services.AddSingleton<AppDbSeeder>();
         Services.AddSingleton<KeyEventService>();
         Services.AddSingleton<AppThemeService>();
+        Services.AddSingleton<CalendarService>();
         Services.AddSingleton<IPreferences, FakePreferences>();
         JSInterop.Mode = JSRuntimeMode.Loose;
         return Task.CompletedTask;

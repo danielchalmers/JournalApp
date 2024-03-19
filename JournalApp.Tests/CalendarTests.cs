@@ -14,26 +14,111 @@ public class CalendarTests : JaTestContext
         var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = new AppDbSeeder(new NullLogger<AppDbSeeder>(), dbf);
 
-        var dates = new DateOnly(2024, 01, 01).DatesTo(new(2025, 01, 01));
+        var dates = new DateOnly(2023, 01, 01).DatesTo(new(2024, 01, 01));
         appDbSeeder.SeedDays(dates);
     }
 
-    public override async Task DisposeAsync()
-    {
-        await base.DisposeAsync();
-    }
-
     [Fact]
-    public void SwitchToCurrentYear()
+    public void SwitchYear()
     {
         var cut = RenderComponent<CalendarPage>(p =>
             p.Add(x => x.OpenToDateString, "20000101")
         );
 
-        cut.Instance.SelectedYear.Should().NotBe(DateTime.Now.Year);
         cut.WaitForAssertion(() => cut.Find(".calendar-view"));
+
+        // Back.
+        var year = cut.Instance.SelectedYear;
+        cut.Find(".switcher .previous-button").Click();
+        cut.Instance.SelectedYear.Should().Be(year - 1);
+
+        // Next.
+        year = cut.Instance.SelectedYear;
+        cut.Find(".switcher .next-button").Click();
+        cut.Instance.SelectedYear.Should().Be(year + 1);
+
+        // Current.
+        cut.Instance.SelectedYear.Should().NotBe(DateTime.Now.Year);
         cut.Find(".year-button").Click();
         cut.Instance.SelectedYear.Should().Be(DateTime.Now.Year);
+
+        // Can't go further.
+        year = cut.Instance.SelectedYear;
+        cut.Find(".switcher .next-button").HasAttribute("disabled").Should().BeTrue();
+        cut.Find(".switcher .next-button").Click();
+        cut.Instance.SelectedYear.Should().Be(year);
+    }
+
+    [Fact]
+    public async Task CalendarViewMoodBlockCount()
+    {
+        var cut = RenderComponent<CalendarPage>(p =>
+            p.Add(x => x.OpenToDateString, "20230101")
+        );
+        cut.Instance.SelectedYear.Should().Be(2023);
+
+        // Wait for calendar to load.
+        cut.WaitForAssertion(() => cut.Find(".calendar-view"));
+        cut.FindAll(".calendar-month").Count.Should().Be(12);
+
+        var db = Services.GetService<AppDbContext>();
+        var calendarService = Services.GetService<CalendarService>();
+        var gridYear = await calendarService.CreateGridYear(cut.Instance.SelectedYear);
+        var filledDays = gridYear.GridMonths.Sum(m => m.GridDays.Count(d => d.Emoji != null)); // Random seeding skips some days and grid days include offsets.
+
+        // 2023, fully filled out leap year.
+        cut.FindAll(".calendar-view .mood-block-container > .mood-block-filled").Count.Should().Be(filledDays);
+
+        cut.Find(".switcher .previous-button").Click();
+        cut.Instance.SelectedYear.Should().Be(2022);
+
+        // 2022, none filled.
+        cut.FindAll(".calendar-view .mood-block-container > .mood-block-filled").Count.Should().Be(0);
+    }
+
+    [Fact]
+    public void CalendarViewRespectsFirstDay()
+    {
+        var _culture = (CultureInfo)CultureInfo.CurrentCulture.Clone();
+        _culture.DateTimeFormat.FirstDayOfWeek = DayOfWeek.Wednesday;
+        Thread.CurrentThread.CurrentCulture = _culture;
+
+        var cut = RenderComponent<CalendarPage>(p =>
+            p.Add(x => x.OpenToDateString, "20230101")
+        );
+        cut.Instance.SelectedYear.Should().Be(2023);
+
+        // Wait for calendar to load.
+        cut.WaitForAssertion(() => cut.Find(".calendar-view"));
+
+        var weekHeaders = cut.FindAll(".mood-blocks-week > .mood-block-container");
+        weekHeaders[0].TextContent.Should().Be("We");
+        weekHeaders[1].TextContent.Should().Be("Th");
+        weekHeaders[2].TextContent.Should().Be("Fr");
+        weekHeaders[3].TextContent.Should().Be("Sa");
+        weekHeaders[4].TextContent.Should().Be("Su");
+        weekHeaders[5].TextContent.Should().Be("Mo");
+        weekHeaders[6].TextContent.Should().Be("Tu");
+    }
+
+    [Fact(Skip = "MoodPalettePreference uses Preferences internally which is not set up")]
+    public void ChangePalette()
+    {
+        var cut = RenderComponent<CalendarPage>(p =>
+            p.Add(x => x.OpenToDateString, "20230101")
+        );
+
+        cut.Find(".pick-palette").Click();
+
+        cut.Find(".color-picker");
+
+        var overlay = cut.Find(".color-picker .mud-dialog-content .mud-picker-color-overlay-black .mud-picker-color-overlay");
+
+        overlay.Click(new MouseEventArgs { OffsetX = 235, OffsetY = 18 });
+
+        cut.Find(".mud-dialog-container .mud-overlay-dialog").Click();
+
+        //cut.Instance.PrimaryColor.Should().Be("#3ad9ec");
     }
 
     [Fact]

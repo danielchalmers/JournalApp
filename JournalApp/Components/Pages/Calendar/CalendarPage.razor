@@ -5,26 +5,27 @@
 @inherits JaPage
 @implements IDisposable
 @inject ILogger<CalendarPage> logger
+@inject CalendarService CalendarService
 
 <div class="page-title">
     <div class="page-header">
-        <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Back" OnClick="Close" />
+        <MudIconButton Class="close-button" Icon="@Icons.Material.Filled.ArrowBack" Title="Back" OnClick="Close" />
 
         <MudText Typo="Typo.h6">Calendar</MudText>
 
         <MudSpacer />
 
-        <MudIconButton Icon="@Icons.Material.Filled.Palette" Title="Pick color" OnClick="OpenColorPicker" />
+        <MudIconButton Class="pick-palette" Icon="@Icons.Material.Filled.Palette" Title="Pick color" OnClick="OpenColorPicker" />
     </div>
 
-    <CalendarSwitcher @ref="_switcher" @bind-SelectedYear="SelectedYear" @bind-SelectedYear:after="LoadYear" YearClicked="OnYearClicked" />
+    <CalendarSwitcher @ref="_switcher" @bind-SelectedYear="SelectedYear" @bind-SelectedYear:after="AfterSelectedYearChanged" YearClicked="OnYearClicked" />
 </div>
 
 <div class="page-body">
     @if (_gridYear != null)
     {
         <div style="padding-bottom: 40vh;">
-            <CalendarView MoodColors="MoodColors" GridYear="_gridYear.Value" OpenToDate="OpenToDate"
+            <CalendarView GetMoodColor="CalendarService.GetMoodColor" GridYear="_gridYear.Value" OpenToDate="OpenToDate"
                           CalendarLoaded="ScrollToOpenToDate" DayClicked="@(d => Close(d))"
                           PreviousMonthClicked="PreviousMonth" NextMonthClicked="NextMonth" />
         </div>
@@ -34,7 +35,6 @@
 @code {
     GridYear? _gridYear = null;
     bool _leaving;
-    DataPointCategory _moodCategory;
     CalendarSwitcher _switcher;
 
     [Parameter]
@@ -43,27 +43,6 @@
     public DateOnly OpenToDate { get; set; }
 
     public int SelectedYear { get; set; }
-
-    private string MoodPalettePreference
-    {
-        get
-        {
-            var palette = Preferences.Get("mood_palette", string.Empty);
-
-            if (string.IsNullOrEmpty(palette))
-                palette = "#6bdbe7"; // Tetradic to our primary purple.
-
-            return palette;
-        }
-    }
-
-    public MudColor PrimaryColor
-    {
-        get => new MudColor(MoodPalettePreference);
-        set => Preferences.Set("mood_palette", value.Value[..^2]);
-    }
-
-    public IReadOnlyDictionary<string, string> MoodColors { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -76,9 +55,7 @@
         logger.LogInformation($"Opening to {OpenToDate}");
         SelectedYear = OpenToDate.Year;
 
-        GenerateColors();
-
-        await LoadYear();
+        await AfterSelectedYearChanged();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -89,6 +66,12 @@
         {
             ShowTeachingTip("click_mood_grid_day", "Tap a day to go to it");
         }
+    }
+
+    async Task AfterSelectedYearChanged()
+    {
+        _gridYear = await CalendarService.CreateGridYear(SelectedYear);
+        logger.LogInformation($"Loaded {SelectedYear}");
     }
 
     async Task ScrollToMonth(int month, bool smooth = false)
@@ -138,76 +121,15 @@
         }
     }
 
-    async Task LoadYear()
-    {
-        logger.LogDebug($"Loading year {SelectedYear}");
-        var sw = Stopwatch.StartNew();
-        var tomorrow = DateOnly.FromDateTime(DateTime.Now).Next();
-        await using var db = await DbFactory.CreateDbContextAsync();
-
-        _moodCategory ??= await db.Categories.SingleOrDefaultAsync(x => x.Guid == new Guid("D90D89FB-F5B9-47CF-AE4E-3EC0D635E783"));
-
-        var moodPoints = new Dictionary<DateOnly, DataPoint>();
-        if (_moodCategory == null || !_moodCategory.Enabled)
-        {
-            logger.LogError("Mood category doesn't exist or is disabled so we won't load any points.");
-        }
-        else
-        {
-            var query = db.Points
-                .Where(p => !p.Deleted && p.Day.Date.Year == SelectedYear && p.Day.Date <= tomorrow && p.Category.Guid == _moodCategory.Guid)
-                .Select(
-                    p => new
-                    {
-                        Date = p.Day.Date,
-                        Point = p,
-                    }
-                );
-
-            // Sort into dictionary here instead of during the query so we can handle
-            // duplicate dates, if that has erroneously happened, without crashing.
-            foreach (var x in query)
-                moodPoints[x.Date] = x.Point;
-
-            logger.LogDebug($"Found {moodPoints.Count} mood points");
-        }
-
-        _gridYear = new GridYear(SelectedYear, System.Globalization.CultureInfo.CurrentCulture, moodPoints);
-        logger.LogDebug("Created grid year");
-
-        logger.LogInformation($"Loaded {SelectedYear} in {sw.ElapsedMilliseconds}ms");
-    }
-
     async Task OpenColorPicker()
     {
         logger.LogInformation("Opening color picker");
 
-        if (await ColorPickerDialog.ShowDialog(DialogService, PrimaryColor) is MudColor selectedColor)
+        if (await ColorPickerDialog.ShowDialog(DialogService, CalendarService.PrimaryColor) is MudColor selectedColor)
         {
-            PrimaryColor = selectedColor;
-            GenerateColors();
+            CalendarService.PrimaryColor = selectedColor;
             StateHasChanged();
         }
-    }
-
-    void GenerateColors()
-    {
-        var emojis = DataPoint.Moods.Where(x => x != "🤔").ToList();
-        var primary = PrimaryColor.ToMauiColor();
-        var complementary = primary.GetComplementary();
-
-        var emojiColors = new Dictionary<string, string>();
-        for (int i = 0; i < emojis.Count; i++)
-        {
-            var p = i / (emojis.Count - 1f);
-            var c = ColorUtil.GetGradientColor(primary, complementary, p);
-
-            emojiColors.Add(emojis[i], c.ToHex());
-        }
-        MoodColors = emojiColors;
-
-        logger.LogInformation($"Primary color: {primary.ToHex()}");
-        logger.LogInformation($"Palette: {string.Join(",", emojiColors)}");
     }
 
     void Close()

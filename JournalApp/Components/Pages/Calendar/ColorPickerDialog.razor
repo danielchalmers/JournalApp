@@ -5,7 +5,7 @@
 @inject IDialogService DialogService
 @inject KeyEventService KeyEventService
 
-<MudDialog DefaultFocus="DefaultFocus.Element" OnBackdropClick="Submit">
+<MudDialog Class="color-picker" DefaultFocus="DefaultFocus.Element" OnBackdropClick="Submit">
     <DialogContent>
         <MudColorPicker Label="Primary" PickerVariant="PickerVariant.Static" @bind-Value="SelectedColor" DisableToolbar DisableAlpha />
     </DialogContent>

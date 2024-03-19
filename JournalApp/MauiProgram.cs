@@ -48,6 +48,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<AppDbSeeder>();
         builder.Services.AddSingleton<KeyEventService>();
         builder.Services.AddSingleton<AppThemeService>();
+        builder.Services.AddSingleton<CalendarService>();
         builder.Services.AddSingleton(Preferences.Default);
         builder.Services.AddSingleton(Share.Default);
         builder.Services.AddSingleton(FilePicker.Default);

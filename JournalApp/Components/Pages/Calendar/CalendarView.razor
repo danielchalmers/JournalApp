@@ -27,7 +27,7 @@
                         @foreach (var day in row)
                         {
                             <div class="@(day.Date == OpenToDate ? "mood-block-container mood-block-container-current" : "mood-block-container")" style="background-color: @(GetMoodColor(day.Emoji));">
-                                <div class="mood-block" onclick="@(async () => await DayClicked.InvokeAsync(day.Date))">
+                                <div class="@(day.Emoji == null ? "mood-block mood-block-offset" : "mood-block mood-block-filled")" onclick="@(async () => await DayClicked.InvokeAsync(day.Date))">
                                     @if (day.Date != null)
                                     {
                                         <b>@day.Date.Value.Day</b>
@@ -46,7 +46,7 @@
 
 @code {
     [Parameter]
-    public IReadOnlyDictionary<string, string> MoodColors { get; set; }
+    public Func<string, string> GetMoodColor { get; set; }
 
     [Parameter]
     public EventCallback<DateOnly?> DayClicked { get; set; }
@@ -75,13 +75,5 @@
             logger.LogDebug("Calendar loaded");
             await CalendarLoaded.InvokeAsync();
         }
-    }
-
-    string GetMoodColor(string emoji)
-    {
-        if (string.IsNullOrEmpty(emoji) || !MoodColors.TryGetValue(emoji, out var color))
-            return "transparent";
-        else
-            return color;
     }
 }
