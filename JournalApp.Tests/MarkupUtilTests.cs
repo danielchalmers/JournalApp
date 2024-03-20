@@ -4,10 +4,11 @@ public class MarkupUtilTests
 {
     [Theory]
     [InlineData("helloworld", "helloworld")]
-    [InlineData("helloworld", "Hello World!")]
-    [InlineData("helloworld", "Hello & World")]
-    public void ToClassName(string expected, string actual)
+    [InlineData("Hello World", "hello-world")]
+    [InlineData("Hello World!", "hello-world")]
+    [InlineData("Hello & World", "hello-world")]
+    public void ToClassName(string actual, string expected)
     {
-        Assert.Equal(expected, MarkupUtil.ToClassName(actual));
+        MarkupUtil.ToClassName(actual).Should().Be(expected);
     }
 }

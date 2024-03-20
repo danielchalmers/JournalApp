@@ -13,9 +13,6 @@ public partial class JaPage : ComponentBase
     protected NavigationManager NavigationManager { get; set; }
 
     [Inject]
-    protected IDbContextFactory<AppDbContext> DbFactory { get; set; }
-
-    [Inject]
     protected IDialogService DialogService { get; set; }
 
     [Inject]

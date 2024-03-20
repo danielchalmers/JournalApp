@@ -1,6 +1,6 @@
 ﻿namespace JournalApp.Tests;
 
-public class DataPointViewTests : JaTestContext
+public class DataPointTests : JaTestContext
 {
     [Fact]
     public void Mood()
@@ -15,16 +15,19 @@ public class DataPointViewTests : JaTestContext
         var point = DataPoint.Create(day, category);
         point.Mood = "🤩";
 
-        var cut = RenderComponent<DataPointView>(p =>
-            p.Add(x => x.Point, point)
+        var layout = RenderComponent<MainLayout>(wp =>
+            wp.AddChildContent<DataPointView>(p =>
+                p.Add(x => x.Point, point)
+            )
         );
+
+        var cut = layout.FindComponent<DataPointView>();
 
         cut.Find(".mud-menu-activator").Click();
 
-        // TODO: Add a razor file with a popover provider so we can check for it.
-        // Could we make a generic wrapper and pass the DataPointView as a ChildContent?
-        // https://github.com/MudBlazor/MudBlazor/blob/1607b06f596bd1ca11bcbfe6c1c4b26e064f9551/src/MudBlazor.UnitTests.Viewer/TestComponents/Menu/MenuTest1.razor
-        // cut.FindAll("div.mud-popover-open").Count.Should().Be(1);
+        layout.FindAll("div.mud-popover-open").Count.Should().Be(1);
+        layout.FindAll(".mud-list .mud-list-item")[0].Click();
+        point.Mood.Should().Be("🤔");
     }
 
     [Fact]
@@ -51,12 +54,16 @@ public class DataPointViewTests : JaTestContext
 
         point.SleepHours.Should().Be(0);
         cut.Find(".sleep-hours").TextContent.Should().Be("00.0");
+        cut.Find(".less-sleep").HasAttribute("disabled").Should().BeTrue();
+        cut.Find(".more-sleep").HasAttribute("disabled").Should().BeFalse();
 
         for (var i = 0; i < 50; i++)
             cut.Find(".more-sleep").Click();
 
         point.SleepHours.Should().Be(24);
         cut.Find(".sleep-hours").TextContent.Should().Be("24.0");
+        cut.Find(".more-sleep").HasAttribute("disabled").Should().BeTrue();
+        cut.Find(".less-sleep").HasAttribute("disabled").Should().BeFalse();
     }
 
     [Fact]
@@ -179,13 +186,29 @@ public class DataPointViewTests : JaTestContext
         var point = DataPoint.Create(day, category);
         point.Text = "Hello world";
 
-        var cut = RenderComponent<DataPointView>(p =>
-            p.Add(x => x.Point, point)
+        var layout = RenderComponent<MainLayout>(wp =>
+            wp.AddChildContent<DataPointView>(p =>
+                p.Add(x => x.Point, point)
+            )
         );
 
-        cut.FindAll(".mud-link").Count.Should().Be(1);
-        // TODO: Test note edit dialog.
-        //cut.Find(".mud-link").Click();
+        var dpv = layout.FindComponent<DataPointView>();
+
+        dpv.Find(".mud-link").Click();
+
+        var noteEditor = layout.FindComponent<EditNoteDialog>();
+        noteEditor.Find("textarea").Input("123");
+        layout.Find(".submit-button").Click();
+
+        point.Text.Should().Be("123");
+
+        dpv.Find(".mud-link").Click();
+
+        noteEditor = layout.FindComponent<EditNoteDialog>();
+        noteEditor.Find("textarea").Input("EXTRA TEXT THAT WILL BE DISCARDED");
+        layout.Find(".cancel-button").Click();
+
+        point.Text.Should().Be("123");
     }
 
     [Fact]
@@ -202,14 +225,15 @@ public class DataPointViewTests : JaTestContext
         var point = DataPoint.Create(day, category);
         point.Text = "Hello world";
 
-        var cut = RenderComponent<DataPointView>(p =>
-            p.Add(x => x.Point, point)
+        var layout = RenderComponent<MainLayout>(wp =>
+            wp.AddChildContent<DataPointView>(p =>
+                p.Add(x => x.Point, point)
+            )
         );
 
-        cut.FindAll(".mud-link").Count.Should().Be(1);
-        // TODO: Test dose edit dialog and make sure it makes the bool true.
-        //cut.Find(".mud-link").Click();
+        var cut = layout.FindComponent<DataPointView>();
 
+        // Initial state.
         point.Bool.Should().Be(null);
         cut.FindAll(".mud-toggle-item").Count.Should().Be(2);
         cut.FindAll(".mud-toggle-item-selected-border").Count.Should().Be(0);
@@ -235,5 +259,101 @@ public class DataPointViewTests : JaTestContext
         point.Bool.Should().Be(null);
 
         point.MedicationDose.Should().Be(point.Category.MedicationDose);
+    }
+
+    [Fact]
+    public void MedicationEditDose()
+    {
+        var category = new DataPointCategory
+        {
+            Guid = Guid.NewGuid(),
+            Type = PointType.Medication,
+            MedicationDose = 11,
+        };
+
+        var day = Day.Create(new(2024, 01, 01));
+        var point = DataPoint.Create(day, category);
+        point.Text = "Hello world";
+        point.MedicationDose = 22;
+
+        var layout = RenderComponent<MainLayout>(wp =>
+            wp.AddChildContent<DataPointView>(p =>
+                p.Add(x => x.Point, point)
+            )
+        );
+
+        var cut = layout.FindComponent<DataPointView>();
+
+        // Initial state.
+        point.Bool.Should().Be(null);
+        cut.FindAll(".mud-toggle-item-selected-border").Count.Should().Be(0);
+
+        // Change dose to empty via dialog.
+        cut.Find(".mud-link").Click();
+        var doseEditor = layout.FindComponent<EditDoseDialog>();
+        doseEditor.Find("input").Input("");
+        layout.Find(".submit-button").Click();
+
+        // Empty dose resets to default and selects No.
+        point.MedicationDose.Should().Be(point.Category.MedicationDose);
+        cut.FindAll(".mud-toggle-item")[0].ClassList.Should().Contain("mud-toggle-item-selected-border");
+
+        // Change dose via dialog.
+        cut.Find(".mud-link").Click();
+        doseEditor = layout.FindComponent<EditDoseDialog>();
+        doseEditor.Find("input").Input("99");
+        layout.Find(".submit-button").Click();
+
+        // Submitting dose is the same as Yes.
+        point.MedicationDose.Should().Be(99);
+        cut.FindAll(".mud-toggle-item")[1].ClassList.Should().Contain("mud-toggle-item-selected-border");
+
+        // Cancel dialog.
+        cut.Find(".mud-link").Click();
+        doseEditor = layout.FindComponent<EditDoseDialog>();
+        doseEditor.Find("input").Input("88");
+        layout.Find(".cancel-button").Click();
+
+        // Same as before
+        point.MedicationDose.Should().Be(99);
+        cut.FindAll(".mud-toggle-item")[1].ClassList.Should().Contain("mud-toggle-item-selected-border");
+    }
+
+    [Fact]
+    public void MedicationEditDoseDialogCloses()
+    {
+        var category = new DataPointCategory
+        {
+            Guid = Guid.NewGuid(),
+            Type = PointType.Medication,
+            MedicationDose = 11,
+        };
+
+        var day = Day.Create(new(2024, 01, 01));
+        var point = DataPoint.Create(day, category);
+        point.Text = "Hello world";
+        point.MedicationDose = 22;
+
+        var layout = RenderComponent<MainLayout>(wp =>
+            wp.AddChildContent<DataPointView>(p =>
+                p.Add(x => x.Point, point)
+            )
+        );
+
+        var cut = layout.FindComponent<DataPointView>();
+
+        layout.FindAll(".mud-dialog").Count.Should().Be(0);
+
+        // Submit.
+        cut.Find(".mud-link").Click();
+        layout.FindAll(".mud-dialog").Count.Should().Be(1);
+        layout.Find(".submit-button").Click();
+        layout.FindAll(".mud-dialog").Count.Should().Be(0);
+
+        // Cancel.
+        cut.Find(".mud-link").Click();
+        layout.FindAll(".mud-dialog").Count.Should().Be(1);
+        layout.Find(".cancel-button").Click();
+        layout.FindAll(".mud-dialog").Count.Should().Be(0);
     }
 }

@@ -4,6 +4,7 @@
 @inherits JaPage
 @implements IDisposable
 @inject ILogger<Index> logger
+@inject IDbContextFactory<AppDbContext> DbFactory
 @inject AppDataService AppDataService
 @inject IShare Share
 @inject IBrowser Browser
