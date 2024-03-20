@@ -26,10 +26,6 @@ body {
   color: white;
 }
 
-button {
-  text-transform: none !important;
-}
-
 .switcher {
   display: flex;
   justify-content: center;
