@@ -28,27 +28,23 @@ public partial class JaPage : ComponentBase
     protected ISnackbar Snackbar { get; set; }
 
     [Inject]
-    protected IPreferences Preferences { get; set; }
-
-    [Inject]
-    protected AppThemeService AppThemeService { get; set; }
+    protected PreferenceService PreferenceService { get; set; }
 
     public void ShowTeachingTip(string name, string text, bool oneTime = false)
     {
-
-        if (Preferences.Get($"tip_{name}", string.Empty) == "seen")
+        if (PreferenceService.Get($"tip_{name}", string.Empty) == "seen")
             return;
 
         Snackbar.Add(text, Severity.Info, key: name);
 
         if (oneTime)
-            Preferences.Set($"tip_{name}", "seen");
+            PreferenceService.Set($"tip_{name}", "seen");
     }
 
     public void ActionTaken(string name)
     {
         Snackbar.RemoveByKey(name);
 
-        Preferences.Set($"tip_{name}", "seen");
+        PreferenceService.Set($"tip_{name}", "seen");
     }
 }

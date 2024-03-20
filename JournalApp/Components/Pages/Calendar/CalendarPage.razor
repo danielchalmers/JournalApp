@@ -25,7 +25,7 @@
     @if (_gridYear != null)
     {
         <div style="padding-bottom: 40vh;">
-            <CalendarView GetMoodColor="CalendarService.GetMoodColor" GridYear="_gridYear.Value" OpenToDate="OpenToDate"
+            <CalendarView GridYear="_gridYear.Value" OpenToDate="OpenToDate"
                           CalendarLoaded="ScrollToOpenToDate" DayClicked="@(d => Close(d))"
                           PreviousMonthClicked="PreviousMonth" NextMonthClicked="NextMonth" />
         </div>
@@ -125,9 +125,9 @@
     {
         logger.LogInformation("Opening color picker");
 
-        if (await ColorPickerDialog.ShowDialog(DialogService, CalendarService.PrimaryColor) is MudColor selectedColor)
+        if (await ColorPickerDialog.ShowDialog(DialogService, PreferenceService.PrimaryColor) is MudColor selectedColor)
         {
-            CalendarService.PrimaryColor = selectedColor;
+            PreferenceService.PrimaryColor = selectedColor;
             StateHasChanged();
         }
     }

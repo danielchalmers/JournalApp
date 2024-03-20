@@ -66,7 +66,7 @@
     protected override void OnInitialized()
     {
         logger.LogDebug("Initializing");
-        Plan = Preferences.GetJson<SafetyPlan>("safety_plan") ?? new();
+        Plan = PreferenceService.SafetyPlan ?? new();
 
         base.OnInitialized();
 
@@ -84,11 +84,7 @@
     {
         KeyEventService.Exited();
 
-        // Save the safety plan or discard if it's unchanged so it won't show in the main menu.
-        if (Plan == new SafetyPlan())
-            Preferences.Set<string>("safety_plan", null);
-        else
-            Preferences.SetJson("safety_plan", Plan);
+        PreferenceService.SafetyPlan = Plan;
     }
 
     protected override bool ShouldRender() => !_leaving;

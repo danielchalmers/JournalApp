@@ -4,8 +4,7 @@
 @inject ILogger<MainLayout> logger
 @inject KeyEventService KeyEventService
 @inject NavigationManager NavigationManager
-@inject AppThemeService AppThemeService
-@inject IPreferences Preferences
+@inject PreferenceService PreferenceService
 
 <MudThemeProvider Theme="_theme" IsDarkMode="_isDarkMode" DefaultScrollbar />
 
@@ -50,9 +49,9 @@
         logger.LogDebug("Initializing");
         base.OnInitialized();
 
-        AppThemeService.ThemeChanged += OnThemeChanged;
+        PreferenceService.ThemeChanged += OnThemeChanged;
         if (Enum.TryParse<AppTheme>(Preferences.Get("theme", "Unspecified"), out var parsed))
-            AppThemeService.SelectedAppTheme = parsed;
+            PreferenceService.SelectedAppTheme = parsed;
 
         App.NewIntent += OnNewIntent;
         App.Window.Destroying += (_, _) => Dispose();
@@ -92,7 +91,7 @@
 
     public void Dispose()
     {
-        AppThemeService.ThemeChanged -= OnThemeChanged;
+        PreferenceService.ThemeChanged -= OnThemeChanged;
         App.NewIntent -= OnNewIntent;
     }
 }

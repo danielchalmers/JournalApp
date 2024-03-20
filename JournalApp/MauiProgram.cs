@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Maui;
-using MudBlazor;
-using MudBlazor.Services;
+using JournalApp.Data;
 
 namespace JournalApp;
 
@@ -26,15 +25,6 @@ public static class MauiProgram
         builder.Logging.AddFilter(ThisAssembly.AssemblyTitle, LogLevel.Debug);
         builder.Logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Warning); // Hugely slows down seed and import.
 
-        builder.Services.AddMudServices(c =>
-        {
-            c.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomCenter;
-            c.SnackbarConfiguration.NewestOnTop = true;
-            c.SnackbarConfiguration.HideTransitionDuration = 300;
-            c.SnackbarConfiguration.ShowTransitionDuration = 300;
-            c.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
-        });
-
         builder.Services.AddDbContextFactory<AppDbContext>(options => options
             .UseLazyLoadingProxies()
             .UseSqlite($"Data Source = {DbFilename}")
@@ -44,11 +34,8 @@ public static class MauiProgram
 #endif
         );
 
-        builder.Services.AddSingleton<AppDataService>();
-        builder.Services.AddSingleton<AppDbSeeder>();
-        builder.Services.AddSingleton<KeyEventService>();
-        builder.Services.AddSingleton<AppThemeService>();
-        builder.Services.AddSingleton<CalendarService>();
+        builder.Services.AddCommonJournalAppServices();
+
         builder.Services.AddSingleton(Preferences.Default);
         builder.Services.AddSingleton(Share.Default);
         builder.Services.AddSingleton(FilePicker.Default);

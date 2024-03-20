@@ -1,45 +1,8 @@
-﻿using MudBlazor.Utilities;
+﻿namespace JournalApp;
 
-namespace JournalApp;
-
-public class CalendarService(ILogger<CalendarService> logger, IDbContextFactory<AppDbContext> DbFactory, IPreferences preferences)
+public class CalendarService(ILogger<CalendarService> logger, IDbContextFactory<AppDbContext> DbFactory)
 {
     private DataPointCategory _moodCategory;
-    private Dictionary<string, string> _moodColors;
-
-    private string MoodPalettePreference
-    {
-        get
-        {
-            var palette = preferences.Get("mood_palette", string.Empty);
-
-            if (string.IsNullOrEmpty(palette))
-                palette = "#6bdbe7"; // Tetradic to our primary purple.
-
-            return palette;
-        }
-    }
-
-    public MudColor PrimaryColor
-    {
-        get => MoodPalettePreference;
-        set
-        {
-            preferences.Set("mood_palette", value.Value[..^2]);
-            GenerateColors();
-        }
-    }
-
-    public string GetMoodColor(string emoji)
-    {
-        if (_moodColors == null)
-            GenerateColors();
-
-        if (string.IsNullOrEmpty(emoji) || !_moodColors.TryGetValue(emoji, out var color))
-            return "transparent";
-        else
-            return color;
-    }
 
     public async Task<GridYear> CreateGridYear(int year)
     {
@@ -79,24 +42,5 @@ public class CalendarService(ILogger<CalendarService> logger, IDbContextFactory<
         logger.LogDebug($"Created grid year {year} in {sw.ElapsedMilliseconds}ms");
 
         return gridYear;
-    }
-
-    private void GenerateColors()
-    {
-        var emojis = DataPoint.Moods.Where(x => x != "🤔").ToList();
-        var primary = PrimaryColor.ToMauiColor();
-        var complementary = primary.GetComplementary();
-
-        _moodColors = [];
-        for (var i = 0; i < emojis.Count; i++)
-        {
-            var p = i / (emojis.Count - 1f);
-            var c = ColorUtil.GetGradientColor(primary, complementary, p);
-
-            _moodColors.Add(emojis[i], c.ToHex());
-        }
-
-        logger.LogInformation($"Primary color: {primary.ToHex()}");
-        logger.LogInformation($"Palette: {string.Join(",", _moodColors)}");
     }
 }

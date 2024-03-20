@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using JournalApp.Data;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace JournalApp.Tests;
@@ -10,13 +11,8 @@ public abstract class JaTestContext : TestContext, IAsyncLifetime
     public virtual Task InitializeAsync()
     {
         Services.AddLogging();
-        Services.AddMudServices();
-        Services.AddSingleton<AppDataService>();
-        Services.AddSingleton<AppDbSeeder>();
-        Services.AddSingleton<KeyEventService>();
-        Services.AddSingleton<AppThemeService>();
-        Services.AddSingleton<CalendarService>();
-        Services.AddSingleton<IPreferences, FakePreferences>();
+        Services.AddCommonJournalAppServices();
+        Services.AddSingleton<IPreferences, InMemoryPreferences>();
         JSInterop.Mode = JSRuntimeMode.Loose;
         return Task.CompletedTask;
     }

@@ -1,6 +1,6 @@
 ﻿@namespace JournalApp
 @using ApexCharts
-@inject AppThemeService AppThemeService
+@inject PreferenceService PreferenceService
 
 @if (Category.Type is PointType.Text or PointType.Note)
 {
@@ -113,7 +113,7 @@ else
             {
                 Theme = new Theme
                 {
-                    Mode = AppThemeService.IsDarkMode ? Mode.Dark : Mode.Light,
+                    Mode = PreferenceService.IsDarkMode ? Mode.Dark : Mode.Light,
                     Monochrome = new ThemeMonochrome
                     {
                         Color = "#776be7",

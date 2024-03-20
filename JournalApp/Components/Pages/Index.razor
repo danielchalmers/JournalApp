@@ -23,7 +23,7 @@
             <MudMenuItem Icon="@Icons.Material.Filled.ShowChart" OnAction="OpenTrends">Trends</MudMenuItem>
             <MudMenuItem Icon="@Icons.Material.Filled.Article" OnAction="OpenWorksheets">Worksheets</MudMenuItem>
 
-            @if (Preferences.Get<string>("safety_plan", null) != null)
+            @if (PreferenceService.SafetyPlan != null)
             {
                 <MudMenuItem Icon="@Icons.Material.Filled.HealthAndSafety" OnAction="OpenSafetyPlan">Safety Plan</MudMenuItem>
             }
@@ -53,7 +53,7 @@
     <div class="main-timeline">
         @foreach (var group in db.Categories.Where(x => x.Enabled && !x.Deleted).GroupBy(x => x.Group))
         {
-            @if (group.Key == "Notes" && Preferences.Get("hide_notes", false))
+            @if (group.Key == "Notes" && PreferenceService.HideNotes)
             {
                 continue;
             }

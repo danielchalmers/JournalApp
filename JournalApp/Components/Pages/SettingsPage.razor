@@ -28,13 +28,13 @@ else
             <div class="settings-group">
                 <MudText Typo="Typo.h4">Personalization</MudText>
 
-                <MudRadioGroup T="AppTheme" Value="AppThemeService.SelectedAppTheme" ValueChanged="SelectedAppThemeChanged">
+                <MudRadioGroup T="AppTheme" Value="PreferenceService.SelectedAppTheme" ValueChanged="v => PreferenceService.SelectedAppTheme = v">
                     <MudRadio Value="@(AppTheme.Unspecified)">System</MudRadio>
                     <MudRadio Value="@(AppTheme.Light)">Light</MudRadio>
                     <MudRadio Value="@(AppTheme.Dark)">Dark</MudRadio>
                 </MudRadioGroup>
 
-                <MudCheckBox @bind-Value="HideNotes">Hide "Today's notes"</MudCheckBox>
+                <MudCheckBox @bind-Value="PreferenceService.HideNotes">Hide "Today's notes"</MudCheckBox>
 
                 <MudButton StartIcon="@Icons.Material.Filled.HealthAndSafety" OnClick="SetUpSafetyPlan" Variant="Variant.Outlined" FullWidth>Set Up Safety Plan</MudButton>
             </div>
@@ -74,12 +74,6 @@ else
 
     public string CreditsText { get; private set; }
 
-    public bool HideNotes
-    {
-        get => Preferences.Get("hide_notes", false);
-        set => Preferences.Set("hide_notes", value);
-    }
-
     protected override async Task OnInitializedAsync()
     {
         logger.LogDebug("Initializing asynchronously");
@@ -106,8 +100,7 @@ else
 
     void SelectedAppThemeChanged(AppTheme newTheme)
     {
-        AppThemeService.SelectedAppTheme = newTheme;
-        Preferences.Set("theme", newTheme.ToString());
+        PreferenceService.SelectedAppTheme = newTheme;
     }
 
     void SetUpSafetyPlan()
