@@ -5,9 +5,11 @@
 
 @if (Point.Type == PointType.Mood)
 {
-    <MudMenu>
+    <MudMenu Dense>
         <ActivatorContent>
-            <MudText Typo="Typo.h4">@(Point.Mood ?? "🤔")</MudText>
+            <MudButton>
+                <MudText Typo="Typo.h4">@(Point.Mood ?? "🤔")</MudText>
+            </MudButton>
         </ActivatorContent>
 
         <ChildContent>

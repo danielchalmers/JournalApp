@@ -55,10 +55,6 @@ body {
   --mud-palette-action-default: var(--mud-palette-appbar-text);
 }
 
-  .page-header *.mud-typography {
-    color: var(--mud-palette-appbar-text);
-  }
-
 .mud-dialog .mud-dialog-title, .page-title {
   z-index: 999;
   display: flex;
@@ -70,10 +66,6 @@ body {
   background-color: var(--mud-palette-primary-lighten);
   --mud-palette-action-default: var(--mud-palette-appbar-text);
 }
-
-  .mud-dialog .mud-dialog-title, .page-title *.mud-typography {
-    color: var(--mud-palette-appbar-text);
-  }
 
 .mud-dialog .mud-dialog-content, .page-body {
   max-width: 960px;
