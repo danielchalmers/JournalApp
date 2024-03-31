@@ -3,7 +3,26 @@
 public class SafetyPlanTests : JaTestContext
 {
     [Fact]
-    public void Persists()
+    [Description("The plan must actually load from preferences")]
+    public void PlanIsLoaded()
+    {
+        var preferenceService = Services.GetService<PreferenceService>();
+
+        preferenceService.SafetyPlan = new()
+        {
+            Purpose = "My purpose is to finish these tests",
+        };
+
+        var cut = RenderComponent<SafetyPlanPage>();
+
+        // Assert state.
+        cut.Instance.Plan.Purpose.Should().Be("My purpose is to finish these tests");
+        cut.Find(".safety-plan-item-purpose textarea").TextContent.Should().Be("My purpose is to finish these tests");
+    }
+
+    [Fact]
+    [Description("The safety plan must save changes and load them back next time")]
+    public void PlanPersists()
     {
         var preferenceService = Services.GetService<PreferenceService>();
 

@@ -76,6 +76,9 @@ public class CalendarTests : JaTestContext
         cut.FindAll(".calendar-view .mood-block-container > .mood-block-filled").Count.Should().Be(0);
     }
 
+    [Fact(Skip = "Stub")]
+    public async Task CannotSeeIntoFuture() { }
+
     [Fact]
     public void CalendarViewRespectsFirstDay()
     {
@@ -101,24 +104,28 @@ public class CalendarTests : JaTestContext
         weekHeaders[6].TextContent.Should().Be("Tu");
     }
 
-    [Fact(Skip = "MoodPalettePreference uses Preferences internally which is not set up")]
+    [Fact(Skip = "Can't find dialog")]
     public void ChangePalette()
     {
         var cut = RenderComponent<CalendarPage>(p =>
             p.Add(x => x.OpenToDateString, "20230101")
         );
 
+        var preferenceService = Services.GetService<PreferenceService>();
+        var initialColor = preferenceService.PrimaryColor;
+
         cut.Find(".pick-palette").Click();
 
-        cut.Find(".color-picker");
-
-        var overlay = cut.Find(".color-picker .mud-dialog-content .mud-picker-color-overlay-black .mud-picker-color-overlay");
-
+        // Click a color.
+        var overlay = cut.WaitForElement(".color-picker .mud-dialog-content .mud-picker-color-overlay-black .mud-picker-color-overlay");
         overlay.Click(new MouseEventArgs { OffsetX = 235, OffsetY = 18 });
 
+        // Close dialog.
         cut.Find(".mud-dialog-container .mud-overlay-dialog").Click();
+        cut.FindAll(".mud-overlay-dialog").Count.Should().Be(0);
 
-        //cut.Instance.PrimaryColor.Should().Be("#3ad9ec");
+        // Color should have changed.
+        preferenceService.PrimaryColor.Should().NotBe(initialColor);
     }
 
     [Fact]
