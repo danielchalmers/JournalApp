@@ -37,7 +37,7 @@
 }
 
 .mood-block-container-current {
-  outline: 2px dashed white;
+  outline: 2px dashed var(--mud-palette-text-primary);
 }
 
 .mood-block {
