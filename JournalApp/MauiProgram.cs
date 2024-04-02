@@ -40,6 +40,7 @@ public static class MauiProgram
         builder.Services.AddSingleton(Share.Default);
         builder.Services.AddSingleton(FilePicker.Default);
         builder.Services.AddSingleton(Browser.Default);
+        builder.Services.AddSingleton(Clipboard.Default);
 
         // Seed the database.
         using var provider = builder.Services.BuildServiceProvider();

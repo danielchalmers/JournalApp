@@ -1,0 +1,15 @@
+﻿@namespace JournalApp
+@inherits MudComponentBase
+@inject IClipboard Clipboard
+
+<MudLink OnClick="OnClick" Underline="Underline.None" Color="Color.Inherit">@Text</MudLink>
+
+@code {
+    [Parameter]
+    public string Text { get; set; }
+
+    public void OnClick()
+    {
+        Clipboard.SetTextAsync(Text);
+    }
+}

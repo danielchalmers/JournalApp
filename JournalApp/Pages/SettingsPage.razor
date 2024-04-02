@@ -50,8 +50,8 @@ else
             <div class="settings-group">
                 <MudText Typo="Typo.h4">About</MudText>
 
-                <MudText>JournalApp @(ThisAssembly.AssemblyInformationalVersion)</MudText>
-                <MudText>@($"{DeviceInfo.Current.Platform} {DeviceInfo.Current.VersionString}")</MudText>
+                <MudCopyText Text="@($"JournalApp {ThisAssembly.AssemblyInformationalVersion}")" />
+                <MudCopyText Text="@($"{DeviceInfo.Current.Platform} {DeviceInfo.Current.VersionString}")" />
 
                 <MudLink Href="@(Feedback.GenerateLink())">Send feedback by email</MudLink>
                 <MudLink Href="https://github.com/danielchalmers/JournalApp/issues">Send feedback on GitHub</MudLink>
