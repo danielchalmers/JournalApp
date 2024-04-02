@@ -108,7 +108,7 @@ body {
   margin-top: 0 !important;
 }
 
-.mud-input-root-outlined {
+.mud-input > textarea.mud-input-root-outlined {
   margin: 0.25em !important;
 }
 
