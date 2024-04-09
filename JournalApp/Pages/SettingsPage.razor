@@ -3,7 +3,7 @@
 @implements IDisposable
 @inherits JaPage
 @inject ILogger<SettingsPage> logger
-@inject AppDataService AppDataService
+@inject AppDataUIService AppDataUIService
 @inject IFilePicker FilePicker
 
 @if (_busy)
@@ -144,7 +144,7 @@ else
 
             var path = App.ActivatedFilePath;
 
-            await AppDataService.StartImportWizard(DialogService, App.ActivatedFilePath);
+            await AppDataUIService.StartImportWizard(DialogService, App.ActivatedFilePath);
         }
         finally
         {
@@ -160,7 +160,7 @@ else
             _busy = true;
             StateHasChanged();
 
-            await AppDataService.StartExportWizard(DialogService);
+            await AppDataUIService.StartExportWizard(DialogService);
         }
         finally
         {

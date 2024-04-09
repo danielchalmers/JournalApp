@@ -2,7 +2,7 @@
 
 public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbContext> dbFactory)
 {
-    public void SeedDb()
+    public void PrepareDatabase()
     {
         logger.LogInformation("Preparing database");
         using var db = dbFactory.CreateDbContext();

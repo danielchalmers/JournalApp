@@ -36,6 +36,7 @@ public static class MauiProgram
 
         builder.Services.AddCommonJournalAppServices();
 
+        builder.Services.AddSingleton<AppDataUIService>();
         builder.Services.AddSingleton(Preferences.Default);
         builder.Services.AddSingleton(Share.Default);
         builder.Services.AddSingleton(FilePicker.Default);
@@ -45,7 +46,7 @@ public static class MauiProgram
         // Seed the database.
         using var provider = builder.Services.BuildServiceProvider();
         var dbSeeder = provider.GetService<AppDbSeeder>();
-        dbSeeder.SeedDb();
+        dbSeeder.PrepareDatabase();
         dbSeeder.SeedCategories();
 #if DEBUG
         dbSeeder.SeedDays();

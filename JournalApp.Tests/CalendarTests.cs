@@ -15,6 +15,7 @@ public class CalendarTests : JaTestContext
         var appDbSeeder = new AppDbSeeder(new NullLogger<AppDbSeeder>(), dbf);
 
         var dates = new DateOnly(2023, 01, 01).DatesTo(new(2024, 01, 01));
+        appDbSeeder.SeedCategories();
         appDbSeeder.SeedDays(dates);
     }
 
@@ -75,9 +76,6 @@ public class CalendarTests : JaTestContext
         // 2022, none filled.
         cut.FindAll(".calendar-view .mood-block-container > .mood-block-filled").Count.Should().Be(0);
     }
-
-    [Fact(Skip = "Stub")]
-    public async Task CannotSeeIntoFuture() { }
 
     [Fact]
     public void CalendarViewRespectsFirstDay()

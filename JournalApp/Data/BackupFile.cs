@@ -37,7 +37,13 @@ public class BackupFile
             }
         }
 
-        throw new InvalidOperationException("No backup file found!");
+        throw new InvalidOperationException("No valid backup found!");
+    }
+
+    public static async Task<BackupFile> ReadArchive(string path)
+    {
+        await using var fs = File.Open(path, FileMode.Open);
+        return await ReadArchive(fs);
     }
 
     public async Task WriteArchive(Stream stream)
@@ -48,6 +54,12 @@ public class BackupFile
         await using var entryStream = entry.Open();
 
         await JsonSerializer.SerializeAsync(entryStream, this, SerializerOptions);
+    }
+
+    public async Task WriteArchive(string path)
+    {
+        await using var stream = File.Create(path);
+        await WriteArchive(stream);
     }
 }
 

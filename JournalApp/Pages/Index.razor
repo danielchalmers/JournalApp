@@ -5,7 +5,7 @@
 @implements IDisposable
 @inject ILogger<Index> logger
 @inject IDbContextFactory<AppDbContext> DbFactory
-@inject AppDataService AppDataService
+@inject AppDataUIService AppDataUIService
 @inject IShare Share
 @inject IBrowser Browser
 
@@ -186,7 +186,7 @@
                 logger.LogInformation($"Switching from {_day} to current day after user was gone since {_stoppedDate}");
                 await GoToDay(DateOnly.FromDateTime(DateTime.Now), scrollToTop: true);
 
-                await AppDataService.ShowExportReminderIfDue(DialogService);
+                await AppDataUIService.ShowExportReminderIfDue(DialogService);
             }
             else
             {

@@ -7,6 +7,7 @@ public class ManageCategoriesTests : JaTestContext
         await base.InitializeAsync();
 
         AddDbContext();
+        Services.GetService<AppDbSeeder>().SeedCategories();
     }
 
     [Fact(Skip = "Stub")]

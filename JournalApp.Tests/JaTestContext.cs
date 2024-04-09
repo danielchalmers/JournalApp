@@ -41,7 +41,6 @@ public abstract class JaTestContext : TestContext, IAsyncLifetime
 
         var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
         var dbSeeder = Services.GetService<AppDbSeeder>();
-        dbSeeder.SeedDb();
-        dbSeeder.SeedCategories();
+        dbSeeder.PrepareDatabase();
     }
 }

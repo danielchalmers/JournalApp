@@ -121,6 +121,24 @@ public sealed class PreferenceService : IPreferences, IDisposable
             return color;
     }
 
+    public void Set(IReadOnlyDictionary<string, string> preferences)
+    {
+        Clear();
+        foreach (var (key, value) in preferences)
+        {
+            Set(key, value);
+            logger.LogInformation($"Preference restored: {key}");
+        }
+    }
+
+    public IEnumerable<KeyValuePair<string, string>> Get(params string[] keys)
+    {
+        foreach (var key in keys)
+        {
+            yield return new(key, Get(key, string.Empty));
+        }
+    }
+
     public void Dispose()
     {
         if (_application != null)
