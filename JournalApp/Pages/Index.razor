@@ -18,11 +18,11 @@
         <MudSpacer />
 
         <MudMenu Icon="@Icons.Material.Filled.MoreVert" title="More" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
-            <MudMenuItem Icon="@Icons.Material.Filled.Category" OnAction="ManageCategories">Categories</MudMenuItem>
-            <MudMenuItem Icon="@Icons.Material.Filled.Medication" OnAction="ManageMedications">Medications</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Category" OnAction="ManageCategories" AutoClose="false">Categories</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Medication" OnAction="ManageMedications" AutoClose="false">Medications</MudMenuItem>
             <MudMenuItem Icon="@Icons.Material.Filled.Comment" OnAction="NewNote">New note</MudMenuItem>
-            <MudMenuItem Icon="@Icons.Material.Filled.ShowChart" OnAction="OpenTrends">Trends</MudMenuItem>
-            <MudMenuItem Icon="@Icons.Material.Filled.Article" OnAction="OpenWorksheets">Worksheets</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.ShowChart" OnAction="OpenTrends" AutoClose="false">Trends</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Article" OnAction="OpenWorksheets" AutoClose="false">Worksheets</MudMenuItem>
 
             @if (PreferenceService.SafetyPlan != null)
             {
@@ -33,7 +33,7 @@
 
             <MudMenuItem Icon="@Icons.Material.Filled.Campaign" OnAction="OpenFeedback">Feedback</MudMenuItem>
             <MudMenuItem Icon="@Icons.Material.Filled.Share" OnAction="OpenShare">Share</MudMenuItem>
-            <MudMenuItem Icon="@Icons.Material.Filled.Settings" OnAction="OpenSettings">Settings</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Settings" OnAction="OpenSettings" AutoClose="false">Settings</MudMenuItem>
         </MudMenu>
     </div>
 
