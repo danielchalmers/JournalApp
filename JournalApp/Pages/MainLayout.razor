@@ -6,7 +6,7 @@
 @inject NavigationManager NavigationManager
 @inject PreferenceService PreferenceService
 
-<MudThemeProvider Theme="_theme" IsDarkMode="_isDarkMode" DefaultScrollbar />
+<MudThemeProvider Theme="_theme" IsDarkMode="PreferenceService.IsDarkMode" DefaultScrollbar />
 
 <MudDialogProvider MaxWidth="MaxWidth.Small"
                    FullWidth="true"
@@ -22,7 +22,6 @@
 </div>
 
 @code {
-    bool _isDarkMode = true;
     bool _hasInitiallyRendered;
 
     MudTheme _theme = new()
@@ -65,11 +64,10 @@
         base.OnInitialized();
 
         PreferenceService.ThemeChanged += OnThemeChanged;
-        if (Enum.TryParse<AppTheme>(Preferences.Get("theme", "Unspecified"), out var parsed))
-            PreferenceService.SelectedAppTheme = parsed;
-
         App.NewIntent += OnNewIntent;
-        App.Window.Destroying += (_, _) => Dispose();
+
+        if (App.Window is not null) // Not available in tests.
+            App.Window.Destroying += (_, _) => Dispose();
 
         // All pages have been reloaded so we should clear any leftover subscriptions.
         KeyEventService.ResetStack();
@@ -92,8 +90,6 @@
 
     public void OnThemeChanged(object sender, bool isDarkMode)
     {
-        _isDarkMode = isDarkMode;
-
         if (_hasInitiallyRendered)
             StateHasChanged();
     }

@@ -8,7 +8,7 @@ public sealed class PreferenceService : IPreferences, IDisposable
     private readonly IPreferences _preferenceStore;
     private readonly Application _application;
     private Dictionary<string, string> _moodColors;
-    private AppTheme _theme;
+    private AppTheme? _theme;
 
     public PreferenceService(ILogger<PreferenceService> logger, IPreferences preferenceStore)
     {
@@ -27,7 +27,18 @@ public sealed class PreferenceService : IPreferences, IDisposable
 
     public AppTheme SelectedAppTheme
     {
-        get => _theme;
+        get
+        {
+            if (_theme == null)
+            {
+                if (Enum.TryParse<AppTheme>(_preferenceStore.Get("theme", string.Empty), out var parsed))
+                    _theme = parsed;
+                else
+                    _theme = AppTheme.Unspecified;
+            }
+
+            return _theme.Value;
+        }
         set
         {
             logger.LogInformation($"Changing theme from {_theme} to {value}");
@@ -37,9 +48,9 @@ public sealed class PreferenceService : IPreferences, IDisposable
         }
     }
 
-    public bool IsDarkMode => _theme switch
+    public bool IsDarkMode => SelectedAppTheme switch
     {
-        AppTheme.Unspecified => Application.Current.RequestedTheme != AppTheme.Light,
+        AppTheme.Unspecified => Application.Current?.RequestedTheme != AppTheme.Light,
         AppTheme.Light => false,
         _ => true,
     };

@@ -1,7 +1,7 @@
-﻿namespace JournalApp.Tests;
+﻿@namespace JournalApp.Tests
+@inherits JaTestContext
 
-public class SafetyPlanTests : JaTestContext
-{
+@code {
     [Fact]
     [Description("The plan must actually load from preferences")]
     public void PlanIsLoaded()

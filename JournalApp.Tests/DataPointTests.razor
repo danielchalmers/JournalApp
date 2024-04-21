@@ -1,7 +1,7 @@
-﻿namespace JournalApp.Tests;
+﻿@namespace JournalApp.Tests
+@inherits JaTestContext
 
-public class DataPointTests : JaTestContext
-{
+@code {
     [Fact]
     public void Mood()
     {
@@ -15,11 +15,12 @@ public class DataPointTests : JaTestContext
         var point = DataPoint.Create(day, category);
         point.Mood = "🤩";
 
-        var layout = RenderComponent<MainLayout>(wp =>
-            wp.AddChildContent<DataPointView>(p =>
-                p.Add(x => x.Point, point)
-            )
-        );
+        var layout = Render(
+            @<MainLayout>
+                <Body>
+                    <DataPointView Point="point" />
+                </Body>
+            </MainLayout>);
 
         var cut = layout.FindComponent<DataPointView>();
 
@@ -185,16 +186,17 @@ public class DataPointTests : JaTestContext
         var day = Day.Create(new(2024, 01, 01));
         var point = DataPoint.Create(day, category);
         point.Text = "Hello world";
+        
+        var layout = Render(
+            @<MainLayout>
+                <Body>
+                    <DataPointView Point="point" />
+                </Body>
+            </MainLayout>);
 
-        var layout = RenderComponent<MainLayout>(wp =>
-            wp.AddChildContent<DataPointView>(p =>
-                p.Add(x => x.Point, point)
-            )
-        );
+        var cut = layout.FindComponent<DataPointView>();
 
-        var dpv = layout.FindComponent<DataPointView>();
-
-        dpv.Find(".mud-link").Click();
+        cut.Find(".mud-link").Click();
 
         var noteEditor = layout.FindComponent<EditNoteDialog>();
         noteEditor.Find("textarea").Input("123");
@@ -202,7 +204,7 @@ public class DataPointTests : JaTestContext
 
         point.Text.Should().Be("123");
 
-        dpv.Find(".mud-link").Click();
+        cut.Find(".mud-link").Click();
 
         noteEditor = layout.FindComponent<EditNoteDialog>();
         noteEditor.Find("textarea").Input("EXTRA TEXT THAT WILL BE DISCARDED");
@@ -225,11 +227,12 @@ public class DataPointTests : JaTestContext
         var point = DataPoint.Create(day, category);
         point.Text = "Hello world";
 
-        var layout = RenderComponent<MainLayout>(wp =>
-            wp.AddChildContent<DataPointView>(p =>
-                p.Add(x => x.Point, point)
-            )
-        );
+        var layout = Render(
+            @<MainLayout>
+                <Body>
+                    <DataPointView Point="point" />
+                </Body>
+            </MainLayout>);
 
         var cut = layout.FindComponent<DataPointView>();
 
@@ -276,11 +279,12 @@ public class DataPointTests : JaTestContext
         point.Text = "Hello world";
         point.MedicationDose = 22;
 
-        var layout = RenderComponent<MainLayout>(wp =>
-            wp.AddChildContent<DataPointView>(p =>
-                p.Add(x => x.Point, point)
-            )
-        );
+        var layout = Render(
+           @<MainLayout>
+                <Body>
+                    <DataPointView Point="point" />
+                </Body>
+            </MainLayout>);
 
         var cut = layout.FindComponent<DataPointView>();
 
@@ -334,11 +338,12 @@ public class DataPointTests : JaTestContext
         point.Text = "Hello world";
         point.MedicationDose = 22;
 
-        var layout = RenderComponent<MainLayout>(wp =>
-            wp.AddChildContent<DataPointView>(p =>
-                p.Add(x => x.Point, point)
-            )
-        );
+        var layout = Render(
+            @<MainLayout>
+                <Body>
+                    <DataPointView Point="point" />
+                </Body>
+            </MainLayout>);
 
         var cut = layout.FindComponent<DataPointView>();
 
