@@ -62,16 +62,16 @@
             <div class="data-point-group">
                 @if (!string.IsNullOrEmpty(group.Key))
                 {
-                    <div class="data-point-group-header">
+                    <MudText Class="data-point-group-header" Typo="Typo.h5">
                         @if (group.Key == "Medications")
                         {
-                            <MudText Typo="Typo.h5">Medications taken</MudText>
+                            @("Medications taken")
                         }
                         else if (group.Key == "Notes")
                         {
-                            <MudText Typo="Typo.h5">Today's notes</MudText>
+                            @("Today's notes")
                         }
-                    </div>
+                    </MudText>
                 }
 
                 @foreach (var category in group.OrderBy(x => x.Index).ThenBy(x => x.Name))

@@ -1,18 +1,13 @@
-.category-view-compact {
+.manage-category {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 0.1em;
 }
 
-.category-view-edit-button {
-  display: flex;
-  flex-grow: 1;
-  overflow-x: clip;
-}
-
-::deep .category-view-edit-button > .mud-button {
+::deep .manage-category-edit-button {
   justify-content: start !important;
-  flex-grow: 1 !important;
+  flex-grow: 1;
   word-wrap: anywhere;
+  overflow-x: clip;
 }

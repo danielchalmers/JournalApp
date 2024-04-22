@@ -26,14 +26,16 @@
     {
         @foreach (var c in Categories.OrderBy(c => c.Index))
         {
-            <div class="category-view-compact">
-                <MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" Title="Move up" OnClick="async () => await MoveUp(c)" Edge="Edge.Start" Disabled="c.Index <= 1" />
+            <div id="@($"manage-category-{c.Guid}")" class="manage-category">
+                <MudIconButton Class="manage-category-up-button" Icon="@Icons.Material.Filled.ArrowUpward" Title="Move up"
+                               OnClick="async () => await MoveUp(c)" Edge="Edge.Start" Disabled="c.Index <= 1" />
 
-                <MudSwitch T="bool" Value="c.Enabled" ValueChanged="async (v) => await OnEnabledChanged(c, v)" Color="Color.Primary" Style="margin-right: -0.125em;" title="Enabled" />
+                <MudSwitch Class="manage-category-enabled-switch" T="bool" Value="c.Enabled" ValueChanged="async (v) => await OnEnabledChanged(c, v)"
+                           Color="Color.Primary" Style="margin-right: -0.125em;" title="Show in home" />
 
-                <div class="category-view-edit-button">
-                    <MudButton Variant="Variant.Text" OnClick="async () => await Edit(c)" Disabled="c.ReadOnly" StartIcon="@Icons.Material.Filled.Edit" title="Edit" Size="Size.Large">@c.Name</MudButton>
-                </div>
+                <MudButton Class="manage-category-edit-button"
+                           Variant="Variant.Text" OnClick="async () => await Edit(c)" Disabled="c.ReadOnly"
+                           StartIcon="@Icons.Material.Filled.Edit" Size="Size.Large" title="Make changes">@c.Name</MudButton>
             </div>
         }
     }

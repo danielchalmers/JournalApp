@@ -14,14 +14,79 @@
     public async Task ClickCategoryOpensEditorAndUpdatesList() { }
 
     [Fact(Skip = "Stub")]
-    public async Task ClickPlusOpensEditorAndAddsNewCategoryToList() { }
-
-    [Fact(Skip = "Stub")]
     public async Task ClickCategoryOpensEditor() { }
 
     [Fact(Skip = "Stub")]
-    public async Task CannotEditReadOnlyCategories() { }
+    public async Task ClickPlusOpensEditorAndAddsNewCategoryToList() { }
 
-    [Fact(Skip = "Stub")]
-    public async Task Reorder() { }
+    [Fact]
+    public void ReadOnlyCannotBeEdited()
+    {
+        var guid = "d90d89fb-f5b9-47cf-ae4e-3ec0d635e783"; // Mood.
+
+        var cut = Render(@<ManageCategoriesPage />);
+
+        cut.Find($"#manage-category-{guid} > .manage-category-edit-button").HasAttribute("disabled").Should().BeTrue();
+    }
+
+    [Fact]
+    public void CanChangeEnabled()
+    {
+        var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var guid = "0fb54aff-9ecc-4c17-bab5-b908b794cea9"; // Anxiety.
+
+        DataPointCategory Category()
+        {
+            using var db = dbf.CreateDbContext();
+            return db.Categories.Single(c => c.Guid == new Guid(guid));
+        }
+
+        var cut = Render(@<ManageCategoriesPage />);
+
+        Category().Enabled.Should().BeFalse();
+        cut.Find($"#manage-category-{guid} > .manage-category-enabled-switch input").Change(true);
+        Category().Enabled.Should().BeTrue();
+        cut.Find($"#manage-category-{guid} > .manage-category-enabled-switch input").Change(false);
+        Category().Enabled.Should().BeFalse();
+    }
+
+    [Fact]
+    public void MoveUpToTop()
+    {
+        var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var guid = "0fb54aff-9ecc-4c17-bab5-b908b794cea9"; // Anxiety.
+
+        DataPointCategory Category()
+        {
+            using var db = dbf.CreateDbContext();
+            return db.Categories.Single(c => c.Guid == new Guid(guid));
+        }
+
+        var cut = RenderComponent<ManageCategoriesPage>();
+
+        for (int i = 6; i > 1; i--)
+        {
+            cut.Find($"#manage-category-{guid} > .manage-category-up-button").Click();
+            Category().Index.Should().Be(i - 1);
+        }
+
+        cut.Find($"#manage-category-{guid} > .manage-category-up-button").HasAttribute("disabled").Should().BeTrue();
+    }
+
+    [Fact(Skip = "Doesn't like the null group being passed")]
+    [Description("Checks if the number of categories in the database per group match the number rendered")]
+    public void ShowsCorrectCategoriesInGroup()
+    {
+        var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
+
+        using var db = dbf.CreateDbContext();
+        var categoryCountPerGroup = db.Categories.GroupBy(x => x.Group).Select(x => new { Group = x.Key, Count = x.Count() }).ToList();
+
+        foreach (var x in categoryCountPerGroup)
+        {
+            var cut = Render(@<ManageCategoriesPage Group="x.Group" />);
+
+            cut.FindAll(".manage-category").Count.Should().Be(x.Count);
+        }
+    }
 }
