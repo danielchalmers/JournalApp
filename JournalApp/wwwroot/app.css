@@ -156,6 +156,10 @@ h1, h2, h3, h4, h5, h6 {
   margin-inline: 0 !important;
 }
 
+.mud-border-primary {
+  border-color: rgb(from var(--mud-palette-primary) r g b / 75%) !important;
+}
+
 #blazor-error-ui {
   background: darkorange;
   bottom: 0;
