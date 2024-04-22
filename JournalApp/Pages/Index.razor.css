@@ -7,7 +7,16 @@
 .data-point-group {
   display: flex;
   flex-direction: column;
+}
+
+.data-point-list {
+  display: flex;
+  flex-direction: column;
   gap: 0.5em;
+}
+
+.data-point-group-footer {
+  margin-top: 1em;
 }
 
 .data-point-container {

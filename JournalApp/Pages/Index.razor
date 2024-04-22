@@ -74,29 +74,31 @@
                     </MudText>
                 }
 
-                @foreach (var category in group.OrderBy(x => x.Index).ThenBy(x => x.Name))
-                {
-                    @foreach (var point in _day.Points.Where(x => !x.Deleted && x.Category.Guid == category.Guid && x.Type == category.Type).OrderBy(x => x.CreatedAt))
+                <div class="data-point-list">
+                    @foreach (var category in group.OrderBy(x => x.Index).ThenBy(x => x.Name))
                     {
-                        <div class="data-point-container">
-                            @if (!string.IsNullOrEmpty(category.Name))
-                            {
-                                <div class="data-point-header">
-                                    <MudText>@(DataPointView.GetHeaderText(point))</MudText>
+                        @foreach (var point in _day.Points.Where(x => !x.Deleted && x.Category.Guid == category.Guid && x.Type == category.Type).OrderBy(x => x.CreatedAt))
+                        {
+                            <div class="data-point-container">
+                                @if (!string.IsNullOrEmpty(category.Name))
+                                {
+                                    <div class="data-point-header">
+                                        <MudText>@(DataPointView.GetHeaderText(point))</MudText>
+                                    </div>
+                                }
+
+                                @if (!category.SingleLine)
+                                {
+                                    <div class="break-flex-column" />
+                                }
+
+                                <div class="data-point-view">
+                                    <DataPointView Point="point" StateChanged="_ => StateHasChanged()" />
                                 </div>
-                            }
-
-                            @if (!category.SingleLine)
-                            {
-                                <div class="break-flex-column" />
-                            }
-
-                            <div class="data-point-view">
-                                <DataPointView Point="point" StateChanged="_ => StateHasChanged()" />
                             </div>
-                        </div>
+                        }
                     }
-                }
+                </div>
 
                 <div class="data-point-group-footer">
                     @if (group.Key == null)

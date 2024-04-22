@@ -62,9 +62,10 @@ else
             <div class="settings-group">
                 <MudText Typo="Typo.h4">Credits</MudText>
 
-                <MudTextField T="string" Text="@CreditsText" Class="text-field-small" AutoGrow ReadOnly DisableUnderLine MaxLines="_creditsExpanded ? 0 : 5" />
+                <MudTextField T="string" Text="@CreditsText" Class="text-field-small" ReadOnly DisableUnderLine
+                              AutoGrow MaxLines="_creditsExpanded ? 0 : 5" FullWidth />
 
-                <MudLink OnClick="() => _creditsExpanded = true">Expand</MudLink>
+                <MudLink OnClick="() => _creditsExpanded = true">Expand credits</MudLink>
             </div>
         </div>
     </div>

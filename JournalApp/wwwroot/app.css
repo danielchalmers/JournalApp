@@ -59,6 +59,10 @@ body {
     color: var(--mud-palette-appbar-text);
   }
 
+h1, h2, h3, h4, h5, h6 {
+  color: var(--mud-palette-appbar-text);
+}
+
 .mud-dialog .mud-dialog-title, .page-title {
   z-index: 999;
   display: flex;
@@ -140,6 +144,11 @@ body {
 
   .mud-toggle-group .mud-toggle-item {
     padding: 0.25em !important;
+    color: var(--mud-palette-text-primary) !important;
+  }
+
+  .mud-toggle-group .mud-toggle-item-selected-border {
+    color: var(--mud-palette-white) !important;
   }
 
 .mud-radio {
