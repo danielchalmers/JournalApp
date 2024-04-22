@@ -151,9 +151,12 @@
         await GoToDay(date);
 
         // https://learn.microsoft.com/en-us/dotnet/maui/fundamentals/app-lifecycle
-        App.Window.Deactivated += Window_DeactivatedOrDestroying;
-        App.Window.Destroying += Window_DeactivatedOrDestroying;
-        App.Window.Resumed += Window_Resumed;
+        if (App.Window is not null) // Not available in tests.
+        {
+            App.Window.Deactivated += Window_DeactivatedOrDestroying;
+            App.Window.Destroying += Window_DeactivatedOrDestroying;
+            App.Window.Resumed += Window_Resumed;
+        }
 
         locationChangingRegistration = NavigationManager.RegisterLocationChangingHandler(OnLocationChanging);
     }
@@ -331,9 +334,12 @@
         logger.LogDebug("Disposing");
         _disposed = true;
 
-        App.Window.Deactivated -= Window_DeactivatedOrDestroying;
-        App.Window.Destroying -= Window_DeactivatedOrDestroying;
-        App.Window.Resumed -= Window_Resumed;
+        if (App.Window is not null) // Not available in tests.
+        {
+            App.Window.Deactivated -= Window_DeactivatedOrDestroying;
+            App.Window.Destroying -= Window_DeactivatedOrDestroying;
+            App.Window.Resumed -= Window_Resumed;
+        }
 
         locationChangingRegistration?.Dispose();
         db?.Dispose();

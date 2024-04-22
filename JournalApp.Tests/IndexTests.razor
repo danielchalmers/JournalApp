@@ -14,14 +14,22 @@
     public async Task CanSwitchDays() { }
 
     [Fact(Skip = "Stub")]
-    public async Task CannotGoIntoFuture() { }
+    public async Task CannotGoPastTomorrow() { }
 
     [Fact(Skip = "Stub")]
     public async Task DataIsSavedWhileSwitchingDays() { }
 
-    [Fact(Skip = "Stub")]
-    public async Task OpenCalendar() { }
+    [Theory]
+    [Description("Checks if the notes group is visible depending on the user's preference")]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void HideTodaysNotes(bool hideNotes)
+    {
+        var preferences = Services.GetService<PreferenceService>();
+        preferences.HideNotes = hideNotes;
 
-    [Fact(Skip = "Stub")]
-    public async Task HideTodaysNotes() { }
+        var cut = Render(@<Index />);
+
+        cut.FindAll(".data-point-group").Count.Should().Be(hideNotes ? 2 : 3);
+    }
 }

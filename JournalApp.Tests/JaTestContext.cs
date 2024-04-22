@@ -12,7 +12,10 @@ public abstract class JaTestContext : TestContext, IAsyncLifetime
     {
         Services.AddLogging();
         Services.AddCommonJournalAppServices();
+        Services.AddSingleton<AppDataUIService>();
         Services.AddSingleton<IPreferences, InMemoryPreferences>();
+        Services.AddSingleton<IShare, MockShare>();
+        Services.AddSingleton<IBrowser, MockBrowser>();
         JSInterop.Mode = JSRuntimeMode.Loose;
         return Task.CompletedTask;
     }
