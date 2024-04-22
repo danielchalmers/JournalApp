@@ -91,7 +91,7 @@ else if (Point.Type == PointType.Medication)
             <MudToggleItem T="bool?" Value="true"><MudText Typo="Typo.subtitle2">Yes</MudText></MudToggleItem>
         </MudToggleGroup>
 
-        <MudLink OnClick="EditDose">Edit dose</MudLink>
+        <MudLink OnClick="EditDose" Disabled="@(string.IsNullOrWhiteSpace(Point.Category.MedicationUnit))">Edit dose</MudLink>
     </div>
 }
 
@@ -170,15 +170,26 @@ else if (Point.Type == PointType.Medication)
 
         sb.Append(category.Name);
 
-        if (point.Type == PointType.Medication)
+        if (point.Type == PointType.Medication && !string.IsNullOrWhiteSpace(category.MedicationUnit))
         {
+            List<string> parts = [];
+
             // The default dose and unit.
-            sb.Append($" {category.MedicationDose:0.##}{category.MedicationUnit}");
+            if (category.MedicationDose != null)
+            {
+                parts.Add($"{category.MedicationDose:0.##}{category.MedicationUnit}");
+            }
 
             // Show the dose if it's different from the category default.
             if (point.MedicationDose != category.MedicationDose && point.MedicationDose != null && category.MedicationUnit != null)
             {
-                sb.Append($" - {point.MedicationDose:0.##}{category.MedicationUnit}");
+                parts.Add($"{point.MedicationDose:0.##}{category.MedicationUnit}");
+            }
+
+            if (parts.Any())
+            {
+                sb.Append(' ');
+                sb.Append(string.Join(" - ", parts));
             }
         }
 

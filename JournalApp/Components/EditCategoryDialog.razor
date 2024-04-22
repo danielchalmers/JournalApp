@@ -27,7 +27,8 @@
 
             @if (Group == null)
             {
-                <MudSelect Label="Type" @bind-Value="Type" Disabled="@(Category != null)" TransformOrigin="Origin.CenterCenter" Immediate>
+                <MudSelect Label="Type" @bind-Value="Type" Disabled="@(Category != null)" TransformOrigin="Origin.CenterCenter" Immedi
+                ate>
                     <MudSelectItem Value="PointType.Bool">Yes or no</MudSelectItem>
                     <MudSelectItem Value="PointType.LowToHigh">Low to high</MudSelectItem>
                     <MudSelectItem Value="PointType.MildToSevere">Mild to severe</MudSelectItem>
@@ -39,9 +40,9 @@
             else if (Group == "Medications")
             {
                 <div class="d-flex flex-row flex-grow-1" style="gap: 0.75em">
-                    <MudNumericField @bind-Value="MedicationDose" HideSpinButtons Label="Dose" MaxLength="6" Required Immediate />
+                    <MudNumericField @bind-Value="MedicationDose" HideSpinButtons Label="Dose" MaxLength="6" Immediate />
 
-                    <MudTextField @bind-Value="MedicationUnit" Label="Unit" MaxLength="8" Required Immediate Disabled="@(Category != null)" />
+                    <MudTextField @bind-Value="MedicationUnit" Label="Unit" MaxLength="8" Immediate />
                 </div>
 
                 <MudSwitch @bind-Value="MedicationEveryDay" Label="Taken every day" title="Auto checks 'yes' every day" Color="Color.Primary" />

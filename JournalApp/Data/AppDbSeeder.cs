@@ -205,9 +205,7 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             group: "Medications",
             name: "Example (AM)",
             details: "Shown as an example of an AM/morning dose",
-            enabled: true,
-            medDose: 1,
-            medUnit: " unit");
+            enabled: true);
 
         AddOrUpdate(
             "4A00F59D-7A66-4CA5-B05A-F7D67F4BB6B5",
@@ -215,9 +213,7 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             group: "Medications",
             name: "Example (PM)",
             details: "Shown as an example of a PM/evening dose",
-            enabled: true,
-            medDose: 1,
-            medUnit: " unit");
+            enabled: true);
 
         AddOrUpdate(
             "01A8F325-3002-40C4-B076-234E26172E82",
