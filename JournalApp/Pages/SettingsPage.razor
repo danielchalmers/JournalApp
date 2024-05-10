@@ -10,7 +10,7 @@
 {
     @* TODO: Replace with separate page so we can change state of inline fields and have it updated properly in settings *@
     <div class="d-flex justify-center">
-        <MudProgressCircular Color="Color.Primary" Style="height:33vw;width:33vw;margin-top:10vh;" Indeterminate="true" />
+        <MudProgressCircular Color="Color.Primary" Style="height:33vw;width:33vw;margin-top:10vh;" Indeterminate />
     </div>
 }
 else
@@ -62,7 +62,7 @@ else
             <div class="settings-group">
                 <MudText Typo="Typo.h4">Credits</MudText>
 
-                <MudTextField T="string" Text="@CreditsText" Class="text-field-small" ReadOnly DisableUnderLine
+                <MudTextField T="string" Text="@CreditsText" Typo="Typo.body2" ReadOnly Underline="false"
                               AutoGrow MaxLines="_creditsExpanded ? 0 : 5" FullWidth />
 
                 <MudLink OnClick="() => _creditsExpanded = true">Expand credits</MudLink>

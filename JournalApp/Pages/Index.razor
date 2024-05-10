@@ -11,29 +11,29 @@
 
 <div class="page-title">
     <div class="page-header">
-        <MudButton OnClick="OnTitleClicked" DisableRipple Variant="Variant.Text">
+        <MudButton OnClick="OnTitleClicked" Ripple="false" Variant="Variant.Text">
             <MudText Typo="Typo.h6">🙂 @ThisAssembly.AssemblyTitle</MudText>
         </MudButton>
 
         <MudSpacer />
 
         <MudMenu Icon="@Icons.Material.Filled.MoreVert" title="More" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
-            <MudMenuItem Icon="@Icons.Material.Filled.Category" OnAction="ManageCategories" AutoClose="false">Categories</MudMenuItem>
-            <MudMenuItem Icon="@Icons.Material.Filled.Medication" OnAction="ManageMedications" AutoClose="false">Medications</MudMenuItem>
-            <MudMenuItem Icon="@Icons.Material.Filled.Comment" OnAction="NewNote">New note</MudMenuItem>
-            <MudMenuItem Icon="@Icons.Material.Filled.ShowChart" OnAction="OpenTrends" AutoClose="false">Trends</MudMenuItem>
-            <MudMenuItem Icon="@Icons.Material.Filled.Article" OnAction="OpenWorksheets" AutoClose="false">Worksheets</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Category" OnClick="ManageCategories" AutoClose="false">Categories</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Medication" OnClick="ManageMedications" AutoClose="false">Medications</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Comment" OnClick="NewNote">New note</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.ShowChart" OnClick="OpenTrends" AutoClose="false">Trends</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Article" OnClick="OpenWorksheets" AutoClose="false">Worksheets</MudMenuItem>
 
             @if (PreferenceService.SafetyPlan != null)
             {
-                <MudMenuItem Icon="@Icons.Material.Filled.HealthAndSafety" OnAction="OpenSafetyPlan">Safety Plan</MudMenuItem>
+                <MudMenuItem Icon="@Icons.Material.Filled.HealthAndSafety" OnClick="OpenSafetyPlan">Safety Plan</MudMenuItem>
             }
 
             <MudDivider />
 
-            <MudMenuItem Icon="@Icons.Material.Filled.Campaign" OnAction="OpenFeedback">Feedback</MudMenuItem>
-            <MudMenuItem Icon="@Icons.Material.Filled.Share" OnAction="OpenShare">Share</MudMenuItem>
-            <MudMenuItem Icon="@Icons.Material.Filled.Settings" OnAction="OpenSettings" AutoClose="false">Settings</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Campaign" OnClick="OpenFeedback">Feedback</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Share" OnClick="OpenShare">Share</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Settings" OnClick="OpenSettings" AutoClose="false">Settings</MudMenuItem>
         </MudMenu>
     </div>
 
@@ -103,15 +103,15 @@
                 <div class="data-point-group-footer">
                     @if (group.Key == null)
                     {
-                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Category" OnClick="ManageCategories" FullWidth>Choose categories</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="Color.Surface" StartIcon="@Icons.Material.Filled.Category" OnClick="ManageCategories" FullWidth>Choose categories</MudButton>
                     }
                     else if (group.Key == "Medications")
                     {
-                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Medication" OnClick="ManageMedications" FullWidth>Choose medications</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="Color.Surface" StartIcon="@Icons.Material.Filled.Medication" OnClick="ManageMedications" FullWidth>Choose medications</MudButton>
                     }
                     else if (group.Key == "Notes")
                     {
-                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote" FullWidth>New note</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="Color.Surface" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote" FullWidth>New note</MudButton>
                     }
                 </div>
             </div>

@@ -3,8 +3,8 @@
 <div class="@($"safety-plan-item safety-plan-item-{MarkupUtil.ToClassName(Title)}")">
     <MudText Typo="Typo.h5">@Title</MudText>
     <MudText Typo="Typo.caption">@Subtitle</MudText>
-    <MudTextField Class="text-field-small" T="string" @bind-Text="Text" Placeholder="@Placeholder"
-                  Variant="Variant.Outlined" Immediate DisableUnderLine
+    <MudTextField T="string" @bind-Text="Text" Placeholder="@Placeholder"
+                  Typo="Typo.body2" Variant="Variant.Outlined" Immediate Underline="false"
                   AutoGrow Lines="3" MaxLines="10" />
 </div>
 

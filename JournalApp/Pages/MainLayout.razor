@@ -8,6 +8,8 @@
 
 <MudThemeProvider Theme="_theme" IsDarkMode="PreferenceService.IsDarkMode" DefaultScrollbar />
 
+<MudPopoverProvider />
+
 <MudDialogProvider MaxWidth="MaxWidth.Small"
                    FullWidth="true"
                    NoHeader="false"
@@ -26,7 +28,7 @@
 
     MudTheme _theme = new()
         {
-            Palette = new PaletteLight()
+            PaletteLight = new PaletteLight()
             {
                 Primary = "#776be7",
                 PrimaryLighten = "#978dec",

@@ -43,6 +43,9 @@ body {
   width: 0;
 }
 
+.page {
+}
+
 .page-header {
   display: flex;
   flex-direction: row;
@@ -80,6 +83,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 
 .mud-dialog .mud-dialog-content, .page-body {
+  width: 100%;
   max-width: 960px;
   margin: 0 auto !important;
   padding: 0.25em 0.5em !important;
@@ -103,8 +107,7 @@ h1, h2, h3, h4, h5, h6 {
   gap: 0.75em;
 }
 
-/* https://github.com/MudBlazor/MudBlazor/blob/dev/src/MudBlazor/Styles/components/_input.scss */
-.mud-input {
+.mud-input-text {
   margin-top: 0 !important;
 }
 
@@ -112,16 +115,10 @@ h1, h2, h3, h4, h5, h6 {
   margin-top: 0 !important;
 }
 
-.mud-input > textarea.mud-input-root-outlined {
-  margin: 0.25em !important;
-}
-
-/* Adds space to make up for label. Only works on newer browsers. */
 .mud-input-control-input-container:has(.mud-input-label) {
   margin-top: 1em !important;
 }
 
-/* https://github.com/MudBlazor/MudBlazor/blob/dev/src/MudBlazor/Styles/components/_inputlabel.scss */
 .mud-input-label-inputcontrol {
   top: 0;
   left: 0;
@@ -129,13 +126,12 @@ h1, h2, h3, h4, h5, h6 {
   transform: translate(0, -0.75em) scale(0.75) !important;
 }
 
-.text-field-small textarea {
-  margin: 0.25em 0 0 0 !important;
-  font-family: var(--mud-typography-default-family) !important;
-  font-size: var(--mud-typography-default-size) !important;
-  font-weight: var(--mud-typography-default-weight) !important;
-  line-height: var(--mud-typography-default-lineheight) !important;
-  letter-spacing: var(--mud-typography-default-letterspacing) !important;
+.mud-input > textarea.mud-input-root-outlined {
+  margin: 0.25em !important;
+}
+
+.mud-button-filled {
+  background-color: unset;
 }
 
 .mud-toggle-group {
@@ -144,17 +140,9 @@ h1, h2, h3, h4, h5, h6 {
 
   .mud-toggle-group .mud-toggle-item {
     padding: 0.25em !important;
-    color: var(--mud-palette-text-primary) !important;
+    /* color: var(--mud-palette-text-primary) !important; */
+    color: var(--mud-palette-appbar-text) !important;
   }
-
-  .mud-toggle-group .mud-toggle-item-selected-border {
-    color: var(--mud-palette-white) !important;
-  }
-
-.mud-radio {
-  margin: 0 !important;
-  margin-inline: 0 !important;
-}
 
 .mud-border-primary {
   border-color: rgb(from var(--mud-palette-primary) r g b / 75%) !important;

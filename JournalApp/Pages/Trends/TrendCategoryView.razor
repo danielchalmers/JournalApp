@@ -9,9 +9,9 @@
         {
             foreach (var point in points.Where(x => !string.IsNullOrEmpty(x.Text)))
             {
-                <MudTextField Value="point.Text" Class="text-field-small"
+                <MudTextField Value="point.Text" Typo="Typo.body2"
                               Label="@GetNoteLabel(point, day)"
-                              ReadOnly DisableUnderLine AutoGrow />
+                              ReadOnly Underline="false" AutoGrow />
             }
         }
     </div>

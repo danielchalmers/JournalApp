@@ -113,22 +113,22 @@
 
         point.ScaleIndex.Should().Be(null);
         cut.FindAll(".mud-toggle-item").Count.Should().Be(4);
-        cut.FindAll(".mud-toggle-item-selected-border").Count.Should().Be(0);
+        cut.FindAll(".mud-toggle-item-selected").Count.Should().Be(0);
 
         cut.FindAll(".mud-toggle-item")[1].Click();
-        cut.FindAll(".mud-toggle-item")[1].ClassList.Should().Contain("mud-toggle-item-selected-border");
+        cut.FindAll(".mud-toggle-item")[1].ClassList.Should().Contain("mud-toggle-item-selected");
         point.ScaleIndex.Should().Be(1);
 
         cut.FindAll(".mud-toggle-item")[2].Click();
-        cut.FindAll(".mud-toggle-item")[2].ClassList.Should().Contain("mud-toggle-item-selected-border");
+        cut.FindAll(".mud-toggle-item")[2].ClassList.Should().Contain("mud-toggle-item-selected");
         point.ScaleIndex.Should().Be(3);
 
         cut.FindAll(".mud-toggle-item")[3].Click();
-        cut.FindAll(".mud-toggle-item")[3].ClassList.Should().Contain("mud-toggle-item-selected-border");
+        cut.FindAll(".mud-toggle-item")[3].ClassList.Should().Contain("mud-toggle-item-selected");
         point.ScaleIndex.Should().Be(5);
 
         cut.FindAll(".mud-toggle-item")[3].Click();
-        cut.FindAll(".mud-toggle-item")[3].ClassList.Should().NotContain("mud-toggle-item-selected-border");
+        cut.FindAll(".mud-toggle-item")[3].ClassList.Should().NotContain("mud-toggle-item-selected");
         point.ScaleIndex.Should().Be(null);
     }
 
@@ -239,26 +239,26 @@
         // Initial state.
         point.Bool.Should().Be(null);
         cut.FindAll(".mud-toggle-item").Count.Should().Be(2);
-        cut.FindAll(".mud-toggle-item-selected-border").Count.Should().Be(0);
+        cut.FindAll(".mud-toggle-item-selected").Count.Should().Be(0);
 
         // A changed dose should get reset to default when clicking No.
         point.MedicationDose--;
 
         cut.FindAll(".mud-toggle-item")[0].Click();
-        cut.FindAll(".mud-toggle-item")[0].ClassList.Should().Contain("mud-toggle-item-selected-border");
+        cut.FindAll(".mud-toggle-item")[0].ClassList.Should().Contain("mud-toggle-item-selected");
         point.Bool.Should().Be(false);
 
         point.MedicationDose.Should().Be(point.Category.MedicationDose);
 
         cut.FindAll(".mud-toggle-item")[1].Click();
-        cut.FindAll(".mud-toggle-item")[1].ClassList.Should().Contain("mud-toggle-item-selected-border");
+        cut.FindAll(".mud-toggle-item")[1].ClassList.Should().Contain("mud-toggle-item-selected");
         point.Bool.Should().Be(true);
 
         // A changed dose should get reset to default when unselecting.
         point.MedicationDose--;
 
         cut.FindAll(".mud-toggle-item")[1].Click();
-        cut.FindAll(".mud-toggle-item")[1].ClassList.Should().NotContain("mud-toggle-item-selected-border");
+        cut.FindAll(".mud-toggle-item")[1].ClassList.Should().NotContain("mud-toggle-item-selected");
         point.Bool.Should().Be(null);
 
         point.MedicationDose.Should().Be(point.Category.MedicationDose);
@@ -271,6 +271,7 @@
         {
             Guid = Guid.NewGuid(),
             Type = PointType.Medication,
+            MedicationUnit = "oz",
             MedicationDose = 11,
         };
 
@@ -290,7 +291,7 @@
 
         // Initial state.
         point.Bool.Should().Be(null);
-        cut.FindAll(".mud-toggle-item-selected-border").Count.Should().Be(0);
+        cut.FindAll(".mud-toggle-item-selected").Count.Should().Be(0);
 
         // Change dose to empty via dialog.
         cut.Find(".mud-link").Click();
@@ -300,7 +301,7 @@
 
         // Empty dose resets to default and selects No.
         point.MedicationDose.Should().Be(point.Category.MedicationDose);
-        cut.FindAll(".mud-toggle-item")[0].ClassList.Should().Contain("mud-toggle-item-selected-border");
+        cut.FindAll(".mud-toggle-item")[0].ClassList.Should().Contain("mud-toggle-item-selected");
 
         // Change dose via dialog.
         cut.Find(".mud-link").Click();
@@ -310,7 +311,7 @@
 
         // Submitting dose is the same as Yes.
         point.MedicationDose.Should().Be(99);
-        cut.FindAll(".mud-toggle-item")[1].ClassList.Should().Contain("mud-toggle-item-selected-border");
+        cut.FindAll(".mud-toggle-item")[1].ClassList.Should().Contain("mud-toggle-item-selected");
 
         // Cancel dialog.
         cut.Find(".mud-link").Click();
@@ -320,7 +321,32 @@
 
         // Same as before
         point.MedicationDose.Should().Be(99);
-        cut.FindAll(".mud-toggle-item")[1].ClassList.Should().Contain("mud-toggle-item-selected-border");
+        cut.FindAll(".mud-toggle-item")[1].ClassList.Should().Contain("mud-toggle-item-selected");
+    }
+
+    [Fact]
+    public void MedicationEditDoseDisabledWithNoUnit()
+    {
+        var category = new DataPointCategory
+        {
+            Guid = Guid.NewGuid(),
+            Type = PointType.Medication,
+            MedicationDose = 11,
+        };
+
+        var day = Day.Create(new(2024, 01, 01));
+        var point = DataPoint.Create(day, category);
+
+        var layout = Render(
+           @<MainLayout>
+                <Body>
+                    <DataPointView Point="point" />
+                </Body>
+            </MainLayout>);
+
+        var cut = layout.FindComponent<DataPointView>();
+
+        cut.Find(".mud-link").ClassList.Should().Contain("mud-link-disabled");
     }
 
     [Fact]
@@ -330,6 +356,7 @@
         {
             Guid = Guid.NewGuid(),
             Type = PointType.Medication,
+            MedicationUnit = "oz",
             MedicationDose = 11,
         };
 
