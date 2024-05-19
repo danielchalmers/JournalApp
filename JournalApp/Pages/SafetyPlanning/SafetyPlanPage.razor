@@ -60,6 +60,7 @@
 
 @code {
     bool _leaving;
+    bool _disposed;
 
     public SafetyPlan Plan { get; set; }
 
@@ -71,6 +72,12 @@
         base.OnInitialized();
 
         KeyEventService.Entered(() => Submit());
+
+        if (App.Window is not null) // Not available in tests.
+        {
+            App.Window.Deactivated += Window_DeactivatedOrDestroying;
+            App.Window.Destroying += Window_DeactivatedOrDestroying;
+        }
     }
 
     void Submit()
@@ -80,8 +87,28 @@
         NavigationManager.NavigateTo("/", false, true);
     }
 
+    private void Window_DeactivatedOrDestroying(object sender, EventArgs e)
+    {
+        if (!_disposed)
+        {
+            PreferenceService.SafetyPlan = Plan;
+        }
+    }
+
     public void Dispose()
     {
+        if (_disposed)
+            return;
+
+        logger.LogDebug("Disposing");
+        _disposed = true;
+
+        if (App.Window is not null) // Not available in tests.
+        {
+            App.Window.Deactivated -= Window_DeactivatedOrDestroying;
+            App.Window.Destroying -= Window_DeactivatedOrDestroying;
+        }
+
         KeyEventService.Exited();
 
         PreferenceService.SafetyPlan = Plan;
