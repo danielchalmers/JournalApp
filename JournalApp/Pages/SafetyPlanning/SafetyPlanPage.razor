@@ -5,15 +5,15 @@
 @implements IDisposable
 @inject ILogger<SafetyPlanPage> logger
 
-<div class="page-title">
-    <div class="page-header">
+<header class="page-header">
+    <div class="page-toolbar">
         <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Submit" OnClick="Submit" />
 
         <MudText Typo="Typo.h6">Safety Plan</MudText>
     </div>
-</div>
+</header>
 
-<div class="page-body">
+<main class="page-body">
     <div class="safety-plan-items-container">
         <MudText Align="MudBlazor.Align.Center">
             Your coping strategies and sources of support that can be used before or during a crisis to help yourself stay safe.
@@ -56,7 +56,7 @@
                         Placeholder="family, friends, pets, health, faith"
                         @bind-Text="Plan.Purpose" />
     </div>
-</div>
+</main>
 
 @code {
     bool _leaving;

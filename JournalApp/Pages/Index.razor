@@ -9,8 +9,8 @@
 @inject IShare Share
 @inject IBrowser Browser
 
-<div class="page-title">
-    <div class="page-header">
+<header class="page-header">
+    <div class="page-toolbar">
         <MudButton OnClick="OnTitleClicked" Ripple="false" Variant="Variant.Text">
             <MudText Typo="Typo.h6">🙂 @ThisAssembly.AssemblyTitle</MudText>
         </MudButton>
@@ -48,9 +48,9 @@
 
         <MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" Title="Next day" OnClick="NextDay" Disabled="@(_day.Date > DateOnly.FromDateTime(DateTime.Now))" />
     </div>
-</div>
+</header>
 
-<div class="page-body">
+<main class="page-body">
     <div class="main-timeline">
         @foreach (var group in db.Categories.Where(x => x.Enabled && !x.Deleted).GroupBy(x => x.Group))
         {
@@ -74,12 +74,12 @@
                     </MudText>
                 }
 
-                <div class="data-point-list">
+                <ul class="data-point-list">
                     @foreach (var category in group.OrderBy(x => x.Index).ThenBy(x => x.Name))
                     {
                         @foreach (var point in _day.Points.Where(x => !x.Deleted && x.Category.Guid == category.Guid && x.Type == category.Type).OrderBy(x => x.CreatedAt))
                         {
-                            <div class="data-point-container">
+                            <li class="data-point-container">
                                 @if (!string.IsNullOrEmpty(category.Name))
                                 {
                                     <div class="data-point-header">
@@ -95,12 +95,12 @@
                                 <div class="data-point-view">
                                     <DataPointView Point="point" StateChanged="_ => StateHasChanged()" />
                                 </div>
-                            </div>
+                            </li>
                         }
                     }
-                </div>
+                </ul>
 
-                <div class="data-point-group-footer">
+                <footer class="data-point-group-footer">
                     @if (group.Key == null)
                     {
                         <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Category" OnClick="ManageCategories" FullWidth>Choose categories</MudButton>
@@ -113,11 +113,11 @@
                     {
                         <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote" FullWidth>New note</MudButton>
                     }
-                </div>
+                </footer>
             </div>
         }
     </div>
-</div>
+</main>
 
 @code {
     AppDbContext db;

@@ -7,8 +7,8 @@
 @inject ILogger<CalendarPage> logger
 @inject CalendarService CalendarService
 
-<div class="page-title">
-    <div class="page-header">
+<header class="page-header">
+    <div class="page-toolbar">
         <MudIconButton Class="close-button" Icon="@Icons.Material.Filled.ArrowBack" Title="Back" OnClick="Close" />
 
         <MudText Typo="Typo.h6">Calendar</MudText>
@@ -19,9 +19,9 @@
     </div>
 
     <CalendarSwitcher @ref="_switcher" @bind-SelectedYear="SelectedYear" @bind-SelectedYear:after="AfterSelectedYearChanged" YearClicked="OnYearClicked" />
-</div>
+</header>
 
-<div class="page-body">
+<main class="page-body">
     @if (_gridYear != null)
     {
         <div style="padding-bottom: 40vh;">
@@ -30,7 +30,7 @@
                           PreviousMonthClicked="PreviousMonth" NextMonthClicked="NextMonth" />
         </div>
     }
-</div>
+</main>
 
 @code {
     GridYear? _gridYear = null;

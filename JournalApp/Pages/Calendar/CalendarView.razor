@@ -5,12 +5,12 @@
 <div class="calendar-view">
     @foreach (var month in GridYear.GridMonths)
     {
-        <div class="calendar-month" id="calendar-month-@(month.Month)">
-            <div class="calendar-month-header">
+        <section class="calendar-month" id="calendar-month-@(month.Month)">
+            <header class="calendar-month-header">
                 <MudIconButton Icon="@Icons.Material.Filled.ArrowLeft" OnClick="async () => await PreviousMonthClicked.InvokeAsync(month.Month)" title="Previous month" />
                 <MudText Typo="Typo.h4">@(month.Name)</MudText>
                 <MudIconButton Icon="@Icons.Material.Filled.ArrowRight" OnClick="async () => await NextMonthClicked.InvokeAsync(month.Month)" title="Next month" Disabled="@(month.Month == 12 && month.Year == DateTime.Now.Year)" />
-            </div>
+            </header>
 
             <div class="mood-blocks-month">
                 <div class="mood-blocks-week">
@@ -41,7 +41,7 @@
                     </div>
                 }
             </div>
-        </div>
+        </section>
     }
 </div>
 

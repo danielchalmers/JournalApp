@@ -4,53 +4,51 @@
 @implements IDisposable
 @inject ILogger<WorksheetsPage> logger
 
-<div class="page-title">
-    <div class="page-header">
+<header class="page-header">
+    <div class="page-toolbar">
         <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Back" OnClick="Close" />
-
         <MudText Typo="Typo.h6">Worksheets</MudText>
     </div>
-</div>
+</header>
 
-<div class="page-body">
+<main class="page-body">
     <div class="worksheet-group-list">
-        <div class="worksheet-group">
+        <nav class="worksheet-group">
             <MudText Typo="Typo.h4">Table of Contents</MudText>
-
-            <div class="worksheet-group-toc">
+            <ul class="worksheet-group-toc">
                 @foreach (var group in WorksheetGroups)
                 {
                     @if (!string.IsNullOrEmpty(group.Key))
                     {
-                        <div class="worksheet-group-toc-item">
+                        <li class="worksheet-group-toc-item">
                             <MudLink OnClick="async () => await ScrollToGroup(MarkupUtil.ToClassName(group.Key))" title="Scroll to group">• @group.Key</MudLink>
-                        </div>
+                        </li>
                     }
                 }
-            </div>
-        </div>
+            </ul>
+        </nav>
 
         @foreach (var group in WorksheetGroups)
         {
-            <div class="worksheet-group" id="worksheet-group-key-@(MarkupUtil.ToClassName(group.Key))">
+            <section class="worksheet-group" id="worksheet-group-key-@(MarkupUtil.ToClassName(group.Key))">
                 @if (!string.IsNullOrEmpty(group.Key))
                 {
-                    <div class="d-flex align-center">
+                    <header class="d-flex align-center">
                         <MudText Typo="Typo.h4">@group.Key</MudText>
                         <MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" OnClick="ScrollToTop" title="Scroll to top" />
-                    </div>
+                    </header>
                 }
 
-                <div class="worksheet-group-items">
+                <ul class="worksheet-group-items">
                     @foreach (var ws in group)
                     {
                         <WorksheetView Worksheet="ws" ResourceClicked="OnResourceClicked" />
                     }
-                </div>
-            </div>
+                </ul>
+            </section>
         }
     </div>
-</div>
+</main>
 
 @code {
     public IEnumerable<IGrouping<string, Worksheet>> WorksheetGroups => WorksheetData.AllWorksheets.GroupBy(x => x.Category);

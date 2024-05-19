@@ -1,7 +1,7 @@
 ﻿@namespace JournalApp
 @inject ILogger<WorksheetView> logger
 
-<div class="worksheet-view">
+<li class="worksheet-view">
     <MudButton OnClick="OnResourceClicked" StartIcon="@Icons.Material.Filled.Link" Color="Color.Primary" Disabled="@IsLinkDisabled" title="View worksheet">
         <MudText Typo="Typo.h5">@Worksheet.Title</MudText>
     </MudButton>
@@ -15,7 +15,7 @@
     {
         <MudLink Href="@Worksheet.SourceUri" Typo="Typo.caption" Color="Color.Default" Style="word-wrap: anywhere" title="Go to source">@PrettySourceUri</MudLink>
     }
-</div>
+</li>
 
 @code {
     [Parameter]

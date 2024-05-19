@@ -15,17 +15,17 @@
 }
 else
 {
-    <div class="page-title">
-        <div class="page-header">
+    <header class="page-header">
+        <div class="page-toolbar">
             <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Back" OnClick="Close" />
 
             <MudText Typo="Typo.h6">Settings</MudText>
         </div>
-    </div>
+    </header>
 
-    <div class="page-body">
+    <main class="page-body">
         <div class="settings-group-list">
-            <div class="settings-group">
+            <section class="settings-group">
                 <MudText Typo="Typo.h4">Personalization</MudText>
 
                 <MudRadioGroup T="AppTheme" Value="PreferenceService.SelectedAppTheme" ValueChanged="v => PreferenceService.SelectedAppTheme = v">
@@ -37,17 +37,17 @@ else
                 <MudCheckBox @bind-Value="PreferenceService.HideNotes">Hide "Today's notes"</MudCheckBox>
 
                 <MudButton StartIcon="@Icons.Material.Filled.HealthAndSafety" OnClick="SetUpSafetyPlan" Variant="Variant.Outlined" FullWidth>Set Up Safety Plan</MudButton>
-            </div>
+            </section>
 
-            <div class="settings-group">
+            <section class="settings-group">
                 <MudText Typo="Typo.h4">Data & backups</MudText>
 
                 <MudButton StartIcon="@Icons.Material.Filled.Upload" OnClick="StartExport" Variant="Variant.Outlined" FullWidth>Export</MudButton>
 
                 <MudButton StartIcon="@Icons.Material.Filled.Download" OnClick="PickAndStartImport" Variant="Variant.Outlined" FullWidth>Import</MudButton>
-            </div>
+            </section>
 
-            <div class="settings-group">
+            <section class="settings-group">
                 <MudText Typo="Typo.h4">About</MudText>
 
                 <MudCopyText Text="@($"JournalApp {ThisAssembly.AssemblyInformationalVersion}")" />
@@ -57,18 +57,18 @@ else
                 <MudLink Href="https://github.com/danielchalmers/JournalApp/issues">Send feedback on GitHub</MudLink>
                 <MudLink Href="https://play.google.com/store/apps/details?id=com.danielchalmers.journalapp">View on Play Store</MudLink>
                 <MudLink Href="https://github.com/danielchalmers/JournalApp">View source code</MudLink>
-            </div>
+            </section>
 
-            <div class="settings-group">
+            <section class="settings-group">
                 <MudText Typo="Typo.h4">Credits</MudText>
 
                 <MudTextField T="string" Text="@CreditsText" Typo="Typo.body2" ReadOnly Underline="false"
                               AutoGrow MaxLines="_creditsExpanded ? 0 : 5" FullWidth />
 
                 <MudLink OnClick="() => _creditsExpanded = true">Expand credits</MudLink>
-            </div>
+            </section>
         </div>
-    </div>
+    </main>
 }
 
 @code {

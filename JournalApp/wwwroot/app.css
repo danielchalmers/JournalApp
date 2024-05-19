@@ -46,7 +46,7 @@ body {
 .page {
 }
 
-.page-header {
+.page-toolbar {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -58,7 +58,7 @@ body {
   --mud-palette-action-default: var(--mud-palette-appbar-text);
 }
 
-  .page-header *.mud-typography {
+  .page-toolbar *.mud-typography {
     color: var(--mud-palette-appbar-text);
   }
 
@@ -66,7 +66,7 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--mud-palette-text-primary);
 }
 
-.mud-dialog .mud-dialog-title, .page-title {
+.mud-dialog .mud-dialog-title, .page-header {
   z-index: 999;
   display: flex;
   flex-direction: column;
@@ -78,7 +78,7 @@ h1, h2, h3, h4, h5, h6 {
   --mud-palette-action-default: var(--mud-palette-appbar-text);
 }
 
-  .mud-dialog .mud-dialog-title, .page-title *.mud-typography {
+  .mud-dialog .mud-dialog-title, .page-header *.mud-typography {
     color: var(--mud-palette-appbar-text);
   }
 
