@@ -103,15 +103,15 @@
                 <div class="data-point-group-footer">
                     @if (group.Key == null)
                     {
-                        <MudButton Variant="Variant.Filled" Color="Color.Surface" StartIcon="@Icons.Material.Filled.Category" OnClick="ManageCategories" FullWidth>Choose categories</MudButton>
+                        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Category" OnClick="ManageCategories" FullWidth>Choose categories</MudButton>
                     }
                     else if (group.Key == "Medications")
                     {
-                        <MudButton Variant="Variant.Filled" Color="Color.Surface" StartIcon="@Icons.Material.Filled.Medication" OnClick="ManageMedications" FullWidth>Choose medications</MudButton>
+                        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Medication" OnClick="ManageMedications" FullWidth>Choose medications</MudButton>
                     }
                     else if (group.Key == "Notes")
                     {
-                        <MudButton Variant="Variant.Filled" Color="Color.Surface" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote" FullWidth>New note</MudButton>
+                        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote" FullWidth>New note</MudButton>
                     }
                 </div>
             </div>

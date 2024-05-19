@@ -63,7 +63,7 @@ body {
   }
 
 h1, h2, h3, h4, h5, h6 {
-  color: var(--mud-palette-appbar-text);
+  color: var(--mud-palette-text-primary);
 }
 
 .mud-dialog .mud-dialog-title, .page-title {
@@ -86,15 +86,15 @@ h1, h2, h3, h4, h5, h6 {
   width: 100%;
   max-width: 960px;
   margin: 0 auto !important;
-  padding: 0.25em 0.5em !important;
+  padding: 0.5em !important;
 }
 
 .mud-dialog .mud-dialog-actions {
-  padding: 0.25em 0.5em !important;
+  padding: 0.5em !important;
 }
 
 .page-body {
-  padding-bottom: 20vh !important;
+  padding-bottom: 15vh !important;
 }
 
 .mud-dialog-width-full {
@@ -127,15 +127,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .mud-input > textarea.mud-input-root-outlined {
-  margin: 0.25em !important;
+  margin: 0.5em !important;
 }
 
-.mud-radio-group {
-  margin-left: 11px; /* Offset the offset! */
-}
-
-.mud-button-filled {
-  background-color: unset;
+.mud-radio {
+  margin: 0 !important;
+  margin-inline: 0 !important;
 }
 
 .mud-toggle-group {
@@ -143,14 +140,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
   .mud-toggle-group .mud-toggle-item {
-    padding: 0.25em !important;
-    /* color: var(--mud-palette-text-primary) !important; */
-    color: var(--mud-palette-appbar-text) !important;
+    padding: 0.2em !important;
   }
-
-.mud-border-primary {
-  border-color: rgb(from var(--mud-palette-primary) r g b / 75%) !important;
-}
 
 #blazor-error-ui {
   background: darkorange;
