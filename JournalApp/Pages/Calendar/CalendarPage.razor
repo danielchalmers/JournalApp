@@ -34,7 +34,6 @@
 
 @code {
     GridYear? _gridYear = null;
-    bool _leaving;
     CalendarSwitcher _switcher;
 
     [Parameter]
@@ -135,7 +134,6 @@
     void Close()
     {
         logger.LogInformation("Going to index");
-        _leaving = true;
         NavigationManager.NavigateTo("/", false, true);
     }
 
@@ -145,15 +143,15 @@
             return;
 
         ActionTaken("click_mood_grid_day");
-        _leaving = true;
         NavigationManager.NavigateTo($"/{date:yyyyMMdd}", false, true);
     }
 
-    public void Dispose()
+    protected override void Dispose(bool disposing)
     {
+        logger.LogDebug("Disposing");
+        base.Dispose(disposing);
+
         KeyEventService.Exited();
         Snackbar.Clear();
     }
-
-    protected override bool ShouldRender() => !_leaving;
 }

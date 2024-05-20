@@ -72,7 +72,6 @@ else
 }
 
 @code {
-    bool _leaving;
     bool _busy;
     bool _creditsExpanded;
 
@@ -110,7 +109,6 @@ else
     void SetUpSafetyPlan()
     {
         logger.LogInformation("Setting up Safety Plan");
-        _leaving = true;
         NavigationManager.NavigateTo($"/safetyplan", false, true);
     }
 
@@ -181,14 +179,14 @@ else
     void Close()
     {
         logger.LogInformation("Going to index");
-        _leaving = true;
         NavigationManager.NavigateTo("/", false, true);
     }
 
-    public void Dispose()
+    protected override void Dispose(bool disposing)
     {
+        base.Dispose(disposing);
+        logger.LogDebug("Disposing");
+
         KeyEventService.Exited();
     }
-
-    protected override bool ShouldRender() => !_leaving;
 }

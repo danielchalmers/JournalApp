@@ -94,8 +94,11 @@
         await JSRuntime.InvokeVoidAsync("scrollToTopOfNestedElement", ".worksheet-group-list", $"#worksheet-group-key-{key}");
     }
 
-    public void Dispose()
+    protected override void Dispose(bool disposing)
     {
+        logger.LogDebug("Disposing");
+        base.Dispose(disposing);
+
         KeyEventService.Exited();
         Snackbar.Clear();
     }

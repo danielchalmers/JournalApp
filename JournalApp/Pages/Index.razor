@@ -121,10 +121,7 @@
 
 @code {
     AppDbContext db;
-    bool _disposed;
     Day _day;
-    bool _leaving;
-    IDisposable locationChangingRegistration;
     DateTimeOffset _stoppedDate;
 
     [Parameter]
@@ -151,34 +148,18 @@
 
         logger.LogInformation($"Opening to {date}");
         await GoToDay(date);
-
-        // https://learn.microsoft.com/en-us/dotnet/maui/fundamentals/app-lifecycle
-        if (App.Window is not null) // Not available in tests.
-        {
-            App.Window.Deactivated += Window_DeactivatedOrDestroying;
-            App.Window.Destroying += Window_DeactivatedOrDestroying;
-            App.Window.Resumed += Window_Resumed;
-        }
-
-        locationChangingRegistration = NavigationManager.RegisterLocationChangingHandler(OnLocationChanging);
     }
 
-    private void Window_DeactivatedOrDestroying(object sender, EventArgs e)
+    protected override void OnWindowDeactivatedOrDestroying(object sender, EventArgs e)
     {
         logger.LogDebug("Window deactivated or destroying");
         _stoppedDate = DateTimeOffset.Now;
+        Debug.Assert(!IsDisposed);
 
-        if (_disposed)
-        {
-            logger.LogDebug("Not auto saving page because it's disposed");
-        }
-        else
-        {
-            SavePage();
-        }
+        SavePage();
     }
 
-    private async void Window_Resumed(object sender, EventArgs e)
+    protected override async void OnWindowResumed(object sender, EventArgs e)
     {
         logger.LogDebug("Window resumed");
 
@@ -312,11 +293,10 @@
         await db.SaveChangesAsync();
     }
 
-    ValueTask OnLocationChanging(LocationChangingContext e)
+    protected override ValueTask OnLocationChanging(LocationChangingContext e)
     {
-        _leaving = true;
         SavePage();
-        return ValueTask.CompletedTask;
+        return base.OnLocationChanging(e);
     }
 
     void SavePage()
@@ -328,25 +308,11 @@
         db.SaveChanges();
     }
 
-    public void Dispose()
+    protected override void Dispose(bool disposing)
     {
-        if (_disposed)
-            return;
-
         logger.LogDebug("Disposing");
-        _disposed = true;
+        base.Dispose(disposing);
 
-        if (App.Window is not null) // Not available in tests.
-        {
-            App.Window.Deactivated -= Window_DeactivatedOrDestroying;
-            App.Window.Destroying -= Window_DeactivatedOrDestroying;
-            App.Window.Resumed -= Window_Resumed;
-        }
-
-        locationChangingRegistration?.Dispose();
         db?.Dispose();
     }
-
-    // https://github.com/dotnet/aspnetcore/issues/53863
-    protected override bool ShouldRender() => !_leaving;
 }

@@ -59,9 +59,6 @@
 </main>
 
 @code {
-    bool _leaving;
-    bool _disposed;
-
     public SafetyPlan Plan { get; set; }
 
     protected override void OnInitialized()
@@ -72,47 +69,26 @@
         base.OnInitialized();
 
         KeyEventService.Entered(() => Submit());
-
-        if (App.Window is not null) // Not available in tests.
-        {
-            App.Window.Deactivated += Window_DeactivatedOrDestroying;
-            App.Window.Destroying += Window_DeactivatedOrDestroying;
-        }
     }
 
     void Submit()
     {
         logger.LogInformation("Going to index");
-        _leaving = true;
         NavigationManager.NavigateTo("/", false, true);
     }
 
-    private void Window_DeactivatedOrDestroying(object sender, EventArgs e)
+    protected override void OnWindowDeactivatedOrDestroying(object sender, EventArgs e)
     {
-        if (!_disposed)
-        {
-            PreferenceService.SafetyPlan = Plan;
-        }
+        PreferenceService.SafetyPlan = Plan;
     }
 
-    public void Dispose()
+    protected override void Dispose(bool disposing)
     {
-        if (_disposed)
-            return;
-
+        base.Dispose(disposing);
         logger.LogDebug("Disposing");
-        _disposed = true;
-
-        if (App.Window is not null) // Not available in tests.
-        {
-            App.Window.Deactivated -= Window_DeactivatedOrDestroying;
-            App.Window.Destroying -= Window_DeactivatedOrDestroying;
-        }
 
         KeyEventService.Exited();
 
         PreferenceService.SafetyPlan = Plan;
     }
-
-    protected override bool ShouldRender() => !_leaving;
 }

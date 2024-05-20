@@ -43,8 +43,6 @@
 </main>
 
 @code {
-    bool _leaving;
-
     [Parameter]
     public string OpenToDateString { get; set; }
 
@@ -105,14 +103,14 @@
     void Close()
     {
         logger.LogInformation("Going to index");
-        _leaving = true;
         NavigationManager.NavigateTo("/", false, true);
     }
 
-    public void Dispose()
+    protected override void Dispose(bool disposing)
     {
+        logger.LogDebug("Disposing");
+        base.Dispose(disposing);
+
         KeyEventService.Exited();
     }
-
-    protected override bool ShouldRender() => !_leaving;
 }
