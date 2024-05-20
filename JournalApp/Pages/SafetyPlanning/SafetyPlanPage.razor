@@ -77,18 +77,18 @@
         NavigationManager.NavigateTo("/", false, true);
     }
 
-    protected override void OnWindowDeactivatedOrDestroying(object sender, EventArgs e)
+    protected override void SaveState()
     {
+        base.SaveState();
+        logger.LogDebug("Saving plan");
         PreferenceService.SafetyPlan = Plan;
     }
 
     protected override void Dispose(bool disposing)
     {
-        base.Dispose(disposing);
         logger.LogDebug("Disposing");
+        base.Dispose(disposing);
 
         KeyEventService.Exited();
-
-        PreferenceService.SafetyPlan = Plan;
     }
 }

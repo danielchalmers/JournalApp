@@ -152,15 +152,14 @@
 
     protected override void OnWindowDeactivatedOrDestroying(object sender, EventArgs e)
     {
+        base.OnWindowDeactivatedOrDestroying(sender, e);
         logger.LogDebug("Window deactivated or destroying");
         _stoppedDate = DateTimeOffset.Now;
-        Debug.Assert(!IsDisposed);
-
-        SavePage();
     }
 
     protected override async void OnWindowResumed(object sender, EventArgs e)
     {
+        base.OnWindowResumed(sender, e);
         logger.LogDebug("Window resumed");
 
         // Go to current day if user returns after a certain amount of time,
@@ -293,14 +292,9 @@
         await db.SaveChangesAsync();
     }
 
-    protected override ValueTask OnLocationChanging(LocationChangingContext e)
+    protected override void SaveState()
     {
-        SavePage();
-        return base.OnLocationChanging(e);
-    }
-
-    void SavePage()
-    {
+        base.SaveState();
         logger.LogDebug("Saving page");
 
         App.IndexDateState = (DateTimeOffset.Now, _day.Date);

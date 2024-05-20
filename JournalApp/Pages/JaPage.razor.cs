@@ -62,6 +62,8 @@ public partial class JaPage : ComponentBase, IDisposable
     /// </summary>
     protected virtual void OnWindowDeactivatedOrDestroying(object sender, EventArgs e)
     {
+        Debug.Assert(!IsDisposed);
+        SaveState();
     }
 
     /// <summary>
@@ -70,6 +72,17 @@ public partial class JaPage : ComponentBase, IDisposable
     /// </summary>
     protected virtual void OnWindowResumed(object sender, EventArgs e)
     {
+        Debug.Assert(!IsDisposed);
+    }
+
+    /// <summary>
+    /// Saves the state of the page.<br/>
+    /// Called when the page is navigated away or the app is switched.
+    /// </summary>
+    protected virtual void SaveState()
+    {
+        Debug.Assert(!IsDisposed);
+        // TODO: Async support.
     }
 
     /// <summary>
@@ -79,6 +92,7 @@ public partial class JaPage : ComponentBase, IDisposable
     protected virtual ValueTask OnLocationChanging(LocationChangingContext e)
     {
         IsLeaving = true;
+        SaveState();
         return ValueTask.CompletedTask;
     }
 
@@ -116,10 +130,16 @@ public partial class JaPage : ComponentBase, IDisposable
     /// <param name="disposing">Indicates whether the method was called from the public Dispose method.</param>
     protected virtual void Dispose(bool disposing)
     {
-        // Check if the page has already been disposed.
+        // Don't dispose the page more than once.
         if (IsDisposed)
         {
             return;
+        }
+
+        // Save the state if we're not just navigating to another page because that would be handled by LocationChangingContext.
+        if (!IsLeaving)
+        {
+            SaveState();
         }
 
         if (disposing)
