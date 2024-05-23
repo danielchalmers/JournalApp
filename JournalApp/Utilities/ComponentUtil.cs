@@ -14,7 +14,7 @@ internal static class ComponentUtil
     public static IDialogReference Show<TComponent>(this IDialogService dialogService, DialogParameters parameters, DialogOptions options) where TComponent : ComponentBase =>
         dialogService.Show<TComponent>(string.Empty, parameters, options);
 
-    public static async Task<bool?> ShowCustomMessageBox(this IDialogService dialogService, string message, string yesText = "OK",
+    public static async Task<bool?> ShowJaMessageBox(this IDialogService dialogService, string message, string yesText = "OK",
         string noText = null, string cancelText = null, DialogOptions options = null, bool showFeedbackLink = true)
     {
         var messageBoxOptions = new MessageBoxOptions
@@ -34,10 +34,10 @@ internal static class ComponentUtil
             [nameof(MessageBoxOptions.CancelText)] = messageBoxOptions.CancelText,
             [nameof(MessageBoxOptions.NoText)] = messageBoxOptions.NoText,
             [nameof(MessageBoxOptions.YesText)] = messageBoxOptions.YesText,
-            [nameof(CustomMessageBox.ShowFeedbackLink)] = showFeedbackLink,
+            [nameof(JaMessageBox.ShowFeedbackLink)] = showFeedbackLink,
         };
 
-        var reference = await dialogService.ShowAsync<CustomMessageBox>(title: messageBoxOptions.Title, parameters: parameters, options: options);
+        var reference = await dialogService.ShowAsync<JaMessageBox>(title: messageBoxOptions.Title, parameters: parameters, options: options);
         var result = await reference.Result;
 
         if (result.Canceled || result.Data is not bool data)

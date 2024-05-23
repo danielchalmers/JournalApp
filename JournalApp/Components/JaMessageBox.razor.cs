@@ -6,7 +6,7 @@ using CategoryAttribute = MudBlazor.CategoryAttribute;
 
 namespace JournalApp;
 
-public partial class CustomMessageBox : MudComponentBase
+public partial class JaMessageBox : MudComponentBase
 {
     private bool _isVisible;
     private IDialogReference _reference;
@@ -182,7 +182,7 @@ public partial class CustomMessageBox : MudComponentBase
             [nameof(YesText)] = YesText,
             [nameof(YesButton)] = YesButton,
         };
-        _reference = await DialogService.ShowAsync<CustomMessageBox>(title: Title, parameters: parameters, options: options);
+        _reference = await DialogService.ShowAsync<JaMessageBox>(title: Title, parameters: parameters, options: options);
         var result = await _reference.Result;
         if (result.Canceled || result.Data is not bool data)
         {
