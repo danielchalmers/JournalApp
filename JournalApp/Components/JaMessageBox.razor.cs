@@ -8,7 +8,6 @@ namespace JournalApp;
 
 public partial class JaMessageBox : MudComponentBase
 {
-    private bool _isVisible;
     private IDialogReference _reference;
     private ActivatableCallback _yesCallback, _cancelCallback, _noCallback;
 
@@ -120,43 +119,8 @@ public partial class JaMessageBox : MudComponentBase
     public EventCallback<bool> OnCancel { get; set; }
 
     /// <summary>
-    /// Bind this two-way to show and close an inlined message box. Has no effect on opened msg boxes
+    /// Displays a link that lets the user leave feedback.
     /// </summary>
-    [Parameter]
-    [Category(CategoryTypes.MessageBox.Behavior)]
-    public bool IsVisible
-    {
-        get => _isVisible;
-        set
-        {
-            if (_isVisible == value)
-            {
-                return;
-            }
-
-            _isVisible = value;
-            if (IsInline)
-            {
-                if (_isVisible)
-                {
-                    _ = Show();
-                }
-                else
-                {
-                    Close();
-                }
-            }
-
-            IsVisibleChanged.InvokeAsync(value);
-        }
-    }
-
-    /// <summary>
-    /// Raised when the inline dialog's display status changes.
-    /// </summary>
-    [Parameter]
-    public EventCallback<bool> IsVisibleChanged { get; set; }
-
     [Parameter]
     public bool ShowFeedbackLink { get; set; }
 

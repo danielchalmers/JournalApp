@@ -13,59 +13,57 @@
         }
     </TitleContent>
     <DialogContent>
-        <div style="padding-top: 8px;">
-            @if (MessageContent is not null)
-            {
-                @MessageContent
-            }
-            else
-            {
-                @MarkupMessage
-                @Message
-            }
-        </div>
+        @if (MessageContent is not null)
+        {
+            @MessageContent
+        }
+        else
+        {
+            @MarkupMessage
+            @Message
+        }
     </DialogContent>
     <DialogActions>
-        <div class="@("d-flex align-center justify-space-between" + (ShowFeedbackLink ? " flex-grow-1" : ""))">
-            @if (ShowFeedbackLink)
-            {
-                <MudLink Href="@(Feedback.GenerateLink(body: $"\"{Message}\""))" Typo="Typo.subtitle2">Send feedback...</MudLink>
-            }
+        @if (ShowFeedbackLink)
+        {
+            <MudLink Href="@(Feedback.GenerateLink(body: $"\"{Message}\""))" Typo="Typo.inherit">Send feedback...</MudLink>
+        }
 
-            <div tabindex="-1" @onkeydown="HandleKeyDown">
-                <MudFocusTrap DefaultFocus="DefaultFocus.LastChild">
-                    @if (CancelButton is not null)
-                    {
-                        <CascadingValue Value="@_cancelCallback">
-                            @CancelButton
-                        </CascadingValue>
-                    }
-                    else if (!string.IsNullOrWhiteSpace(CancelText))
-                    {
-                        <MudButton OnClick="OnCancelClicked">@CancelText</MudButton>
-                    }
-                    @if (NoButton is not null)
-                    {
-                        <CascadingValue Value="@_noCallback">
-                            @NoButton
-                        </CascadingValue>
-                    }
-                    else if (!string.IsNullOrWhiteSpace(NoText))
-                    {
-                        <MudButton OnClick="OnNoClicked">@NoText</MudButton>
-                    }
-                    @if (YesButton is not null)
-                    {
-                        <CascadingValue Value="@_yesCallback">
-                            @YesButton
-                        </CascadingValue>
-                    }
-                    else if (!string.IsNullOrWhiteSpace(YesText))
-                    {
-                        <MudButton Color="Color.Primary" OnClick="OnYesClicked">@YesText</MudButton>
-                    }
-                </MudFocusTrap>
-            </div>
+        <MudSpacer />
+
+        <div tabindex="-1" @onkeydown="HandleKeyDown">
+            <MudFocusTrap DefaultFocus="DefaultFocus.LastChild">
+                @if (CancelButton is not null)
+                {
+                    <CascadingValue Value="@_cancelCallback">
+                        @CancelButton
+                    </CascadingValue>
+                }
+                else if (!string.IsNullOrWhiteSpace(CancelText))
+                {
+                    <MudButton OnClick="OnCancelClicked">@CancelText</MudButton>
+                }
+                @if (NoButton is not null)
+                {
+                    <CascadingValue Value="@_noCallback">
+                        @NoButton
+                    </CascadingValue>
+                }
+                else if (!string.IsNullOrWhiteSpace(NoText))
+                {
+                    <MudButton OnClick="OnNoClicked">@NoText</MudButton>
+                }
+                @if (YesButton is not null)
+                {
+                    <CascadingValue Value="@_yesCallback">
+                        @YesButton
+                    </CascadingValue>
+                }
+                else if (!string.IsNullOrWhiteSpace(YesText))
+                {
+                    <MudButton Color="Color.Primary" OnClick="OnYesClicked">@YesText</MudButton>
+                }
+            </MudFocusTrap>
         </div>
     </DialogActions>
 </MudDialog>
