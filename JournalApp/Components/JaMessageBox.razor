@@ -26,7 +26,7 @@
     <DialogActions>
         @if (ShowFeedbackLink)
         {
-            <MudLink Href="@(Feedback.GenerateLink(body: $"\"{Message}\""))" Typo="Typo.inherit" aria-label="Open feedback email">Send feedback...</MudLink>
+            <MudLink Href="@(Feedback.GenerateLink(body: $"\"{Message}\""))" Typo="Typo.inherit">Send feedback...</MudLink>
         }
 
         <MudSpacer />

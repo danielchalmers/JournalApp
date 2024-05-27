@@ -17,23 +17,23 @@
 
         <MudSpacer />
 
-        <MudMenu Icon="@Icons.Material.Filled.MoreVert" aria-label="View more features" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
-            <MudMenuItem Icon="@Icons.Material.Filled.Category" aria-label="Go to Categories" OnClick="ManageCategories" AutoClose="false">Categories</MudMenuItem>
-            <MudMenuItem Icon="@Icons.Material.Filled.Medication" aria-label="Go to Medications" OnClick="ManageMedications" AutoClose="false">Medications</MudMenuItem>
-            <MudMenuItem Icon="@Icons.Material.Filled.Comment" aria-label="Open dialog to create a new note" OnClick="NewNote">New note</MudMenuItem>
-            <MudMenuItem Icon="@Icons.Material.Filled.ShowChart" aria-label="Go to Trends" OnClick="OpenTrends" AutoClose="false">Trends</MudMenuItem>
-            <MudMenuItem Icon="@Icons.Material.Filled.Article" aria-label="Go to Worksheets" OnClick="OpenWorksheets" AutoClose="false">Worksheets</MudMenuItem>
+        <MudMenu Icon="@Icons.Material.Filled.MoreVert" aria-label="Main menu" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
+            <MudMenuItem Icon="@Icons.Material.Filled.Category" OnClick="ManageCategories" AutoClose="false">Categories</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Medication" OnClick="ManageMedications" AutoClose="false">Medications</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Comment" OnClick="NewNote">New note</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.ShowChart" OnClick="OpenTrends" AutoClose="false">Trends</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Article" OnClick="OpenWorksheets" AutoClose="false">Worksheets</MudMenuItem>
 
             @if (PreferenceService.SafetyPlan != null)
             {
-                <MudMenuItem Icon="@Icons.Material.Filled.HealthAndSafety" aria-label="Go to Safety Plan" OnClick="OpenSafetyPlan">Safety Plan</MudMenuItem>
+                <MudMenuItem Icon="@Icons.Material.Filled.HealthAndSafety" OnClick="OpenSafetyPlan">Safety Plan</MudMenuItem>
             }
 
             <MudDivider />
 
-            <MudMenuItem Icon="@Icons.Material.Filled.Campaign" aria-label="Open feedback email" OnClick="OpenFeedback">Feedback</MudMenuItem>
-            <MudMenuItem Icon="@Icons.Material.Filled.Share" aria-label="Open share menu" OnClick="OpenShare">Share</MudMenuItem>
-            <MudMenuItem Icon="@Icons.Material.Filled.Settings" aria-label="Go to Settings" OnClick="OpenSettings" AutoClose="false">Settings</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Campaign" OnClick="OpenFeedback">Feedback</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Share" OnClick="OpenShare">Share</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Filled.Settings" OnClick="OpenSettings" AutoClose="false">Settings</MudMenuItem>
         </MudMenu>
     </div>
 

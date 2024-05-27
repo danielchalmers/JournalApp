@@ -17,7 +17,7 @@ else
 {
     <header class="page-header">
         <div class="page-toolbar">
-            <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" aria-label="Return to home" OnClick="Close" />
+            <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" aria-label="Go home" OnClick="Close" />
 
             <MudText Typo="Typo.h6">Settings</MudText>
         </div>
@@ -34,7 +34,7 @@ else
                     <MudRadio Value="@(AppTheme.Dark)">Dark</MudRadio>
                 </MudRadioGroup>
 
-                <MudCheckBox @bind-Value="PreferenceService.HideNotes" aria-label="Hides the notes section on the home page">Hide "Today's notes"</MudCheckBox>
+                <MudCheckBox @bind-Value="PreferenceService.HideNotes" aria-label="Hide the notes section on the home page">Hide "Today's notes"</MudCheckBox>
 
                 <MudButton StartIcon="@Icons.Material.Filled.HealthAndSafety" OnClick="SetUpSafetyPlan" Variant="Variant.Outlined" FullWidth>Set Up Safety Plan</MudButton>
             </section>

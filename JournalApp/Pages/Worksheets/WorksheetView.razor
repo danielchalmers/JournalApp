@@ -2,7 +2,7 @@
 @inject ILogger<WorksheetView> logger
 
 <li class="worksheet-view">
-    <MudButton OnClick="OnResourceClicked" StartIcon="@Icons.Material.Filled.Link" Color="Color.Primary" Disabled="@IsLinkDisabled" aria-label="View worksheet">
+    <MudButton OnClick="OnResourceClicked" StartIcon="@Icons.Material.Filled.Link" Color="Color.Primary" Disabled="@IsLinkDisabled">
         <MudText Typo="Typo.h5">@Worksheet.Title</MudText>
     </MudButton>
 
@@ -13,7 +13,7 @@
 
     @if (!string.IsNullOrEmpty(Worksheet.SourceUri))
     {
-        <MudLink Href="@Worksheet.SourceUri" Typo="Typo.caption" Color="Color.Default" Style="word-wrap: anywhere" aria-label="Go to source">@PrettySourceUri</MudLink>
+        <MudLink Href="@Worksheet.SourceUri" Typo="Typo.caption" Color="Color.Default" Style="word-wrap: anywhere">@PrettySourceUri</MudLink>
     }
 </li>
 
