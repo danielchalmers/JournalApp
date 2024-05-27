@@ -6,22 +6,24 @@
 @inject NavigationManager NavigationManager
 @inject PreferenceService PreferenceService
 
-<MudThemeProvider Theme="_theme" IsDarkMode="PreferenceService.IsDarkMode" DefaultScrollbar />
+<MudRTLProvider RightToLeft="@(PreferenceService.LayoutDirection == LayoutDirection.RightToLeft)">
+    <MudThemeProvider Theme="_theme" IsDarkMode="PreferenceService.IsDarkMode" DefaultScrollbar />
 
-<MudPopoverProvider />
+    <MudPopoverProvider />
 
-<MudDialogProvider MaxWidth="MaxWidth.Small"
-                   FullWidth="true"
-                   NoHeader="false"
-                   CloseButton="false"
-                   CloseOnEscapeKey="false"
-                   Position="DialogPosition.Center" />
+    <MudDialogProvider MaxWidth="MaxWidth.Small"
+                       FullWidth="true"
+                       NoHeader="false"
+                       CloseButton="false"
+                       CloseOnEscapeKey="false"
+                       Position="DialogPosition.Center" />
 
-<MudSnackbarProvider />
+    <MudSnackbarProvider />
 
-<div class="page">
-    @Body
-</div>
+    <div class="page">
+        @Body
+    </div>
+</MudRTLProvider>
 
 @code {
     bool _hasInitiallyRendered;

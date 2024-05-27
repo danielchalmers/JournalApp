@@ -55,6 +55,8 @@ public sealed class PreferenceService : IPreferences, IDisposable
         _ => true,
     };
 
+    public LayoutDirection LayoutDirection => AppInfo.RequestedLayoutDirection;
+
     public bool HideNotes
     {
         get => _preferenceStore.Get("hide_notes", false);
