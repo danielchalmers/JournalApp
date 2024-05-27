@@ -9,13 +9,13 @@
 
 <header class="page-header">
     <div class="page-toolbar">
-        <MudIconButton Class="close-button" Icon="@Icons.Material.Filled.ArrowBack" Title="Back" OnClick="Close" />
+        <MudIconButton Class="close-button" Icon="@Icons.Material.Filled.ArrowBack" aria-label="Back" OnClick="Close" />
 
         <MudText Typo="Typo.h6">Calendar</MudText>
 
         <MudSpacer />
 
-        <MudIconButton Class="pick-palette" Icon="@Icons.Material.Filled.Palette" Title="Pick color" OnClick="OpenColorPicker" />
+        <MudIconButton Class="pick-palette" Icon="@Icons.Material.Filled.Palette" aria-label="Pick color palette" OnClick="OpenColorPicker" />
     </div>
 
     <CalendarSwitcher @ref="_switcher" @bind-SelectedYear="SelectedYear" @bind-SelectedYear:after="AfterSelectedYearChanged" YearClicked="OnYearClicked" />

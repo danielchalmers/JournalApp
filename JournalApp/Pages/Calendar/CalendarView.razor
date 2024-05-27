@@ -7,9 +7,9 @@
     {
         <section class="calendar-month" id="calendar-month-@(month.Month)">
             <header class="calendar-month-header">
-                <MudIconButton Icon="@Icons.Material.Filled.ArrowLeft" OnClick="async () => await PreviousMonthClicked.InvokeAsync(month.Month)" title="Previous month" />
+                <MudIconButton Icon="@Icons.Material.Filled.ArrowLeft" OnClick="async () => await PreviousMonthClicked.InvokeAsync(month.Month)" aria-label="Previous month" />
                 <MudText Typo="Typo.h4">@(month.Name)</MudText>
-                <MudIconButton Icon="@Icons.Material.Filled.ArrowRight" OnClick="async () => await NextMonthClicked.InvokeAsync(month.Month)" title="Next month" Disabled="@(month.Month == 12 && month.Year == DateTime.Now.Year)" />
+                <MudIconButton Icon="@Icons.Material.Filled.ArrowRight" OnClick="async () => await NextMonthClicked.InvokeAsync(month.Month)" aria-label="Next month" Disabled="@(month.Month == 12 && month.Year == DateTime.Now.Year)" />
             </header>
 
             <div class="mood-blocks-month">

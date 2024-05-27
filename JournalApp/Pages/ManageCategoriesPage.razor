@@ -7,13 +7,13 @@
 
 <header class="page-header">
     <div class="page-toolbar">
-        <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Submit" OnClick="Submit" />
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" aria-label="Submit" OnClick="Submit" />
 
         <MudText Typo="Typo.h6">@(Group == null ? "Categories" : Group)</MudText>
 
         <MudSpacer />
 
-        <MudIconButton Icon="@Icons.Material.Filled.Add" Title="New" OnClick="New" />
+        <MudIconButton Icon="@Icons.Material.Filled.Add" aria-label="New" OnClick="New" />
     </div>
 </header>
 
@@ -27,15 +27,15 @@
         @foreach (var c in Categories.OrderBy(c => c.Index))
         {
             <div id="@($"manage-category-{c.Guid}")" class="manage-category">
-                <MudIconButton Class="manage-category-up-button" Icon="@Icons.Material.Filled.ArrowUpward" Title="Move up"
+                <MudIconButton Class="manage-category-up-button" Icon="@Icons.Material.Filled.ArrowUpward" aria-label="Move up"
                                OnClick="async () => await MoveUp(c)" Edge="Edge.Start" Disabled="c.Index <= 1" />
 
                 <MudSwitch Class="manage-category-enabled-switch" T="bool" Value="c.Enabled" ValueChanged="async (v) => await OnEnabledChanged(c, v)"
-                           Color="Color.Primary" Style="margin-right: -0.125em;" title="Show in home" />
+                           Color="Color.Primary" Style="margin-right: -0.125em;" aria-label="Show in home" />
 
                 <MudButton Class="manage-category-edit-button"
                            Variant="Variant.Text" OnClick="async () => await Edit(c)" Disabled="c.ReadOnly"
-                           StartIcon="@Icons.Material.Filled.Edit" Size="Size.Large" title="Make changes">@c.Name</MudButton>
+                           StartIcon="@Icons.Material.Filled.Edit" Size="Size.Large" aria-label="Make changes">@c.Name</MudButton>
             </div>
         }
     }

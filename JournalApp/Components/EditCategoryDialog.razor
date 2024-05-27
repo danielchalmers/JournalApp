@@ -6,7 +6,7 @@
 <MudDialog DefaultFocus="DefaultFocus.FirstChild" OnBackdropClick="Submit">
     <TitleContent>
         <div class="page-toolbar">
-            <MudIconButton Icon="@Icons.Material.Filled.Close" Title="Cancel" OnClick="Cancel" />
+            <MudIconButton Icon="@Icons.Material.Filled.Close" aria-label="Cancel" OnClick="Cancel" />
 
             <MudText Typo="Typo.h6">@(Category == null ? "New" : "Edit") @(Group == "Medications" ? "medication" : "category")</MudText>
 
@@ -14,10 +14,10 @@
 
             @if (Category != null)
             {
-                <MudIconButton Icon="@Icons.Material.Filled.DeleteForever" Title="Delete forever" OnClick="Delete" />
+                <MudIconButton Icon="@Icons.Material.Filled.DeleteForever" aria-label="Delete forever" OnClick="Delete" />
             }
 
-            <MudIconButton Icon="@Icons.Material.Filled.Check" Title="Submit" OnClick="Submit" />
+            <MudIconButton Icon="@Icons.Material.Filled.Check" aria-label="Submit" OnClick="Submit" />
         </div>
     </TitleContent>
 
@@ -44,7 +44,7 @@
                     <MudTextField @bind-Value="MedicationUnit" Label="Unit" MaxLength="8" Immediate />
                 </div>
 
-                <MudSwitch @bind-Value="MedicationEveryDay" Label="Taken every day" title="Auto checks 'yes' every day" Color="Color.Primary" />
+                <MudSwitch @bind-Value="MedicationEveryDay" Label="Taken every day" aria-label="Auto checks 'yes' every day" Color="Color.Primary" />
             }
 
             <MudTextField @bind-Value="Details" Immediate AutoGrow MaxLines="10"

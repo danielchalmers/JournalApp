@@ -6,13 +6,13 @@
 <MudDialog DefaultFocus="DefaultFocus.FirstChild" OnBackdropClick="Submit">
     <TitleContent>
         <div class="page-toolbar">
-            <MudIconButton Class="cancel-button" Icon="@Icons.Material.Filled.Close" Title="Cancel" OnClick="Cancel" />
+            <MudIconButton Class="cancel-button" Icon="@Icons.Material.Filled.Close" aria-label="Cancel" OnClick="Cancel" />
 
             <MudText Typo="Typo.h6">@Title</MudText>
 
             <MudSpacer />
 
-            <MudIconButton Class="submit-button" Icon="@Icons.Material.Filled.Check" Title="Submit" OnClick="Submit" />
+            <MudIconButton Class="submit-button" Icon="@Icons.Material.Filled.Check" aria-label="Submit" OnClick="Submit" />
         </div>
     </TitleContent>
 

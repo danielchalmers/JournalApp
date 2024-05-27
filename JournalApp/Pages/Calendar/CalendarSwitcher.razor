@@ -1,7 +1,7 @@
 ﻿@namespace JournalApp
 
 <div class="switcher">
-    <MudIconButton Class="previous-button" Icon="@Icons.Material.Filled.ArrowBackIos" Title="Previous year" OnClick="PreviousYear" />
+    <MudIconButton Class="previous-button" Icon="@Icons.Material.Filled.ArrowBackIos" aria-label="Previous year" OnClick="PreviousYear" />
 
     <div class="switcher-header">
         <MudButton Class="year-button" OnClick="OnYearClicked">
@@ -9,7 +9,7 @@
         </MudButton>
     </div>
 
-    <MudIconButton Class="next-button" Icon="@Icons.Material.Filled.ArrowForwardIos" Title="Next year" OnClick="NextYear" Disabled="@(SelectedYear >= DateTime.Now.Year)" />
+    <MudIconButton Class="next-button" Icon="@Icons.Material.Filled.ArrowForwardIos" aria-label="Next year" OnClick="NextYear" Disabled="@(SelectedYear >= DateTime.Now.Year)" />
 </div>
 
 @code {

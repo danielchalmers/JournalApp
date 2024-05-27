@@ -17,7 +17,7 @@
 
         <MudSpacer />
 
-        <MudMenu Icon="@Icons.Material.Filled.MoreVert" title="More" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
+        <MudMenu Icon="@Icons.Material.Filled.MoreVert" aria-label="View more features" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
             <MudMenuItem Icon="@Icons.Material.Filled.Category" OnClick="ManageCategories" AutoClose="false">Categories</MudMenuItem>
             <MudMenuItem Icon="@Icons.Material.Filled.Medication" OnClick="ManageMedications" AutoClose="false">Medications</MudMenuItem>
             <MudMenuItem Icon="@Icons.Material.Filled.Comment" OnClick="NewNote">New note</MudMenuItem>
@@ -38,15 +38,15 @@
     </div>
 
     <div class="switcher">
-        <MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" Title="Previous day" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" aria-label="Previous day" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
 
         <div class="switcher-header">
-            <MudButton OnClick="OpenCalendar" title="Open Calendar">
+            <MudButton OnClick="OpenCalendar" aria-label="Open Calendar">
                 <MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false">@_day.Date.ToString("ddd, MMM d")</MudText>
             </MudButton>
         </div>
 
-        <MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" Title="Next day" OnClick="NextDay" Disabled="@(_day.Date > DateOnly.FromDateTime(DateTime.Now))" />
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" aria-label="Next day" OnClick="NextDay" Disabled="@(_day.Date > DateOnly.FromDateTime(DateTime.Now))" />
     </div>
 </header>
 

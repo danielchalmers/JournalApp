@@ -6,7 +6,7 @@
 
 <header class="page-header">
     <div class="page-toolbar">
-        <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" Title="Back" OnClick="Close" />
+        <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" aria-label="Back" OnClick="Close" />
         <MudText Typo="Typo.h6">Worksheets</MudText>
     </div>
 </header>
@@ -21,7 +21,7 @@
                     @if (!string.IsNullOrEmpty(group.Key))
                     {
                         <li class="worksheet-group-toc-item">
-                            <MudLink OnClick="async () => await ScrollToGroup(MarkupUtil.ToClassName(group.Key))" title="Scroll to group">• @group.Key</MudLink>
+                            <MudLink OnClick="async () => await ScrollToGroup(MarkupUtil.ToClassName(group.Key))" aria-label="Scroll to group">• @group.Key</MudLink>
                         </li>
                     }
                 }
@@ -35,7 +35,7 @@
                 {
                     <header class="d-flex align-center">
                         <MudText Typo="Typo.h4">@group.Key</MudText>
-                        <MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" OnClick="ScrollToTop" title="Scroll to top" />
+                        <MudIconButton Icon="@Icons.Material.Filled.ArrowUpward" OnClick="ScrollToTop" aria-label="Scroll to top" />
                     </header>
                 }
 
