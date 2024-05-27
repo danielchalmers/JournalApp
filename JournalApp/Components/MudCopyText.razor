@@ -2,7 +2,8 @@
 @inherits MudComponentBase
 @inject IClipboard Clipboard
 
-<MudLink OnClick="OnClick" Underline="Underline.None" Color="Color.Inherit">@Text</MudLink>
+<MudLink OnClick="OnClick" Underline="Underline.None" Color="Color.Inherit"
+         aria-label="Copy text to clipboard">@Text</MudLink>
 
 @code {
     [Parameter]

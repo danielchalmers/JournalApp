@@ -4,7 +4,7 @@
 
 @if (Category.Type is PointType.Text or PointType.Note)
 {
-    <div class="trend-view-notes">
+    <div class="trend-view-notes" aria-label="Trend Notes">
         @foreach (var (day, points) in PointsByDay)
         {
             foreach (var point in points.Where(x => !string.IsNullOrEmpty(x.Text)))
@@ -18,7 +18,7 @@
 }
 else
 {
-    <div class="trend-view-chart">
+    <div class="trend-view-chart" aria-label="Trend Chart">
         <ApexChart @ref="_chart" TItem="TrendChartPoint" Options="ChartOptions">
             @switch (Category.Type)
             {

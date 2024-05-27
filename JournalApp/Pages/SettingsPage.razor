@@ -17,7 +17,7 @@ else
 {
     <header class="page-header">
         <div class="page-toolbar">
-            <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" aria-label="Back" OnClick="Close" />
+            <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" aria-label="Return to home" OnClick="Close" />
 
             <MudText Typo="Typo.h6">Settings</MudText>
         </div>
@@ -28,13 +28,13 @@ else
             <section class="settings-group">
                 <MudText Typo="Typo.h4">Personalization</MudText>
 
-                <MudRadioGroup T="AppTheme" Value="PreferenceService.SelectedAppTheme" ValueChanged="v => PreferenceService.SelectedAppTheme = v">
+                <MudRadioGroup T="AppTheme" Value="PreferenceService.SelectedAppTheme" ValueChanged="v => PreferenceService.SelectedAppTheme = v" aria-label="Theme for entire app">
                     <MudRadio Value="@(AppTheme.Unspecified)">System</MudRadio>
                     <MudRadio Value="@(AppTheme.Light)">Light</MudRadio>
                     <MudRadio Value="@(AppTheme.Dark)">Dark</MudRadio>
                 </MudRadioGroup>
 
-                <MudCheckBox @bind-Value="PreferenceService.HideNotes">Hide "Today's notes"</MudCheckBox>
+                <MudCheckBox @bind-Value="PreferenceService.HideNotes" aria-label="Hides the notes section on the home page">Hide "Today's notes"</MudCheckBox>
 
                 <MudButton StartIcon="@Icons.Material.Filled.HealthAndSafety" OnClick="SetUpSafetyPlan" Variant="Variant.Outlined" FullWidth>Set Up Safety Plan</MudButton>
             </section>
