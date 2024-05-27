@@ -65,7 +65,10 @@ else
                 <MudTextField T="string" Text="@CreditsText" Typo="Typo.body2" ReadOnly Underline="false"
                               AutoGrow MaxLines="_creditsExpanded ? 0 : 5" FullWidth />
 
-                <MudLink OnClick="() => _creditsExpanded = true">Expand credits</MudLink>
+                @if (!_creditsExpanded)
+                {
+                    <MudLink OnClick="() => _creditsExpanded = true">Expand credits</MudLink>
+                }
             </section>
         </div>
     </main>
