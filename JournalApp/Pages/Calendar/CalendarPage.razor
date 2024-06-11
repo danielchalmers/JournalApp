@@ -26,7 +26,7 @@
     {
         <div style="padding-bottom: 40vh;">
             <CalendarView GridYear="_gridYear.Value" OpenToDate="OpenToDate"
-                          CalendarLoaded="ScrollToOpenToDate" DayClicked="@(d => Close(d))"
+                          CalendarLoaded="ScrollToOpenToDate" DayClicked="@(EventUtil.AsNonRenderingEventHandler(Close))"
                           PreviousMonthClicked="PreviousMonth" NextMonthClicked="NextMonth" />
         </div>
     }
