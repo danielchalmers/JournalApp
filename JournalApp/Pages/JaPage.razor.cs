@@ -107,7 +107,7 @@ public partial class JaPage : ComponentBase, IDisposable
         if (PreferenceService.Get($"tip_{name}", string.Empty) == "seen")
             return;
 
-        Snackbar.Add(text, Severity.Info, key: name);
+        Snackbar.Add(text, Severity.Info, c => c.Icon = Icons.Material.Rounded.Info, name);
 
         if (oneTime)
             PreferenceService.Set($"tip_{name}", "seen");

@@ -17,28 +17,28 @@
 
         <MudSpacer />
 
-        <MudMenu Icon="@Icons.Material.Filled.MoreVert" aria-label="Main menu" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
-            <MudMenuItem Icon="@Icons.Material.Filled.Category" OnClick="ManageCategories" AutoClose="false">Categories</MudMenuItem>
-            <MudMenuItem Icon="@Icons.Material.Filled.Medication" OnClick="ManageMedications" AutoClose="false">Medications</MudMenuItem>
-            <MudMenuItem Icon="@Icons.Material.Filled.Comment" OnClick="NewNote">New note</MudMenuItem>
-            <MudMenuItem Icon="@Icons.Material.Filled.ShowChart" OnClick="OpenTrends" AutoClose="false">Trends</MudMenuItem>
-            <MudMenuItem Icon="@Icons.Material.Filled.Article" OnClick="OpenWorksheets" AutoClose="false">Worksheets</MudMenuItem>
+        <MudMenu Icon="@Icons.Material.Rounded.MoreVert" aria-label="Main menu" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.BottomLeft">
+            <MudMenuItem Icon="@Icons.Material.Rounded.Category" OnClick="ManageCategories" AutoClose="false">Categories</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Rounded.Medication" OnClick="ManageMedications" AutoClose="false">Medications</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Rounded.Comment" OnClick="NewNote">New note</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Rounded.ShowChart" OnClick="OpenTrends" AutoClose="false">Trends</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Rounded.Article" OnClick="OpenWorksheets" AutoClose="false">Worksheets</MudMenuItem>
 
             @if (PreferenceService.SafetyPlan != null)
             {
-                <MudMenuItem Icon="@Icons.Material.Filled.HealthAndSafety" OnClick="OpenSafetyPlan">Safety Plan</MudMenuItem>
+                <MudMenuItem Icon="@Icons.Material.Rounded.HealthAndSafety" OnClick="OpenSafetyPlan">Safety Plan</MudMenuItem>
             }
 
             <MudDivider />
 
-            <MudMenuItem Icon="@Icons.Material.Filled.Campaign" OnClick="OpenFeedback">Feedback</MudMenuItem>
-            <MudMenuItem Icon="@Icons.Material.Filled.Share" OnClick="OpenShare">Share</MudMenuItem>
-            <MudMenuItem Icon="@Icons.Material.Filled.Settings" OnClick="OpenSettings" AutoClose="false">Settings</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Rounded.Campaign" OnClick="OpenFeedback">Feedback</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Rounded.Share" OnClick="OpenShare">Share</MudMenuItem>
+            <MudMenuItem Icon="@Icons.Material.Rounded.Settings" OnClick="OpenSettings" AutoClose="false">Settings</MudMenuItem>
         </MudMenu>
     </div>
 
     <div class="switcher">
-        <MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" aria-label="Previous day" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
+        <MudIconButton Icon="@Icons.Material.Rounded.ArrowBackIos" aria-label="Previous day" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
 
         <div class="switcher-header">
             <MudButton OnClick="OpenCalendar" aria-label="Open Calendar">
@@ -46,7 +46,7 @@
             </MudButton>
         </div>
 
-        <MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" aria-label="Next day" OnClick="NextDay" Disabled="@(_day.Date > DateOnly.FromDateTime(DateTime.Now))" />
+        <MudIconButton Icon="@Icons.Material.Rounded.ArrowForwardIos" aria-label="Next day" OnClick="NextDay" Disabled="@(_day.Date > DateOnly.FromDateTime(DateTime.Now))" />
     </div>
 </header>
 
@@ -103,15 +103,15 @@
                 <footer class="data-point-group-footer">
                     @if (group.Key == null)
                     {
-                        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Category" OnClick="ManageCategories" FullWidth>Edit categories</MudButton>
+                        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Rounded.Category" OnClick="ManageCategories" FullWidth>Edit categories</MudButton>
                     }
                     else if (group.Key == "Medications")
                     {
-                        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Medication" OnClick="ManageMedications" FullWidth>Edit medications</MudButton>
+                        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Rounded.Medication" OnClick="ManageMedications" FullWidth>Edit medications</MudButton>
                     }
                     else if (group.Key == "Notes")
                     {
-                        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Comment" OnClick="NewNote" FullWidth>New note</MudButton>
+                        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Rounded.Comment" OnClick="NewNote" FullWidth>New note</MudButton>
                     }
                 </footer>
             </div>

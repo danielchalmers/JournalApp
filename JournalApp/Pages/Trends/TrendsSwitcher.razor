@@ -2,7 +2,7 @@
 @inject ILogger<TrendsSwitcher> logger
 
 <div class="switcher">
-    <MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" aria-label="Previous month" OnClick="GoPrevious" />
+    <MudIconButton Icon="@Icons.Material.Rounded.ArrowBackIos" aria-label="Previous month" OnClick="GoPrevious" />
 
     <div class="switcher-header">
         <MudButton OnClick="() => SelectedMonth = MonthAfterCurrent">
@@ -10,7 +10,7 @@
         </MudButton>
     </div>
 
-    <MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos" aria-label="Next month" OnClick="GoNext" Disabled="@(NextSelectedMonth > MonthAfterCurrent)" />
+    <MudIconButton Icon="@Icons.Material.Rounded.ArrowForwardIos" aria-label="Next month" OnClick="GoNext" Disabled="@(NextSelectedMonth > MonthAfterCurrent)" />
 </div>
 
 @code {

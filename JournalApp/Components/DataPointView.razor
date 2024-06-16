@@ -26,14 +26,14 @@ else if (Point.Type == PointType.Sleep)
 {
     <div class="d-flex align-center flex-grow-1" style="gap: 0.5em">
         <MudText Class="sleep-hours" Typo="Typo.caption">@((Point.SleepHours ?? 0).ToString("00.0"))</MudText>
-        <MudIconButton Class="less-sleep" Icon="@Icons.Material.Filled.Remove" aria-label="Less sleep" OnClick="DecrementSleep" Disabled="@(Point.SleepHours <= 0)" Size="Size.Small" />
+        <MudIconButton Class="less-sleep" Icon="@Icons.Material.Rounded.Remove" aria-label="Less sleep" OnClick="DecrementSleep" Disabled="@(Point.SleepHours <= 0)" Size="Size.Small" />
         <MudSlider T="decimal" @bind-NullableValue="Point.SleepHours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" Size="Size.Large" />
-        <MudIconButton Class="more-sleep" Icon="@Icons.Material.Filled.Add" aria-label="More sleep" OnClick="IncrementSleep" Disabled="@(Point.SleepHours >= 24)" Size="Size.Small" />
+        <MudIconButton Class="more-sleep" Icon="@Icons.Material.Rounded.Add" aria-label="More sleep" OnClick="IncrementSleep" Disabled="@(Point.SleepHours >= 24)" Size="Size.Small" />
     </div>
 }
 else if (Point.Type == PointType.Scale)
 {
-    <MudRating @bind-SelectedValue="ScaleIndexForMudRating" FullIcon="@Icons.Material.Filled.Circle" EmptyIcon="@Icons.Material.Outlined.Circle" Color="Color.Primary" />
+    <MudRating @bind-SelectedValue="ScaleIndexForMudRating" FullIcon="@Icons.Material.Rounded.Circle" EmptyIcon="@Icons.Material.Rounded.Circle" Color="Color.Primary" />
 }
 else if (Point.Type == PointType.LowToHigh)
 {

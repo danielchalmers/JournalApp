@@ -6,7 +6,7 @@
 <MudDialog DefaultFocus="DefaultFocus.FirstChild" OnBackdropClick="Submit">
     <TitleContent>
         <div class="page-toolbar">
-            <MudIconButton Icon="@Icons.Material.Filled.Close" aria-label="Cancel" OnClick="Cancel" />
+            <MudIconButton Icon="@Icons.Material.Rounded.Close" aria-label="Cancel" OnClick="Cancel" />
 
             <MudText Typo="Typo.h6">@(Category == null ? "New" : "Edit") @(Group == "Medications" ? "medication" : "category")</MudText>
 
@@ -14,10 +14,10 @@
 
             @if (Category != null)
             {
-                <MudIconButton Icon="@Icons.Material.Filled.DeleteForever" aria-label="Delete forever" OnClick="Delete" />
+                <MudIconButton Icon="@Icons.Material.Rounded.DeleteForever" aria-label="Delete forever" OnClick="Delete" />
             }
 
-            <MudIconButton Icon="@Icons.Material.Filled.Check" aria-label="Submit" OnClick="Submit" />
+            <MudIconButton Icon="@Icons.Material.Rounded.Check" aria-label="Submit" OnClick="Submit" />
         </div>
     </TitleContent>
 

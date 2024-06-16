@@ -17,7 +17,7 @@ else
 {
     <header class="page-header">
         <div class="page-toolbar">
-            <MudIconButton Icon="@Icons.Material.Filled.ArrowBack" aria-label="Go home" OnClick="Close" />
+            <MudIconButton Icon="@Icons.Material.Rounded.ArrowBack" aria-label="Go home" OnClick="Close" />
 
             <MudText Typo="Typo.h6">Settings</MudText>
         </div>
@@ -36,15 +36,15 @@ else
 
                 <MudCheckBox @bind-Value="PreferenceService.HideNotes" aria-label="Hide the notes section on the home page">Hide "Today's notes"</MudCheckBox>
 
-                <MudButton StartIcon="@Icons.Material.Filled.HealthAndSafety" OnClick="SetUpSafetyPlan" Variant="Variant.Outlined" FullWidth>Set Up Safety Plan</MudButton>
+                <MudButton StartIcon="@Icons.Material.Rounded.HealthAndSafety" OnClick="SetUpSafetyPlan" Variant="Variant.Outlined" FullWidth>Set Up Safety Plan</MudButton>
             </section>
 
             <section class="settings-group">
                 <MudText Typo="Typo.h4">Data & backups</MudText>
 
-                <MudButton StartIcon="@Icons.Material.Filled.Upload" OnClick="StartExport" Variant="Variant.Outlined" FullWidth>Export</MudButton>
+                <MudButton StartIcon="@Icons.Material.Rounded.Upload" OnClick="StartExport" Variant="Variant.Outlined" FullWidth>Export</MudButton>
 
-                <MudButton StartIcon="@Icons.Material.Filled.Download" OnClick="PickAndStartImport" Variant="Variant.Outlined" FullWidth>Import</MudButton>
+                <MudButton StartIcon="@Icons.Material.Rounded.Download" OnClick="PickAndStartImport" Variant="Variant.Outlined" FullWidth>Import</MudButton>
             </section>
 
             <section class="settings-group">
