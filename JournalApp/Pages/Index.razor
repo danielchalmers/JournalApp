@@ -103,11 +103,11 @@
                 <footer class="data-point-group-footer">
                     @if (group.Key == null)
                     {
-                        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Category" OnClick="ManageCategories" FullWidth>Choose categories</MudButton>
+                        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Category" OnClick="ManageCategories" FullWidth>Edit categories</MudButton>
                     }
                     else if (group.Key == "Medications")
                     {
-                        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Medication" OnClick="ManageMedications" FullWidth>Choose medications</MudButton>
+                        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Filled.Medication" OnClick="ManageMedications" FullWidth>Edit medications</MudButton>
                     }
                     else if (group.Key == "Notes")
                     {
