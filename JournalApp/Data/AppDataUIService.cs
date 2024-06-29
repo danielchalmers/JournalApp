@@ -94,19 +94,19 @@ public sealed class AppDataUIService(ILogger<AppDataUIService> logger, AppDataSe
         }
 
         // Prompt the user to share the file.
-        await ShareFile(path, "JournalApp backup");
+        await ShareBackup(path);
 
         preferenceService.LastExportDate = DateTimeOffset.Now;
         logger.LogInformation("Finished export");
     }
 
-    public Task ShareFile(string path, string title)
+    public async Task ShareBackup(string path)
     {
-        logger.LogDebug($"Share request <{title}>");
+        logger.LogDebug("Share request");
 
-        return share.RequestAsync(new ShareFileRequest
+        await share.RequestAsync(new ShareFileRequest
         {
-            Title = title,
+            Title = "JournalApp backup",
             File = new ShareFile(path)
         });
     }

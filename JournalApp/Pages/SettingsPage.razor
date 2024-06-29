@@ -48,7 +48,7 @@ else
 
                 <MudButton StartIcon="@Icons.Material.Rounded.Upload" OnClick="StartExport" Variant="Variant.Outlined" FullWidth>Export backup</MudButton>
 
-                <MudButton StartIcon="@Icons.Material.Rounded.Download" OnClick="StartImport" Variant="Variant.Outlined" FullWidth>Import backup</MudButton>
+                <MudButton StartIcon="@Icons.Material.Rounded.Download" OnClick="PickAndStartImport" Variant="Variant.Outlined" FullWidth>Import backup</MudButton>
             </section>
 
             <section class="settings-group">
@@ -119,6 +119,28 @@ else
         NavigationManager.NavigateTo($"/safetyplan", false, true);
     }
 
+    async Task PickAndStartImport()
+    {
+        if (DeviceInfo.Current.Platform == DevicePlatform.WinUI)
+        {
+            logger.LogInformation("Picking import file");
+
+            var pickResult = await FilePicker.PickAsync();
+
+            if (pickResult == null)
+                return;
+
+            App.ActivatedFilePath = pickResult.FullPath;
+
+            await StartImport();
+        }
+        else
+        {
+            logger.LogInformation("Explaining how to import");
+            await DialogService.ShowJaMessageBox("Find the backup in your files app and click it or choose Open With -> JournalApp. You can also share the file directly from another app.");
+        }
+    }
+
     async Task StartImport()
     {
         try
@@ -126,26 +148,9 @@ else
             _busy = true;
             StateHasChanged();
 
-            if (DeviceInfo.Current.Platform == DevicePlatform.WinUI)
-            {
-                logger.LogInformation("Picking import file");
+            var path = App.ActivatedFilePath;
 
-                var pickResult = await FilePicker.PickAsync();
-
-                if (pickResult == null)
-                    return;
-
-                App.ActivatedFilePath = pickResult.FullPath;
-
-                var path = App.ActivatedFilePath;
-
-                await AppDataUIService.StartImportWizard(DialogService, App.ActivatedFilePath);
-            }
-            else
-            {
-                logger.LogInformation("Explaining how to import");
-                await DialogService.ShowJaMessageBox("Find the backup in your files app and click it or choose Open With -> JournalApp. You can also share the file directly from another app.");
-            }
+            await AppDataUIService.StartImportWizard(DialogService, App.ActivatedFilePath);
         }
         finally
         {
@@ -160,10 +165,6 @@ else
         {
             _busy = true;
             StateHasChanged();
-
-            // Force UI to update otherwise progress circle won't show. Isn't effective on Android at the moment.
-            await Task.Yield();
-            await Task.Delay(1);
 
             await AppDataUIService.StartExportWizard(DialogService);
         }
