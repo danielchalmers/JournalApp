@@ -29,22 +29,26 @@ else
                 <MudText Typo="Typo.h4">Personalization</MudText>
 
                 <MudRadioGroup T="AppTheme" Value="PreferenceService.SelectedAppTheme" ValueChanged="v => PreferenceService.SelectedAppTheme = v" aria-label="Theme for entire app">
-                    <MudRadio Value="@(AppTheme.Unspecified)">System</MudRadio>
                     <MudRadio Value="@(AppTheme.Light)">Light</MudRadio>
                     <MudRadio Value="@(AppTheme.Dark)">Dark</MudRadio>
+                    <MudRadio Value="@(AppTheme.Unspecified)">System</MudRadio>
                 </MudRadioGroup>
 
                 <MudCheckBox @bind-Value="PreferenceService.HideNotes" aria-label="Hide the notes section on the home page">Hide "Today's notes"</MudCheckBox>
 
-                <MudButton StartIcon="@Icons.Material.Rounded.HealthAndSafety" OnClick="SetUpSafetyPlan" Variant="Variant.Outlined" FullWidth>Set Up Safety Plan</MudButton>
+                <MudButton StartIcon="@Icons.Material.Rounded.HealthAndSafety" OnClick="SetUpSafetyPlan" Variant="Variant.Outlined" FullWidth>
+                    Set Up Safety Plan
+                </MudButton>
             </section>
 
             <section class="settings-group">
                 <MudText Typo="Typo.h4">Data & backups</MudText>
 
-                <MudButton StartIcon="@Icons.Material.Rounded.Upload" OnClick="StartExport" Variant="Variant.Outlined" FullWidth>Export</MudButton>
+                <MudText>Last backup: @(PreferenceService.LastExportDate.ToString("d"))</MudText>
 
-                <MudButton StartIcon="@Icons.Material.Rounded.Download" OnClick="PickAndStartImport" Variant="Variant.Outlined" FullWidth>Import</MudButton>
+                <MudButton StartIcon="@Icons.Material.Rounded.Upload" OnClick="StartExport" Variant="Variant.Outlined" FullWidth>Export backup</MudButton>
+
+                <MudButton StartIcon="@Icons.Material.Rounded.Download" OnClick="PickAndStartImport" Variant="Variant.Outlined" FullWidth>Import backup</MudButton>
             </section>
 
             <section class="settings-group">

@@ -1,4 +1,5 @@
-﻿using MudBlazor.Utilities;
+﻿using Microsoft.Maui.Storage;
+using MudBlazor.Utilities;
 
 namespace JournalApp;
 
@@ -92,6 +93,26 @@ public sealed class PreferenceService : IPreferences, IDisposable
             else
                 _preferenceStore.SetJson("safety_plan", value);
         }
+    }
+
+    public DateTimeOffset LastExportDate
+    {
+        get
+        {
+            var lastExportString = _preferenceStore.Get<string>("last_export", null);
+
+            if (DateTimeOffset.TryParse(lastExportString, out var parsed))
+            {
+                return parsed;
+            }
+            else
+            {
+                // We haven't tracked this or it's malformed so set it to now.
+                LastExportDate = DateTimeOffset.Now;
+                return DateTimeOffset.Now;
+            }
+        }
+        set => _preferenceStore.Set("last_export", value.ToString("O"));
     }
 
     public event EventHandler<bool> ThemeChanged;

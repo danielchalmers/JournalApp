@@ -2,14 +2,14 @@
 
 namespace JournalApp;
 
-public sealed class AppDataUIService(ILogger<AppDataUIService> logger, AppDataService appDataService, IShare share, IPreferences preferences)
+public sealed class AppDataUIService(ILogger<AppDataUIService> logger, AppDataService appDataService, IShare share, PreferenceService preferenceService)
 {
     public async Task<bool> StartImportWizard(IDialogService dialogService, string path)
     {
         logger.LogInformation("Starting import wizard");
 
         // Warn if an export wasn't done in the last week.
-        if (DateTimeOffset.Now > LastExportDate.AddDays(7) &&
+        if (DateTimeOffset.Now > preferenceService.LastExportDate.AddDays(7) &&
             await dialogService.ShowJaMessageBox("It's recommended to export your data first in case there are any issues; You can do this in Settings.", yesText: "Continue anyway", cancelText: "Go back") == null)
         {
             logger.LogDebug("User didn't want to import after being warned about export");
@@ -60,7 +60,7 @@ public sealed class AppDataUIService(ILogger<AppDataUIService> logger, AppDataSe
             return false;
         }
 
-        LastExportDate = DateTimeOffset.Now;
+        preferenceService.LastExportDate = DateTimeOffset.Now;
         logger.LogInformation("Finished import");
         return true;
     }
@@ -96,7 +96,7 @@ public sealed class AppDataUIService(ILogger<AppDataUIService> logger, AppDataSe
         // Prompt the user to share the file.
         await ShareBackup(path);
 
-        LastExportDate = DateTimeOffset.Now;
+        preferenceService.LastExportDate = DateTimeOffset.Now;
         logger.LogInformation("Finished export");
     }
 
@@ -109,38 +109,5 @@ public sealed class AppDataUIService(ILogger<AppDataUIService> logger, AppDataSe
             Title = "JournalApp backup",
             File = new ShareFile(path)
         });
-    }
-
-    public async Task ShowExportReminderIfDue(IDialogService dialogService)
-    {
-        if (LastExportDate.AddDays(90) > DateTimeOffset.Now)
-            return;
-
-        logger.LogInformation($"It's been a while since last export <{LastExportDate}>");
-
-        // We're going to show the message so let's not bug the user again until next interval.
-        LastExportDate = DateTimeOffset.Now;
-
-        await dialogService.ShowJaMessageBox("Reminder: You haven't backed your data up in a while. To keep your data safe, select \"Export\" in Settings.");
-    }
-
-    public DateTimeOffset LastExportDate
-    {
-        get
-        {
-            var lastExportString = preferences.Get<string>("last_export", null);
-
-            if (DateTimeOffset.TryParse(lastExportString, out var parsed))
-            {
-                return parsed;
-            }
-            else
-            {
-                // If we haven't tracked this, or it's malformed, set it to current so the user won't immediately get notified after first launch.
-                LastExportDate = DateTimeOffset.Now;
-                return DateTimeOffset.Now;
-            }
-        }
-        set => preferences.Set("last_export", value.ToString("O"));
     }
 }

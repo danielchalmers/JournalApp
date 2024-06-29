@@ -60,6 +60,10 @@
             }
 
             <div class="data-point-group">
+                @{
+                    var _groupIsEmpty = true;
+                }
+
                 @if (!string.IsNullOrEmpty(group.Key))
                 {
                     <MudText Class="data-point-group-header" Typo="Typo.h5">
@@ -79,6 +83,8 @@
                     {
                         @foreach (var point in _day.Points.Where(x => !x.Deleted && x.Category.Guid == category.Guid && x.Type == category.Type).OrderBy(x => x.CreatedAt))
                         {
+                            _groupIsEmpty = false;
+
                             <li class="data-point-container">
                                 @if (!string.IsNullOrEmpty(category.Name))
                                 {
@@ -111,6 +117,11 @@
                     }
                     else if (group.Key == "Notes")
                     {
+                        @if (_groupIsEmpty)
+                        {
+                            <MudText>No notes today!</MudText>
+                        }
+
                         <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Rounded.Comment" OnClick="NewNote" FullWidth>New note</MudButton>
                     }
                 </footer>
@@ -171,9 +182,6 @@
                 logger.LogInformation($"Switching from {_day} to current day after user was gone since {_stoppedDate}");
                 await GoToDay(DateOnly.FromDateTime(DateTime.Now));
                 await ScrollToTop();
-
-                await AppDataUIService.ShowExportReminderIfDue(DialogService);
-                OpenSettings();
             }
             else
             {
