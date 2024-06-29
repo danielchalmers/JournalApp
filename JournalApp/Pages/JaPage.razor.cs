@@ -44,6 +44,9 @@ public partial class JaPage : ComponentBase, IDisposable
     {
         base.OnInitialized();
 
+        // Register the handler for location changing event.
+        _locationChangingRegistration = NavigationManager.RegisterLocationChangingHandler(OnLocationChanging);
+
         // Subscribe to window events if the window is available (not in tests).
         if (App.Window is not null)
         {
@@ -51,9 +54,6 @@ public partial class JaPage : ComponentBase, IDisposable
             App.Window.Destroying += OnWindowDeactivatedOrDestroying;
             App.Window.Resumed += OnWindowResumed;
         }
-
-        // Register the handler for location changing event.
-        _locationChangingRegistration = NavigationManager.RegisterLocationChangingHandler(OnLocationChanging);
     }
 
     /// <summary>

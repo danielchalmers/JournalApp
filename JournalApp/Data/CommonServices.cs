@@ -14,8 +14,8 @@ public static class CommonServices
         {
             c.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomCenter;
             c.SnackbarConfiguration.NewestOnTop = true;
-            c.SnackbarConfiguration.HideTransitionDuration = 300;
-            c.SnackbarConfiguration.ShowTransitionDuration = 300;
+            c.SnackbarConfiguration.HideTransitionDuration = 200;
+            c.SnackbarConfiguration.ShowTransitionDuration = 200;
             c.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
         });
 

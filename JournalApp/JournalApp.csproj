@@ -60,7 +60,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
     <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
     <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
-    <PackageReference Include="MudBlazor" Version="7.0.0-rc.1" />
+    <PackageReference Include="MudBlazor" Version="7.0.0-rc.2" />
     <PackageReference Include="Nerdbank.GitVersioning" Version="3.6.139" PrivateAssets="All" />
   </ItemGroup>
 

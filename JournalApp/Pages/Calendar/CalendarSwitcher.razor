@@ -35,10 +35,10 @@
     [Parameter]
     public EventCallback YearClicked { get; set; }
 
-    void OnYearClicked()
+    Task OnYearClicked()
     {
         SelectedYear = DateTime.Now.Year;
-        YearClicked.InvokeAsync();
+        return YearClicked.InvokeAsync();
     }
 
     public void NextYear()

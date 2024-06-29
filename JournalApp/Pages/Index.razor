@@ -169,7 +169,8 @@
             if (KeyEventService.CurrentDepth == 0)
             {
                 logger.LogInformation($"Switching from {_day} to current day after user was gone since {_stoppedDate}");
-                await GoToDay(DateOnly.FromDateTime(DateTime.Now), scrollToTop: true);
+                await GoToDay(DateOnly.FromDateTime(DateTime.Now));
+                await ScrollToTop();
 
                 await AppDataUIService.ShowExportReminderIfDue(DialogService);
                 OpenSettings();
@@ -186,17 +187,18 @@
         if (e.Detail == 2)
         {
             logger.LogDebug("Title clicked twice so going to now");
-            await GoToDay(DateOnly.FromDateTime(DateTime.Now), scrollToTop: true);
+            await GoToDay(DateOnly.FromDateTime(DateTime.Now));
+            await ScrollToTop();
         }
     }
 
     async Task ScrollToTop()
     {
         logger.LogInformation("Scrolling to the top");
-        await ScrollManager.ScrollToTopAsync("main-body");
+        await JSRuntime.InvokeVoidAsync("scrollToAbsoluteTop", "instant");
     }
 
-    async Task GoToDay(DateOnly date, bool scrollToTop = false)
+    async Task GoToDay(DateOnly date)
     {
         var sw = Stopwatch.StartNew();
 
@@ -205,9 +207,6 @@
         await db.SaveChangesAsync(); // Save potentially new day and points.
 
         logger.LogDebug($"Went to {_day} in {sw.ElapsedMilliseconds}ms ({sw.ElapsedTicks} ticks)");
-
-        if (scrollToTop)
-            await ScrollToTop();
 
         StateHasChanged();
     }

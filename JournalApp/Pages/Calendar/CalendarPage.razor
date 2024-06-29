@@ -26,7 +26,7 @@
     {
         <div style="padding-bottom: 40vh;">
             <CalendarView GridYear="_gridYear.Value" OpenToDate="OpenToDate"
-                          CalendarLoaded="ScrollToOpenToDate" DayClicked="@(EventUtil.AsNonRenderingEventHandler(Close))"
+                          CalendarRendered="ScrollToOpenToDate" DayClicked="@(EventUtil.AsNonRenderingEventHandler(Close))"
                           PreviousMonthClicked="PreviousMonth" NextMonthClicked="NextMonth" />
         </div>
     }
@@ -73,16 +73,16 @@
         logger.LogInformation($"Loaded {SelectedYear}");
     }
 
-    async Task ScrollToMonth(int month, bool smooth = false)
+    async Task ScrollToMonth(int month, bool smooth = true)
     {
         logger.LogDebug($"Scrolling to month {month}, smooth: {smooth}");
 
         await JSRuntime.InvokeVoidAsync("scrollToTopOfNestedElement", ".page-body", $"#calendar-month-{month}", smooth ? "smooth" : "instant");
     }
 
-    async Task ScrollToOpenToDate() => await ScrollToMonth(OpenToDate.Month, true);
+    Task ScrollToOpenToDate() => ScrollToMonth(OpenToDate.Month);
 
-    async Task OnYearClicked() => await ScrollToMonth(DateTime.Now.Month);
+    async Task OnYearClicked() => await JSRuntime.InvokeVoidAsync("scrollToAbsoluteTop", "instant");
 
     async Task PreviousMonth(int month)
     {
