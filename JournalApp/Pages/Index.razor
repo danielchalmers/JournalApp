@@ -172,6 +172,7 @@
                 await GoToDay(DateOnly.FromDateTime(DateTime.Now), scrollToTop: true);
 
                 await AppDataUIService.ShowExportReminderIfDue(DialogService);
+                OpenSettings();
             }
             else
             {
