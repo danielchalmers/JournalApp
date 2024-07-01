@@ -10,14 +10,120 @@
         Services.GetService<AppDbSeeder>().SeedCategories();
     }
 
-    [Fact(Skip = "Stub")]
-    public async Task ClickCategoryOpensEditor() { }
+    [Fact]
+    public void EditDialog_Open()
+    {
+        var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var guid = "0fb54aff-9ecc-4c17-bab5-b908b794cea9"; // Anxiety.
+
+        var layout = Render(
+    @<MainLayout>
+        <Body>
+            <ManageCategoriesPage />
+        </Body>
+    </MainLayout>
+    );
+
+        DataPointCategory Category()
+        {
+            using var db = dbf.CreateDbContext();
+            return db.Categories.Single(c => c.Guid == new Guid(guid));
+        }
+
+        layout.Find($"#manage-category-{guid} > .manage-category-edit-button").Click();
+        var editDialog = layout.FindComponent<EditCategoryDialog>();
+
+        // Assert.
+        Category().Name.Should().Be("Anxiety");
+        editDialog.FindAll(".mud-input-text input")[0].GetAttribute("value").Should().Be("Anxiety");
+
+        layout.Find(".submit-button").Click();
+    }
+
+    [Fact]
+    public void EditDialog_UpdatesList()
+    {
+        var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var guid = "0fb54aff-9ecc-4c17-bab5-b908b794cea9"; // Anxiety.
+
+        var layout = Render(
+    @<MainLayout>
+        <Body>
+            <ManageCategoriesPage />
+        </Body>
+    </MainLayout>
+    );
+
+        DataPointCategory Category()
+        {
+            using var db = dbf.CreateDbContext();
+            return db.Categories.Single(c => c.Guid == new Guid(guid));
+        }
+
+        layout.Find($"#manage-category-{guid} > .manage-category-edit-button").Click();
+
+        Category().Name.Should().Be("Anxiety");
+        layout.FindAll(".category-dialog .mud-input-text input")[0].Input("New name");
+
+        // Submit changes and confirm they have changed on the main list.
+        layout.Find(".category-dialog .submit-button").Click();
+        layout.Find($"#manage-category-{guid} > .manage-category-edit-button").TextContent.Should().Be("New name");
+    }
 
     [Fact(Skip = "Stub")]
-    public async Task ClickCategoryOpensEditorAndUpdatesList() { }
+    public void EditDialog_Delete() { }
 
-    [Fact(Skip = "Stub")]
-    public async Task ClickPlusOpensEditorAndAddsNewCategoryToList() { }
+    [Fact]
+    public void AddNewCategory()
+    {
+        var layout = Render(
+    @<MainLayout>
+        <Body>
+            <ManageCategoriesPage />
+        </Body>
+    </MainLayout>
+    );
+
+        // Initial state.
+        layout.FindAll(".manage-category-edit-button").Count.Should().Be(13);
+
+        // Open the dialog to create a new category.
+        layout.Find(".add-category-button").Click();
+        layout.Markup.Should().Contain("New category");
+
+        // Set up the new category.
+        layout.FindAll(".category-dialog .mud-input-text input")[0].Input("New name");
+
+        // Submit changes and confirm there is a new category in the list.
+        layout.Find(".category-dialog .submit-button").Click();
+        layout.FindAll(".manage-category-edit-button").Count.Should().Be(14);
+    }
+
+    [Fact]
+    public void AddNewMedication()
+    {
+        var layout = Render(
+    @<MainLayout>
+        <Body>
+            <ManageCategoriesPage Group="Medications" />
+        </Body>
+    </MainLayout>
+    );
+
+        // Initial state.
+        layout.FindAll(".manage-category-edit-button").Count.Should().Be(6);
+
+        // Open the dialog to create a new category.
+        layout.Find(".add-category-button").Click();
+        layout.Markup.Should().Contain("New medication");
+
+        // Set up the new category.
+        layout.FindAll(".category-dialog .mud-input-text input")[0].Input("New name");
+
+        // Submit changes and confirm there is a new category in the list.
+        layout.Find(".category-dialog .submit-button").Click();
+        layout.FindAll(".manage-category-edit-button").Count.Should().Be(7);
+    }
 
     [Fact]
     public void ReadOnlyCannotBeEdited()
@@ -73,7 +179,7 @@
         cut.Find($"#manage-category-{guid} > .manage-category-up-button").HasAttribute("disabled").Should().BeTrue();
     }
 
-    [Fact(Skip = "Doesn't like the null group being passed")]
+    [Fact(Skip = "TBD")]
     [Description("Checks if the number of categories in the database per group match the number rendered")]
     public void ShowsCorrectCategoriesInGroup()
     {
@@ -86,7 +192,7 @@
         {
             var cut = Render(@<ManageCategoriesPage Group="x.Group" />);
 
-            cut.FindAll(".manage-category").Count.Should().Be(x.Count);
+            cut.FindAll(".manage-category-edit-button").Count.Should().Be(x.Count);
         }
     }
 }
