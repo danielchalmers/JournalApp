@@ -22,7 +22,7 @@
             <ManageCategoriesPage />
         </Body>
     </MainLayout>
-    );
+        );
 
         DataPointCategory Category()
         {
@@ -52,7 +52,7 @@
             <ManageCategoriesPage />
         </Body>
     </MainLayout>
-    );
+        );
 
         DataPointCategory Category()
         {
@@ -82,7 +82,7 @@
             <ManageCategoriesPage />
         </Body>
     </MainLayout>
-    );
+        );
 
         // Initial state.
         layout.FindAll(".manage-category-edit-button").Count.Should().Be(13);
@@ -179,20 +179,23 @@
         cut.Find($"#manage-category-{guid} > .manage-category-up-button").HasAttribute("disabled").Should().BeTrue();
     }
 
-    [Fact(Skip = "TBD")]
-    [Description("Checks if the number of categories in the database per group match the number rendered")]
+    [Fact]
+    [Description("Ensures the number of categories in the database per group match the number rendered")]
     public void ShowsCorrectCategoriesInGroup()
     {
         var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
 
         using var db = dbf.CreateDbContext();
-        var categoryCountPerGroup = db.Categories.GroupBy(x => x.Group).Select(x => new { Group = x.Key, Count = x.Count() }).ToList();
+        var categoryGuidsByGroup = db.Categories.Select(c => new { Group = c.Group, Guid = c.Guid }).GroupBy(x => x.Group).ToList();
 
-        foreach (var x in categoryCountPerGroup)
+        foreach (var x in categoryGuidsByGroup)
         {
-            var cut = Render(@<ManageCategoriesPage Group="x.Group" />);
+            var cut = Render(@<ManageCategoriesPage Group="@x.Key" />);
 
-            cut.FindAll(".manage-category-edit-button").Count.Should().Be(x.Count);
+            foreach (var y in x)
+            {
+                cut.FindAll($"#manage-category-{y.Guid}").Count.Should().Be(1);
+            }
         }
     }
 }

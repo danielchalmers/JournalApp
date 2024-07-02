@@ -37,8 +37,8 @@
         </MudMenu>
     </div>
 
-    <div class="switcher">
-        <MudIconButton Icon="@Icons.Material.Rounded.ArrowBackIos" aria-label="Previous day" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
+    <div class="switcher" data-current-day="@_day.Date.DayNumber">
+        <MudIconButton Class="day-switcher-back" Icon="@Icons.Material.Rounded.ArrowBackIos" aria-label="Previous day" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
 
         <div class="switcher-header">
             <MudButton OnClick="OpenCalendar" aria-label="Open Calendar">
@@ -46,7 +46,7 @@
             </MudButton>
         </div>
 
-        <MudIconButton Icon="@Icons.Material.Rounded.ArrowForwardIos" aria-label="Next day" OnClick="NextDay" Disabled="@(_day.Date > DateOnly.FromDateTime(DateTime.Now))" />
+        <MudIconButton Class="day-switcher-forward" Icon="@Icons.Material.Rounded.ArrowForwardIos" aria-label="Next day" OnClick="NextDay" Disabled="@(_day.Date > DateOnly.FromDateTime(DateTime.Now))" />
     </div>
 </header>
 
@@ -79,7 +79,7 @@
                     {
                         @foreach (var point in _day.Points.Where(x => !x.Deleted && x.Category.Guid == category.Guid && x.Type == category.Type).OrderBy(x => x.CreatedAt))
                         {
-                            <li class="data-point-container">
+                            <li class="data-point-container" data-category-guid="@category.Guid">
                                 @if (!string.IsNullOrEmpty(category.Name))
                                 {
                                     <div class="data-point-header">

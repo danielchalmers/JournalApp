@@ -1,10 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging.Abstractions;
+﻿@namespace JournalApp.Tests
+@using Microsoft.Extensions.Logging.Abstractions
+@inherits JaTestContext
 
-namespace JournalApp.Tests;
-
-public class CalendarTests : JaTestContext
-{
+@code {
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();
@@ -23,8 +21,8 @@ public class CalendarTests : JaTestContext
     public void SwitchYear()
     {
         var cut = RenderComponent<CalendarPage>(p =>
-            p.Add(x => x.OpenToDateString, "20000101")
-        );
+        p.Add(x => x.OpenToDateString, "20000101")
+    );
 
         cut.WaitForAssertion(() => cut.Find(".calendar-view"));
 
@@ -54,8 +52,8 @@ public class CalendarTests : JaTestContext
     public async Task CalendarViewMoodBlockCount()
     {
         var cut = RenderComponent<CalendarPage>(p =>
-            p.Add(x => x.OpenToDateString, "20230101")
-        );
+        p.Add(x => x.OpenToDateString, "20230101")
+    );
         cut.Instance.SelectedYear.Should().Be(2023);
 
         // Wait for calendar to load.
@@ -85,8 +83,8 @@ public class CalendarTests : JaTestContext
         Thread.CurrentThread.CurrentCulture = _culture;
 
         var cut = RenderComponent<CalendarPage>(p =>
-            p.Add(x => x.OpenToDateString, "20230101")
-        );
+        p.Add(x => x.OpenToDateString, "20230101")
+    );
         cut.Instance.SelectedYear.Should().Be(2023);
 
         // Wait for calendar to load.
@@ -102,25 +100,29 @@ public class CalendarTests : JaTestContext
         weekHeaders[6].TextContent.Should().Be("Tu");
     }
 
-    [Fact(Skip = "Can't find dialog")]
+    [Fact]
     public void ChangePalette()
     {
-        var cut = RenderComponent<CalendarPage>(p =>
-            p.Add(x => x.OpenToDateString, "20230101")
-        );
+        var layout = Render(
+    @<MainLayout>
+        <Body>
+            <CalendarPage OpenToDateString="20230101" />
+        </Body>
+    </MainLayout>);
 
         var preferenceService = Services.GetService<PreferenceService>();
         var initialColor = preferenceService.PrimaryColor;
 
-        cut.Find(".pick-palette").Click();
+        layout.Find(".pick-palette").Click();
 
         // Click a color.
-        var overlay = cut.WaitForElement(".color-picker .mud-dialog-content .mud-picker-color-overlay-black .mud-picker-color-overlay");
-        overlay.Click(new MouseEventArgs { OffsetX = 235, OffsetY = 18 });
+        var overlay = layout.Find(".color-picker .mud-dialog-content .mud-picker-color-overlay-black .mud-picker-color-overlay");
+        overlay.PointerDown(new PointerEventArgs { OffsetX = 235, OffsetY = 18 });
+        overlay.PointerUp(new PointerEventArgs { OffsetX = 235, OffsetY = 18 });
 
         // Close dialog.
-        cut.Find(".mud-dialog-container .mud-overlay-dialog").Click();
-        cut.FindAll(".mud-overlay-dialog").Count.Should().Be(0);
+        layout.Find(".mud-overlay-dialog").Click();
+        layout.WaitForAssertion(() => layout.FindAll(".mud-overlay-dialog").Count.Should().Be(0));
 
         // Color should have changed.
         preferenceService.PrimaryColor.Should().NotBe(initialColor);
@@ -182,13 +184,13 @@ public class CalendarTests : JaTestContext
 
             Assert.Equal([
                 DayOfWeek.Sunday,
-                DayOfWeek.Monday,
-                DayOfWeek.Tuesday,
-                DayOfWeek.Wednesday,
-                DayOfWeek.Thursday,
-                DayOfWeek.Friday,
-                DayOfWeek.Saturday,
-            ], gridMonth.DaysOfWeek);
+            DayOfWeek.Monday,
+            DayOfWeek.Tuesday,
+            DayOfWeek.Wednesday,
+            DayOfWeek.Thursday,
+            DayOfWeek.Friday,
+            DayOfWeek.Saturday,
+        ], gridMonth.DaysOfWeek);
         }
     }
 }

@@ -10,14 +10,90 @@
         Services.GetService<AppDbSeeder>().SeedCategories();
     }
 
-    [Fact(Skip = "Stub")]
-    public async Task CanSwitchDays() { }
+    [Fact]
+    public void CanSwitchDays()
+    {
+        var layout = Render(
+    @<MainLayout>
+        <Body>
+            <Index />
+        </Body>
+    </MainLayout>
+    );
 
-    [Fact(Skip = "Stub")]
-    public async Task CannotGoPastTomorrow() { }
+        var nowDayNumber = DateOnly.FromDateTime(DateTime.Now).DayNumber;
+        var selectedDayNumber = () => int.Parse(layout.Find(".switcher").GetAttribute("data-current-day"));
 
-    [Fact(Skip = "Stub")]
-    public async Task DataIsSavedWhileSwitchingDays() { }
+        selectedDayNumber().Should().Be(nowDayNumber);
+
+        layout.Find(".day-switcher-back").Click();
+        selectedDayNumber().Should().Be(nowDayNumber - 1);
+
+        layout.Find(".day-switcher-forward").Click();
+        selectedDayNumber().Should().Be(nowDayNumber);
+    }
+
+    [Fact]
+    public void CannotGoPastTomorrow()
+    {
+        var layout = Render(
+    @<MainLayout>
+        <Body>
+            <Index />
+        </Body>
+    </MainLayout>
+        );
+
+        var nowDayNumber = DateOnly.FromDateTime(DateTime.Now).DayNumber;
+        var selectedDayNumber = () => int.Parse(layout.Find(".switcher").GetAttribute("data-current-day"));
+
+        // We can go to tomorrow.
+        layout.Find(".day-switcher-forward").HasAttribute("disabled").Should().BeFalse();
+        layout.Find(".day-switcher-forward").Click();
+        selectedDayNumber().Should().Be(nowDayNumber + 1);
+
+        // We cannot go past tomorrow
+        layout.Find(".day-switcher-forward").HasAttribute("disabled").Should().BeTrue();
+        layout.Find(".day-switcher-forward").Click();
+        selectedDayNumber().Should().Be(nowDayNumber + 1);
+    }
+
+    [Fact(Skip = "TBD")]
+    public void DataIsSavedWhileSwitchingDays()
+    {
+        var layout = Render(
+    @<MainLayout>
+        <Body>
+            <Index />
+        </Body>
+    </MainLayout>
+    );
+
+        // Set up the exact day, category, and point we will be asserting.
+        // var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
+        // using var db = dbf.CreateDbContext();
+        // var day = db.Days.Single(d => d.Date == new DateOnly(2023, 01, 01));
+        // var weightCategoryGuid = "480dc07d-1330-486f-9b30-ec83a3d4e6f0";
+        // var weightPoint = db.Points.Single(p => p.Day == day && p.Category.Guid == new Guid(weightCategoryGuid));
+        // var weightInput = () => layout.Find($".data-point-container[data-category-guid=\"{weightCategoryGuid}\"] .data-point-view input");
+        // var initialWeight = weightInput().GetAttribute("value");
+
+        var weightInput = () => layout.Find($".data-point-container[data-category-guid=\"480dc07d-1330-486f-9b30-ec83a3d4e6f0\"] .data-point-view input");
+
+        var initialWeight = weightInput().GetAttribute("value");
+
+        // Change the value so we can test if it is saved. -1 will never be chosen randomly.
+        weightInput().Input("-1");
+        weightInput().GetAttribute("value").Should().Be("-1");
+
+        // Go back then forward to make sure the data is saved.
+        layout.Find(".day-switcher-back").Click();
+        weightInput().GetAttribute("value").Should().NotBe("-1");
+        layout.Find(".day-switcher-forward").Click();
+
+        // Assert that the weight is back to it's changed value from the original day.
+        weightInput().GetAttribute("value").Should().Be("-1");
+    }
 
     [Theory]
     [Description("Checks if the notes group is visible depending on the user's preference")]
