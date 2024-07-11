@@ -42,7 +42,7 @@
 
         <div class="switcher-header">
             <MudButton OnClick="OpenCalendar" aria-label="Open Calendar">
-                <MudText Typo="Typo.h5" Align="Align.Center" GutterBottom="false">@_day.Date.ToString("ddd, MMM d")</MudText>
+                <MudText Typo="Typo.h5" HtmlTag="p" Align="Align.Center" GutterBottom="false">@_day.Date.ToString("ddd, MMM d")</MudText>
             </MudButton>
         </div>
 
@@ -83,7 +83,9 @@
                                 @if (!string.IsNullOrEmpty(category.Name))
                                 {
                                     <div class="data-point-header">
-                                        <MudText>@(DataPointView.GetHeaderText(point))</MudText>
+                                        <MudText HtmlTag="h6">
+                                            @(DataPointView.GetHeaderText(point))
+                                        </MudText>
                                     </div>
                                 }
 
