@@ -8,7 +8,7 @@
     <MudMenu Dense>
         <ActivatorContent>
             <MudButton aria-label="Choose emoji for day's mood'">
-                <MudText Typo="Typo.h4" HtmlTag="span">@(Point.Mood ?? "🤔")</MudText>
+                <Emoji>@(Point.Mood ?? "🤔")</Emoji>
             </MudButton>
         </ActivatorContent>
 
@@ -16,7 +16,7 @@
             @foreach (var mood in DataPoint.Moods)
             {
                 <MudMenuItem OnClick="@(() => Point.Mood = mood)">
-                    <MudText Typo="Typo.h4" HtmlTag="span">@mood</MudText>
+                    <Emoji>@mood</Emoji>
                 </MudMenuItem>
             }
         </ChildContent>

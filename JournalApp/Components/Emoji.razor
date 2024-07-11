@@ -1,0 +1,11 @@
+﻿@namespace JournalApp
+
+@if (ChildContent != null)
+{
+    <MudText Typo="Typo.h4" HtmlTag="span">@ChildContent</MudText>
+}
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}

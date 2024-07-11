@@ -38,11 +38,6 @@ body {
   width: 55vw;
 }
 
-.break-flex-column {
-  flex-basis: 100%;
-  width: 0;
-}
-
 .page {
 }
 
