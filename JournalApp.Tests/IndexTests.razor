@@ -104,8 +104,14 @@
         var preferences = Services.GetService<PreferenceService>();
         preferences.HideNotes = hideNotes;
 
-        var cut = Render(@<Index />);
+        var layout = Render(
+    @<MainLayout>
+        <Body>
+            <Index />
+        </Body>
+    </MainLayout>
+        );
 
-        cut.FindAll(".data-point-group").Count.Should().Be(hideNotes ? 2 : 3);
+        layout.FindAll(".data-point-group").Count.Should().Be(hideNotes ? 2 : 3);
     }
 }
