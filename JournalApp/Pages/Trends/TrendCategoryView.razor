@@ -223,7 +223,7 @@ else
         if (point.IsTimestampedNote)
         {
             // Add the time.
-            sb.Append($" {point.CreatedAt:h:mm tt}");
+            sb.Append($" {point.CreatedAt.ToLocalTime():h:mm tt}");
 
             // Denote that it was created from a future date.
             if (DateOnly.FromDateTime(point.CreatedAt.Date) != point.Day.Date)

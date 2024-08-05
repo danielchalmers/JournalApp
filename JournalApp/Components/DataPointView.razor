@@ -112,9 +112,15 @@ else if (Point.Type == PointType.Medication)
     {
         get
         {
-            // Only include a label if we're in the general notes group. If this is a custom category it will be covered by its own label.
+            var localTime = Point.CreatedAt.ToLocalTime();
+
+            // Only include a label if we're in the general notes group.
+            // If this is a custom category it will be covered by its own label.
             if (Point.IsTimestampedNote)
-                return Point.CreatedAt.ToString(DateOnly.FromDateTime(Point.CreatedAt.Date) == Point.Day.Date ? "h:mm tt" : "M/d/yy h:mm tt");
+            {
+                var isSameDay = DateOnly.FromDateTime(localTime.Date) == Point.Day.Date;
+                return localTime.ToString(isSameDay ? "h:mm tt" : "M/d/yy h:mm tt");
+            }
 
             return null;
         }

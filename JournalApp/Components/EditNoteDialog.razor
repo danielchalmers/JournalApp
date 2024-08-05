@@ -37,7 +37,7 @@
 
             if (value?.IsTimestampedNote == true)
             {
-                Title = value.CreatedAt.ToString("MMM d h:mm tt");
+                Title = value.CreatedAt.ToLocalTime().ToString("MMM d h:mm tt");
                 Placeholder = "What's on your mind?";
 
                 logger.LogDebug($"Using timestamped note <{value.CreatedAt}>");
