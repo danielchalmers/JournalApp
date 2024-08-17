@@ -103,7 +103,7 @@ h1, h2, h3, h4, h5, h6 {
 .mud-form {
   display: flex;
   flex-direction: column;
-  gap: 0.75em;
+  gap: 1em;
 }
 
 .mud-input-text {

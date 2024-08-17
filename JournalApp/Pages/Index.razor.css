@@ -1,22 +1,22 @@
 .main-timeline {
   display: flex;
   flex-direction: column;
-  gap: 1.5em;
+  gap: 0.5em;
 }
 
 .data-point-group {
   display: flex;
   flex-direction: column;
+  gap: 1em;
 }
 
 .data-point-list {
   display: flex;
   flex-direction: column;
-  gap: 0.5em;
+  gap: 1em;
 }
 
 .data-point-group-footer {
-  margin-top: 1em;
 }
 
 .data-point-container {

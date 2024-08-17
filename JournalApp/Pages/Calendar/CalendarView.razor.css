@@ -1,7 +1,7 @@
 .calendar-view {
   display: flex;
   flex-direction: column;
-  gap: 0.75em;
+  gap: 1em;
 }
 
 .calendar-month-header {
