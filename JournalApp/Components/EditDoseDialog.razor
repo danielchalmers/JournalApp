@@ -18,7 +18,9 @@
 
     <DialogContent>
         <MudForm>
-            <MudText Style="word-wrap: anywhere">@(Point.Category.Name + ":")</MudText>
+            <MudText Align="Align.Center" Typo="Typo.subtitle2">
+                To change this for all days, go to "Edit medications" from the home screen.
+            </MudText>
 
             <MudNumericField @bind-Value="Dose"
                              Label="@($"Dose ({Point.Day.Date:ddd, MMM d})")"
@@ -26,7 +28,10 @@
                              MaxLength="6" HideSpinButtons Immediate />
 
 
-            <MudText aria-label="Category details">@CategoryDetails</MudText>
+            @if (!string.IsNullOrWhiteSpace(CategoryDetails))
+            {
+                <MudTextField Value="CategoryDetails" ReadOnly AutoGrow MaxLines="10" Label="Details" />
+            }
         </MudForm>
     </DialogContent>
 </MudDialog>
