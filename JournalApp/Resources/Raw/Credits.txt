@@ -2,7 +2,7 @@
 
 Play Store: https://play.google.com/store/apps/details?id=com.danielchalmers.journalapp
 
-Email: JournalApp@proton.me
+Email: DCAppHelp@outlook.com
 
 
 
@@ -962,13 +962,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-
-
-Inspired by
-
-eMoods: https://play.google.com/store/apps/details?id=com.emoodtracker.wellness
-
-and
-
-Pixels: https://play.google.com/store/apps/details?id=ar.teovogel.yip

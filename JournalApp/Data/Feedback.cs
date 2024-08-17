@@ -2,7 +2,7 @@
 
 public static class Feedback
 {
-    public static readonly string Email = "JournalApp@proton.me";
+    public static readonly string Email = "DCAppHelp@outlook.com";
     public static readonly string NewGitHubIssue = "https://github.com/danielchalmers/JournalApp/issues/new";
 
     public static string GenerateLink(string subject = null, string body = null)
