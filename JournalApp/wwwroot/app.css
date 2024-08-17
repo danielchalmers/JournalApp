@@ -69,13 +69,9 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0 !important;
   top: 0 !important;
   position: sticky !important;
-  background-color: var(--mud-palette-primary-lighten);
-  --mud-palette-action-default: var(--mud-palette-appbar-text);
+  background-color: var(--mud-palette-background);
+  border-bottom: 1px solid var(--mud-palette-divider);
 }
-
-  .mud-dialog .mud-dialog-title, .page-header *.mud-typography {
-    color: var(--mud-palette-appbar-text);
-  }
 
 .mud-dialog .mud-dialog-content, .page-body {
   width: 100%;
