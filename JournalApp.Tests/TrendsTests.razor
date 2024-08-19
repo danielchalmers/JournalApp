@@ -1,0 +1,71 @@
+﻿@namespace JournalApp.Tests
+@inherits JaTestContext
+
+@code {
+    [Fact]
+    public void HeaderCategory()
+    {
+        var category = new DataPointCategory
+        {
+            Guid = Guid.NewGuid(),
+            Name = "Hello World",
+            Type = PointType.Text,
+        };
+
+        TrendCategoryView.GetHeaderText(category).Should().Be("Hello World");
+    }
+
+    [Fact]
+    public void HeaderCategory_FallbackToGroupName()
+    {
+        var category = new DataPointCategory
+        {
+            Guid = Guid.NewGuid(),
+            Group = "Notes",
+            Type = PointType.Note,
+        };
+
+        TrendCategoryView.GetHeaderText(category).Should().Be("Notes");
+    }
+
+    [Fact]
+    public void HeaderMedication()
+    {
+        var category = new DataPointCategory
+        {
+            Guid = Guid.NewGuid(),
+            Name = "Hi",
+            Type = PointType.Medication,
+            MedicationUnit = "oz",
+        };
+
+        TrendCategoryView.GetHeaderText(category).Should().Be("Hi (oz)");
+    }
+
+    [Fact]
+    public void HeaderMedication_TrimUnit()
+    {
+        var category = new DataPointCategory
+        {
+            Guid = Guid.NewGuid(),
+            Name = "Hi",
+            Type = PointType.Medication,
+            MedicationUnit = "  oz",
+        };
+
+        TrendCategoryView.GetHeaderText(category).Should().Be("Hi (oz)");
+    }
+
+    [Fact]
+    public void HeaderMedication_NoUnit()
+    {
+        var category = new DataPointCategory
+        {
+            Guid = Guid.NewGuid(),
+            Name = "Hi",
+            Type = PointType.Medication,
+        };
+
+        TrendCategoryView.GetHeaderText(category).Should().Be("Hi");
+    }
+}

@@ -198,16 +198,17 @@ else
     public static string GetHeaderText(DataPointCategory category)
     {
         var sb = new StringBuilder();
-
         // Show the name if there is one; otherwise the group title.
         if (string.IsNullOrEmpty(category.Name))
             sb.Append(category.Group);
         else
             sb.Append(category.Name);
 
-        // Append the unit if it's a medication category.
-        if (category.Type == PointType.Medication)
-            sb.Append($" ({category.MedicationUnit?.Trim()})");
+        // Append the unit if it's a medication category with a unit.
+        if (category.Type == PointType.Medication && !string.IsNullOrWhiteSpace(category.MedicationUnit))
+        {
+            sb.Append(' ').Append('(').Append(category.MedicationUnit?.Trim()).Append(')');
+        }
 
         return sb.ToString();
     }

@@ -172,35 +172,31 @@ else if (Point.Type == PointType.Medication)
     public static string GetHeaderText(DataPoint point)
     {
         var category = point.Category;
-        var sb = new StringBuilder();
-
-        sb.Append(category.Name);
+        var sb = new StringBuilder(category.Name);
 
         if (point.Type == PointType.Medication && !string.IsNullOrWhiteSpace(category.MedicationUnit))
         {
-            List<string> parts = [];
+            var parts = new List<string>();
 
             // The default dose and unit.
-            if (category.MedicationDose != null)
+            if (category.MedicationDose.HasValue)
             {
                 parts.Add($"{category.MedicationDose:0.##}{category.MedicationUnit}");
             }
 
             // Show the dose if it's different from the category default.
-            if (point.MedicationDose != category.MedicationDose && point.MedicationDose != null && category.MedicationUnit != null)
+            if (point.MedicationDose.HasValue && point.MedicationDose != category.MedicationDose)
             {
                 parts.Add($"{point.MedicationDose:0.##}{category.MedicationUnit}");
             }
 
-            if (parts.Any())
+            if (parts.Count > 0)
             {
-                sb.Append(' ');
-                sb.Append(string.Join(" - ", parts));
+                sb.Append(' ').Append(string.Join(" - ", parts));
             }
         }
 
-        sb.Append(":");
-
+        sb.Append(':');
         return sb.ToString();
     }
 }
