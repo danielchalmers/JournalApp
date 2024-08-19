@@ -25,9 +25,20 @@ internal record TrendChartPoint(string Day, DataPoint Point)
         get
         {
             if (Point?.Bool == true)
-                return Point.MedicationDose;
+            {
+                if (Point.Category.MedicationDose.HasValue || !string.IsNullOrEmpty(Point.Category.MedicationUnit))
+                {
+                    return Point.MedicationDose;
+                }
+                else
+                {
+                    return 1;
+                }
+            }
             else if (Point?.Bool == false)
+            {
                 return 0;
+            }
 
             return null;
         }
