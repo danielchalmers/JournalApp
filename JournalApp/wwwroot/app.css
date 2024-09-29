@@ -106,6 +106,10 @@ h1, h2, h3, h4, h5, h6 {
   gap: 1em;
 }
 
+.mud-input > textarea.mud-input-root {
+  margin: 0 !important;
+}
+
 .mud-input-text {
   margin-top: 0 !important;
 }
