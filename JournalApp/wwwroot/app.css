@@ -88,7 +88,7 @@ h1, h2, h3, h4, h5, h6 {
 .mud-form {
   display: flex;
   flex-direction: column;
-  gap: 1em;
+  gap: 0.75em;
 }
 
 .mud-input-text {
@@ -111,7 +111,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .mud-input > textarea.mud-input-root-outlined {
-  margin: 0.5em !important;
+  margin: 0.75em !important;
 }
 
 .mud-radio {
@@ -124,8 +124,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .mud-dialog, .mud-card {
-  padding: 1em !important;
-  gap: 1em !important;
+  padding: 0.75em !important;
+  gap: 0.75em !important;
 }
 
 .mud-dialog-title, .mud-card-header {
@@ -134,6 +134,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .mud-dialog-content, .mud-card-content {
   padding: 0 !important;
+  margin: 0 !important;
   border-radius: 0 !important;
 }
 
