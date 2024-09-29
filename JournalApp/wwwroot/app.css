@@ -30,6 +30,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  box-shadow: var(--mud-elevation-4);
 }
 
 .switcher-header {
@@ -70,7 +71,6 @@ h1, h2, h3, h4, h5, h6 {
   top: 0 !important;
   position: sticky !important;
   background-color: var(--mud-palette-background);
-  box-shadow: var(--mud-elevation-4);
 }
 
 .mud-dialog .mud-dialog-content, .page-body {
