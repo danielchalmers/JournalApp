@@ -1,7 +1,7 @@
 .worksheet-group-list {
   display: flex;
   flex-direction: column;
-  gap: 2em;
+  gap: 1em;
 }
 
 .worksheet-group {
@@ -12,7 +12,7 @@
 .worksheet-group-items {
   display: flex;
   flex-direction: column;
-  gap: 1em;
+  gap: 2em;
 }
 
 .worksheet-group-toc {

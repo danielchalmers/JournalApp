@@ -6,9 +6,19 @@
 @inject KeyEventService KeyEventService
 
 <MudDialog Class="color-picker" DefaultFocus="DefaultFocus.Element" OnBackdropClick="Submit">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Pick color</MudText>
+    </TitleContent>
+
     <DialogContent>
         <MudColorPicker Label="Primary" PickerVariant="PickerVariant.Static" @bind-Value="SelectedColor" ShowToolbar="false" ShowAlpha="false" ThrottleInterval="50" />
     </DialogContent>
+
+    <DialogActions>
+        <MudButton Class="cancel-button" StartIcon="@Icons.Material.Rounded.Close" aria-label="Cancel" OnClick="Cancel">Cancel</MudButton>
+
+        <MudButton Class="submit-button" StartIcon="@Icons.Material.Rounded.Check" aria-label="Submit" OnClick="Submit">Submit</MudButton>
+    </DialogActions>
 </MudDialog>
 
 @code {
@@ -22,6 +32,11 @@
         base.OnInitialized();
 
         KeyEventService.Entered(() => Submit());
+    }
+
+    void Cancel()
+    {
+        KeyEventService.CancelDialog(MudDialog);
     }
 
     void Submit()

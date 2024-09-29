@@ -5,20 +5,7 @@
 
 <MudDialog Class="category-dialog" DefaultFocus="DefaultFocus.FirstChild" OnBackdropClick="Submit">
     <TitleContent>
-        <div class="page-toolbar">
-            <MudIconButton Class="cancel-button" Icon="@Icons.Material.Rounded.Close" aria-label="Cancel" OnClick="Cancel" />
-
-            <MudText Typo="Typo.h6">@(Category == null ? "New" : "Edit") @(Group == "Medications" ? "medication" : "category")</MudText>
-
-            <MudSpacer />
-
-            @if (Category != null)
-            {
-                <MudIconButton Class="delete-button" Icon="@Icons.Material.Rounded.DeleteForever" aria-label="Delete forever" OnClick="Delete" />
-            }
-
-            <MudIconButton Class="submit-button" Icon="@Icons.Material.Rounded.Check" aria-label="Submit" OnClick="Submit" />
-        </div>
+        <MudText Typo="Typo.h6">@(Category == null ? "New" : "Edit") @(Group == "Medications" ? "medication" : "category")</MudText>
     </TitleContent>
 
     <DialogContent>
@@ -38,7 +25,7 @@
             }
             else if (Group == "Medications")
             {
-                <div class="d-flex flex-row flex-grow-1" style="gap: 1em">
+                <div class="d-flex flex-row flex-grow-1" style="gap: 0.75em">
                     <MudNumericField @bind-Value="MedicationDose" HideSpinButtons Label="Dose" MaxLength="6" Immediate />
 
                     <MudTextField @bind-Value="MedicationUnit" Label="Unit" MaxLength="8" Immediate />
@@ -52,6 +39,17 @@
                           Placeholder="@(Group == "Medications" ? "Start date, side effects, etc" : "Explanation, scoring criteria, etc")" />
         </MudForm>
     </DialogContent>
+
+    <DialogActions>
+        @if (Category != null)
+        {
+            <MudButton Class="delete-button" StartIcon="@Icons.Material.Rounded.DeleteForever" aria-label="Delete forever" OnClick="Delete">Delete</MudButton>
+        }
+
+        <MudButton Class="cancel-button" StartIcon="@Icons.Material.Rounded.Close" aria-label="Cancel" OnClick="Cancel">Cancel</MudButton>
+
+        <MudButton Class="submit-button" StartIcon="@Icons.Material.Rounded.Check" aria-label="Submit" OnClick="Submit">Submit</MudButton>
+    </DialogActions>
 </MudDialog>
 
 @code {

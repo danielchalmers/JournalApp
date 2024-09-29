@@ -30,22 +30,24 @@
 
         @foreach (var group in WorksheetGroups)
         {
-            <section class="worksheet-group" id="worksheet-group-key-@(MarkupUtil.ToClassName(group.Key))">
+            <MudCard Class="worksheet-group" id="@($"worksheet-group-key-{MarkupUtil.ToClassName(group.Key)}")">
                 @if (!string.IsNullOrEmpty(group.Key))
                 {
-                    <header class="d-flex align-center">
+                    <MudCardHeader Class="gap-1">
                         <MudText Typo="Typo.h4">@group.Key</MudText>
                         <MudIconButton Icon="@Icons.Material.Rounded.ArrowUpward" OnClick="ScrollToTop" aria-label="Scroll to top" />
-                    </header>
+                    </MudCardHeader>
                 }
 
-                <ul class="worksheet-group-items">
-                    @foreach (var ws in group)
-                    {
-                        <WorksheetView Worksheet="ws" ResourceClicked="OnResourceClicked" />
-                    }
-                </ul>
-            </section>
+                <MudCardContent>
+                    <ul class="worksheet-group-items">
+                        @foreach (var ws in group)
+                        {
+                            <WorksheetView Worksheet="ws" ResourceClicked="OnResourceClicked" />
+                        }
+                    </ul>
+                </MudCardContent>
+            </MudCard>
         }
     </div>
 </main>

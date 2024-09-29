@@ -27,7 +27,7 @@ else if (Point.Type == PointType.Sleep)
     <div class="d-flex align-center flex-grow-1" style="gap: 0.5em">
         <MudText Class="sleep-hours" Typo="Typo.caption">@((Point.SleepHours ?? 0).ToString("00.0"))</MudText>
         <MudIconButton Class="less-sleep" Icon="@Icons.Material.Rounded.Remove" aria-label="Less sleep" OnClick="DecrementSleep" Disabled="@(Point.SleepHours <= 0)" Size="Size.Small" />
-        <MudSlider T="decimal" @bind-NullableValue="Point.SleepHours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" Size="Size.Large" />
+        <MudSlider T="decimal" @bind-NullableValue="Point.SleepHours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" />
         <MudIconButton Class="more-sleep" Icon="@Icons.Material.Rounded.Add" aria-label="More sleep" OnClick="IncrementSleep" Disabled="@(Point.SleepHours >= 24)" Size="Size.Small" />
     </div>
 }
@@ -37,27 +37,27 @@ else if (Point.Type == PointType.Scale)
 }
 else if (Point.Type == PointType.LowToHigh)
 {
-    <MudToggleGroup T="int?" @bind-Value="Point.ScaleIndex" SelectionMode="SelectionMode.ToggleSelection" Color="Color.Primary" Size="Size.Small">
-        <MudToggleItem T="int?" Value="0"><MudText Typo="Typo.button">None</MudText></MudToggleItem>
-        <MudToggleItem T="int?" Value="1"><MudText Typo="Typo.button">Low</MudText></MudToggleItem>
-        <MudToggleItem T="int?" Value="3"><MudText Typo="Typo.button">Medium</MudText></MudToggleItem>
-        <MudToggleItem T="int?" Value="5"><MudText Typo="Typo.button">High</MudText></MudToggleItem>
+    <MudToggleGroup T="int?" @bind-Value="Point.ScaleIndex" SelectionMode="SelectionMode.ToggleSelection">
+        <MudToggleItem T="int?" Value="0">None</MudToggleItem>
+        <MudToggleItem T="int?" Value="1">Low</MudToggleItem>
+        <MudToggleItem T="int?" Value="3">Medium</MudToggleItem>
+        <MudToggleItem T="int?" Value="5">High</MudToggleItem>
     </MudToggleGroup>
 }
 else if (Point.Type == PointType.MildToSevere)
 {
-    <MudToggleGroup T="int?" @bind-Value="Point.ScaleIndex" SelectionMode="SelectionMode.ToggleSelection" Color="Color.Primary" Size="Size.Small">
-        <MudToggleItem T="int?" Value="0"><MudText Typo="Typo.button">None</MudText></MudToggleItem>
-        <MudToggleItem T="int?" Value="1"><MudText Typo="Typo.button">Mild</MudText></MudToggleItem>
-        <MudToggleItem T="int?" Value="3"><MudText Typo="Typo.button">Moderate</MudText></MudToggleItem>
-        <MudToggleItem T="int?" Value="5"><MudText Typo="Typo.button">Severe</MudText></MudToggleItem>
+    <MudToggleGroup T="int?" @bind-Value="Point.ScaleIndex" SelectionMode="SelectionMode.ToggleSelection">
+        <MudToggleItem T="int?" Value="0">None</MudToggleItem>
+        <MudToggleItem T="int?" Value="1">Mild</MudToggleItem>
+        <MudToggleItem T="int?" Value="3">Moderate</MudToggleItem>
+        <MudToggleItem T="int?" Value="5">Severe</MudToggleItem>
     </MudToggleGroup>
 }
 else if (Point.Type == PointType.Bool)
 {
-    <MudToggleGroup T="bool?" @bind-Value="Point.Bool" SelectionMode="SelectionMode.ToggleSelection" Color="Color.Primary" Size="Size.Small">
-        <MudToggleItem T="bool?" Value="false"><MudText Typo="Typo.button">No</MudText></MudToggleItem>
-        <MudToggleItem T="bool?" Value="true"><MudText Typo="Typo.button">Yes</MudText></MudToggleItem>
+    <MudToggleGroup T="bool?" @bind-Value="Point.Bool" SelectionMode="SelectionMode.ToggleSelection">
+        <MudToggleItem T="bool?" Value="false">No</MudToggleItem>
+        <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
     </MudToggleGroup>
 }
 else if (Point.Type == PointType.Number)
@@ -86,9 +86,9 @@ else if (Point.Type == PointType.Note)
 else if (Point.Type == PointType.Medication)
 {
     <div class="d-flex flex-grow-1 justify-space-between align-center" style="gap: 0.5em">
-        <MudToggleGroup T="bool?" @bind-Value="Point.Bool" @bind-Value:after="OnMedicationTakenChanged" SelectionMode="SelectionMode.ToggleSelection" Color="Color.Primary" Size="Size.Small">
-            <MudToggleItem T="bool?" Value="false"><MudText Typo="Typo.button">No</MudText></MudToggleItem>
-            <MudToggleItem T="bool?" Value="true"><MudText Typo="Typo.button">Yes</MudText></MudToggleItem>
+        <MudToggleGroup T="bool?" @bind-Value="Point.Bool" @bind-Value:after="OnMedicationTakenChanged" SelectionMode="SelectionMode.ToggleSelection">
+            <MudToggleItem T="bool?" Value="false">No</MudToggleItem>
+            <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
         </MudToggleGroup>
 
         <MudLink OnClick="EditDose" Disabled="@(string.IsNullOrWhiteSpace(Point.Category.MedicationUnit))">Edit dose</MudLink>
