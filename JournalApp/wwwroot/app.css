@@ -70,7 +70,6 @@ h1, h2, h3, h4, h5, h6 {
   top: 0 !important;
   position: sticky !important;
   background-color: var(--mud-palette-background);
-  border-bottom: 1px solid var(--mud-palette-divider);
 }
 
 .mud-dialog .mud-dialog-content, .page-body {
