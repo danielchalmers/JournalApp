@@ -62,7 +62,7 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--mud-palette-text-primary);
 }
 
-.mud-dialog .mud-dialog-title, .page-header {
+.page-header {
   z-index: 999;
   display: flex;
   flex-direction: column;
@@ -73,37 +73,16 @@ h1, h2, h3, h4, h5, h6 {
   background-color: var(--mud-palette-background);
 }
 
-.mud-dialog .mud-dialog-content, .page-body {
+.page-body {
   width: 100%;
   max-width: 960px;
   margin: 0 auto !important;
   padding: 0.5em !important;
-}
-
-.mud-dialog .mud-dialog-content {
-  padding-bottom: 1em !important;
-  padding-left: 1em !important;
-  padding-right: 1em !important;
-}
-
-.mud-message-box :not(:has(.mud-dialog-title)) .mud-dialog-content {
-  padding-top: 1em !important;
-}
-
-.mud-dialog .mud-dialog-actions {
-  padding: 0.5em !important;
-}
-
-.page-body {
   padding-bottom: 15vh !important;
 }
 
 .mud-dialog-width-full {
   width: calc(100% - 1em) !important;
-}
-
-.color-picker .mud-dialog-content {
-  padding: 0 !important;
 }
 
 .mud-form {
@@ -144,12 +123,22 @@ h1, h2, h3, h4, h5, h6 {
   flex-grow: 1;
 }
 
-.mud-card-header {
-  padding: 1em 1em 0 1em !important;
+.mud-dialog, .mud-card {
+  padding: 1em !important;
+  gap: 1em !important;
 }
 
-.mud-card-content {
-  padding: 1em !important;
+.mud-dialog-title, .mud-card-header {
+  padding: 0 !important;
+}
+
+.mud-dialog-content, .mud-card-content {
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
+.mud-dialog-actions, .mud-card-actions {
+  padding: 0 !important;
 }
 
 #blazor-error-ui {
