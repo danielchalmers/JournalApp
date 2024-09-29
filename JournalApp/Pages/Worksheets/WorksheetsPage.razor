@@ -33,7 +33,7 @@
             <MudCard Class="worksheet-group" id="@($"worksheet-group-key-{MarkupUtil.ToClassName(group.Key)}")">
                 @if (!string.IsNullOrEmpty(group.Key))
                 {
-                    <MudCardHeader>
+                    <MudCardHeader Class="gap-1">
                         <MudText Typo="Typo.h4">@group.Key</MudText>
                         <MudIconButton Icon="@Icons.Material.Rounded.ArrowUpward" OnClick="ScrollToTop" aria-label="Scroll to top" />
                     </MudCardHeader>

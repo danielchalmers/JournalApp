@@ -143,11 +143,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .mud-card-header {
-  padding: 1em !important;
+  padding: 1em 1em 0 1em !important;
 }
 
 .mud-card-content {
-  padding: 0.5em 1em !important;
+  padding: 1em !important;
 }
 
 #blazor-error-ui {
