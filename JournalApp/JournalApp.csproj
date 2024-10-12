@@ -10,7 +10,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <EnableDefaultCssItems>false</EnableDefaultCssItems>
 
-    <ApplicationTitle>JournalApp</ApplicationTitle>
+    <ApplicationTitle>Journal App</ApplicationTitle>
     <ApplicationId>com.danielchalmers.journalapp</ApplicationId>
     <ApplicationId Condition="'$(Configuration)' == 'DEBUG'">com.danielchalmers.journalapp.debug</ApplicationId>
     <ApplicationIdGuid>2B30B066-B4D9-4C17-8A4B-C72E1ABC4BF3</ApplicationIdGuid>
@@ -22,8 +22,8 @@
     <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg_debug.svg" Condition="'$(Configuration)' == 'DEBUG'" />
 
     <!-- Splash Screen -->
-    <MauiSplashScreen Include="Resources\AppIcon\appiconfg.svg" Color="#776be7" Condition="'$(Configuration)' != 'DEBUG'" />
-    <MauiSplashScreen Include="Resources\AppIcon\appiconfg_debug.svg" Color="#776be7" Condition="'$(Configuration)' == 'DEBUG'" />
+    <MauiSplashScreen Include="Resources\AppIcon\appiconfg.svg" Color="#9389e8" Condition="'$(Configuration)' != 'DEBUG'" />
+    <MauiSplashScreen Include="Resources\AppIcon\appiconfg_debug.svg" Color="#9389e8" Condition="'$(Configuration)' == 'DEBUG'" />
 
     <!-- Images -->
     <MauiImage Include="Resources\Images\*" />
