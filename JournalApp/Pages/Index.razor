@@ -11,9 +11,9 @@
 
 <header class="page-header">
     <div class="page-toolbar">
-        <MudButton OnClick="OnTitleClicked" Ripple="false" Variant="Variant.Text">
-            <MudText Typo="Typo.h6">@ThisAssembly.AssemblyTitle</MudText>
-        </MudButton>
+        <MudIconButton Icon="@Icons.Material.Rounded.Home" OnClick="GoHome" aria-label="Go to today" />
+
+        <MudText Typo="Typo.h6">@ThisAssembly.AssemblyTitle</MudText>
 
         <MudSpacer />
 
@@ -185,14 +185,11 @@
         }
     }
 
-    async Task OnTitleClicked(MouseEventArgs e)
+    async Task GoHome()
     {
-        if (e.Detail == 2)
-        {
-            logger.LogDebug("Title clicked twice so going to now");
-            await GoToDay(DateOnly.FromDateTime(DateTime.Now));
-            await ScrollToTop();
-        }
+        logger.LogDebug("Home button was clicked");
+        await GoToDay(DateOnly.FromDateTime(DateTime.Now));
+        await ScrollToTop();
     }
 
     async Task ScrollToTop()
