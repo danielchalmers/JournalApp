@@ -109,15 +109,21 @@
                 <MudCardActions>
                     @if (group.Key == null)
                     {
-                        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Rounded.Category" OnClick="ManageCategories">Edit categories</MudButton>
+                        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Rounded.Category" OnClick="ManageCategories">
+                            Edit categories
+                        </MudButton>
                     }
                     else if (group.Key == "Medications")
                     {
-                        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Rounded.Medication" OnClick="ManageMedications">Edit medications</MudButton>
+                        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Rounded.Medication" OnClick="ManageMedications">
+                            Edit medications
+                        </MudButton>
                     }
                     else if (group.Key == "Notes")
                     {
-                        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Rounded.Comment" OnClick="NewNote">New note</MudButton>
+                        <MudButton Variant="Variant.Text" StartIcon="@Icons.Material.Rounded.Comment" OnClick="NewNote">
+                            New note
+                        </MudButton>
                     }
                 </MudCardActions>
             </MudCard>
@@ -149,7 +155,9 @@
         {
             // If we recently navigated away from the index, restore the date it was on before.
             if (DateTimeOffset.Now - App.IndexDateState.Value.LeftAt < TimeSpan.FromHours(1))
+            {
                 date = App.IndexDateState.Value.LastDate;
+            }
         }
 
         logger.LogInformation($"Opening to {date}");

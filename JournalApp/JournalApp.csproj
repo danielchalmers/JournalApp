@@ -13,7 +13,6 @@
     <ApplicationTitle>Journal App</ApplicationTitle>
     <ApplicationId>com.danielchalmers.journalapp</ApplicationId>
     <ApplicationId Condition="'$(Configuration)' == 'DEBUG'">com.danielchalmers.journalapp.debug</ApplicationId>
-    <ApplicationIdGuid>2B30B066-B4D9-4C17-8A4B-C72E1ABC4BF3</ApplicationIdGuid>
   </PropertyGroup>
 
   <ItemGroup>
@@ -47,20 +46,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blazor-ApexCharts" Version="3.4.0" />
+    <PackageReference Include="Blazor-ApexCharts" Version="3.5.0" />
     <PackageReference Include="CommunityToolkit.Maui" Version="9.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="8.0.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.8">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="8.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.10">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1" />
     <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
     <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
-    <PackageReference Include="MudBlazor" Version="7.8.0" />
+    <PackageReference Include="MudBlazor" Version="7.11.0" />
     <PackageReference Include="Nerdbank.GitVersioning" Version="3.6.143" PrivateAssets="All" />
   </ItemGroup>
 

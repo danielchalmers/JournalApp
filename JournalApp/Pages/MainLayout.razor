@@ -81,7 +81,9 @@
         App.NewIntent += OnNewIntent;
 
         if (App.Window is not null) // Not available in tests.
+        {
             App.Window.Destroying += (_, _) => Dispose();
+        }
 
         // All pages have been reloaded so we should clear any leftover subscriptions.
         KeyEventService.ResetStack();
