@@ -134,7 +134,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .mud-dialog-title, .mud-card-header {
   padding: 0 !important;
-  padding-top: 1em !important;
+  padding-top: 0.5em !important;
 }
 
 .mud-dialog-content, .mud-card-content {
