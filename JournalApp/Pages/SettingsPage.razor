@@ -54,7 +54,7 @@ else
             <section class="settings-group">
                 <MudText Typo="Typo.h4">About</MudText>
 
-                <MudCopyText Text="@($"JournalApp {ThisAssembly.AssemblyInformationalVersion}")" />
+                <MudCopyText Text="@($"Journal App {ThisAssembly.AssemblyInformationalVersion}")" />
                 <MudCopyText Text="@($"{DeviceInfo.Current.Platform} {DeviceInfo.Current.VersionString}")" />
 
                 <MudLink Href="@(Feedback.GenerateLink())">Send feedback by email</MudLink>
