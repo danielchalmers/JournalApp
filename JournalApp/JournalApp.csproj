@@ -9,6 +9,7 @@
     <SingleProject>true</SingleProject>
     <ImplicitUsings>enable</ImplicitUsings>
     <EnableDefaultCssItems>false</EnableDefaultCssItems>
+    <WindowsPackageType>None</WindowsPackageType>
 
     <ApplicationTitle>Journal App</ApplicationTitle>
     <ApplicationId>com.danielchalmers.journalapp</ApplicationId>
