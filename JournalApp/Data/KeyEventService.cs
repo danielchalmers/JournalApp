@@ -32,13 +32,13 @@ public sealed class KeyEventService(ILogger<KeyEventService> logger)
         }
     }
 
-    public void CancelDialog(MudDialogInstance dialogInstance)
+    public void CancelDialog(IMudDialogInstance dialogInstance)
     {
         Exited();
         dialogInstance.Cancel();
     }
 
-    public void CloseDialog<T>(MudDialogInstance dialogInstance, T returnValue)
+    public void CloseDialog<T>(IMudDialogInstance dialogInstance, T returnValue)
     {
         Exited();
         dialogInstance.Close(returnValue);

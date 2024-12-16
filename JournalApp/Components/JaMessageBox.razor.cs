@@ -18,7 +18,7 @@ public partial class JaMessageBox : MudComponentBase
     private IDialogService DialogService { get; set; } = null!;
 
     [CascadingParameter]
-    private MudDialogInstance DialogInstance { get; set; }
+    private IMudDialogInstance DialogInstance { get; set; }
 
     /// <summary>
     /// The message box title. If null or empty, title will be hidden
