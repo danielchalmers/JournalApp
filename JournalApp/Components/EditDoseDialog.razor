@@ -94,6 +94,7 @@
     public static async Task ShowDialog(IDialogService dialogService, DataPoint point)
     {
         var parameters = new DialogParameters<EditDoseDialog> { { x => x.Point, point } };
-        await dialogService.Show<EditDoseDialog>(parameters).Result;
+        var dialog = await dialogService.ShowAsync<EditDoseDialog>(parameters);
+        var result = await dialog.Result;
     }
 }

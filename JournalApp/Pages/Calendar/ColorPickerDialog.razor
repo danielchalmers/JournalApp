@@ -52,7 +52,8 @@
 
         var options = new DialogOptions { FullWidth = false };
 
-        var result = await dialogService.Show<ColorPickerDialog>(parameters, options).Result;
+        var dialog = await dialogService.ShowAsync<ColorPickerDialog>(parameters, options);
+        var result = await dialog.Result;
 
         return result.Data as MudColor;
     }

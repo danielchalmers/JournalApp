@@ -28,7 +28,7 @@
                         @foreach (var day in row)
                         {
                             <div class="@(day.Date == OpenToDate ? "mood-block-container mood-block-container-current" : "mood-block-container")" style="background-color: @(PreferenceService.GetMoodColor(day.Emoji));">
-                                <div class="@(day.Emoji == null ? "mood-block mood-block-offset" : "mood-block mood-block-filled")" @onclick="EventUtil.AsNonRenderingEventHandler(async () => await DayClicked.InvokeAsync(day.Date))">
+                                <div class="@(day.Emoji == null ? "mood-block mood-block-offset" : "mood-block mood-block-filled")" @onclick="this.AsNonRenderingEventHandler(async () => await DayClicked.InvokeAsync(day.Date))">
                                     @if (day.Date != null)
                                     {
                                         <b>@day.Date.Value.Day</b>

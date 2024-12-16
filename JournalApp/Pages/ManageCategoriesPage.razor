@@ -86,7 +86,8 @@
     async Task Edit(DataPointCategory category)
     {
         var parameters = new DialogParameters<EditCategoryDialog> { { x => x.Group, Group }, { x => x.Category, category } };
-        var result = await DialogService.Show<EditCategoryDialog>(parameters).Result;
+        var dialog = await DialogService.ShowAsync<EditCategoryDialog>(parameters);
+        var result = await dialog.Result;
 
         if (result.Canceled)
             return;
@@ -108,7 +109,8 @@
         ActionTaken("add_new_category");
 
         var parameters = new DialogParameters<EditCategoryDialog> { { x => x.Group, Group } };
-        var result = await DialogService.Show<EditCategoryDialog>(parameters).Result;
+        var dialog = await DialogService.ShowAsync<EditCategoryDialog>(parameters);
+        var result = await dialog.Result;
 
         if (result.Canceled)
             return;
