@@ -462,7 +462,7 @@
 
         // If we specify a dose in the point it should show up in the header where the category's would have been.
         point.MedicationDose = 20;
-        DataPointView.GetHeaderText(point).Should().Be("Hi 20oz:");
+        DataPointView.GetHeaderText(point).Should().Be("Hi 20oz*:");
     }
 
     [Fact]

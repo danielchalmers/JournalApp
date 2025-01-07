@@ -5,94 +5,94 @@
 
 @if (Point.Type == PointType.Mood)
 {
-    <MudMenu Dense>
-        <ActivatorContent>
-            <MudButton aria-label="Choose emoji for day's mood'">
-                <Emoji>@(Point.Mood ?? "🤔")</Emoji>
-            </MudButton>
-        </ActivatorContent>
+            <MudMenu Dense>
+                <ActivatorContent>
+                    <MudButton aria-label="Choose emoji for day's mood'">
+                        <Emoji>@(Point.Mood ?? "🤔")</Emoji>
+                    </MudButton>
+                </ActivatorContent>
 
-        <ChildContent>
+                <ChildContent>
             @foreach (var mood in DataPoint.Moods)
             {
-                <MudMenuItem OnClick="@(() => Point.Mood = mood)">
-                    <Emoji>@mood</Emoji>
-                </MudMenuItem>
+                                <MudMenuItem OnClick="@(() => Point.Mood = mood)">
+                                    <Emoji>@mood</Emoji>
+                                </MudMenuItem>
             }
-        </ChildContent>
-    </MudMenu>
+                </ChildContent>
+            </MudMenu>
 }
 else if (Point.Type == PointType.Sleep)
 {
-    <div class="d-flex align-center flex-grow-1" style="gap: 0.5em">
-        <MudText Class="sleep-hours" Typo="Typo.caption">@((Point.SleepHours ?? 0).ToString("00.0"))</MudText>
-        <MudIconButton Class="less-sleep" Icon="@Icons.Material.Rounded.Remove" aria-label="Less sleep" OnClick="DecrementSleep" Disabled="@(Point.SleepHours <= 0)" Size="Size.Small" />
-        <MudSlider T="decimal" @bind-NullableValue="Point.SleepHours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" />
-        <MudIconButton Class="more-sleep" Icon="@Icons.Material.Rounded.Add" aria-label="More sleep" OnClick="IncrementSleep" Disabled="@(Point.SleepHours >= 24)" Size="Size.Small" />
-    </div>
+            <div class="d-flex align-center flex-grow-1" style="gap: 0.5em">
+                <MudText Class="sleep-hours" Typo="Typo.caption">@((Point.SleepHours ?? 0).ToString("00.0"))</MudText>
+                <MudIconButton Class="less-sleep" Icon="@Icons.Material.Rounded.Remove" aria-label="Less sleep" OnClick="DecrementSleep" Disabled="@(Point.SleepHours <= 0)" Size="Size.Small" />
+                <MudSlider T="decimal" @bind-NullableValue="Point.SleepHours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" />
+                <MudIconButton Class="more-sleep" Icon="@Icons.Material.Rounded.Add" aria-label="More sleep" OnClick="IncrementSleep" Disabled="@(Point.SleepHours >= 24)" Size="Size.Small" />
+            </div>
 }
 else if (Point.Type == PointType.Scale)
 {
-    <MudRating @bind-SelectedValue="ScaleIndexForMudRating" FullIcon="@Icons.Material.Rounded.Circle" EmptyIcon="@Icons.Material.Rounded.Circle" Color="Color.Primary" />
+            <MudRating @bind-SelectedValue="ScaleIndexForMudRating" FullIcon="@Icons.Material.Rounded.Circle" EmptyIcon="@Icons.Material.Rounded.Circle" Color="Color.Primary" />
 }
 else if (Point.Type == PointType.LowToHigh)
 {
-    <MudToggleGroup T="int?" @bind-Value="Point.ScaleIndex" SelectionMode="SelectionMode.ToggleSelection">
-        <MudToggleItem T="int?" Value="0">None</MudToggleItem>
-        <MudToggleItem T="int?" Value="1">Low</MudToggleItem>
-        <MudToggleItem T="int?" Value="3">Medium</MudToggleItem>
-        <MudToggleItem T="int?" Value="5">High</MudToggleItem>
-    </MudToggleGroup>
+            <MudToggleGroup T="int?" @bind-Value="Point.ScaleIndex" SelectionMode="SelectionMode.ToggleSelection">
+                <MudToggleItem T="int?" Value="0">None</MudToggleItem>
+                <MudToggleItem T="int?" Value="1">Low</MudToggleItem>
+                <MudToggleItem T="int?" Value="3">Medium</MudToggleItem>
+                <MudToggleItem T="int?" Value="5">High</MudToggleItem>
+            </MudToggleGroup>
 }
 else if (Point.Type == PointType.MildToSevere)
 {
-    <MudToggleGroup T="int?" @bind-Value="Point.ScaleIndex" SelectionMode="SelectionMode.ToggleSelection">
-        <MudToggleItem T="int?" Value="0">None</MudToggleItem>
-        <MudToggleItem T="int?" Value="1">Mild</MudToggleItem>
-        <MudToggleItem T="int?" Value="3">Moderate</MudToggleItem>
-        <MudToggleItem T="int?" Value="5">Severe</MudToggleItem>
-    </MudToggleGroup>
+            <MudToggleGroup T="int?" @bind-Value="Point.ScaleIndex" SelectionMode="SelectionMode.ToggleSelection">
+                <MudToggleItem T="int?" Value="0">None</MudToggleItem>
+                <MudToggleItem T="int?" Value="1">Mild</MudToggleItem>
+                <MudToggleItem T="int?" Value="3">Moderate</MudToggleItem>
+                <MudToggleItem T="int?" Value="5">Severe</MudToggleItem>
+            </MudToggleGroup>
 }
 else if (Point.Type == PointType.Bool)
 {
-    <MudToggleGroup T="bool?" @bind-Value="Point.Bool" SelectionMode="SelectionMode.ToggleSelection">
-        <MudToggleItem T="bool?" Value="false">No</MudToggleItem>
-        <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
-    </MudToggleGroup>
+            <MudToggleGroup T="bool?" @bind-Value="Point.Bool" SelectionMode="SelectionMode.ToggleSelection">
+                <MudToggleItem T="bool?" Value="false">No</MudToggleItem>
+                <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
+            </MudToggleGroup>
 }
 else if (Point.Type == PointType.Number)
 {
-    <MudNumericField @bind-Value="Point.Number" Immediate MaxLength="9" />
+            <MudNumericField @bind-Value="Point.Number" Immediate MaxLength="9" />
 }
 else if (Point.Type == PointType.Text)
 {
-    <MudTextField @bind-Value="Point.Text" Immediate />
+            <MudTextField @bind-Value="Point.Text" Immediate />
 }
 else if (Point.Type == PointType.Note)
 {
-    <div class="d-flex flex-column flex-grow-1">
+            <div class="d-flex flex-column flex-grow-1">
         @if (!string.IsNullOrWhiteSpace(Point.Text))
         {
-            <MudTextField @bind-Value="Point.Text"
-                          Placeholder="@(Point.IsTimestampedNote ? "What's on your mind?" : null)"
-                          Label="@(NoteLabel)" Typo="Typo.body2"
-                          Immediate ReadOnly Underline="false"
-                          AutoGrow Lines="1" MaxLines="10" />
+                            <MudTextField @bind-Value="Point.Text"
+                                          Placeholder="@(Point.IsTimestampedNote ? "What's on your mind?" : null)"
+                                          Label="@(NoteLabel)" Typo="Typo.body2"
+                                          Immediate ReadOnly Underline="false"
+                                          AutoGrow Lines="1" MaxLines="10" />
         }
 
-        <MudLink OnClick="EditTextInDialog">Edit note</MudLink>
-    </div>
+                <MudLink OnClick="EditTextInDialog">Edit note</MudLink>
+            </div>
 }
 else if (Point.Type == PointType.Medication)
 {
-    <div class="d-flex flex-grow-1 justify-space-between align-center" style="gap: 0.5em">
-        <MudToggleGroup T="bool?" @bind-Value="Point.Bool" @bind-Value:after="OnMedicationTakenChanged" SelectionMode="SelectionMode.ToggleSelection">
-            <MudToggleItem T="bool?" Value="false">No</MudToggleItem>
-            <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
-        </MudToggleGroup>
+            <div class="d-flex flex-grow-1 justify-space-between align-center" style="gap: 0.5em">
+                <MudToggleGroup T="bool?" @bind-Value="Point.Bool" @bind-Value:after="OnMedicationTakenChanged" SelectionMode="SelectionMode.ToggleSelection">
+                    <MudToggleItem T="bool?" Value="false">No</MudToggleItem>
+                    <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
+                </MudToggleGroup>
 
-        <MudLink OnClick="EditDose" Disabled="@(string.IsNullOrWhiteSpace(Point.Category.MedicationUnit))">Edit dose</MudLink>
-    </div>
+                <MudLink OnClick="EditDose" Disabled="@(string.IsNullOrWhiteSpace(Point.Category.MedicationUnit))">Edit dose</MudLink>
+            </div>
 }
 
 @code {
@@ -176,23 +176,15 @@ else if (Point.Type == PointType.Medication)
 
         if (point.Type == PointType.Medication && !string.IsNullOrWhiteSpace(category.MedicationUnit))
         {
-            var parts = new List<string>();
-
-            // The default dose and unit.
-            if (category.MedicationDose.HasValue)
-            {
-                parts.Add($"{category.MedicationDose:0.##}{category.MedicationUnit}");
-            }
-
-            // Show the dose if it's different from the category default.
+            // Different dose from the category default.
             if (point.MedicationDose.HasValue && point.MedicationDose != category.MedicationDose)
             {
-                parts.Add($"{point.MedicationDose:0.##}{category.MedicationUnit}");
+                sb.Append(' ').Append($"{point.MedicationDose:0.##}{category.MedicationUnit}*");
             }
-
-            if (parts.Count > 0)
+            // The default dose and unit.
+            else if (category.MedicationDose.HasValue)
             {
-                sb.Append(' ').Append(string.Join(" - ", parts));
+                sb.Append(' ').Append($"{category.MedicationDose:0.##}{category.MedicationUnit}");
             }
         }
 
