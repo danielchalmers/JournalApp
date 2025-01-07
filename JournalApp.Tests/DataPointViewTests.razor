@@ -27,7 +27,7 @@
         cut.Find(".mud-menu-activator").Click();
 
         layout.FindAll("div.mud-popover-open").Count.Should().Be(1);
-        layout.FindAll(".mud-list .mud-list-item")[0].Click();
+        layout.FindAll(".mud-list .mud-menu-item")[0].Click();
         point.Mood.Should().Be("🤔");
     }
 
@@ -439,7 +439,7 @@
         var point = DataPoint.Create(day, category);
         point.MedicationDose = 20;
 
-        DataPointView.GetHeaderText(point).Should().Be("Hi 10oz - 20oz:");
+        DataPointView.GetHeaderText(point).Should().Be("Hi 20oz*:");
     }
 
     [Fact]
