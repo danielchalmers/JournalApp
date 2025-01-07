@@ -61,6 +61,9 @@ public class AppDbContext : DbContext
         return day;
     }
 
+    /// <summary>
+    /// Gets missing data points for the specified day and category.
+    /// </summary>
     public HashSet<DataPoint> GetMissingPoints(Day day, DataPointCategory category, Random random)
     {
         var newPoints = new HashSet<DataPoint>();
@@ -110,6 +113,9 @@ public class AppDbContext : DbContext
         return newPoints;
     }
 
+    /// <summary>
+    /// Adds a new category to the database.
+    /// </summary>
     public void AddCategory(DataPointCategory category)
     {
         // Set index to the end of the last category in the same group.
@@ -123,6 +129,9 @@ public class AppDbContext : DbContext
         Categories.Add(category);
     }
 
+    /// <summary>
+    /// Moves the specified category up in the order.
+    /// </summary>
     public async Task MoveCategoryUp(DataPointCategory category)
     {
         // Ensure no conflicts.
@@ -139,7 +148,7 @@ public class AppDbContext : DbContext
     }
 
     /// <summary>
-    /// Removes gaps or overlap between indexes.
+    /// Fixes the indexes of the categories to remove gaps or overlap.
     /// </summary>
     public void FixCategoryIndexes()
     {

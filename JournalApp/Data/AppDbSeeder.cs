@@ -1,7 +1,13 @@
 ﻿namespace JournalApp;
 
+/// <summary>
+/// Seeds the database with initial data and prepares it for use.
+/// </summary>
 public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbContext> dbFactory)
 {
+    /// <summary>
+    /// Prepares the database by migrating it and ensuring it is up to date.
+    /// </summary>
     public void PrepareDatabase()
     {
         logger.LogInformation("Preparing database");
@@ -35,6 +41,9 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
         logger.LogInformation($"Prepared database in {sw.ElapsedMilliseconds}ms");
     }
 
+    /// <summary>
+    /// Seeds the database with predefined categories.
+    /// </summary>
     public void SeedCategories()
     {
         logger.LogInformation("Seeding categories");
@@ -261,6 +270,10 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
         logger.LogInformation($"Seeded categories in {sw.ElapsedMilliseconds}ms");
     }
 
+    /// <summary>
+    /// Seeds the database with debug data for the specified dates.
+    /// </summary>
+    /// <param name="dates">The dates to seed.</param>
     public void SeedDays(IEnumerable<DateOnly> dates)
     {
         using var db = dbFactory.CreateDbContext();
@@ -309,6 +322,9 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
         db.SaveChanges();
     }
 
+    /// <summary>
+    /// Seeds the database with debug data.
+    /// </summary>
     public void SeedDays()
     {
         var sw = Stopwatch.StartNew();

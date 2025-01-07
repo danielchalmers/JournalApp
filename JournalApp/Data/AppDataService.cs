@@ -1,5 +1,8 @@
 ﻿namespace JournalApp;
 
+/// <summary>
+/// Provides services for managing app data, including backup and restore operations.
+/// </summary>
 public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<AppDbContext> dbFactory, PreferenceService preferences)
 {
     public async Task DeleteDbSets()

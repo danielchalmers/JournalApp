@@ -4,6 +4,9 @@ using System.Text.Json.Serialization;
 
 namespace JournalApp;
 
+/// <summary>
+/// Handles backup and restore operations for the journal data.
+/// </summary>
 public class BackupFile
 {
     private const string InternalBackupFileName = "journalapp-data.json";
@@ -23,6 +26,9 @@ public class BackupFile
 
     public IReadOnlyCollection<PreferenceBackup> PreferenceBackups { get; set; }
 
+    /// <summary>
+    /// Reads a backup file from the specified stream.
+    /// </summary>
     public static async Task<BackupFile> ReadArchive(Stream stream)
     {
         using var archive = new ZipArchive(stream, ZipArchiveMode.Read);
@@ -40,12 +46,18 @@ public class BackupFile
         throw new InvalidOperationException("No valid backup found!");
     }
 
+    /// <summary>
+    /// Reads a backup file from the specified path.
+    /// </summary>
     public static async Task<BackupFile> ReadArchive(string path)
     {
         await using var fs = File.Open(path, FileMode.Open);
         return await ReadArchive(fs);
     }
 
+    /// <summary>
+    /// Writes the backup file to the specified stream.
+    /// </summary>
     public async Task WriteArchive(Stream stream)
     {
         using var archive = new ZipArchive(stream, ZipArchiveMode.Create);
@@ -56,6 +68,9 @@ public class BackupFile
         await JsonSerializer.SerializeAsync(entryStream, this, SerializerOptions);
     }
 
+    /// <summary>
+    /// Writes the backup file to the specified path.
+    /// </summary>
     public async Task WriteArchive(string path)
     {
         await using var stream = File.Create(path);
@@ -63,4 +78,7 @@ public class BackupFile
     }
 }
 
+/// <summary>
+/// Represents a preference.
+/// </summary>
 public record class PreferenceBackup(string Name, string Value);

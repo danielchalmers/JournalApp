@@ -2,6 +2,9 @@
 
 namespace JournalApp;
 
+/// <summary>
+/// Provides UI-related services for managing app data, including import and export wizards.
+/// </summary>
 public sealed class AppDataUIService(ILogger<AppDataUIService> logger, AppDataService appDataService, IShare share, PreferenceService preferenceService)
 {
     public async Task<bool> StartImportWizard(IDialogService dialogService, string path)

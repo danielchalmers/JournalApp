@@ -1,7 +1,13 @@
 ﻿namespace JournalApp;
 
+/// <summary>
+/// Represents a single day in the journal, containing data points.
+/// </summary>
 public class Day
 {
+    /// <summary>
+    /// The unique identifier for the day.
+    /// </summary>
     [Key]
     public Guid Guid { get; set; }
 
