@@ -22,6 +22,7 @@ body {
 
 @media (prefers-color-scheme: dark) {
   #splash-screen {
+    /*The splash screen should use the system theme so it blends in, even if the app itself uses a different theme.*/
     background-color: #1F171C;
   }
 }

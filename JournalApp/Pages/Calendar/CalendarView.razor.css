@@ -12,6 +12,8 @@
 .calendar-month {
   display: flex;
   flex-direction: column;
+  background-color: var(--mud-palette-surface);
+  border-radius: var(--mud-default-borderradius)
 }
 
 .mood-blocks-month {
