@@ -22,8 +22,8 @@
     <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg_debug.svg" Condition="'$(Configuration)' == 'DEBUG'" />
 
     <!-- Splash Screen -->
-    <MauiSplashScreen Include="Resources\AppIcon\appiconfg.svg" Color="#9389e8" Condition="'$(Configuration)' != 'DEBUG'" />
-    <MauiSplashScreen Include="Resources\AppIcon\appiconfg_debug.svg" Color="#9389e8" Condition="'$(Configuration)' == 'DEBUG'" />
+    <MauiSplashScreen Include="Resources\AppIcon\appiconfg.svg" TintColor="#F7B1DE" Condition="'$(Configuration)' != 'DEBUG'" BaseSize="288,288" />
+    <MauiSplashScreen Include="Resources\AppIcon\appiconfg_debug.svg" TintColor="#F7B1DE" Condition="'$(Configuration)' == 'DEBUG'" BaseSize="288,288" />
 
     <!-- Images -->
     <MauiImage Include="Resources\Images\*" />
@@ -47,20 +47,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Blazor-ApexCharts" Version="5.0.0" />
-    <PackageReference Include="CommunityToolkit.Maui" Version="9.1.1" />
+    <PackageReference Include="Blazor-ApexCharts" Version="6.0.1" />
+    <PackageReference Include="CommunityToolkit.Maui" Version="11.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="9.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="9.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.5" />
     <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
-    <PackageReference Include="MudBlazor" Version="8.0.0-preview.7" />
-    <PackageReference Include="Nerdbank.GitVersioning" Version="3.7.112" PrivateAssets="All" />
+    <PackageReference Include="MudBlazor" Version="8.6.0" />
+    <PackageReference Include="Nerdbank.GitVersioning" Version="3.7.115" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>

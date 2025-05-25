@@ -65,16 +65,16 @@ public sealed class PreferenceService : IPreferences, IDisposable
     {
         get
         {
-            var palette = _preferenceStore.Get("mood_palette", string.Empty);
+            var palette = _preferenceStore.Get("mood_palette2", string.Empty);
 
             if (string.IsNullOrEmpty(palette))
-                palette = "#6bdbe7"; // Tetradic to our primary purple.
+                palette = "#FF9FDF";
 
             return palette;
         }
         set
         {
-            _preferenceStore.Set("mood_palette", value.Value[..^2]);
+            _preferenceStore.Set("mood_palette2", value.Value[..^2]);
             GenerateMoodColors();
         }
     }

@@ -27,50 +27,58 @@
     bool _hasInitiallyRendered;
 
     MudTheme _theme = new()
+    {
+        PaletteLight = new PaletteLight()
         {
-            PaletteLight = new PaletteLight()
+            // https://materialkolor.com/?color_seed=FFA0648C
+            Primary = "#854C73",
+            TextPrimary = "#3A2F36",
+            Secondary = "#715867",
+            TextSecondary = "#FFF7F8",
+            AppbarText = "#FFF7F8",
+
+            Info = "#6C567F",
+            Background = "#FEF0F6",
+            Surface = "#FAEAF0",
+
+            HoverOpacity = 0.1,
+        },
+
+        PaletteDark = new PaletteDark()
+        {
+            // https://materialkolor.com/?color_seed=FFA0648C
+            Primary = "#F7B1DE",
+            TextPrimary = "#DECCD4",
+            Secondary = "#DDBECF",
+            TextSecondary = "#D6B7C8",
+            AppbarText = "#622E53",
+
+            Info = "#F2DEFF",
+            Background = "#1F171C",
+            Surface = "#120D10",
+            PrimaryContrastText = "#DECCD4",
+
+            HoverOpacity = 0.1,
+        },
+
+        LayoutProperties = new()
+        {
+            DefaultBorderRadius = "2.0em",
+        },
+
+        Typography = new()
+        {
+            Button = new ButtonTypography()
             {
-                // https://material-foundation.github.io/material-theme-builder
-                Primary = "#9389e8",
-                Secondary = "#928ea6",
-                Tertiary = "#b48399",
-                Info = "#b48399",
-                AppbarText = "#ffffffff",
-                HoverOpacity = 0.1,
+                TextTransform = "none",
             },
 
-            PaletteDark = new PaletteDark()
+            Caption = new CaptionTypography()
             {
-                // https://material-foundation.github.io/material-theme-builder
-                Primary = "#9389e8",
-                Secondary = "#928ea6",
-                Tertiary = "#b48399",
-                Info = "#b48399",
-                AppbarText = "#ffffffff",
-                HoverOpacity = 0.1,
-
-                TextPrimary = "#ffffffde",
-                TextSecondary = "#ffffff99",
+                LineHeight = "1",
             },
-
-            LayoutProperties = new()
-            {
-                DefaultBorderRadius = "2.0em",
-            },
-
-            Typography = new()
-            {
-                Button = new ButtonTypography()
-                {
-                    TextTransform = "none",
-                },
-
-                Caption = new CaptionTypography()
-                {
-                    LineHeight = "1",
-                },
-            },
-        };
+        },
+    };
 
     protected override void OnInitialized()
     {
