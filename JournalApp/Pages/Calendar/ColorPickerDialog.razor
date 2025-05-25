@@ -11,16 +11,12 @@
     </TitleContent>
 
     <DialogContent>
-        <MudText Align="Align.Center">
-            The mood colors will automatically be chosen from the primary color.
-        </MudText>
-
-        <MudDivider />
-
         <MudColorPicker Label="Primary" PickerVariant="PickerVariant.Static" @bind-Value="SelectedColor" ShowToolbar="false" ShowAlpha="false" ThrottleInterval="50" />
     </DialogContent>
 
     <DialogActions>
+        <MudButton Class="reset-button" StartIcon="@Icons.Material.Rounded.Undo" aria-label="Reset" OnClick="Reset">Reset</MudButton>
+
         <MudButton Class="cancel-button" StartIcon="@Icons.Material.Rounded.Close" aria-label="Cancel" OnClick="Cancel">Cancel</MudButton>
 
         <MudButton Class="submit-button" StartIcon="@Icons.Material.Rounded.Check" aria-label="Submit" OnClick="Submit" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Submit</MudButton>
@@ -38,6 +34,12 @@
         base.OnInitialized();
 
         KeyEventService.Entered(() => Submit());
+    }
+
+    void Reset()
+    {
+        SelectedColor = new MudColor("#FF9FDF");
+        KeyEventService.CloseDialog(MudDialog, SelectedColor);
     }
 
     void Cancel()
