@@ -21,7 +21,7 @@
                     @if (!string.IsNullOrEmpty(group.Key))
                     {
                         <li class="worksheet-group-toc-item">
-                            <MudLink OnClick="async () => await ScrollToGroup(MarkupUtil.ToClassName(group.Key))" aria-label="Scroll to group">@group.Key</MudLink>
+                            <MudLink OnClick="async () => await ScrollToGroup(MarkupUtil.ToClassName(group.Key))" aria-label="Scroll to group">• @group.Key</MudLink>
                         </li>
                     }
                 }

@@ -127,6 +127,10 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: calc(var(--mud-default-borderradius) / 2);
 }
 
+.mud-input-control > .mud-input-control-input-container > .mud-input-label-inputcontrol {
+  color: var(--mud-palette-text-primary)
+}
+
 .mud-radio {
   margin: 0 !important;
   margin-inline: 0 !important;

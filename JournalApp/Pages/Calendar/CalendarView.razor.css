@@ -39,11 +39,15 @@
 }
 
 .mood-block-container-current {
-  outline: 2px dashed var(--mud-palette-text-primary);
+  outline: 2px dashed #3A2F36;
 }
 
 .mood-block {
   display: flex;
   width: 100%;
   aspect-ratio: 1 / 1;
+}
+
+.mood-block-filled {
+  color: #3A2F36;
 }
