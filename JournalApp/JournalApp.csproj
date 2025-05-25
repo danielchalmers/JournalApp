@@ -22,8 +22,8 @@
     <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg_debug.svg" Condition="'$(Configuration)' == 'DEBUG'" />
 
     <!-- Splash Screen -->
-    <MauiSplashScreen Include="Resources\AppIcon\appiconfg.svg" Color="#9389e8" Condition="'$(Configuration)' != 'DEBUG'" />
-    <MauiSplashScreen Include="Resources\AppIcon\appiconfg_debug.svg" Color="#9389e8" Condition="'$(Configuration)' == 'DEBUG'" />
+    <MauiSplashScreen Include="Resources\AppIcon\appiconfg.svg" TintColor="#F7B1DE" Condition="'$(Configuration)' != 'DEBUG'" BaseSize="288,288" />
+    <MauiSplashScreen Include="Resources\AppIcon\appiconfg_debug.svg" TintColor="#F7B1DE" Condition="'$(Configuration)' == 'DEBUG'" BaseSize="288,288" />
 
     <!-- Images -->
     <MauiImage Include="Resources\Images\*" />
