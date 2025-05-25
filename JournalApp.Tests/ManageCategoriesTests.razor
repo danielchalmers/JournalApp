@@ -89,7 +89,7 @@
 
         // Open the dialog to create a new category.
         layout.Find(".add-category-button").Click();
-        layout.Markup.Should().Contain("New category");
+        layout.Markup.Should().Contain("New card");
 
         // Set up the new category.
         layout.FindAll(".category-dialog .mud-input-text input")[0].Input("New name");

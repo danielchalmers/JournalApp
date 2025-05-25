@@ -7,17 +7,23 @@
 
 <MudDialog Class="color-picker" DefaultFocus="DefaultFocus.Element" OnBackdropClick="Submit">
     <TitleContent>
-        <MudText Typo="Typo.h6">Pick color</MudText>
+        <MudText Typo="Typo.h6">Pick primary color</MudText>
     </TitleContent>
 
     <DialogContent>
+        <MudText Align="Align.Center">
+            The mood colors will automatically be chosen from the primary color.
+        </MudText>
+
+        <MudDivider />
+
         <MudColorPicker Label="Primary" PickerVariant="PickerVariant.Static" @bind-Value="SelectedColor" ShowToolbar="false" ShowAlpha="false" ThrottleInterval="50" />
     </DialogContent>
 
     <DialogActions>
         <MudButton Class="cancel-button" StartIcon="@Icons.Material.Rounded.Close" aria-label="Cancel" OnClick="Cancel">Cancel</MudButton>
 
-        <MudButton Class="submit-button" StartIcon="@Icons.Material.Rounded.Check" aria-label="Submit" OnClick="Submit">Submit</MudButton>
+        <MudButton Class="submit-button" StartIcon="@Icons.Material.Rounded.Check" aria-label="Submit" OnClick="Submit" Variant="Variant.Filled" Color="MudBlazor.Color.Primary">Submit</MudButton>
     </DialogActions>
 </MudDialog>
 

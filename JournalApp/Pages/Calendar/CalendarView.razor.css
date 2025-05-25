@@ -7,13 +7,14 @@
 .calendar-month-header {
   display: flex;
   justify-content: space-between;
+  padding: 1em;
 }
 
 .calendar-month {
   display: flex;
   flex-direction: column;
   background-color: var(--mud-palette-surface);
-  border-radius: var(--mud-default-borderradius)
+  border-radius: var(--mud-default-borderradius);
 }
 
 .mood-blocks-month {

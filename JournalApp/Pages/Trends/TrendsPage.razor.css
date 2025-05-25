@@ -2,9 +2,16 @@
   display: flex;
   flex-direction: column;
   gap: 0.5em;
+  margin-top: 1em;
 }
 
 .trends-category {
   display: flex;
   flex-direction: column;
+}
+
+::deep .trend-view {
+  padding: 0.5em;
+  background-color: var(--mud-palette-surface);
+  border-radius: var(--mud-default-borderradius);
 }

@@ -37,7 +37,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: var(--mud-elevation-4);
+  box-shadow: var(--mud-elevation-1);
 }
 
 .switcher-header {
@@ -119,10 +119,6 @@ h1, h2, h3, h4, h5, h6 {
   transform: translate(0, -0.75em) scale(0.75) !important;
 }
 
-.mud-input > textarea.mud-input-root-outlined {
-  margin: 0.75em !important;
-}
-
 .mud-input.mud-input-outlined .mud-input-outlined-border {
   border-radius: calc(var(--mud-default-borderradius) / 2);
 }
@@ -152,6 +148,9 @@ h1, h2, h3, h4, h5, h6 {
 .mud-dialog-title, .mud-card-header {
   padding: 0 !important;
   padding-top: 0.5em !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .mud-dialog-content, .mud-card-content {
@@ -162,6 +161,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .mud-dialog-actions, .mud-card-actions {
   padding: 0 !important;
+  padding-top: 1em !important;
 }
 
 #blazor-error-ui {
