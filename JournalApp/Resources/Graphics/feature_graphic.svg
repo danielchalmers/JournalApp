@@ -21,7 +21,7 @@
        inkscape:collect="always"
        gradientTransform="rotate(45)">
       <stop
-         style="stop-color:#FF9FDF;stop-opacity:1;"
+         style="stop-color:#F7B1DE;stop-opacity:1;"
          offset="0"
          id="stop1" />
       <stop
@@ -59,7 +59,7 @@
      inkscape:window-maximized="1"
      inkscape:current-layer="svg1" />
   <path
-     fill="#FF9FDF"
+     fill="#F7B1DE"
      d="M 0,0 H 1024 V 500 H 0 Z"
      id="path1"
      style="stroke-width:1.39754;fill:url(#linearGradient2)" />

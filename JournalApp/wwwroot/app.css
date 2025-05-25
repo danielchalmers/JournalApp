@@ -14,10 +14,16 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #FF9FDF;
+  background-color: #FAEAF0;
   position: fixed;
   width: 100%;
   height: 100%
+}
+
+@media (prefers-color-scheme: dark) {
+  #splash-screen {
+    background-color: #1F171C;
+  }
 }
 
 #loading-text {
@@ -51,15 +57,16 @@ body {
   box-shadow: none;
   min-height: calc(var(--mud-appbar-height) - var(--mud-appbar-height) / 4);
   background-color: var(--mud-palette-primary);
+  color: var(--mud-palette-appbar-text);
   --mud-palette-action-default: var(--mud-palette-appbar-text);
 }
 
-  .page-toolbar *.mud-typography {
-    color: var(--mud-palette-appbar-text);
+  .page-toolbar * {
+    color: inherit;
   }
 
 h1, h2, h3, h4, h5, h6 {
-  color: var(--mud-palette-text-primary);
+  color: var(--mud-palette-text-secondary);
 }
 
 .page-header {
@@ -70,7 +77,8 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0 !important;
   top: 0 !important;
   position: sticky !important;
-  background-color: var(--mud-palette-background);
+  background-color: var(--mud-palette-surface);
+  color: #DECCD4;
 }
 
 .page-body {
@@ -127,6 +135,10 @@ h1, h2, h3, h4, h5, h6 {
   flex-grow: 1;
 }
 
+.mud-button-filled.mud-button-filled-primary {
+  color: var(--mud-palette-appbar-text);
+}
+
 .mud-dialog, .mud-card {
   padding: 0.75em !important;
   gap: 0.75em !important;
@@ -168,12 +180,23 @@ h1, h2, h3, h4, h5, h6 {
     position: sticky;
     top: 0;
     height: env(safe-area-inset-top);
-    background-color: #f7f7f7;
     width: 100%;
     z-index: 1;
   }
 
   .flex-column, .navbar-brand {
     padding-left: env(safe-area-inset-left);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .status-bar-safe-area {
+    background-color: #120D10;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  .status-bar-safe-area {
+    background-color: #FFF8F9;
   }
 }
