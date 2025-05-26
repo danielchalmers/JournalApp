@@ -22,8 +22,8 @@
     <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg_debug.svg" Condition="'$(Configuration)' == 'DEBUG'" />
 
     <!-- Splash Screen -->
-    <MauiSplashScreen Include="Resources\AppIcon\appiconfg.svg" Condition="'$(Configuration)' != 'DEBUG'" BaseSize="288,288" />
-    <MauiSplashScreen Include="Resources\AppIcon\appiconfg_debug.svg" Condition="'$(Configuration)' == 'DEBUG'" BaseSize="288,288" />
+    <MauiSplashScreen Include="Resources\AppIcon\appiconfg.svg" Condition="'$(Configuration)' != 'DEBUG'" />
+    <MauiSplashScreen Include="Resources\AppIcon\appiconfg_debug.svg" Condition="'$(Configuration)' == 'DEBUG'" />
 
     <!-- Images -->
     <MauiImage Include="Resources\Images\*" />
