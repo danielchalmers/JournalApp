@@ -85,7 +85,7 @@
         );
 
         // Initial state.
-        layout.FindAll(".manage-category-edit-button").Count.Should().Be(13);
+        layout.FindAll(".manage-category-edit-button").Count.Should().Be(12);
 
         // Open the dialog to create a new category.
         layout.Find(".add-category-button").Click();
@@ -96,7 +96,7 @@
 
         // Submit changes and confirm there is a new category in the list.
         layout.Find(".category-dialog .submit-button").Click();
-        layout.FindAll(".manage-category-edit-button").Count.Should().Be(14);
+        layout.FindAll(".manage-category-edit-button").Count.Should().Be(13);
     }
 
     [Fact]
