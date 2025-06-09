@@ -18,12 +18,12 @@
 
   <ItemGroup>
     <!-- App Icon -->
-    <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Condition="'$(Configuration)' != 'DEBUG'" />
-    <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg_debug.svg" Condition="'$(Configuration)' == 'DEBUG'" />
+    <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" BaseSize="256,256" Condition="'$(Configuration)' != 'DEBUG'" />
+    <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg_debug.svg" BaseSize="256,256" Condition="'$(Configuration)' == 'DEBUG'" />
 
     <!-- Splash Screen -->
-    <MauiSplashScreen Include="Resources\AppIcon\appiconfg.svg" Condition="'$(Configuration)' != 'DEBUG'" />
-    <MauiSplashScreen Include="Resources\AppIcon\appiconfg_debug.svg" Condition="'$(Configuration)' == 'DEBUG'" />
+    <MauiSplashScreen Include="Resources\AppIcon\appiconfg.svg" BaseSize="256,256" Condition="'$(Configuration)' != 'DEBUG'" />
+    <MauiSplashScreen Include="Resources\AppIcon\appiconfg_debug.svg" BaseSize="256,256" Condition="'$(Configuration)' == 'DEBUG'" />
 
     <!-- Images -->
     <MauiImage Include="Resources\Images\*" />
