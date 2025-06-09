@@ -1,6 +1,6 @@
-﻿# 🙂 Journal App
+﻿# 🙂 Good Diary: Mood Tracker
 
-Journal App lets you track your daily activities and moods.
+Previously known as "Journal App", Good Diary lets you track your daily activities and moods.
 You can record notes, manage medications, and create custom categories to track whatever you need.
 Features include trend analysis, mental health resources, safety tools, and data exporting.
 
