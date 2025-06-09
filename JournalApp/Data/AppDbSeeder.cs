@@ -179,13 +179,6 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
         );
 
         AddOrUpdate(
-            "EE8DE4D0-3A87-4CA4-B384-81BD7508A19F",
-            PointType.Bool,
-            name: "Menstruating",
-            enabled: false
-        );
-
-        AddOrUpdate(
             "C871C9F7-1A6E-4EA2-ACC9-94A256C9E2CC",
             PointType.Bool,
             name: "Therapy",
