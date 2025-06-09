@@ -13,7 +13,7 @@
     <div class="page-toolbar">
         <MudIconButton Icon="@Icons.Material.Rounded.Home" OnClick="GoHome" aria-label="Go to today" />
 
-        <MudText Typo="Typo.h6">Journal App</MudText>
+        <MudText Typo="Typo.h6">Good Diary</MudText>
 
         <MudSpacer />
 
@@ -276,7 +276,7 @@
     async Task OpenShare()
     {
         logger.LogInformation("Opening share link");
-        await Share.RequestAsync("Stay on top of your wellness goals with JournalApp, your personal diary and mood tracker! https://play.google.com/store/apps/details?id=com.danielchalmers.journalapp");
+        await Share.RequestAsync("Stay on top of your wellness goals with Good Diary, your personal diary and mood tracker! https://play.google.com/store/apps/details?id=com.danielchalmers.journalapp");
     }
 
     void OpenSettings()

@@ -10,7 +10,7 @@ public static class Feedback
         var deviceInfo = DeviceInfo.Current;
         var deviceInfoString = $"{ThisAssembly.AssemblyInformationalVersion} | {deviceInfo.Platform} {deviceInfo.VersionString} | {deviceInfo.Manufacturer} {deviceInfo.Model}";
 
-        subject = $"Journal App: " + subject;
+        subject = $"Good Diary: " + subject;
 
         body += "%0D%0A" + deviceInfoString + "%0D%0A";
 

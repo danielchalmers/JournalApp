@@ -79,7 +79,7 @@ public class AppDbContext : DbContext
                 // First-launch example note.
                 var note = CreateNote(day);
                 var sb = new StringBuilder();
-                sb.AppendLine("I just started using JournalApp! 😎");
+                sb.AppendLine("I just started using Good Diary! 😎");
                 sb.AppendLine();
                 sb.AppendLine("Click the date to go to the calendar");
                 sb.Append("Find more features in the top right menu");

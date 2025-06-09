@@ -109,7 +109,7 @@ public sealed class AppDataUIService(ILogger<AppDataUIService> logger, AppDataSe
 
         await share.RequestAsync(new ShareFileRequest
         {
-            Title = "JournalApp backup",
+            Title = "Good Diary backup",
             File = new ShareFile(path)
         });
     }

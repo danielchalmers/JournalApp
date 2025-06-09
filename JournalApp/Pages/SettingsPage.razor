@@ -54,7 +54,7 @@ else
             <section class="settings-group">
                 <MudText Typo="Typo.h4">About</MudText>
 
-                <MudCopyText Text="@($"Journal App {ThisAssembly.AssemblyInformationalVersion}")" />
+                <MudCopyText Text="@($"Good Diary {ThisAssembly.AssemblyInformationalVersion}")" />
                 <MudCopyText Text="@($"{DeviceInfo.Current.Platform} {DeviceInfo.Current.VersionString}")" />
 
                 <MudLink Href="@(Feedback.GenerateLink())">Send feedback by email</MudLink>
@@ -137,7 +137,7 @@ else
         else
         {
             logger.LogInformation("Explaining how to import");
-            await DialogService.ShowJaMessageBox("Find the backup in your files app and click it or choose Open With -> JournalApp. You can also share the file directly from another app.");
+            await DialogService.ShowJaMessageBox("Find the backup in your files app and click it or choose Open With -> Good Diary. You can also share the file directly from another app.");
         }
     }
 

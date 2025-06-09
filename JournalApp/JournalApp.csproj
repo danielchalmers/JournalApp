@@ -11,7 +11,7 @@
     <EnableDefaultCssItems>false</EnableDefaultCssItems>
     <WindowsPackageType>None</WindowsPackageType>
 
-    <ApplicationTitle>Journal App</ApplicationTitle>
+    <ApplicationTitle>Good Diary</ApplicationTitle>
     <ApplicationId>com.danielchalmers.journalapp</ApplicationId>
     <ApplicationId Condition="'$(Configuration)' == 'DEBUG'">com.danielchalmers.journalapp.debug</ApplicationId>
   </PropertyGroup>
