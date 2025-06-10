@@ -23,7 +23,15 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
 #endif
         try
         {
-            db.Database.Migrate();
+            var anyPendingMigrations = db.Database.GetPendingMigrations().Any();
+            logger.LogInformation($"Pending migrations: {anyPendingMigrations}");
+
+            if (anyPendingMigrations)
+            {
+                logger.LogInformation($"Migrating database after {sw.ElapsedMilliseconds}ms");
+                db.Database.Migrate();
+                logger.LogInformation($"Migrated database after {sw.ElapsedMilliseconds}ms");
+            }
         }
         catch (Microsoft.Data.Sqlite.SqliteException ex) when (ex.SqliteErrorCode == 14)
         {
@@ -37,8 +45,7 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
         }
 
         db.SaveChanges();
-
-        logger.LogInformation($"Prepared database in {sw.ElapsedMilliseconds}ms");
+        logger.LogInformation($"Finished preparing database after {sw.ElapsedMilliseconds}ms");
     }
 
     /// <summary>
