@@ -117,87 +117,80 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             "BF394F35-2228-4933-BF38-AF5B1B97AEF7",
             PointType.Note,
             group: "Notes",
-            readOnly: true
-        );
+            readOnly: true);
 
         AddOrUpdate(
             "D90D89FB-F5B9-47CF-AE4E-3EC0D635E783",
             PointType.Mood,
             name: "Overall mood",
-            details: "My rating for the day",
-            readOnly: true
-        );
+            details: "How I felt overall today",
+            readOnly: true);
 
         AddOrUpdate(
             "D8657B36-F3A0-486F-BF80-0CF057919C7D",
             PointType.Sleep,
             name: "Last night's sleep",
-            details: "The total amount of sleep I got last night"
-        );
+            details: "Total hours of sleep I got last night");
 
         AddOrUpdate(
             "7330B995-0B56-46FF-9DD6-9CFC550FF5C8",
             PointType.MildToSevere,
             name: "Most depressed mood",
-            details: "My most severe level of depression today",
-            enabled: false
-        );
+            details: "How low my mood felt today at its worst",
+            enabled: false);
 
         AddOrUpdate(
             "4955EB49-0BCF-433B-873E-2092F292CC6B",
             PointType.MildToSevere,
             name: "Most elevated mood",
-            details: "My most severe level of elevation today",
-            enabled: false
-        );
+            details: "How high or energized I felt today at my peak",
+            enabled: false);
 
         AddOrUpdate(
             "E9B7E4BE-FD17-4171-B1D4-D38B6009FDA0",
             PointType.MildToSevere,
             name: "Irritability",
-            enabled: false
-        );
+            details: "How irritable or easily frustrated I felt today",
+            enabled: false);
 
         AddOrUpdate(
             "0FB54AFF-9ECC-4C17-BAB5-B908B794CEA9",
             PointType.MildToSevere,
             name: "Anxiety",
-            enabled: false
-        );
+            details: "How anxious or on edge I felt today",
+            enabled: false);
 
         AddOrUpdate(
             "40B5AF7B-4F4E-4E77-BD6B-F7855CF773AB",
             PointType.LowToHigh,
-            name: "Productivity"
-        );
+            name: "Productivity",
+            details: "How productive I felt today");
 
         AddOrUpdate(
             "DE394B38-9007-4349-AE31-429541AAB947",
             PointType.LowToHigh,
-            name: "Physical activity"
-        );
+            name: "Physical activity",
+            details: "How physically active I was today");
 
         AddOrUpdate(
             "14A348F7-139F-44A4-B032-1D11EBB63F90",
             PointType.LowToHigh,
             name: "Physical pain",
-            details: "The amount of physical pain I experienced today",
-            enabled: false
-        );
+            details: "How much physical pain I felt today",
+            enabled: false);
 
         AddOrUpdate(
             "480DC07D-1330-486F-9B30-EC83A3D4E6F0",
             PointType.Number,
             name: "Weight",
-            details: "My weight in the measurement I prefer"
-        );
+            details: "My current weight using my preferred units");
 
         AddOrUpdate(
             "2EEA42EE-4586-4E7D-ABF1-012BED1C0753",
             PointType.Medication,
             group: "Medications",
             name: "Example (AM)",
-            details: "Shown as an example of an AM/morning dose",
+            details: "Just an example of a morning medication",
             enabled: true);
 
         AddOrUpdate(
@@ -205,7 +198,7 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             PointType.Medication,
             group: "Medications",
             name: "Example (PM)",
-            details: "Shown as an example of a PM/evening dose",
+            details: "Just an example of an evening medication",
             enabled: true);
 
         AddOrUpdate(
@@ -213,6 +206,7 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             PointType.Medication,
             group: "Medications",
             name: "Vitamin D",
+            details: "Often taken for bone or immune support",
             enabled: false,
             medDose: 2000,
             medUnit: "IU",
@@ -223,7 +217,7 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             PointType.Medication,
             group: "Medications",
             name: "Trazodone",
-            details: "An antidepressant primarily used to treat depression, anxiety, and insomnia",
+            details: "Commonly used for sleep or mood support",
             enabled: false,
             medDose: 50,
             medUnit: "mg",
@@ -234,14 +228,15 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             PointType.Medication,
             group: "Medications",
             name: "Gabapentin",
-            details: "An anticonvulsant primarily used to treat partial seizures and neuropathic pain",
+            details: "Often taken for nerve pain, sleep, or seizures",
             enabled: false,
             medDose: 300,
             medUnit: "mg",
             medEveryDaySince: DateTimeOffset.Now);
 
+
         logger.LogInformation($"Seeded categories in {sw.ElapsedMilliseconds}ms");
-    }
+
 
     /// <summary>
     /// Seeds the database with debug data for the specified dates.
