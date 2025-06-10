@@ -3,4 +3,6 @@
     <color name="colorPrimary">#854C73</color>
     <color name="colorPrimaryDark">#EAB8D6</color>
     <color name="colorAccent">#715867</color>
+    <color name="colorActionMenuTextColor">#FFFFFF</color>
+    <color name="maui_splash_color">@color/colorPrimary</color>
 </resources>

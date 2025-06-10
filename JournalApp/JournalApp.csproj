@@ -10,6 +10,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <EnableDefaultCssItems>false</EnableDefaultCssItems>
     <WindowsPackageType>None</WindowsPackageType>
+    <TrimMode>full</TrimMode>
+
 
     <ApplicationTitle>Good Diary</ApplicationTitle>
     <ApplicationId>com.danielchalmers.journalapp</ApplicationId>

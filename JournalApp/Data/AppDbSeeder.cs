@@ -193,14 +193,6 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
         );
 
         AddOrUpdate(
-            "3EA2D087-9D4C-4110-9B96-0A52FDA6BFD2",
-            PointType.Note,
-            name: "Day summary",
-            details: "A summary of the whole day's events including any notes that were written",
-            enabled: false
-        );
-
-        AddOrUpdate(
             "2EEA42EE-4586-4E7D-ABF1-012BED1C0753",
             PointType.Medication,
             group: "Medications",
