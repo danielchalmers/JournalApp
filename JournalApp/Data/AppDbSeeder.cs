@@ -219,17 +219,6 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             medEveryDaySince: DateTimeOffset.Now);
 
         AddOrUpdate(
-            "7DBB09E6-4A83-4E71-94AE-C40F3422DF09",
-            PointType.Medication,
-            group: "Medications",
-            name: "Cetirizine",
-            details: "A second-generation antihistamine primarily used to treat hay fever and other allergies.",
-            enabled: false,
-            medDose: 10,
-            medUnit: "mg",
-            medEveryDaySince: DateTimeOffset.Now);
-
-        AddOrUpdate(
             "545E8EBE-3C5C-4289-B4AD-E11CAC7B9324",
             PointType.Medication,
             group: "Medications",
