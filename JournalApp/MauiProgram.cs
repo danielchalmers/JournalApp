@@ -9,6 +9,7 @@ public static class MauiProgram
 
     public static MauiApp CreateMauiApp()
     {
+        var stopwatch = Stopwatch.StartNew();
         var builder = MauiApp.CreateBuilder()
             .UseMauiApp<App>()
             .UseMauiCommunityToolkit()
@@ -51,6 +52,9 @@ public static class MauiProgram
 #if DEBUG
         dbSeeder.SeedDays();
 #endif
+
+        var logger = provider.GetRequiredService<ILoggerFactory>().CreateLogger("JournalApp.MauiProgram");
+        logger.LogInformation($"Created MAUI app in: {stopwatch.ElapsedMilliseconds}ms");
 
         return builder.Build();
     }
