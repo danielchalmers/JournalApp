@@ -222,7 +222,7 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             "545E8EBE-3C5C-4289-B4AD-E11CAC7B9324",
             PointType.Medication,
             group: "Medications",
-            name: "Trazadone",
+            name: "Trazodone",
             details: "An antidepressant primarily used to treat depression, anxiety, and insomnia",
             enabled: false,
             medDose: 50,
