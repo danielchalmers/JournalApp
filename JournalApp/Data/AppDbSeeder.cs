@@ -186,14 +186,6 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
         );
 
         AddOrUpdate(
-            "C871C9F7-1A6E-4EA2-ACC9-94A256C9E2CC",
-            PointType.Bool,
-            name: "Therapy",
-            details: "Did I participate in group or individual therapy?",
-            enabled: false
-        );
-
-        AddOrUpdate(
             "480DC07D-1330-486F-9B30-EC83A3D4E6F0",
             PointType.Number,
             name: "Weight",
