@@ -57,10 +57,6 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
         using var db = dbFactory.CreateDbContext();
         var sw = Stopwatch.StartNew();
 
-        // Fetch all categories once and use a dictionary for lookups.
-        var categoriesByGuid = db.Categories.ToDictionary(x => x.Guid);
-        var anyUpdated = false;
-
         void AddOrUpdate(
             string guidString,
             PointType type,
@@ -73,91 +69,48 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             string medUnit = null,
             DateTimeOffset? medEveryDaySince = null)
         {
+            // Use existing category or create a new one.
             var guid = new Guid(guidString);
-            categoriesByGuid.TryGetValue(guid, out var category);
-
+            var category = db.Categories.SingleOrDefault(x => x.Guid == guid);
             var doesExist = category != null;
+            category ??= new();
+
+            // Overwrite some properties that are supposed to be static.
+            category.Guid = guid;
+            category.Group = group;
+            category.ReadOnly = readOnly;
+
+            // Only set these properties if the category is new.
             if (!doesExist)
             {
-                // Create a new category if it doesn't exist.
-                category = new DataPointCategory { Guid = guid };
-                db.AddCategory(category);
-                categoriesByGuid[guid] = category;
-                logger.LogDebug($"Adding category <{guidString}>");
-                anyUpdated = true;
-            }
-
-            // Track if any property actually changes so we know if we need to save changes.
-            var updated = false;
-
-            if (category.Group != group)
-            {
-                category.Group = group;
-                updated = true;
-            }
-
-            if (category.ReadOnly != readOnly)
-            {
-                category.ReadOnly = readOnly;
-                updated = true;
-            }
-
-            if (!doesExist && category.Enabled != enabled)
-            {
                 category.Enabled = enabled;
-                updated = true;
             }
 
+            // Overwrite some flexible properties if it doesn't already exist OR is readonly and isn't allowed to change.
             if (!doesExist || readOnly)
             {
-                if (category.Type != type)
-                {
-                    category.Type = type;
-                    updated = true;
-                }
-
-                if (category.Name != name)
-                {
-                    category.Name = name;
-                    updated = true;
-                }
-
-                if (category.Details != details)
-                {
-                    category.Details = details;
-                    updated = true;
-                }
-
-                if (category.MedicationDose != medDose)
-                {
-                    category.MedicationDose = medDose;
-                    updated = true;
-                }
-
-                if (category.MedicationEveryDaySince != medEveryDaySince)
-                {
-                    category.MedicationEveryDaySince = medEveryDaySince;
-                    updated = true;
-                }
-
-                if (category.MedicationUnit != medUnit)
-                {
-                    category.MedicationUnit = medUnit;
-                    updated = true;
-                }
-
-                if (category.Deleted != false)
-                {
-                    category.Deleted = false;
-                    updated = true;
-                }
+                category.Type = type;
+                category.Name = name;
+                category.Details = details;
+                category.MedicationDose = medDose;
+                category.MedicationEveryDaySince = medEveryDaySince;
+                category.MedicationUnit = medUnit;
+                category.Deleted = false;
             }
 
-            if (doesExist && updated)
+            if (doesExist)
             {
-                logger.LogDebug($"Updating category <{guidString}> after {sw.ElapsedMilliseconds}ms");
-                anyUpdated = true;
+                logger.LogDebug($"Updating category <{guidString}>");
             }
+            else
+            {
+                // Add the new category.
+                logger.LogDebug($"Adding category <{guidString}>");
+                db.AddCategory(category);
+            }
+
+            // Save all the changed properties or the new category itself.
+            db.SaveChanges();
         }
 
         AddOrUpdate(
@@ -313,11 +266,6 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             medDose: 300,
             medUnit: "mg",
             medEveryDaySince: DateTimeOffset.Now);
-
-        if (anyUpdated)
-        {
-            db.SaveChanges();
-        }
 
         logger.LogInformation($"Seeded categories in {sw.ElapsedMilliseconds}ms");
     }
