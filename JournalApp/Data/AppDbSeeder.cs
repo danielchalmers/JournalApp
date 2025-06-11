@@ -6,7 +6,7 @@
 public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbContext> dbFactory)
 {
     /// <summary>
-    /// Prepares the database by migrating it and ensuring it is up to date.
+    /// Prepares the database by applying any pending migrations and ensuring it's ready to use.
     /// </summary>
     public void PrepareDatabase()
     {
@@ -15,7 +15,8 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
         var sw = Stopwatch.StartNew();
 
 #if DEBUG && false
-            // So dangerous that it's kept in a block with a long delay instead of being added and removed as needed.
+            // ⚠️ Dangerous: This block deletes the database and all preferences.
+            // It's intentionally disabled and delayed to prevent accidental use.
             logger.LogCritical("ERASING DATABASE AND PREFERENCES");
             Thread.Sleep(5_000);
             Preferences.Clear();
@@ -35,7 +36,8 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
         }
         catch (Microsoft.Data.Sqlite.SqliteException ex) when (ex.SqliteErrorCode == 14)
         {
-            // https://stackoverflow.com/a/38562947.
+            // Handles Sqlite "unable to open database file" error.
+            // See: https://stackoverflow.com/a/38562947.
             logger.LogError(ex, "Sqlite Error Code 14");
         }
         catch (Exception ex)
@@ -49,7 +51,7 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
     }
 
     /// <summary>
-    /// Seeds the database with predefined categories.
+    /// Seeds the database with predefined tracking categories.
     /// </summary>
     public void SeedCategories()
     {
@@ -75,18 +77,18 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             var doesExist = category != null;
             category ??= new();
 
-            // Overwrite some properties that are supposed to be static.
+            // Always set fixed properties.
             category.Guid = guid;
             category.Group = group;
             category.ReadOnly = readOnly;
 
-            // Only set these properties if the category is new.
+            // Set default enabled flag only if new.
             if (!doesExist)
             {
                 category.Enabled = enabled;
             }
 
-            // Overwrite some flexible properties if it doesn't already exist OR is readonly and isn't allowed to change.
+            // Set modifiable properties if it's new or marked read-only.
             if (!doesExist || readOnly)
             {
                 category.Type = type;
@@ -104,12 +106,10 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             }
             else
             {
-                // Add the new category.
                 logger.LogDebug($"Adding category <{guidString}>");
                 db.AddCategory(category);
             }
 
-            // Save all the changed properties or the new category itself.
             db.SaveChanges();
         }
 
@@ -234,24 +234,23 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             medUnit: "mg",
             medEveryDaySince: DateTimeOffset.Now);
 
-
         logger.LogInformation($"Seeded categories in {sw.ElapsedMilliseconds}ms");
-
+    }
 
     /// <summary>
-    /// Seeds the database with debug data for the specified dates.
+    /// Seeds the database with debug data for a specific set of days.
     /// </summary>
-    /// <param name="dates">The dates to seed.</param>
+    /// <param name="dates">The dates to populate with sample data.</param>
     public void SeedDays(IEnumerable<DateOnly> dates)
     {
         using var db = dbFactory.CreateDbContext();
 
-        // Select and create only new days.
+        // Only seed new days — skip dates that already exist.
         var existingDates = db.Days.Where(d => dates.Contains(d.Date)).Select(d => d.Date).ToHashSet();
         var newDays = dates.Except(existingDates).Order().Select(Day.Create).ToList();
 
         if (newDays.Count == 0)
-            return; // We only want to seed new days but there aren't any.
+            return;
 
         var newPoints = new List<DataPoint>();
 
@@ -262,19 +261,18 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
                 var d = 0;
                 while (true)
                 {
-                    // Use the same seed over a random number of days to represent trends.
+                    // Simulate a stretch of similar data points to show trends.
                     var chunkLength = Random.Shared.Next(1, 6);
                     var seed = Guid.NewGuid().GetHashCode();
 
                     for (var i = 0; i < chunkLength; i++)
                     {
-                        // Sometimes don't even generate the day as if the user forgot.
+                        // Occasionally skip a day to simulate missed entries.
                         var fill = Random.Shared.Next(0, 10) > 0;
 
-                        // Generate missing points with the random seed.
+                        // Generate points for that day and category using the seed.
                         newPoints.AddRange(db.GetMissingPoints(newDays[d], category, fill ? new(seed) : null));
 
-                        // Increment and end when we've gone through all the days.
                         d++;
                         if (d == newDays.Count)
                             return;
@@ -291,7 +289,7 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
     }
 
     /// <summary>
-    /// Seeds the database with debug data.
+    /// Seeds the database with debug data covering a wide date range.
     /// </summary>
     public void SeedDays()
     {
@@ -302,7 +300,7 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
 
         dates.AddRange(startDate.DatesTo(endDate));
 
-        // A few additional days to test multi-year features.
+        // Add a few outlier months for edge-case testing (e.g. visualizations, reports).
         foreach (var relativeMonth in new int[] { -30, -36, -42, -48 })
             startDate.AddMonths(relativeMonth);
 
