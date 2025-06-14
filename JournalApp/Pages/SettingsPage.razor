@@ -37,7 +37,7 @@ else
                 <MudCheckBox @bind-Value="PreferenceService.HideNotes" aria-label="Hide the notes section on the home page">Hide "Today's notes"</MudCheckBox>
 
                 <MudButton StartIcon="@Icons.Material.Rounded.HealthAndSafety" OnClick="SetUpSafetyPlan" Variant="Variant.Outlined" FullWidth>
-                    Set Up Safety Plan
+                    Set up Safety Plan
                 </MudButton>
             </section>
 
@@ -57,8 +57,7 @@ else
                 <MudCopyText Text="@($"Good Diary {ThisAssembly.AssemblyInformationalVersion}")" />
                 <MudCopyText Text="@($"{DeviceInfo.Current.Platform} {DeviceInfo.Current.VersionString}")" />
 
-                <MudLink Href="@(Feedback.GenerateLink())">Send feedback by email</MudLink>
-                <MudLink Href="https://github.com/danielchalmers/JournalApp/issues">Send feedback on GitHub</MudLink>
+                <MudLink Href="https://github.com/danielchalmers/JournalApp/issues/new">Submit feedbacl</MudLink>
                 <MudLink Href="https://play.google.com/store/apps/details?id=com.danielchalmers.journalapp">View on Play Store</MudLink>
                 <MudLink Href="https://github.com/danielchalmers/JournalApp">View source code</MudLink>
             </section>

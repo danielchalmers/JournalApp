@@ -270,7 +270,7 @@
     async Task OpenFeedback()
     {
         logger.LogInformation("Opening feedback link");
-        await Browser.OpenAsync(Feedback.GenerateLink());
+        await Browser.OpenAsync(Feedback.NewGitHubIssue);
     }
 
     async Task OpenShare()
