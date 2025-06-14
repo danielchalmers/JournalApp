@@ -131,15 +131,27 @@ body {
 
 .mud-toggle-group {
   flex-grow: 1;
+  border-radius: 20px;
+}
+
+.mud-button {
+  border-radius: 20px;
 }
 
 .mud-button-filled.mud-button-filled-primary {
   color: var(--mud-palette-primary-text);
 }
 
-.mud-dialog, .mud-card {
+.mud-dialog {
   padding: 0.75em !important;
   gap: 0.75em !important;
+  border-radius: 28px;
+}
+
+.mud-card {
+  padding: 0.75em !important;
+  gap: 0.75em !important;
+  border-radius: 12px;
 }
 
 .mud-dialog-title, .mud-card-header {
