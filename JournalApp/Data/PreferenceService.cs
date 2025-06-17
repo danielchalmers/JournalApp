@@ -134,6 +134,7 @@ public sealed class PreferenceService : IPreferences, IDisposable
         if (OperatingSystem.IsAndroid())
         {
             logger.LogDebug("Updating status bar");
+#pragma warning disable CS0618 // Type or member is obsolete
             if (IsDarkMode)
             {
                 StatusBar.SetColor(Color.FromHex("#EAB8D6"));
@@ -144,6 +145,7 @@ public sealed class PreferenceService : IPreferences, IDisposable
                 StatusBar.SetColor(Color.FromHex("#854C73"));
                 StatusBar.SetStyle(StatusBarStyle.LightContent);
             }
+#pragma warning restore CS0618 // Type or member is obsolete
         }
     }
 
