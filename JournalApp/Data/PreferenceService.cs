@@ -1,4 +1,6 @@
-﻿using MudBlazor.Utilities;
+﻿using CommunityToolkit.Maui.Core;
+using CommunityToolkit.Maui.Core.Platform;
+using MudBlazor.Utilities;
 
 namespace JournalApp;
 
@@ -22,6 +24,7 @@ public sealed class PreferenceService : IPreferences, IDisposable
             _application.RequestedThemeChanged += Application_RequestedThemeChanged;
         }
 
+        UpdateStatusBar();
         GenerateMoodColors();
     }
 
@@ -122,7 +125,26 @@ public sealed class PreferenceService : IPreferences, IDisposable
 
     private void OnThemeChanged()
     {
+        UpdateStatusBar();
         ThemeChanged?.Invoke(this, IsDarkMode);
+    }
+
+    private void UpdateStatusBar()
+    {
+        if (OperatingSystem.IsAndroid())
+        {
+            logger.LogDebug("Updating status bar");
+            if (IsDarkMode)
+            {
+                StatusBar.SetColor(Color.FromHex("#EAB8D6"));
+                StatusBar.SetStyle(StatusBarStyle.DarkContent);
+            }
+            else
+            {
+                StatusBar.SetColor(Color.FromHex("#854C73"));
+                StatusBar.SetStyle(StatusBarStyle.LightContent);
+            }
+        }
     }
 
     private void GenerateMoodColors()
