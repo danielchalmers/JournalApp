@@ -84,7 +84,7 @@ body {
 }
 
 .mud-dialog-width-full {
-  width: calc(100% - 4em) !important;
+  width: calc(100% - 32px) !important;
 }
 
 .mud-form {
