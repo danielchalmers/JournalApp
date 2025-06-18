@@ -10,11 +10,6 @@
     {
         <MudText Typo="Typo.body1">@Worksheet.Description</MudText>
     }
-
-    @if (!string.IsNullOrEmpty(Worksheet.SourceUri))
-    {
-        <MudLink Href="@Worksheet.SourceUri" Typo="Typo.caption" Style="word-wrap: anywhere">@PrettySourceUri</MudLink>
-    }
 </li>
 
 @code {
@@ -24,14 +19,12 @@
     [Parameter]
     public EventCallback ResourceClicked { get; set; }
 
-    public bool IsLinkDisabled => string.IsNullOrWhiteSpace(Worksheet.Uri);
-
-    public string PrettySourceUri => Worksheet.SourceUri.Replace("http://", "").Replace("https://", "").Replace("www.", "");
+    public bool IsLinkDisabled => string.IsNullOrWhiteSpace(Worksheet.SourceUri);
 
     async Task OnResourceClicked()
     {
-        logger.LogInformation($"Clicked <{Worksheet.Title}> and going to <{Worksheet.Uri}>");
-        await Browser.Default.OpenAsync(Worksheet.Uri);
+        logger.LogInformation($"Clicked <{Worksheet.Title}> and going to <{Worksheet.SourceUri}>");
+        await Browser.Default.OpenAsync(Worksheet.SourceUri);
 
         if (ResourceClicked.HasDelegate)
             await ResourceClicked.InvokeAsync();
