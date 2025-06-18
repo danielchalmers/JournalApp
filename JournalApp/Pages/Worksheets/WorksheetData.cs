@@ -181,6 +181,13 @@ public static class WorksheetData
         };
         yield return new()
         {
+            Title = "What Are Common Types of Eating Disorders?",
+            Description = "Information about eating disorders, including anorexia nervosa, binge-eating disorder, bulimia nervosa, and avoidant restrictive food intake disorder (ARFID).",
+            SourceUri = "https://www.nimh.nih.gov/health/publications/what-are-common-types-of-eating-disorders",
+            Category = "Eating Disorders",
+        };
+        yield return new()
+        {
             Title = "Obsessive-Compulsive Disorder: When Unwanted Thoughts or Repetitive Behaviors Take Over",
             Description = "Information on obsessive-compulsive disorder (OCD) including signs and symptoms, causes, and treatment options such as psychotherapy and medication.",
             SourceUri = "https://www.nimh.nih.gov/health/publications/obsessive-compulsive-disorder-when-unwanted-thoughts-or-repetitive-behaviors-take-over",
@@ -247,6 +254,55 @@ public static class WorksheetData
             Title = "Disruptive Mood Dysregulation Disorder: The Basics",
             Description = "Learn about disruptive mood dysregulation disorder including what it is, signs and symptoms, how it's diagnosed, treatments, and tips for parents or caregivers.",
             SourceUri = "https://www.nimh.nih.gov/health/publications/disruptive-mood-dysregulation-disorder",
+            Category = "Other",
+        };
+        yield return new()
+        {
+            Title = "Children and Mental Health: Is This Just a Stage?",
+            Description = "Information on children’s mental health including behavioral assessments, when to seek help, treatment, and guidance on working with your child’s school.",
+            SourceUri = "https://www.nimh.nih.gov/health/publications/children-and-mental-health",
+            Category = "Other",
+        };
+        yield return new()
+        {
+            Title = "Clinical Research Trials and You: Questions and Answers",
+            Description = "Learn about what a clinical trial is, potential risks and benefits, safety and ethical guidelines, and what people might experience during a clinical trial.",
+            SourceUri = "https://www.nimh.nih.gov/health/publications/clinical-research-trials-and-you-questions-and-answers",
+            Category = "Other",
+        };
+        yield return new()
+        {
+            Title = "Get Excited About Mental Health Research!",
+            Description = "This printable coloring and activity book for children ages 8-12 has information about mental health research and paths to becoming a mental health researcher.",
+            SourceUri = "https://www.nimh.nih.gov/health/publications/get-excited-about-mental-health-research",
+            Category = "Other",
+        };
+        yield return new()
+        {
+            Title = "Get Excited About the Brain!",
+            Description = "This free science education activity book helps kids ages 8-12 learn facts about the brain with coloring and puzzles about brain science and research.",
+            SourceUri = "https://www.nimh.nih.gov/health/publications/get-excited-about-the-brain",
+            Category = "Other",
+        };
+        yield return new()
+        {
+            Title = "Getting Mental Health Support Virtually",
+            Description = "Information about telehealth for mental health services, including potential benefits and drawbacks and factors to consider when looking for a provider.",
+            SourceUri = "https://www.nimh.nih.gov/health/publications/what-is-telemental-health",
+            Category = "Other",
+        };
+        yield return new()
+        {
+            Title = "Looking at My Genes: What Can They Tell Me About My Mental Health?",
+            Description = "This fact sheet provides information on how you can look at your family health history and your genes to determine your risk of developing a mental disorder.",
+            SourceUri = "https://www.nimh.nih.gov/health/publications/looking-at-my-genes",
+            Category = "Other",
+        };
+        yield return new()
+        {
+            Title = "National Institute of Mental Health: Celebrating 75 Years",
+            Description = "This booklet provides an overview of NIMH’s 75-year history, charting a timeline of key events and major research programs and public health initiatives.",
+            SourceUri = "https://www.nimh.nih.gov/health/publications/national-institute-of-mental-health-celebrating-75-years",
             Category = "Other",
         };
     }
