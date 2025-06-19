@@ -14,7 +14,7 @@
     public void EditDialog_Open()
     {
         var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
-        var guid = "0fb54aff-9ecc-4c17-bab5-b908b794cea9"; // Anxiety.
+        var guid = "de394b38-9007-4349-ae31-429541aab947"; // Physical activity.
 
         var layout = Render(
     @<MainLayout>
@@ -30,18 +30,19 @@
             return db.Categories.Single(c => c.Guid == new Guid(guid));
         }
 
+        layout.Find($"#manage-category-{guid} > .manage-category-edit-button").HasAttribute("disabled").Should().BeFalse();
         layout.Find($"#manage-category-{guid} > .manage-category-edit-button").Click();
         var editDialog = layout.FindComponent<EditCategoryDialog>();
 
         // Assert.
-        Category().Name.Should().Be("Anxiety");
-        editDialog.FindAll(".mud-input-text input")[0].GetAttribute("value").Should().Be("Anxiety");
+        Category().Name.Should().Be("Physical activity");
+        editDialog.FindAll(".mud-input-text input")[0].GetAttribute("value").Should().Be("Physical activity");
 
         layout.Find(".submit-button").Click();
     }
 
     [Fact]
-    public void EditDialog_UpdatesList()
+    public void EditDialog_ShouldNotOpenWhenCategoryIsDisabled()
     {
         var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
         var guid = "0fb54aff-9ecc-4c17-bab5-b908b794cea9"; // Anxiety.
@@ -54,6 +55,44 @@
     </MainLayout>
         );
 
+        layout.Find($"#manage-category-{guid} > .manage-category-edit-button").HasAttribute("disabled").Should().BeTrue();
+        layout.Find($"#manage-category-{guid} > .manage-category-edit-button").Click();
+        layout.HasComponent<EditCategoryDialog>().Should().BeFalse();
+    }
+
+    [Fact]
+    public void EditDialog_ShouldNotOpenWhenCategoryIsReadOnly()
+    {
+        var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var guid = "d90d89fb-f5b9-47cf-ae4e-3ec0d635e783"; // Overall mood.
+
+        var layout = Render(
+    @<MainLayout>
+        <Body>
+            <ManageCategoriesPage />
+        </Body>
+    </MainLayout>
+        );
+
+        layout.Find($"#manage-category-{guid} > .manage-category-edit-button").HasAttribute("disabled").Should().BeTrue();
+        layout.Find($"#manage-category-{guid} > .manage-category-edit-button").Click();
+        layout.HasComponent<EditCategoryDialog>().Should().BeFalse();
+    }
+
+    [Fact]
+    public void EditDialog_UpdatesList()
+    {
+        var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var guid = "de394b38-9007-4349-ae31-429541aab947"; // Physical activity.
+
+        var layout = Render(
+    @<MainLayout>
+        <Body>
+            <ManageCategoriesPage />
+        </Body>
+    </MainLayout>
+        );
+
         DataPointCategory Category()
         {
             using var db = dbf.CreateDbContext();
@@ -62,7 +101,7 @@
 
         layout.Find($"#manage-category-{guid} > .manage-category-edit-button").Click();
 
-        Category().Name.Should().Be("Anxiety");
+        Category().Name.Should().Be("Physical activity");
         layout.FindAll(".category-dialog .mud-input-text input")[0].Input("New name");
 
         // Submit changes and confirm they have changed on the main list.
@@ -89,7 +128,7 @@
 
         // Open the dialog to create a new category.
         layout.Find(".add-category-button").Click();
-        layout.Markup.Should().Contain("New card");
+        layout.Markup.Should().Contain("New element");
 
         // Set up the new category.
         layout.FindAll(".category-dialog .mud-input-text input")[0].Input("New name");
@@ -111,7 +150,7 @@
     );
 
         // Initial state.
-        layout.FindAll(".manage-category-edit-button").Count.Should().Be(5);
+        layout.FindAll(".manage-category-edit-button").Count.Should().Be(3);
 
         // Open the dialog to create a new category.
         layout.Find(".add-category-button").Click();
@@ -122,7 +161,7 @@
 
         // Submit changes and confirm there is a new category in the list.
         layout.Find(".category-dialog .submit-button").Click();
-        layout.FindAll(".manage-category-edit-button").Count.Should().Be(6);
+        layout.FindAll(".manage-category-edit-button").Count.Should().Be(4);
     }
 
     [Fact]
