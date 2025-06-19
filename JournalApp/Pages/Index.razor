@@ -59,74 +59,74 @@
                 continue;
             }
 
-            <MudCard Class="data-point-group">
+            <div>
                 @if (!string.IsNullOrEmpty(group.Key))
                 {
-                    <MudCardHeader>
-                        <MudText Class="data-point-group-header" Typo="Typo.h5">
-                            @if (group.Key == "Medications")
-                            {
-                                @("Medications taken")
-                            }
-                            else if (group.Key == "Notes")
-                            {
-                                @("Today's notes")
-                            }
-                        </MudText>
-                    </MudCardHeader>
+                    <MudText Class="data-point-group-header">
+                        @if (group.Key == "Medications")
+                        {
+                            @("Medications taken")
+                        }
+                        else if (group.Key == "Notes")
+                        {
+                            @("Today's notes")
+                        }
+                    </MudText>
                 }
 
-                <MudCardContent>
-                    <ul class="data-point-list">
-                        @foreach (var category in group.OrderBy(x => x.Index).ThenBy(x => x.Name))
-                        {
-                            @foreach (var point in _day.Points.Where(x => !x.Deleted && x.Category.Guid == category.Guid && x.Type == category.Type).OrderBy(x => x.CreatedAt))
+                <MudCard Class="data-point-group">
+                    <MudCardContent>
+                        <ul class="data-point-list">
+                            @foreach (var category in group.OrderBy(x => x.Index).ThenBy(x => x.Name))
                             {
-                                <li class="data-point-container" data-category-guid="@category.Guid">
-                                    @if (!string.IsNullOrEmpty(category.Name))
-                                    {
-                                        <div class="data-point-header">
-                                            <MudText HtmlTag="h6">
-                                                @(DataPointView.GetHeaderText(point))
-                                            </MudText>
+                                @foreach (var point in _day.Points.Where(x => !x.Deleted && x.Category.Guid == category.Guid && x.Type == category.Type).OrderBy(x => x.CreatedAt))
+                                {
+                                    <li class="data-point-container" data-category-guid="@category.Guid">
+                                        @if (!string.IsNullOrEmpty(category.Name))
+                                        {
+                                            <div class="data-point-header">
+                                                <MudText HtmlTag="h6">
+                                                    @(DataPointView.GetHeaderText(point))
+                                                </MudText>
+                                            </div>
+                                        }
+
+                                        @if (!category.SingleLine)
+                                        {
+                                            <MudFlexBreak />
+                                        }
+
+                                        <div class="data-point-view">
+                                            <DataPointView Point="point" StateChanged="_ => StateHasChanged()" />
                                         </div>
-                                    }
-
-                                    @if (!category.SingleLine)
-                                    {
-                                        <MudFlexBreak />
-                                    }
-
-                                    <div class="data-point-view">
-                                        <DataPointView Point="point" StateChanged="_ => StateHasChanged()" />
-                                    </div>
-                                </li>
+                                    </li>
+                                }
                             }
-                        }
-                    </ul>
-                </MudCardContent>
+                        </ul>
+                    </MudCardContent>
 
-                <MudCardActions>
-                    @if (group.Key == null)
-                    {
-                        <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Rounded.DashboardCustomize" OnClick="ManageCategories">
-                            Manage elements
-                        </MudButton>
-                    }
-                    else if (group.Key == "Medications")
-                    {
-                        <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Rounded.Medication" OnClick="ManageMedications">
-                            Manage medications
-                        </MudButton>
-                    }
-                    else if (group.Key == "Notes")
-                    {
-                        <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Rounded.Chat" OnClick="NewNote">
-                            New note
-                        </MudButton>
-                    }
-                </MudCardActions>
-            </MudCard>
+                    <MudCardActions>
+                        @if (group.Key == null)
+                        {
+                            <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Rounded.DashboardCustomize" OnClick="ManageCategories">
+                                Manage elements
+                            </MudButton>
+                        }
+                        else if (group.Key == "Medications")
+                        {
+                            <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Rounded.Medication" OnClick="ManageMedications">
+                                Manage medications
+                            </MudButton>
+                        }
+                        else if (group.Key == "Notes")
+                        {
+                            <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Rounded.Chat" OnClick="NewNote">
+                                New note
+                            </MudButton>
+                        }
+                    </MudCardActions>
+                </MudCard>
+            </div>
         }
     </div>
 </main>
