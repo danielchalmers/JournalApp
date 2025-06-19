@@ -24,11 +24,9 @@
 <main class="page-body">
     @if (_gridYear != null)
     {
-        <div style="padding-bottom: 40vh;">
-            <CalendarView GridYear="_gridYear.Value" OpenToDate="OpenToDate"
-                          CalendarRendered="ScrollToOpenToDate" DayClicked="(d) => Close(d)"
-                          PreviousMonthClicked="PreviousMonth" NextMonthClicked="NextMonth" />
-        </div>
+        <CalendarView GridYear="_gridYear.Value" OpenToDate="OpenToDate"
+                      CalendarRendered="ScrollToOpenToDate" DayClicked="(d) => Close(d)"
+                      PreviousMonthClicked="PreviousMonth" NextMonthClicked="NextMonth" />
     }
 </main>
 

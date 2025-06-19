@@ -14,7 +14,7 @@
 <main class="page-body">
     <div class="worksheet-group-list">
         <nav class="worksheet-group">
-            <MudText Typo="Typo.h4">Table of Contents</MudText>
+            <MudText Class="list-group-title">Table of Contents</MudText>
             <ul class="worksheet-group-toc">
                 @foreach (var group in WorksheetGroups)
                 {
@@ -30,24 +30,26 @@
 
         @foreach (var group in WorksheetGroups)
         {
-            <MudCard Class="worksheet-group" id="@($"worksheet-group-key-{MarkupUtil.ToClassName(group.Key)}")">
+            <div class="worksheet-group" id="@($"worksheet-group-key-{MarkupUtil.ToClassName(group.Key)}")">
                 @if (!string.IsNullOrEmpty(group.Key))
                 {
-                    <MudCardHeader Class="gap-1">
-                        <MudText Typo="Typo.h4">@group.Key</MudText>
-                        <MudIconButton Icon="@Icons.Material.Rounded.ArrowUpward" OnClick="ScrollToTop" aria-label="Scroll to top" />
-                    </MudCardHeader>
+                    <MudText Class="list-group-title">@group.Key</MudText>
                 }
 
-                <MudCardContent>
+                <MudCard>
                     <ul class="worksheet-group-items">
                         @foreach (var ws in group)
                         {
                             <WorksheetView Worksheet="ws" ResourceClicked="OnResourceClicked" />
+
+                            if (ws != group.Last())
+                            {
+                                <MudDivider />
+                            }
                         }
                     </ul>
-                </MudCardContent>
-            </MudCard>
+                </MudCard>
+            </div>
         }
     </div>
 </main>

@@ -6,13 +6,9 @@
     @foreach (var month in GridYear.GridMonths)
     {
         <section class="calendar-month" id="calendar-month-@(month.Month)">
-            <header class="calendar-month-header">
-                <MudIconButton Icon="@Icons.Material.Rounded.ArrowLeft" OnClick="async () => await PreviousMonthClicked.InvokeAsync(month.Month)" aria-label="Previous month" />
-                <MudText Typo="Typo.h4">@(month.Name)</MudText>
-                <MudIconButton Icon="@Icons.Material.Rounded.ArrowRight" OnClick="async () => await NextMonthClicked.InvokeAsync(month.Month)" aria-label="Next month" Disabled="@(month.Month == 12 && month.Year == DateTime.Now.Year)" />
-            </header>
+            <MudText>@(month.Name)</MudText>
 
-            <div class="mood-blocks-month">
+            <MudCard Class="mood-blocks-month">
                 <div class="mood-blocks-week">
                     @foreach (var day in month.DaysOfWeek)
                     {
@@ -40,7 +36,7 @@
                         }
                     </div>
                 }
-            </div>
+            </MudCard>
         </section>
     }
 </div>
