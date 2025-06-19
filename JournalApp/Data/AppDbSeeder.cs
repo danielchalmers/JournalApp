@@ -186,28 +186,12 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             details: "My current weight using my preferred units");
 
         AddOrUpdate(
-            "2EEA42EE-4586-4E7D-ABF1-012BED1C0753",
-            PointType.Medication,
-            group: "Medications",
-            name: "Example (AM)",
-            details: "Just an example of a morning medication",
-            enabled: true);
-
-        AddOrUpdate(
-            "4A00F59D-7A66-4CA5-B05A-F7D67F4BB6B5",
-            PointType.Medication,
-            group: "Medications",
-            name: "Example (PM)",
-            details: "Just an example of an evening medication",
-            enabled: true);
-
-        AddOrUpdate(
             "01A8F325-3002-40C4-B076-234E26172E82",
             PointType.Medication,
             group: "Medications",
             name: "Vitamin D",
             details: "Often taken for bone or immune support",
-            enabled: false,
+            enabled: true,
             medDose: 2000,
             medUnit: "IU",
             medEveryDaySince: DateTimeOffset.Now);
@@ -229,7 +213,7 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             group: "Medications",
             name: "Gabapentin",
             details: "Often taken for nerve pain, sleep, or seizures",
-            enabled: false,
+            enabled: true,
             medDose: 300,
             medUnit: "mg",
             medEveryDaySince: DateTimeOffset.Now);
