@@ -5,7 +5,7 @@
 
 @if (Point.Type == PointType.Mood)
 {
-    <MudMenu Dense>
+    <MudMenu PopoverClass="emoji-menu-list" Dense>
         <ActivatorContent>
             <MudButton aria-label="Choose emoji for day's mood'">
                 <Emoji>@(Point.Mood ?? "🤔")</Emoji>

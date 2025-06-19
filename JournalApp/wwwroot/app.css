@@ -170,12 +170,15 @@ body {
 
 .mud-dialog-actions, .mud-card-actions {
   padding: 0 !important;
-  padding-top: 1em !important;
 }
 
 .mud-snackbar {
   background-color: var(--mud-palette-primary);
   color: var(--mud-palette-primary-text);
+}
+
+.emoji-menu-list .mud-menu-list {
+  min-width: unset;
 }
 
 #blazor-error-ui {

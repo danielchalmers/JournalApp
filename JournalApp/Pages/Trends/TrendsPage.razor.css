@@ -8,7 +8,6 @@
 .trends-category {
   display: flex;
   flex-direction: column;
-  gap: 1em;
 }
 
 ::deep .trend-view {
