@@ -1,12 +1,12 @@
 .settings-group-list {
   display: flex;
   flex-direction: column;
-  gap: 2em;
+  gap: 32px;
 }
 
 .settings-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5em;
+  gap: 8px;
   align-items: start;
 }

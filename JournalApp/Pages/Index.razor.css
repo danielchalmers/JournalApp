@@ -1,19 +1,19 @@
 .main-timeline {
   display: flex;
   flex-direction: column;
-  gap: 2em;
+  gap: 32px;
 }
 
 .data-point-group {
   display: flex;
   flex-direction: column;
-  gap: 1em;
+  gap: 16px;
 }
 
 .data-point-list {
   display: flex;
   flex-direction: column;
-  gap: 1em;
+  gap: 16px;
 }
 
 .data-point-container {
@@ -22,7 +22,7 @@
   flex-grow: 1;
   align-items: center;
   justify-items: center;
-  column-gap: 0.5em;
+  column-gap: 8px;
 }
 
 .data-point-header {

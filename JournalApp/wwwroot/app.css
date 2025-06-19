@@ -55,7 +55,7 @@ body {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 0.5em;
+  gap: 8px;
   padding: 0;
   box-shadow: none;
   background-color: var(--mud-palette-primary);
@@ -79,7 +79,7 @@ body {
   width: 100%;
   max-width: 960px;
   margin: 0 auto !important;
-  padding: 0.5em !important;
+  padding: 8px !important;
   padding-bottom: 15vh !important;
 }
 
@@ -90,7 +90,7 @@ body {
 .mud-form {
   display: flex;
   flex-direction: column;
-  gap: 1em;
+  gap: 16px;
 }
 
 .mud-input-control > .mud-input-control-input-container > .mud-input-label-inputcontrol {
@@ -103,7 +103,7 @@ body {
 }
 
 .mud-radio-group {
-  gap: 0.5em;
+  gap: 8px;
 }
 
 .mud-toggle-group {
@@ -133,7 +133,7 @@ body {
 
 .mud-dialog-title, .mud-card-header {
   padding: 0 !important;
-  padding-top: 0.5em !important;
+  padding-top: 8px !important;
   display: flex;
   align-items: center;
   justify-content: center;

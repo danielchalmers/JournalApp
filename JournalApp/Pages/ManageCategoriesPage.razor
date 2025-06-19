@@ -31,7 +31,7 @@
                                OnClick="async () => await MoveUp(c)" Edge="Edge.Start" Disabled="c.Index <= 1" />
 
                 <MudSwitch Class="manage-category-enabled-switch" T="bool" Value="c.Enabled" ValueChanged="async (v) => await OnEnabledChanged(c, v)"
-                           Color="Color.Primary" Style="margin-right: -0.125em;" aria-label="Show in home" />
+                           Color="Color.Primary" Style="margin-right: -2px;" aria-label="Show in home" />
 
                 <MudButton Class="manage-category-edit-button"
                            Variant="Variant.Text" OnClick="async () => await Edit(c)" Disabled="c.ReadOnly"

@@ -1,8 +1,8 @@
 ﻿#trends-category-list {
   display: flex;
   flex-direction: column;
-  gap: 2em;
-  margin-top: 1em;
+  gap: 32px;
+  margin-top: 16px;
 }
 
 .trends-category {
@@ -11,8 +11,8 @@
 }
 
 ::deep .trend-view {
-  padding: 0.5em;
-  gap: 1em;
+  padding: 8px;
+  gap: 16px;
   background-color: var(--mud-palette-surface);
   border-radius: var(--mud-default-borderradius);
 }

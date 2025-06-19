@@ -1,5 +1,5 @@
 ﻿.trend-view-chart {
-  height: 10em;
+  height: 160px;
 }
 
 .trend-view-notes {
@@ -9,5 +9,5 @@
 }
 
 .trend-view-note {
-  margin-block-end: 1em;
+  margin-block-end: 16px;
 }

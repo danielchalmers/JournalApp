@@ -24,7 +24,7 @@
 }
 else if (Point.Type == PointType.Sleep)
 {
-    <div class="d-flex align-center flex-grow-1" style="gap: 0.5em">
+    <div class="d-flex align-center flex-grow-1" style="gap: 8px">
         <MudText Class="sleep-hours" Typo="Typo.caption">@((Point.SleepHours ?? 0).ToString("00.0"))</MudText>
         <MudIconButton Class="less-sleep" Icon="@Icons.Material.Rounded.Remove" aria-label="Less sleep" OnClick="DecrementSleep" Disabled="@(Point.SleepHours <= 0)" Size="Size.Small" />
         <MudSlider T="decimal" @bind-NullableValue="Point.SleepHours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" />
@@ -85,7 +85,7 @@ else if (Point.Type == PointType.Note)
 }
 else if (Point.Type == PointType.Medication)
 {
-    <div class="d-flex flex-grow-1 justify-space-between align-center" style="gap: 0.5em">
+    <div class="d-flex flex-grow-1 justify-space-between align-center" style="gap: 8px">
         <MudToggleGroup T="bool?" @bind-Value="Point.Bool" @bind-Value:after="OnMedicationTakenChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small">
             <MudToggleItem T="bool?" Value="false">No</MudToggleItem>
             <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
