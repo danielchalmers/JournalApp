@@ -110,61 +110,61 @@ else
         base.OnInitialized();
 
         ChartOptions = new()
+        {
+            Theme = new Theme
             {
-                Theme = new Theme
+                Mode = PreferenceService.IsDarkMode ? Mode.Dark : Mode.Light,
+                Monochrome = new ThemeMonochrome
                 {
-                    Mode = PreferenceService.IsDarkMode ? Mode.Dark : Mode.Light,
-                    Monochrome = new ThemeMonochrome
+                    Color = "#F7B1DE",
+                    Enabled = true,
+                },
+            },
+            Grid = new Grid
+            {
+                Padding = new Padding
+                {
+                    Bottom = 0,
+                    Left = 0,
+                    Right = 0,
+                    Top = -15,
+                },
+                BorderColor = "var(--mud-palette-action-default)",
+            },
+            Chart = new Chart
+            {
+                Background = "transparent",
+                Height = "100%",
+                ParentHeightOffset = 0,
+                Zoom = new Zoom
+                {
+                    Enabled = false,
+                },
+                Toolbar = new Toolbar
+                {
+                    Show = false,
+                },
+                Animations = new Animations
+                {
+                    Enabled = false,
+                },
+            },
+            Xaxis = new XAxis
+            {
+                TickAmount = 15,
+                Labels = new XAxisLabels
+                {
+                    HideOverlappingLabels = true,
+                    Rotate = 0,
+                    Style = new AxisLabelStyle
                     {
-                        Color = "#F7B1DE",
-                        Enabled = true,
+                        //FontSize = "var(--mud-typography-caption-size)",
+                        FontFamily = "var(--mud-typography-caption-family)",
+                        FontWeight = "var(--mud-typography-caption-weight)",
                     },
                 },
-                Grid = new Grid
-                {
-                    Padding = new Padding
-                    {
-                        Bottom = 0,
-                        Left = 0,
-                        Right = 0,
-                        Top = -15,
-                    },
-                    BorderColor = "var(--mud-palette-action-default)",
-                },
-                Chart = new Chart
-                {
-                    Background = "transparent",
-                    Height = "100%",
-                    ParentHeightOffset = 0,
-                    Zoom = new Zoom
-                    {
-                        Enabled = false,
-                    },
-                    Toolbar = new Toolbar
-                    {
-                        Show = false,
-                    },
-                    Animations = new Animations
-                    {
-                        Enabled = false,
-                    },
-                },
-                Xaxis = new XAxis
-                {
-                    TickAmount = 15,
-                    Labels = new XAxisLabels
-                    {
-                        HideOverlappingLabels = true,
-                        Rotate = 0,
-                        Style = new AxisLabelStyle
-                        {
-                            //FontSize = "var(--mud-typography-caption-size)",
-                            FontFamily = "var(--mud-typography-caption-family)",
-                            FontWeight = "var(--mud-typography-caption-weight)",
-                        },
-                    },
-                },
-                Yaxis = new List<YAxis>
+            },
+            Yaxis = new List<YAxis>
                 {
                    new YAxis
                    {
@@ -180,16 +180,16 @@ else
                         },
                    },
                 },
-                Markers = new Markers
-                {
-                    ShowNullDataPoints = false,
-                },
-                Stroke = new Stroke
-                {
-                    Curve = Curve.Smooth,
-                    LineCap = LineCap.Round,
-                },
-            };
+            Markers = new Markers
+            {
+                ShowNullDataPoints = false,
+            },
+            Stroke = new Stroke
+            {
+                Curve = Curve.Smooth,
+                LineCap = LineCap.Round,
+            },
+        };
     }
 
     /// <summary>

@@ -16,21 +16,21 @@ public static class WorksheetData
             Title = "Getting Mental Health Support Virtually",
             Description = "Information about telehealth for mental health services, including potential benefits and drawbacks and factors to consider when looking for a provider.",
             SourceUri = "https://www.nimh.nih.gov/health/publications/what-is-telemental-health",
-            Category = "",
+            Category = "Treatment",
         };
         yield return new()
         {
             Title = "My Mental Health: Do I Need Help?",
             Description = "Information about how to assess your mental health and determine if you need help. It provides examples of mild and severe symptoms, as well as self-care activities and options for professional help.",
             SourceUri = "https://www.nimh.nih.gov/health/publications/my-mental-health-do-i-need-help",
-            Category = "",
+            Category = "Treatment",
         };
         yield return new()
         {
             Title = "Tips for Talking With a Health Care Provider About Your Mental Health",
             Description = "Five tips to help prepare and guide you on how to talk to a health care provider about your mental health and get the most out of your visit.",
             SourceUri = "https://www.nimh.nih.gov/health/publications/tips-for-talking-with-your-health-care-provider",
-            Category = "",
+            Category = "Treatment",
         };
         yield return new()
         {
