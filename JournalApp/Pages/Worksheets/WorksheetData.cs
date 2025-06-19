@@ -13,6 +13,13 @@ public static class WorksheetData
 
         yield return new()
         {
+            Title = "Getting Mental Health Support Virtually",
+            Description = "Information about telehealth for mental health services, including potential benefits and drawbacks and factors to consider when looking for a provider.",
+            SourceUri = "https://www.nimh.nih.gov/health/publications/what-is-telemental-health",
+            Category = "",
+        };
+        yield return new()
+        {
             Title = "My Mental Health: Do I Need Help?",
             Description = "Information about how to assess your mental health and determine if you need help. It provides examples of mild and severe symptoms, as well as self-care activities and options for professional help.",
             SourceUri = "https://www.nimh.nih.gov/health/publications/my-mental-health-do-i-need-help",
@@ -20,52 +27,31 @@ public static class WorksheetData
         };
         yield return new()
         {
+            Title = "Tips for Talking With a Health Care Provider About Your Mental Health",
+            Description = "Five tips to help prepare and guide you on how to talk to a health care provider about your mental health and get the most out of your visit.",
+            SourceUri = "https://www.nimh.nih.gov/health/publications/tips-for-talking-with-your-health-care-provider",
+            Category = "",
+        };
+        yield return new()
+        {
             Title = "Generalized Anxiety Disorder: When Worry Gets Out of Control",
             Description = "Information about generalized anxiety disorder including common signs and symptoms, treatment options, and how to find help.",
             SourceUri = "https://www.nimh.nih.gov/health/publications/generalized-anxiety-disorder-gad",
-            Category = "Anxiety & Stress",
-        };
-        yield return new()
-        {
-            Title = "I’m So Stressed Out! Fact Sheet",
-            Description = "Intended for teens and young adults and presents information about stress, anxiety, and ways to cope when feeling overwhelmed.",
-            SourceUri = "https://www.nimh.nih.gov/health/publications/so-stressed-out-fact-sheet",
-            Category = "Anxiety & Stress",
-        };
-        yield return new()
-        {
-            Title = "I’m So Stressed Out! Infographic",
-            Description = "Infographic about stress, anxiety, and ways to cope when feeling overwhelmed. It was developed for use on social media to highlight the \"I’m So Stressed Out!\" fact sheet.",
-            SourceUri = "https://www.nimh.nih.gov/health/publications/so-stressed-out-infographic",
-            Category = "Anxiety & Stress",
+            Category = "Anxiety",
         };
         yield return new()
         {
             Title = "Panic Disorder: When Fear Overwhelms",
             Description = "Information about panic disorder, including common signs and symptoms, treatment options, and how to find help.",
             SourceUri = "https://www.nimh.nih.gov/health/publications/panic-disorder-when-fear-overwhelms",
-            Category = "Anxiety & Stress",
+            Category = "Anxiety",
         };
         yield return new()
         {
             Title = "Social Anxiety Disorder: More Than Just Shyness",
             Description = "Information about social anxiety disorder, including common signs and symptoms, treatment options, and how to find help.",
             SourceUri = "https://www.nimh.nih.gov/health/publications/social-anxiety-disorder-more-than-just-shyness",
-            Category = "Anxiety & Stress",
-        };
-        yield return new()
-        {
-            Title = "Stand Up to Stress!",
-            Description = "Coloring and activity book for children ages 8-12 teaches kids about stress and anxiety and offers tips for coping in a healthy way.",
-            SourceUri = "https://www.nimh.nih.gov/health/publications/stand-up-to-stress",
-            Category = "Anxiety & Stress",
-        };
-        yield return new()
-        {
-            Title = "Stress Catcher",
-            Description = "\"Fortune teller\" craft for children that offers coping strategies to help manage stress and other difficult emotions. Instructions on how to create and use the Stress Catcher are provided.",
-            SourceUri = "https://www.nimh.nih.gov/health/publications/stress-catcher",
-            Category = "Anxiety & Stress",
+            Category = "Anxiety",
         };
         yield return new()
         {
@@ -115,6 +101,34 @@ public static class WorksheetData
             Description = "Information about borderline personality disorder, including signs and symptoms, diagnosis, and treatments for borderline personality disorder.",
             SourceUri = "https://www.nimh.nih.gov/health/publications/borderline-personality-disorder",
             Category = "BPD",
+        };
+        yield return new()
+        {
+            Title = "Disruptive Mood Dysregulation Disorder: The Basics",
+            Description = "Learn about disruptive mood dysregulation disorder including what it is, signs and symptoms, how it's diagnosed, treatments, and tips for parents or caregivers.",
+            SourceUri = "https://www.nimh.nih.gov/health/publications/disruptive-mood-dysregulation-disorder",
+            Category = "Children",
+        };
+        yield return new()
+        {
+            Title = "Children and Mental Health: Is This Just a Stage?",
+            Description = "Information on children’s mental health including behavioral assessments, when to seek help, treatment, and guidance on working with your child’s school.",
+            SourceUri = "https://www.nimh.nih.gov/health/publications/children-and-mental-health",
+            Category = "Children",
+        };
+        yield return new()
+        {
+            Title = "Get Excited About Mental Health Research!",
+            Description = "This printable coloring and activity book for children ages 8-12 has information about mental health research and paths to becoming a mental health researcher.",
+            SourceUri = "https://www.nimh.nih.gov/health/publications/get-excited-about-mental-health-research",
+            Category = "Children",
+        };
+        yield return new()
+        {
+            Title = "Get Excited About the Brain!",
+            Description = "This free science education activity book helps kids ages 8-12 learn facts about the brain with coloring and puzzles about brain science and research.",
+            SourceUri = "https://www.nimh.nih.gov/health/publications/get-excited-about-the-brain",
+            Category = "Children",
         };
         yield return new()
         {
@@ -202,17 +216,38 @@ public static class WorksheetData
         };
         yield return new()
         {
-            Title = "Understanding Psychosis",
-            Description = "Information on psychosis including causes, signs and symptoms, treatment, and resources for help.",
-            SourceUri = "https://www.nimh.nih.gov/health/publications/understanding-psychosis",
-            Category = "Psychosis",
-        };
-        yield return new()
-        {
             Title = "Schizophrenia",
             Description = "Information about schizophrenia including symptoms, causes, treatment options, and how to find help for yourself or a loved one.",
             SourceUri = "https://www.nimh.nih.gov/health/publications/schizophrenia",
             Category = "Schizophrenia",
+        };
+        yield return new()
+        {
+            Title = "Understanding Psychosis",
+            Description = "Information on psychosis including causes, signs and symptoms, treatment, and resources for help.",
+            SourceUri = "https://www.nimh.nih.gov/health/publications/understanding-psychosis",
+            Category = "Schizophrenia",
+        };
+        yield return new()
+        {
+            Title = "I’m So Stressed Out! Fact Sheet",
+            Description = "Intended for teens and young adults and presents information about stress, anxiety, and ways to cope when feeling overwhelmed.",
+            SourceUri = "https://www.nimh.nih.gov/health/publications/so-stressed-out-fact-sheet",
+            Category = "Stress",
+        };
+        yield return new()
+        {
+            Title = "I’m So Stressed Out! Infographic",
+            Description = "Infographic about stress, anxiety, and ways to cope when feeling overwhelmed. It was developed for use on social media to highlight the \"I’m So Stressed Out!\" fact sheet.",
+            SourceUri = "https://www.nimh.nih.gov/health/publications/so-stressed-out-infographic",
+            Category = "Stress",
+        };
+        yield return new()
+        {
+            Title = "Stand Up to Stress!",
+            Description = "Coloring and activity book for children ages 8-12 teaches kids about stress and anxiety and offers tips for coping in a healthy way.",
+            SourceUri = "https://www.nimh.nih.gov/health/publications/stand-up-to-stress",
+            Category = "Stress",
         };
         yield return new()
         {
@@ -240,28 +275,14 @@ public static class WorksheetData
             Title = "Helping Children and Adolescents Cope With Traumatic Events",
             Description = "Information on how children and adolescents respond to traumatic events, and what family, friends, and trusted adults can do to help.",
             SourceUri = "https://www.nimh.nih.gov/health/publications/helping-children-and-adolescents-cope-with-disasters-and-other-traumatic-events",
-            Category = "Traumatic Events",
+            Category = "Trauma",
         };
         yield return new()
         {
             Title = "Post-Traumatic Stress Disorder",
             Description = "Information about post-traumatic stress disorder (PTSD) including what it is, who develops PTSD, symptoms, treatment options, and how to find help for yourself or someone else who may have PTSD.",
             SourceUri = "https://www.nimh.nih.gov/health/publications/post-traumatic-stress-disorder-ptsd",
-            Category = "Traumatic Events",
-        };
-        yield return new()
-        {
-            Title = "Disruptive Mood Dysregulation Disorder: The Basics",
-            Description = "Learn about disruptive mood dysregulation disorder including what it is, signs and symptoms, how it's diagnosed, treatments, and tips for parents or caregivers.",
-            SourceUri = "https://www.nimh.nih.gov/health/publications/disruptive-mood-dysregulation-disorder",
-            Category = "Other",
-        };
-        yield return new()
-        {
-            Title = "Children and Mental Health: Is This Just a Stage?",
-            Description = "Information on children’s mental health including behavioral assessments, when to seek help, treatment, and guidance on working with your child’s school.",
-            SourceUri = "https://www.nimh.nih.gov/health/publications/children-and-mental-health",
-            Category = "Other",
+            Category = "Trauma",
         };
         yield return new()
         {
@@ -272,37 +293,9 @@ public static class WorksheetData
         };
         yield return new()
         {
-            Title = "Get Excited About Mental Health Research!",
-            Description = "This printable coloring and activity book for children ages 8-12 has information about mental health research and paths to becoming a mental health researcher.",
-            SourceUri = "https://www.nimh.nih.gov/health/publications/get-excited-about-mental-health-research",
-            Category = "Other",
-        };
-        yield return new()
-        {
-            Title = "Get Excited About the Brain!",
-            Description = "This free science education activity book helps kids ages 8-12 learn facts about the brain with coloring and puzzles about brain science and research.",
-            SourceUri = "https://www.nimh.nih.gov/health/publications/get-excited-about-the-brain",
-            Category = "Other",
-        };
-        yield return new()
-        {
-            Title = "Getting Mental Health Support Virtually",
-            Description = "Information about telehealth for mental health services, including potential benefits and drawbacks and factors to consider when looking for a provider.",
-            SourceUri = "https://www.nimh.nih.gov/health/publications/what-is-telemental-health",
-            Category = "Other",
-        };
-        yield return new()
-        {
             Title = "Looking at My Genes: What Can They Tell Me About My Mental Health?",
             Description = "This fact sheet provides information on how you can look at your family health history and your genes to determine your risk of developing a mental disorder.",
             SourceUri = "https://www.nimh.nih.gov/health/publications/looking-at-my-genes",
-            Category = "Other",
-        };
-        yield return new()
-        {
-            Title = "National Institute of Mental Health: Celebrating 75 Years",
-            Description = "This booklet provides an overview of NIMH’s 75-year history, charting a timeline of key events and major research programs and public health initiatives.",
-            SourceUri = "https://www.nimh.nih.gov/health/publications/national-institute-of-mental-health-celebrating-75-years",
             Category = "Other",
         };
     }
