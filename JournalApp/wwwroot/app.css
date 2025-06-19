@@ -93,29 +93,6 @@ body {
   gap: 1em;
 }
 
-.mud-input-text {
-  margin-top: 0 !important;
-}
-
-.mud-input-control {
-  margin-top: 0 !important;
-}
-
-.mud-input-control-input-container:has(.mud-input-label) {
-  margin-top: 1em !important;
-}
-
-.mud-input-label-inputcontrol {
-  top: 0;
-  left: 0;
-  position: absolute;
-  transform: translate(0, -0.75em) scale(0.75) !important;
-}
-
-.mud-input.mud-input-outlined .mud-input-outlined-border {
-  border-radius: calc(var(--mud-default-borderradius) / 2);
-}
-
 .mud-input-control > .mud-input-control-input-container > .mud-input-label-inputcontrol {
   color: var(--mud-palette-text-primary)
 }
