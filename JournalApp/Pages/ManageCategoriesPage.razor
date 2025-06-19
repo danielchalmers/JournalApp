@@ -34,7 +34,7 @@
                            Color="Color.Primary" Style="margin-right: -2px;" aria-label="Show in home" />
 
                 <MudButton Class="manage-category-edit-button"
-                           Variant="Variant.Text" OnClick="async () => await Edit(c)" Disabled="c.ReadOnly"
+                           Variant="Variant.Text" OnClick="async () => await Edit(c)" Disabled="c.ReadOnly || !c.Enabled"
                            StartIcon="@Icons.Material.Rounded.Edit" Size="Size.Large" aria-label="Make changes">@c.Name</MudButton>
             </div>
         }
