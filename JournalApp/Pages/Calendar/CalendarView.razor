@@ -27,9 +27,13 @@
                                 <div class="@(day.Emoji == null ? "mood-block mood-block-offset" : "mood-block mood-block-filled")" @onclick="this.AsNonRenderingEventHandler(async () => await DayClicked.InvokeAsync(day.Date))">
                                     @if (day.Date != null)
                                     {
-                                        <b>@day.Date.Value.Day</b>
-                                        <MudSpacer />
-                                        @day.Emoji
+                                        <span class="mood-block-day">
+                                            @day.Date.Value.Day
+                                        </span>
+
+                                        <span class="mood-block-emoji">
+                                            @day.Emoji
+                                        </span>
                                     }
                                 </div>
                             </div>
