@@ -120,14 +120,14 @@ body {
 }
 
 .mud-dialog {
-  padding: 0.75em !important;
-  gap: 0.75em !important;
+  padding: 12px !important;
+  gap: 12px !important;
   border-radius: 28px;
 }
 
 .mud-card {
-  padding: 0.75em !important;
-  gap: 0.75em !important;
+  padding: 12px !important;
+  gap: 12px !important;
   border-radius: 12px;
 }
 
