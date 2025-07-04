@@ -2,14 +2,14 @@
 @inject PreferenceService PreferenceService
 
 <div class="@GetContainerClass()" style="background-color: @(PreferenceService.GetMoodColor(Day.Emoji));">
-    <div class="@GetBlockClass()" @onclick="this.AsNonRenderingEventHandler(async () => await DayClicked.InvokeAsync(Day.Date))">
+    <div class="@GetContentClass()" @onclick="this.AsNonRenderingEventHandler(async () => await DayClicked.InvokeAsync(Day.Date))">
         @if (Day.Date != null)
         {
-            <span class="mood-block-day">
+            <span class="calendar-day-number">
                 @Day.Date.Value.Day
             </span>
 
-            <span class="mood-block-emoji">
+            <span class="calendar-day-emoji">
                 @Day.Emoji
             </span>
         }
@@ -29,14 +29,14 @@
     private string GetContainerClass()
     {
         return Day.Date == OpenToDate 
-            ? "mood-block-container mood-block-container-current" 
-            : "mood-block-container";
+            ? "calendar-day-cell calendar-day-current" 
+            : "calendar-day-cell";
     }
 
-    private string GetBlockClass()
+    private string GetContentClass()
     {
         return Day.Emoji == null 
-            ? "mood-block mood-block-offset" 
-            : "mood-block mood-block-filled";
+            ? "calendar-day-content calendar-day-empty" 
+            : "calendar-day-content calendar-day-with-mood";
     }
 }

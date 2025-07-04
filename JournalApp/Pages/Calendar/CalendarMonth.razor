@@ -4,7 +4,7 @@
 <section class="calendar-month" id="calendar-month-@(Month.Month)">
     <MudText>@(Month.Name)</MudText>
 
-    <MudPaper Class="mood-blocks-month">
+    <MudPaper Class="calendar-month-grid">
         <CalendarWeekHeader DaysOfWeek="Month.DaysOfWeek" />
 
         @foreach (var weekDays in Month.GridDays.Chunk(7))

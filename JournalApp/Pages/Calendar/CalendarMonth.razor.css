@@ -5,13 +5,13 @@
   padding-top: 16px;
 }
 
-::deep .mood-blocks-month {
+::deep .calendar-month-grid {
   display: flex;
   flex-direction: column;
   padding: 0.75em;
 }
 
-::deep .mood-block-container {
+::deep .calendar-day-cell {
   display: flex;
   flex: 1 1 0;
   margin: 2px;
@@ -20,6 +20,6 @@
   max-width: 96px;
 }
 
-::deep .mood-block-container-current {
+::deep .calendar-day-current {
   outline: 2px dashed #3A2F36;
 }

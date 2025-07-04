@@ -1,9 +1,9 @@
 ﻿@namespace JournalApp
 
-<div class="mood-blocks-week mood-blocks-week-header">
+<div class="calendar-week-row calendar-week-header">
     @foreach (var day in DaysOfWeek)
     {
-        <div class="mood-block-container">
+        <div class="calendar-day-cell calendar-day-header">
             <b>@(day.ToString()[0..2])</b>
         </div>
     }

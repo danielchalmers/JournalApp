@@ -1,21 +1,21 @@
-.mood-block {
+.calendar-day-content {
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
 }
 
-.mood-block-filled {
+.calendar-day-with-mood {
   color: #3A2F36;
 }
 
-.mood-block-day {
+.calendar-day-number {
   position: absolute;
   top: 0;
   left: 0;
   font-weight: bold;
 }
 
-.mood-block-emoji {
+.calendar-day-emoji {
   position: absolute;
   bottom: 0;
   right: 0;

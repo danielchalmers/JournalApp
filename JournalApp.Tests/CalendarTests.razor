@@ -66,13 +66,13 @@
         var filledDays = gridYear.GridMonths.Sum(m => m.GridDays.Count(d => d.Emoji != null)); // Random seeding skips some days and grid days include offsets.
 
         // 2023, fully filled out leap year.
-        cut.FindAll(".calendar-view .mood-block-container > .mood-block-filled").Count.Should().Be(filledDays);
+        cut.FindAll(".calendar-view .calendar-day-cell > .calendar-day-with-mood").Count.Should().Be(filledDays);
 
         cut.Find(".switcher .previous-button").Click();
         cut.Instance.SelectedYear.Should().Be(2022);
 
         // 2022, none filled.
-        cut.FindAll(".calendar-view .mood-block-container > .mood-block-filled").Count.Should().Be(0);
+        cut.FindAll(".calendar-view .calendar-day-cell > .calendar-day-with-mood").Count.Should().Be(0);
     }
 
     [Fact]
@@ -90,7 +90,7 @@
         // Wait for calendar to load.
         cut.WaitForAssertion(() => cut.Find(".calendar-view"));
 
-        var weekHeaders = cut.FindAll(".mood-blocks-week > .mood-block-container");
+        var weekHeaders = cut.FindAll(".calendar-week-row > .calendar-day-cell");
         weekHeaders[0].TextContent.Should().Be("We");
         weekHeaders[1].TextContent.Should().Be("Th");
         weekHeaders[2].TextContent.Should().Be("Fr");
