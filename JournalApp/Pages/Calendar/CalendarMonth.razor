@@ -1,0 +1,26 @@
+﻿@namespace JournalApp
+@using JournalApp
+
+<section class="calendar-month" id="calendar-month-@(Month.Month)">
+    <MudText>@(Month.Name)</MudText>
+
+    <MudPaper Class="mood-blocks-month">
+        <CalendarWeekHeader DaysOfWeek="Month.DaysOfWeek" />
+
+        @foreach (var weekDays in Month.GridDays.Chunk(7))
+        {
+            <CalendarWeek WeekDays="weekDays" OpenToDate="OpenToDate" DayClicked="DayClicked" />
+        }
+    </MudPaper>
+</section>
+
+@code {
+    [Parameter]
+    public GridMonth Month { get; set; }
+
+    [Parameter]
+    public DateOnly OpenToDate { get; set; }
+
+    [Parameter]
+    public EventCallback<DateOnly?> DayClicked { get; set; }
+}

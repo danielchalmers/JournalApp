@@ -1,0 +1,15 @@
+﻿@namespace JournalApp
+
+<div class="mood-blocks-week mood-blocks-week-header">
+    @foreach (var day in DaysOfWeek)
+    {
+        <div class="mood-block-container">
+            <b>@(day.ToString()[0..2])</b>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public IReadOnlyList<DayOfWeek> DaysOfWeek { get; set; }
+}

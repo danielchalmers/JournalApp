@@ -5,43 +5,7 @@
 <div class="calendar-view">
     @foreach (var month in GridYear.GridMonths)
     {
-        <section class="calendar-month" id="calendar-month-@(month.Month)">
-            <MudText>@(month.Name)</MudText>
-
-            <MudCard Class="mood-blocks-month">
-                <div class="mood-blocks-week">
-                    @foreach (var day in month.DaysOfWeek)
-                    {
-                        <div class="mood-block-container">
-                            <b>@(day.ToString()[0..2])</b>
-                        </div>
-                    }
-                </div>
-
-                @foreach (var row in month.GridDays.Chunk(7))
-                {
-                    <div class="mood-blocks-week">
-                        @foreach (var day in row)
-                        {
-                            <div class="@(day.Date == OpenToDate ? "mood-block-container mood-block-container-current" : "mood-block-container")" style="background-color: @(PreferenceService.GetMoodColor(day.Emoji));">
-                                <div class="@(day.Emoji == null ? "mood-block mood-block-offset" : "mood-block mood-block-filled")" @onclick="this.AsNonRenderingEventHandler(async () => await DayClicked.InvokeAsync(day.Date))">
-                                    @if (day.Date != null)
-                                    {
-                                        <span class="mood-block-day">
-                                            @day.Date.Value.Day
-                                        </span>
-
-                                        <span class="mood-block-emoji">
-                                            @day.Emoji
-                                        </span>
-                                    }
-                                </div>
-                            </div>
-                        }
-                    </div>
-                }
-            </MudCard>
-        </section>
+        <CalendarMonth Month="month" OpenToDate="OpenToDate" DayClicked="DayClicked" />
     }
 </div>
 

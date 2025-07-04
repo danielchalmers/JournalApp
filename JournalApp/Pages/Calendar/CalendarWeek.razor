@@ -1,0 +1,19 @@
+﻿@namespace JournalApp
+
+<div class="mood-blocks-week">
+    @foreach (var day in WeekDays)
+    {
+        <CalendarDay Day="day" OpenToDate="OpenToDate" DayClicked="DayClicked" />
+    }
+</div>
+
+@code {
+    [Parameter]
+    public GridDay[] WeekDays { get; set; }
+
+    [Parameter]
+    public DateOnly OpenToDate { get; set; }
+
+    [Parameter]
+    public EventCallback<DateOnly?> DayClicked { get; set; }
+}

@@ -1,0 +1,42 @@
+@namespace JournalApp
+@inject PreferenceService PreferenceService
+
+<div class="@GetContainerClass()" style="background-color: @(PreferenceService.GetMoodColor(Day.Emoji));">
+    <div class="@GetBlockClass()" @onclick="this.AsNonRenderingEventHandler(async () => await DayClicked.InvokeAsync(Day.Date))">
+        @if (Day.Date != null)
+        {
+            <span class="mood-block-day">
+                @Day.Date.Value.Day
+            </span>
+
+            <span class="mood-block-emoji">
+                @Day.Emoji
+            </span>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public GridDay Day { get; set; }
+
+    [Parameter]
+    public DateOnly OpenToDate { get; set; }
+
+    [Parameter]
+    public EventCallback<DateOnly?> DayClicked { get; set; }
+
+    private string GetContainerClass()
+    {
+        return Day.Date == OpenToDate 
+            ? "mood-block-container mood-block-container-current" 
+            : "mood-block-container";
+    }
+
+    private string GetBlockClass()
+    {
+        return Day.Emoji == null 
+            ? "mood-block mood-block-offset" 
+            : "mood-block mood-block-filled";
+    }
+}

@@ -1,0 +1,25 @@
+.calendar-month {
+  display: flex;
+  flex-direction: column;
+  /*Half padding instead of gap to add space for the autoscroll*/
+  padding-top: 16px;
+}
+
+::deep .mood-blocks-month {
+  display: flex;
+  flex-direction: column;
+  padding: 0.75em;
+}
+
+::deep .mood-block-container {
+  display: flex;
+  flex: 1 1 0;
+  margin: 2px;
+  padding: 1%;
+  min-width: 32px;
+  max-width: 96px;
+}
+
+::deep .mood-block-container-current {
+  outline: 2px dashed #3A2F36;
+}

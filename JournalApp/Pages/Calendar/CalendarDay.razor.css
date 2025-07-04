@@ -1,0 +1,22 @@
+.mood-block {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+}
+
+.mood-block-filled {
+  color: #3A2F36;
+}
+
+.mood-block-day {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-weight: bold;
+}
+
+.mood-block-emoji {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
