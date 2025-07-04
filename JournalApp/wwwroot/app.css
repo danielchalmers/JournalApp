@@ -158,6 +158,16 @@ body {
   min-width: unset;
 }
 
+.list-group-title {
+  font-size: var(--mud-typography-subtitle2-size);
+  font-family: var(--mud-typography-subtitle2-family);
+  font-weight: var(--mud-typography-subtitle2-weight);
+  line-height: var(--mud-typography-subtitle2-lineheight);
+  letter-spacing: var(--mud-typography-subtitle2-letterspacing);
+  text-transform: var(--mud-typography-subtitle2-text-transform);
+  margin-bottom: 8px;
+}
+
 #blazor-error-ui {
   background: darkorange;
   bottom: 0;

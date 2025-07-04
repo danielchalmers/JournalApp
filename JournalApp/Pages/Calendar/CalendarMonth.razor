@@ -2,7 +2,7 @@
 @using JournalApp
 
 <section class="calendar-month" id="calendar-month-@(Month.Month)">
-    <MudText>@(Month.Name)</MudText>
+    <MudText Class="list-group-title">@(Month.Name)</MudText>
 
     <MudPaper Class="calendar-month-grid">
         <CalendarWeekHeader DaysOfWeek="Month.DaysOfWeek" />
