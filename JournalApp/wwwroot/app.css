@@ -115,6 +115,10 @@ body {
   border-radius: 20px;
 }
 
+.mud-button-group-root {
+  border-radius: 20px;
+}
+
 .mud-button-filled.mud-button-filled-primary {
   color: var(--mud-palette-primary-text);
 }

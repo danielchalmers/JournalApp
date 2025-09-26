@@ -25,53 +25,63 @@ else
 
     <main class="page-body">
         <div class="settings-group-list">
-            <section class="settings-group">
-                <MudText Typo="Typo.h4">Personalization</MudText>
+            <section>
+                <MudText Class="list-group-title">Personalization</MudText>
 
-                <MudRadioGroup T="AppTheme" Value="PreferenceService.SelectedAppTheme" ValueChanged="v => PreferenceService.SelectedAppTheme = v" aria-label="Theme for entire app">
-                    <MudRadio Value="@(AppTheme.Light)">Light</MudRadio>
-                    <MudRadio Value="@(AppTheme.Dark)">Dark</MudRadio>
-                    <MudRadio Value="@(AppTheme.Unspecified)">System</MudRadio>
-                </MudRadioGroup>
+                <MudPaper Class="settings-group">
+                    <MudRadioGroup T="AppTheme" Value="PreferenceService.SelectedAppTheme" ValueChanged="v => PreferenceService.SelectedAppTheme = v" aria-label="Theme for entire app">
+                        <MudRadio Value="@(AppTheme.Light)">Light</MudRadio>
+                        <MudRadio Value="@(AppTheme.Dark)">Dark</MudRadio>
+                        <MudRadio Value="@(AppTheme.Unspecified)">System</MudRadio>
+                    </MudRadioGroup>
 
-                <MudCheckBox @bind-Value="PreferenceService.HideNotes" aria-label="Hide the notes section on the home page">Hide "Today's notes"</MudCheckBox>
+                    <MudCheckBox @bind-Value="PreferenceService.HideNotes" aria-label="Hide the notes section on the home page">Hide "Today's notes"</MudCheckBox>
 
-                <MudButton StartIcon="@Icons.Material.Rounded.HealthAndSafety" OnClick="SetUpSafetyPlan" Variant="Variant.Outlined" FullWidth>
-                    Set up Safety Plan
-                </MudButton>
+                    <MudButton StartIcon="@Icons.Material.Rounded.HealthAndSafety" OnClick="SetUpSafetyPlan" Variant="Variant.Outlined" FullWidth>
+                        Set up Safety Plan
+                    </MudButton>
+                </MudPaper>
             </section>
 
-            <section class="settings-group">
-                <MudText Typo="Typo.h4">Data & backups</MudText>
+            <section>
+                <MudText Class="list-group-title">Data & backups</MudText>
 
-                <MudText>Last backup: @(PreferenceService.LastExportDate.ToString("d"))</MudText>
+                <MudPaper Class="settings-group">
+                    <MudText>Last backup: @(PreferenceService.LastExportDate.ToString("d"))</MudText>
 
-                <MudButton StartIcon="@Icons.Material.Rounded.Upload" OnClick="StartExport" Variant="Variant.Outlined" FullWidth>Export backup</MudButton>
+                    <MudButtonGroup Variant="Variant.Outlined" FullWidth>
+                        <MudButton StartIcon="@Icons.Material.Rounded.Upload" OnClick="StartExport">Export backup</MudButton>
 
-                <MudButton StartIcon="@Icons.Material.Rounded.Download" OnClick="PickAndStartImport" Variant="Variant.Outlined" FullWidth>Import backup</MudButton>
+                        <MudButton StartIcon="@Icons.Material.Rounded.Download" OnClick="PickAndStartImport">Import backup</MudButton>
+                    </MudButtonGroup>
+                </MudPaper>
             </section>
 
-            <section class="settings-group">
-                <MudText Typo="Typo.h4">About</MudText>
+            <section>
+                <MudText Class="list-group-title">About</MudText>
 
-                <MudCopyText Text="@($"Good Diary {ThisAssembly.AssemblyInformationalVersion}")" />
-                <MudCopyText Text="@($"{DeviceInfo.Current.Platform} {DeviceInfo.Current.VersionString}")" />
+                <MudPaper Class="settings-group">
+                    <MudCopyText Text="@($"Good Diary {ThisAssembly.AssemblyInformationalVersion}")" />
+                    <MudCopyText Text="@($"{DeviceInfo.Current.Platform} {DeviceInfo.Current.VersionString}")" />
 
-                <MudLink Href="https://github.com/danielchalmers/JournalApp/issues/new">Submit feedback</MudLink>
-                <MudLink Href="https://play.google.com/store/apps/details?id=com.danielchalmers.journalapp">View on Play Store</MudLink>
-                <MudLink Href="https://github.com/danielchalmers/JournalApp">View source code</MudLink>
+                    <MudLink Href="https://github.com/danielchalmers/JournalApp/issues/new">Submit feedback</MudLink>
+                    <MudLink Href="https://play.google.com/store/apps/details?id=com.danielchalmers.journalapp">View on Play Store</MudLink>
+                    <MudLink Href="https://github.com/danielchalmers/JournalApp">View source code</MudLink>
+                </MudPaper>
             </section>
 
-            <section class="settings-group">
-                <MudText Typo="Typo.h4">Credits</MudText>
+            <section>
+                <MudText Class="list-group-title">Credits</MudText>
 
-                <MudTextField T="string" Text="@CreditsText" Typo="Typo.body2" ReadOnly Underline="false"
-                              AutoGrow MaxLines="_creditsExpanded ? 0 : 5" FullWidth />
+                <MudPaper Class="settings-group">
+                    <MudTextField T="string" Text="@CreditsText" Typo="Typo.body2" ReadOnly Underline="false"
+                                  AutoGrow MaxLines="_creditsExpanded ? 0 : 10" FullWidth />
 
-                @if (!_creditsExpanded)
-                {
-                    <MudLink OnClick="() => _creditsExpanded = true">Expand credits</MudLink>
-                }
+                    @if (!_creditsExpanded)
+                    {
+                        <MudLink OnClick="() => _creditsExpanded = true">Expand credits</MudLink>
+                    }
+                </MudPaper>
             </section>
         </div>
     </main>

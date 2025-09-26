@@ -4,9 +4,10 @@
   gap: 32px;
 }
 
-.settings-group {
+::deep .settings-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
   align-items: start;
+  padding: 12px;
 }
