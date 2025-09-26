@@ -24,20 +24,22 @@
     }
     else
     {
-        @foreach (var c in Categories.OrderBy(c => c.Index))
-        {
-            <div id="@($"manage-category-{c.Guid}")" class="manage-category">
-                <MudIconButton Class="manage-category-up-button" Icon="@Icons.Material.Rounded.ArrowUpward" aria-label="Move up"
-                               OnClick="async () => await MoveUp(c)" Edge="Edge.Start" Disabled="c.Index <= 1" />
+        <MudPaper>
+            @foreach (var c in Categories.OrderBy(c => c.Index))
+            {
+                <div id="@($"manage-category-{c.Guid}")" class="manage-category">
+                    <MudIconButton Class="manage-category-up-button" Icon="@Icons.Material.Rounded.ArrowUpward" aria-label="Move up"
+                                   OnClick="async () => await MoveUp(c)" Edge="Edge.Start" Disabled="c.Index <= 1" />
 
-                <MudSwitch Class="manage-category-enabled-switch" T="bool" Value="c.Enabled" ValueChanged="async (v) => await OnEnabledChanged(c, v)"
-                           Color="Color.Primary" Style="margin-right: -2px;" aria-label="Show in home" />
+                    <MudButton Class="manage-category-edit-button"
+                               Variant="Variant.Text" OnClick="async () => await Edit(c)" Disabled="c.ReadOnly || !c.Enabled"
+                               Size="Size.Large" aria-label="Make changes">@c.Name</MudButton>
 
-                <MudButton Class="manage-category-edit-button"
-                           Variant="Variant.Text" OnClick="async () => await Edit(c)" Disabled="c.ReadOnly || !c.Enabled"
-                           Size="Size.Large" aria-label="Make changes">@c.Name</MudButton>
-            </div>
-        }
+                    <MudSwitch Class="manage-category-enabled-switch" T="bool" Value="c.Enabled" ValueChanged="async (v) => await OnEnabledChanged(c, v)"
+                               Color="Color.Primary" Style="margin-right: -2px;" aria-label="Show in home" />
+                </div>
+            }
+        </MudPaper>
     }
 </main>
 

@@ -7,7 +7,12 @@
 
 ::deep .manage-category-edit-button {
   justify-content: start !important;
+  text-align: start;
   flex-grow: 1;
   word-wrap: anywhere;
   overflow-x: clip;
+}
+
+::deep .mud-paper {
+  padding: 12px;
 }
