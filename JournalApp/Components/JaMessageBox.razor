@@ -31,7 +31,7 @@
 
         <MudSpacer />
 
-        <div tabindex="-1" @onkeydown="HandleKeyDown">
+        <div tabindex="-1" class="d-contents" @onkeydown="HandleKeyDown">
             <MudFocusTrap DefaultFocus="DefaultFocus.LastChild">
                 @if (CancelButton is not null)
                 {
@@ -41,7 +41,7 @@
                 }
                 else if (!string.IsNullOrWhiteSpace(CancelText))
                 {
-                    <MudButton OnClick="OnCancelClicked">@CancelText</MudButton>
+                    <MudButton Class="mud-message-box__cancel-button" OnClick="OnCancelClicked">@CancelText</MudButton>
                 }
                 @if (NoButton is not null)
                 {
@@ -51,7 +51,7 @@
                 }
                 else if (!string.IsNullOrWhiteSpace(NoText))
                 {
-                    <MudButton OnClick="OnNoClicked">@NoText</MudButton>
+                    <MudButton Class="mud-message-box__no-button" OnClick="OnNoClicked">@NoText</MudButton>
                 }
                 @if (YesButton is not null)
                 {
@@ -61,7 +61,7 @@
                 }
                 else if (!string.IsNullOrWhiteSpace(YesText))
                 {
-                    <MudButton OnClick="OnYesClicked" Variant="Variant.Filled" Color="Color.Primary">@YesText</MudButton>
+                    <MudButton Class="mud-message-box__yes-button" OnClick="OnYesClicked" Variant="Variant.Filled" Color="Color.Primary">@YesText</MudButton>
                 }
             </MudFocusTrap>
         </div>
