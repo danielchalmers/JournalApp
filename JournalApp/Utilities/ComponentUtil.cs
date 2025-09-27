@@ -15,7 +15,7 @@ internal static class ComponentUtil
         dialogService.ShowAsync<TComponent>(string.Empty, parameters, options);
 
     public static async Task<bool?> ShowJaMessageBox(this IDialogService dialogService, string message, string yesText = "OK",
-        string noText = null, string cancelText = null, DialogOptions options = null, bool showFeedbackLink = true)
+        string noText = null, string cancelText = null, DialogOptions options = null, bool showFeedbackLink = false)
     {
         var messageBoxOptions = new MessageBoxOptions
         {
