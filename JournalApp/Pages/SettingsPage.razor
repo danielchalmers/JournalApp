@@ -36,6 +36,16 @@ else
                     </MudRadioGroup>
 
                     <MudCheckBox @bind-Value="PreferenceService.HideNotes" aria-label="Hide the notes section on the home page">Hide "Today's notes"</MudCheckBox>
+                </MudPaper>
+            </section>
+
+            <section>
+                <MudText Class="list-group-title">Safety</MudText>
+
+                <MudPaper Class="settings-group">
+                    <MudText>
+                        Your coping strategies and sources of support that can be used in a crisis.
+                    </MudText>
 
                     <MudButton StartIcon="@Icons.Material.Rounded.HealthAndSafety" OnClick="SetUpSafetyPlan" Variant="Variant.Outlined" FullWidth>
                         Set up Safety Plan
@@ -47,12 +57,19 @@ else
                 <MudText Class="list-group-title">Data & backups</MudText>
 
                 <MudPaper Class="settings-group">
+                    @if ((DateTimeOffset.Now - PreferenceService.LastExportDate) > TimeSpan.FromDays(180))
+                    {
+                        <MudAlert Severity="Severity.Warning">
+                            It's been a while since your last backup. Consider exporting your data to keep it safe.
+                        </MudAlert>
+                    }
+
                     <MudText>Last backup: @(PreferenceService.LastExportDate.ToString("d"))</MudText>
 
                     <MudButtonGroup Variant="Variant.Outlined" FullWidth>
-                        <MudButton StartIcon="@Icons.Material.Rounded.Upload" OnClick="StartExport">Export backup</MudButton>
+                        <MudButton StartIcon="@Icons.Material.Rounded.Upload" OnClick="StartExport">Export data</MudButton>
 
-                        <MudButton StartIcon="@Icons.Material.Rounded.Download" OnClick="PickAndStartImport">Import backup</MudButton>
+                        <MudButton StartIcon="@Icons.Material.Rounded.Download" OnClick="PickAndStartImport">Import data</MudButton>
                     </MudButtonGroup>
                 </MudPaper>
             </section>

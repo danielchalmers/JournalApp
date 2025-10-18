@@ -160,6 +160,7 @@ body {
 
 .emoji-menu-list .mud-menu-list {
   min-width: unset;
+  /*z-index: 998 !important;*/
 }
 
 .list-group-title {

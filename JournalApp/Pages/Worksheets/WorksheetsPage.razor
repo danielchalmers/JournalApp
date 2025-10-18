@@ -40,7 +40,7 @@
                     <ul class="worksheet-group-items">
                         @foreach (var ws in group)
                         {
-                            <WorksheetView Worksheet="ws" ResourceClicked="OnResourceClicked" />
+                            <WorksheetView Worksheet="ws" />
 
                             if (ws != group.Last())
                             {
@@ -63,21 +63,6 @@
         base.OnInitialized();
 
         KeyEventService.Entered(() => Close());
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await base.OnAfterRenderAsync(firstRender);
-
-        if (firstRender)
-        {
-            ShowTeachingTip("worksheets", "Tap worksheet title to open");
-        }
-    }
-
-    void OnResourceClicked()
-    {
-        ActionTaken("worksheets");
     }
 
     void Close()
