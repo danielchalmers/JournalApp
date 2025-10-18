@@ -5,8 +5,6 @@ public partial class App : Application
     public App()
     {
         InitializeComponent();
-
-        MainPage = new MainPage();
     }
 
     public static event EventHandler NewIntent;
@@ -25,7 +23,7 @@ public partial class App : Application
 
     protected override Window CreateWindow(IActivationState activationState)
     {
-        var window = base.CreateWindow(activationState);
+        var window = new Window(new MainPage());
         Window = window;
 
         LaunchCount++;

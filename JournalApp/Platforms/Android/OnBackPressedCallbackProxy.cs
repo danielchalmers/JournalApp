@@ -6,7 +6,7 @@ internal class OnBackPressedCallbackProxy(Action onBackPressed) : OnBackPressedC
 {
     public override void HandleOnBackPressed()
     {
-        var navigation = Application.Current?.MainPage?.Navigation;
+        var navigation = App.Window?.Page?.Navigation;
         if (navigation is null || navigation.NavigationStack.Count > 1 || navigation.ModalStack.Count > 0)
             return;
 
