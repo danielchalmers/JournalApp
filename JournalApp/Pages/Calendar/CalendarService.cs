@@ -6,7 +6,7 @@ public class CalendarService(ILogger<CalendarService> logger, IDbContextFactory<
 
     public async Task<GridYear> CreateGridYear(int year)
     {
-        logger.LogDebug($"Loading year {year}");
+        logger.LogDebug("Loading grid year {Year}", year);
         var sw = Stopwatch.StartNew();
         var tomorrow = DateOnly.FromDateTime(DateTime.Now).Next();
         await using var db = await DbFactory.CreateDbContextAsync();
@@ -16,10 +16,11 @@ public class CalendarService(ILogger<CalendarService> logger, IDbContextFactory<
         var moodPoints = new Dictionary<DateOnly, DataPoint>();
         if (_moodCategory == null || !_moodCategory.Enabled)
         {
-            logger.LogError("Mood category doesn't exist or is disabled so we won't load any points.");
+            logger.LogError("Mood category missing or disabled; skipping mood point load");
         }
         else
         {
+            var queryStopwatch = Stopwatch.StartNew();
             var query = db.Points
                 .Where(p => !p.Deleted && p.Day.Date.Year == year && p.Day.Date <= tomorrow && p.Category.Guid == _moodCategory.Guid)
                 .Select(
@@ -35,11 +36,13 @@ public class CalendarService(ILogger<CalendarService> logger, IDbContextFactory<
             foreach (var x in query)
                 moodPoints[x.Date] = x.Point;
 
-            logger.LogDebug($"Found {moodPoints.Count} mood points");
+            queryStopwatch.Stop();
+            logger.LogDebug("Loaded {PointCount} mood points in {ElapsedMilliseconds}ms", moodPoints.Count, queryStopwatch.ElapsedMilliseconds);
         }
 
         var gridYear = new GridYear(year, System.Globalization.CultureInfo.CurrentCulture, moodPoints);
-        logger.LogDebug($"Created grid year {year} in {sw.ElapsedMilliseconds}ms");
+        sw.Stop();
+        logger.LogInformation("Created grid year {Year} in {ElapsedMilliseconds}ms (mood points: {PointCount})", year, sw.ElapsedMilliseconds, moodPoints.Count);
 
         return gridYear;
     }

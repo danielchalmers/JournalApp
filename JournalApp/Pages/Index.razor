@@ -214,20 +214,25 @@
         _day = await db.GetOrCreateDayAndAddPoints(date);
         await db.SaveChangesAsync(); // Save potentially new day and points.
 
-        logger.LogDebug($"Went to {_day} in {sw.ElapsedMilliseconds}ms ({sw.ElapsedTicks} ticks)");
+        sw.Stop();
+        logger.LogDebug(
+            "Loaded day {Day} in {ElapsedMilliseconds}ms ({ElapsedTicks} ticks)",
+            _day,
+            sw.ElapsedMilliseconds,
+            sw.ElapsedTicks);
 
         StateHasChanged();
     }
 
     async Task PreviousDay()
     {
-        logger.LogInformation($"Going to the previous day from {_day}");
+        logger.LogInformation("Going to the previous day from {CurrentDay}", _day);
         await GoToDay(_day.Date.Previous());
     }
 
     async Task NextDay()
     {
-        logger.LogInformation($"Going to the next day from {_day}");
+        logger.LogInformation("Going to the next day from {CurrentDay}", _day);
         await GoToDay(_day.Date.Next());
     }
 

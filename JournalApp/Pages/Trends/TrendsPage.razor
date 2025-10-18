@@ -60,12 +60,12 @@
         KeyEventService.Entered(() => Close());
 
         OpenToDate = DateOnly.ParseExact(OpenToDateString, "yyyyMMdd");
-        logger.LogInformation($"Opening to {OpenToDate}");
+        logger.LogInformation("Opening trends to {OpenToDate}", OpenToDate);
     }
 
     async Task LoadDates()
     {
-        logger.LogInformation($"Loading dates <{SelectedDates[0]}..{SelectedDates[^1]}>");
+        logger.LogInformation("Loading trends for {StartDate}..{EndDate}", SelectedDates[0], SelectedDates[^1]);
         var sw = Stopwatch.StartNew();
 
         await using var db = await DbFactory.CreateDbContextAsync();
@@ -97,7 +97,8 @@
             AllPoints.Add(group.Key, pointsByDayNumber);
         }
 
-        logger.LogInformation($"Loaded dates in {sw.ElapsedMilliseconds}ms");
+        sw.Stop();
+        logger.LogInformation("Loaded trends data in {ElapsedMilliseconds}ms (categories: {CategoryCount})", sw.ElapsedMilliseconds, AllPoints.Count);
     }
 
     void Close()

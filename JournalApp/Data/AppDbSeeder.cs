@@ -25,13 +25,15 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
         try
         {
             var anyPendingMigrations = db.Database.GetPendingMigrations().Any();
-            logger.LogInformation($"Pending migrations: {anyPendingMigrations}");
+            logger.LogInformation("Pending migrations detected: {HasPendingMigrations}", anyPendingMigrations);
 
             if (anyPendingMigrations)
             {
-                logger.LogInformation($"Migrating database after {sw.ElapsedMilliseconds}ms");
+                logger.LogInformation("Applying database migrations (elapsed: {ElapsedMilliseconds}ms)", sw.ElapsedMilliseconds);
+                var migrationStopwatch = Stopwatch.StartNew();
                 db.Database.Migrate();
-                logger.LogInformation($"Migrated database after {sw.ElapsedMilliseconds}ms");
+                migrationStopwatch.Stop();
+                logger.LogInformation("Completed database migrations in {ElapsedMilliseconds}ms", migrationStopwatch.ElapsedMilliseconds);
             }
         }
         catch (Microsoft.Data.Sqlite.SqliteException ex) when (ex.SqliteErrorCode == 14)
@@ -47,7 +49,8 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
         }
 
         db.SaveChanges();
-        logger.LogInformation($"Finished preparing database after {sw.ElapsedMilliseconds}ms");
+        sw.Stop();
+        logger.LogInformation("Finished preparing database in {ElapsedMilliseconds}ms", sw.ElapsedMilliseconds);
     }
 
     /// <summary>
@@ -102,11 +105,11 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
 
             if (doesExist)
             {
-                logger.LogDebug($"Updating category <{guidString}>");
+                logger.LogDebug("Updating category {CategoryGuid}", guidString);
             }
             else
             {
-                logger.LogDebug($"Adding category <{guidString}>");
+                logger.LogDebug("Adding category {CategoryGuid}", guidString);
                 db.AddCategory(category);
             }
 
@@ -218,7 +221,8 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             medUnit: "mg",
             medEveryDaySince: DateTimeOffset.Now);
 
-        logger.LogInformation($"Seeded categories in {sw.ElapsedMilliseconds}ms");
+        sw.Stop();
+        logger.LogInformation("Seeded categories in {ElapsedMilliseconds}ms", sw.ElapsedMilliseconds);
     }
 
     /// <summary>
@@ -228,13 +232,18 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
     public void SeedDays(IEnumerable<DateOnly> dates)
     {
         using var db = dbFactory.CreateDbContext();
+        var sw = Stopwatch.StartNew();
 
-        // Only seed new days — skip dates that already exist.
+        // Only seed new days - skip dates that already exist.
         var existingDates = db.Days.Where(d => dates.Contains(d.Date)).Select(d => d.Date).ToHashSet();
         var newDays = dates.Except(existingDates).Order().Select(Day.Create).ToList();
 
         if (newDays.Count == 0)
+        {
+            sw.Stop();
+            logger.LogDebug("SeedDays skipped; no new dates detected");
             return;
+        }
 
         var newPoints = new List<DataPoint>();
 
@@ -270,6 +279,8 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
         db.Points.AddRange(newPoints);
         db.Days.AddRange(newDays);
         db.SaveChanges();
+        sw.Stop();
+        logger.LogInformation("Seeded {DayCount} new days with {PointCount} points in {ElapsedMilliseconds}ms", newDays.Count, newPoints.Count, sw.ElapsedMilliseconds);
     }
 
     /// <summary>
@@ -288,10 +299,11 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
         foreach (var relativeMonth in new int[] { -30, -36, -42, -48 })
             startDate.AddMonths(relativeMonth);
 
-        logger.LogInformation($"Seeding up to {dates.Count} days");
+        logger.LogInformation("Seeding up to {DayCount} days", dates.Count);
 
         SeedDays(dates);
 
-        logger.LogInformation($"Seeded days in {sw.ElapsedMilliseconds}ms");
+        sw.Stop();
+        logger.LogInformation("Seeded days in {ElapsedMilliseconds}ms", sw.ElapsedMilliseconds);
     }
 }

@@ -68,8 +68,9 @@ public static class MauiProgram
         dbSeeder.SeedDays();
 #endif
 
+        stopwatch.Stop();
         var logger = provider.GetRequiredService<ILoggerFactory>().CreateLogger("JournalApp.MauiProgram");
-        logger.LogInformation($"Created MAUI app in: {stopwatch.ElapsedMilliseconds}ms");
+        logger.LogInformation("Created MAUI app in {ElapsedMilliseconds}ms", stopwatch.ElapsedMilliseconds);
 
         return builder.Build();
     }

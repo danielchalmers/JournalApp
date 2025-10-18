@@ -10,12 +10,18 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
         var sw = Stopwatch.StartNew();
 
         await using var db = await dbFactory.CreateDbContextAsync();
-        await db.Points.ExecuteDeleteAsync();
-        await db.Days.ExecuteDeleteAsync();
-        await db.Categories.ExecuteDeleteAsync();
+        var pointsDeleted = await db.Points.ExecuteDeleteAsync();
+        var daysDeleted = await db.Days.ExecuteDeleteAsync();
+        var categoriesDeleted = await db.Categories.ExecuteDeleteAsync();
         await db.SaveChangesAsync();
 
-        logger.LogDebug($"Cleared db sets after {sw.ElapsedMilliseconds}ms");
+        sw.Stop();
+        logger.LogInformation(
+            "Cleared data sets in {ElapsedMilliseconds}ms (points: {PointsDeleted}, days: {DaysDeleted}, categories: {CategoriesDeleted})",
+            sw.ElapsedMilliseconds,
+            pointsDeleted,
+            daysDeleted,
+            categoriesDeleted);
     }
 
     public async Task RestoreDbSets(BackupFile backup)
@@ -28,11 +34,18 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
         await db.Points.AddRangeAsync(backup.Points);
         await db.SaveChangesAsync();
 
-        logger.LogDebug($"Restored db sets after {sw.ElapsedMilliseconds}ms");
+        sw.Stop();
+        logger.LogInformation(
+            "Restored data sets in {ElapsedMilliseconds}ms (days: {DayCount}, categories: {CategoryCount}, points: {PointCount})",
+            sw.ElapsedMilliseconds,
+            backup.Days.Count,
+            backup.Categories.Count,
+            backup.Points.Count);
     }
 
     public void SetPreferences(BackupFile backup)
     {
+        logger.LogDebug("Restoring {PreferenceCount} preferences from backup", backup.PreferenceBackups.Count);
         preferences.Set(backup.PreferenceBackups.ToDictionary(b => b.Name, b => b.Value));
     }
 
@@ -50,14 +63,29 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
 
     public async Task<BackupFile> CreateBackup()
     {
+        var sw = Stopwatch.StartNew();
         await using var db = await dbFactory.CreateDbContextAsync();
+
+        var days = await db.Days.Include(d => d.Points).ToListAsync();
+        var categories = await db.Categories.Include(c => c.Points).ToListAsync();
+        var points = await db.Points.ToListAsync();
+        var preferencesBackup = GetPreferenceBackups().ToList();
+
+        sw.Stop();
+        logger.LogInformation(
+            "Created backup snapshot in {ElapsedMilliseconds}ms (days: {DayCount}, categories: {CategoryCount}, points: {PointCount}, preferences: {PreferenceCount})",
+            sw.ElapsedMilliseconds,
+            days.Count,
+            categories.Count,
+            points.Count,
+            preferencesBackup.Count);
 
         return new()
         {
-            Days = await db.Days.Include(d => d.Points).ToListAsync(),
-            Categories = await db.Categories.Include(c => c.Points).ToListAsync(),
-            Points = await db.Points.ToListAsync(),
-            PreferenceBackups = GetPreferenceBackups().ToList(),
+            Days = days,
+            Categories = categories,
+            Points = points,
+            PreferenceBackups = preferencesBackup,
         };
     }
 }

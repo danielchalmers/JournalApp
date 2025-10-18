@@ -49,7 +49,7 @@
         KeyEventService.Entered(() => Close());
 
         OpenToDate = DateOnly.ParseExact(OpenToDateString, "yyyyMMdd");
-        logger.LogInformation($"Opening to {OpenToDate}");
+        logger.LogInformation("Opening calendar to {OpenToDate}", OpenToDate);
         SelectedYear = OpenToDate.Year;
 
         await AfterSelectedYearChanged();
@@ -68,12 +68,12 @@
     async Task AfterSelectedYearChanged()
     {
         _gridYear = await CalendarService.CreateGridYear(SelectedYear);
-        logger.LogInformation($"Loaded {SelectedYear}");
+        logger.LogInformation("Calendar view loaded for {SelectedYear}", SelectedYear);
     }
 
     async Task ScrollToMonth(int month, bool smooth = true)
     {
-        logger.LogDebug($"Scrolling to month {month}, smooth: {smooth}");
+        logger.LogDebug("Scrolling to month {Month}; smooth: {SmoothScroll}", month, smooth);
 
         await JSRuntime.InvokeVoidAsync("scrollToTopOfNestedElement", ".page-body", $"#calendar-month-{month}", smooth ? "smooth" : "instant");
     }
@@ -141,7 +141,7 @@
             return;
 
         ActionTaken("click_mood_grid_day");
-        logger.LogInformation($"Clicked grid day {date}");
+        logger.LogInformation("Clicked grid day {Date}", date);
         NavigationManager.NavigateTo($"/{date:yyyyMMdd}", false, true);
     }
 
