@@ -147,24 +147,16 @@ else
 
     async Task PickAndStartImport()
     {
-        if (DeviceInfo.Current.Platform == DevicePlatform.WinUI)
-        {
-            logger.LogInformation("Picking import file");
+        logger.LogInformation("Picking import file");
 
-            var pickResult = await FilePicker.PickAsync();
+        var pickResult = await FilePicker.PickAsync();
 
-            if (pickResult == null)
-                return;
+        if (pickResult == null)
+            return;
 
-            App.ActivatedFilePath = pickResult.FullPath;
+        App.ActivatedFilePath = pickResult.FullPath;
 
-            await StartImport();
-        }
-        else
-        {
-            logger.LogInformation("Explaining how to import");
-            await DialogService.ShowJaMessageBox("Find the backup in your files app and click it or choose Open With -> Good Diary. You can also share the file directly from another app.");
-        }
+        await StartImport();
     }
 
     async Task StartImport()
