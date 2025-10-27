@@ -25,6 +25,12 @@ namespace JournalApp;
     DataSchemes = ["content", "file"],
     DataMimeType = "*/*"
 )]
+// Accept text sharing for creating notes.
+[IntentFilter(
+    [Intent.ActionSend],
+    Categories = [Intent.CategoryDefault],
+    DataMimeType = "text/plain"
+)]
 public class MainActivity : MauiAppCompatActivity
 {
     protected override void OnCreate(Bundle savedInstanceState)
@@ -49,8 +55,20 @@ public class MainActivity : MauiAppCompatActivity
     {
         base.OnNewIntent(intent);
 
-        if (App.ActivatedFilePath != null)
-            return; // Already importing.
+        if (App.ActivatedFilePath != null || App.SharedText != null)
+            return; // Already importing or handling shared text.
+
+        // Handle shared text for creating notes.
+        if (intent.Action == Intent.ActionSend && intent.Type == "text/plain")
+        {
+            var sharedText = intent.GetStringExtra(Intent.ExtraText);
+            if (!string.IsNullOrWhiteSpace(sharedText))
+            {
+                App.SharedText = sharedText;
+                App.OnNewIntent(this);
+                return;
+            }
+        }
 
         string filePath;
         Android.Net.Uri streamUri;

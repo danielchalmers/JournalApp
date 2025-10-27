@@ -162,6 +162,12 @@
 
         logger.LogInformation($"Opening to {date}");
         await GoToDay(date);
+
+        // Subscribe to new intent events for shared text.
+        App.NewIntent += OnNewIntent;
+
+        // Handle shared text if available.
+        await HandleSharedText();
     }
 
     protected override void OnWindowDeactivatedOrDestroying(object sender, EventArgs e)
@@ -305,6 +311,33 @@
         await db.SaveChangesAsync();
     }
 
+    async void OnNewIntent(object sender, EventArgs e)
+    {
+        logger.LogDebug("New intent received on Index page");
+        await HandleSharedText();
+    }
+
+    async Task HandleSharedText()
+    {
+        if (App.SharedText != null)
+        {
+            logger.LogInformation($"Handling shared text: {App.SharedText}");
+
+            var note = db.CreateNote(_day);
+            note.Text = App.SharedText;
+            App.SharedText = null; // Clear the shared text after reading it.
+
+            var dialogSubmitted = await EditNoteDialog.ShowDialog(DialogService, note);
+            if (!dialogSubmitted || note.Deleted)
+                return;
+
+            logger.LogInformation("Saving note from shared text");
+            note.Category.Points.Add(note);
+            await db.SaveChangesAsync();
+            StateHasChanged();
+        }
+    }
+
     protected override void SaveState()
     {
         base.SaveState();
@@ -319,6 +352,9 @@
     {
         logger.LogDebug("Disposing");
         base.Dispose(disposing);
+
+        // Unsubscribe from new intent events.
+        App.NewIntent -= OnNewIntent;
 
         db?.Dispose();
     }

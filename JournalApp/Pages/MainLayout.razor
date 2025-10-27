@@ -100,6 +100,12 @@
             logger.LogDebug($"Activated by file <{App.ActivatedFilePath}>");
             NavigationManager.NavigateTo($"/settings", false, true);
         }
+        // Handle shared text.
+        else if (App.SharedText != null)
+        {
+            logger.LogDebug($"Activated by shared text");
+            NavigationManager.NavigateTo($"/", false, true);
+        }
     }
 
     protected override void OnAfterRender(bool firstRender)
@@ -119,7 +125,16 @@
     void OnNewIntent(object sender, EventArgs e)
     {
         logger.LogDebug("New intent");
-        NavigationManager.NavigateTo($"/settings", true, true);
+        
+        // Navigate to settings for file import, or to index for shared text.
+        if (App.SharedText != null)
+        {
+            NavigationManager.NavigateTo($"/", true, true);
+        }
+        else
+        {
+            NavigationManager.NavigateTo($"/settings", true, true);
+        }
     }
 
     public void Dispose()

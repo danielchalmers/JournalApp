@@ -13,6 +13,8 @@ public partial class App : Application
 
     public static string ActivatedFilePath { get; set; }
 
+    public static string SharedText { get; set; }
+
     public static (DateTimeOffset LeftAt, DateOnly LastDate)? IndexDateState { get; set; }
 
     public int LaunchCount
