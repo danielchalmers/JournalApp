@@ -18,17 +18,13 @@ namespace JournalApp;
         "/.*\\..*\\..*\\.journalapp",
         "/.*\\..*\\..*\\..*\\.journalapp"
 ])]
+// Added because the above filter doesn't work in Samsung My Files - https://stackoverflow.com/questions/50407193/open-custom-filetype-in-samsung-file-explorer.
 [IntentFilter(
     [Intent.ActionSend, Intent.ActionView],
-    Categories = [Intent.CategoryDefault, Intent.CategoryBrowsable],
+    Categories = [Intent.CategoryDefault],
     DataSchemes = ["content", "file"],
-    DataMimeType = "application/octet-stream",
-    DataPathPatterns = [
-        "/.*\\.journalapp",
-        "/.*\\..*\\.journalapp",
-        "/.*\\..*\\..*\\.journalapp",
-        "/.*\\..*\\..*\\..*\\.journalapp"
-])]
+    DataMimeType = "*/*"
+)]
 public class MainActivity : MauiAppCompatActivity
 {
     protected override void OnCreate(Bundle savedInstanceState)
