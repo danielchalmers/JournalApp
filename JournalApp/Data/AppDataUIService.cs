@@ -132,9 +132,13 @@ namespace JournalApp;
                     logger.LogDebug("File saved to {FilePath} in {ElapsedMilliseconds}ms", result.FilePath, sw.ElapsedMilliseconds);
                     preferenceService.LastExportDate = DateTimeOffset.Now;
                 }
+                else if (result.Exception != null)
+                {
+                    logger.LogWarning(result.Exception, "File save failed after {ElapsedMilliseconds}ms", sw.ElapsedMilliseconds);
+                }
                 else
                 {
-                    logger.LogDebug("File save cancelled or failed after {ElapsedMilliseconds}ms: {Exception}", sw.ElapsedMilliseconds, result.Exception?.Message);
+                    logger.LogInformation("File save cancelled by user after {ElapsedMilliseconds}ms", sw.ElapsedMilliseconds);
                 }
             }
             catch (Exception ex)
