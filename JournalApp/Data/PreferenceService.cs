@@ -64,6 +64,12 @@ public sealed class PreferenceService : IPreferences, IDisposable
         set => _preferenceStore.Set("hide_notes", value);
     }
 
+    public bool RequireUnlock
+    {
+        get => _preferenceStore.Get("require_unlock", false);
+        set => _preferenceStore.Set("require_unlock", value);
+    }
+
     public MudColor PrimaryColor
     {
         get

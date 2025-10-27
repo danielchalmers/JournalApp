@@ -61,6 +61,7 @@
     <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.110" />
     <PackageReference Include="MudBlazor" Version="8.13.0" />
     <PackageReference Include="Nerdbank.GitVersioning" Version="3.8.118" PrivateAssets="All" />
+    <PackageReference Include="Oscore.Maui.Biometric" Version="2.4.1" />
   </ItemGroup>
 
 </Project>

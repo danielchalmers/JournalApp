@@ -27,6 +27,9 @@ namespace JournalApp;
 )]
 public class MainActivity : MauiAppCompatActivity
 {
+    private DateTime? _lastAuthenticationTime;
+    private static readonly TimeSpan AuthenticationTimeout = TimeSpan.FromHours(1);
+
     protected override void OnCreate(Bundle savedInstanceState)
     {
         base.OnCreate(savedInstanceState);
@@ -43,6 +46,41 @@ public class MainActivity : MauiAppCompatActivity
         OnBackPressedDispatcher.AddCallback(this, backCallback);
 
         OnNewIntent(Intent);
+    }
+
+    protected override async void OnResume()
+    {
+        base.OnResume();
+
+        // Check if we need to authenticate
+        var shouldAuthenticate = !_lastAuthenticationTime.HasValue ||
+                                (DateTime.Now - _lastAuthenticationTime.Value) > AuthenticationTimeout;
+
+        if (shouldAuthenticate)
+        {
+            var biometricService = IPlatformApplication.Current.Services.GetService<BiometricAuthService>();
+            if (biometricService != null)
+            {
+                var authenticated = await biometricService.AuthenticateIfRequired();
+
+                if (!authenticated)
+                {
+                    // Show error and close app
+                    var builder = new Android.App.AlertDialog.Builder(this);
+                    builder.SetTitle("Authentication Failed");
+                    builder.SetMessage("Unable to authenticate. The app will now close.");
+                    builder.SetPositiveButton("OK", (sender, args) =>
+                    {
+                        FinishAndRemoveTask();
+                    });
+                    builder.SetCancelable(false);
+                    builder.Show();
+                    return;
+                }
+
+                _lastAuthenticationTime = DateTime.Now;
+            }
+        }
     }
 
     protected override void OnNewIntent(Intent intent)
