@@ -40,14 +40,20 @@ else
             </section>
 
             <section>
-                <MudText Class="list-group-title">Safety</MudText>
+                <MudText Class="list-group-title">Privacy</MudText>
 
                 <MudPaper Class="settings-group">
                     @if (DeviceInfo.Current.Platform == DevicePlatform.Android)
                     {
                         <MudCheckBox @bind-Value="PreferenceService.RequireUnlock" aria-label="Require biometric unlock to open the app">Require unlock to open app</MudCheckBox>
                     }
+                </MudPaper>
+            </section>
 
+            <section>
+                <MudText Class="list-group-title">Safety</MudText>
+
+                <MudPaper Class="settings-group">
                     <MudText>
                         Your coping strategies and sources of support that can be used in a crisis.
                     </MudText>

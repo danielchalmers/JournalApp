@@ -27,12 +27,17 @@ namespace JournalApp;
 )]
 public class MainActivity : MauiAppCompatActivity
 {
+    private static bool _isDatabaseInitialized = false;
+    private static readonly object _databaseLock = new object();
     private DateTime? _lastAuthenticationTime;
     private static readonly TimeSpan AuthenticationTimeout = TimeSpan.FromHours(1);
 
-    protected override void OnCreate(Bundle savedInstanceState)
+    protected override async void OnCreate(Bundle savedInstanceState)
     {
         base.OnCreate(savedInstanceState);
+
+        // Authenticate before allowing any database access
+        await AuthenticateAndInitializeDatabase();
 
         var backCallback = new OnBackPressedCallbackProxy(() =>
         {
@@ -48,15 +53,70 @@ public class MainActivity : MauiAppCompatActivity
         OnNewIntent(Intent);
     }
 
+    private async Task AuthenticateAndInitializeDatabase()
+    {
+        var biometricService = IPlatformApplication.Current.Services.GetService<BiometricAuthService>();
+        if (biometricService == null)
+        {
+            InitializeDatabase();
+            return;
+        }
+
+        var authenticated = await biometricService.AuthenticateIfRequired();
+
+        if (!authenticated)
+        {
+            // Show error and close app
+            var builder = new Android.App.AlertDialog.Builder(this);
+            builder.SetTitle("Authentication Failed");
+            builder.SetMessage("Unable to authenticate. The app will now close.");
+            builder.SetPositiveButton("OK", (sender, args) =>
+            {
+                FinishAndRemoveTask();
+            });
+            builder.SetCancelable(false);
+            builder.Show();
+            return;
+        }
+
+        _lastAuthenticationTime = DateTime.Now;
+        
+        // Only initialize database after successful authentication
+        InitializeDatabase();
+    }
+
+    private void InitializeDatabase()
+    {
+        lock (_databaseLock)
+        {
+            if (_isDatabaseInitialized)
+                return;
+
+            var dbSeeder = IPlatformApplication.Current.Services.GetService<AppDbSeeder>();
+            if (dbSeeder != null)
+            {
+                dbSeeder.PrepareDatabase();
+                dbSeeder.SeedCategories();
+
+#if DEBUG
+                // Only seed sample days in debug mode.
+                dbSeeder.SeedDays();
+#endif
+            }
+
+            _isDatabaseInitialized = true;
+        }
+    }
+
     protected override async void OnResume()
     {
         base.OnResume();
 
-        // Check if we need to authenticate
+        // Check if we need to re-authenticate after timeout
         var shouldAuthenticate = !_lastAuthenticationTime.HasValue ||
                                 (DateTime.Now - _lastAuthenticationTime.Value) > AuthenticationTimeout;
 
-        if (shouldAuthenticate)
+        if (shouldAuthenticate && _isDatabaseInitialized)
         {
             var biometricService = IPlatformApplication.Current.Services.GetService<BiometricAuthService>();
             if (biometricService != null)

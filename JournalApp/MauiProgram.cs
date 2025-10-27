@@ -58,20 +58,10 @@ public static class MauiProgram
         builder.Services.AddSingleton(Browser.Default);
         builder.Services.AddSingleton(Clipboard.Default);
 
-        // Seed the database with required data.
-        using var provider = builder.Services.BuildServiceProvider();
-        var dbSeeder = provider.GetService<AppDbSeeder>();
-
-        dbSeeder.PrepareDatabase();
-        dbSeeder.SeedCategories();
-
-#if DEBUG
-        // Only seed sample days in debug mode.
-        dbSeeder.SeedDays();
-#endif
-
+        // Note: Database seeding moved to MainActivity to ensure it happens after authentication
+        
         stopwatch.Stop();
-        var logger = provider.GetRequiredService<ILoggerFactory>().CreateLogger("JournalApp.MauiProgram");
+        var logger = builder.Services.BuildServiceProvider().GetRequiredService<ILoggerFactory>().CreateLogger("JournalApp.MauiProgram");
         logger.LogInformation("Created MAUI app in {ElapsedMilliseconds}ms", stopwatch.ElapsedMilliseconds);
 
         return builder.Build();
