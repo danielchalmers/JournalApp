@@ -1,11 +1,12 @@
-﻿using MudBlazor;
+using CommunityToolkit.Maui.Storage;
+using MudBlazor;
 
 namespace JournalApp;
 
     /// <summary>
     /// Provides UI-related services for managing app data, including import and export wizards.
     /// </summary>
-    public sealed class AppDataUIService(ILogger<AppDataUIService> logger, AppDataService appDataService, IShare share, PreferenceService preferenceService)
+    public sealed class AppDataUIService(ILogger<AppDataUIService> logger, AppDataService appDataService, IFileSaver fileSaver, PreferenceService preferenceService)
     {
         public async Task<bool> StartImportWizard(IDialogService dialogService, string path)
         {
@@ -91,50 +92,64 @@ namespace JournalApp;
             var total = Stopwatch.StartNew();
 
             logger.LogDebug("Constructing backup data");
-            var path = Path.Combine(Path.GetTempPath(), $"backup-{DateTime.Now:yyyy-MM-dd}.journalapp");
             var sw = Stopwatch.StartNew();
 
             var backupFile = await appDataService.CreateBackup();
 
-            // Create the file and write the archive to it.
-            // We don't write directly to a place the user picks because that requires the harsh WRITE_EXTERNAL_STORAGE permission.
-            logger.LogDebug("Creating archive at {Path} after {ElapsedMilliseconds}ms", path, sw.ElapsedMilliseconds);
+            logger.LogDebug("Backup data constructed in {ElapsedMilliseconds}ms", sw.ElapsedMilliseconds);
             sw.Restart();
+
+            // Create a memory stream to write the archive to
+            using var memoryStream = new MemoryStream();
             try
             {
-                await backupFile.WriteArchive(path);
+                await backupFile.WriteArchive(memoryStream);
+                memoryStream.Position = 0;
 
-                logger.LogDebug("Archive written to {Path} in {ElapsedMilliseconds}ms", path, sw.ElapsedMilliseconds);
+                logger.LogDebug("Archive created in memory in {ElapsedMilliseconds}ms", sw.ElapsedMilliseconds);
             }
             catch (Exception ex)
             {
                 total.Stop();
                 logger.LogWarning(
                     ex,
-                    "Failed to create archive at {Path} after {ElapsedMilliseconds}ms (total {TotalElapsedMilliseconds}ms)",
-                    path,
+                    "Failed to create archive after {ElapsedMilliseconds}ms (total {TotalElapsedMilliseconds}ms)",
                     sw.ElapsedMilliseconds,
                     total.ElapsedMilliseconds);
                 await dialogService.ShowJaMessageBox($"Nothing happened; Failed to create archive: {ex.Message}.");
                 return;
             }
 
-            // Prompt the user to share the file.
-            await ShareBackup(path);
+            // Prompt the user to save the file.
+            sw.Restart();
+            try
+            {
+                var fileName = $"backup-{DateTime.Now:yyyy-MM-dd}.journalapp";
+                var result = await fileSaver.SaveAsync(fileName, memoryStream);
 
-            preferenceService.LastExportDate = DateTimeOffset.Now;
+                if (result.IsSuccessful)
+                {
+                    logger.LogDebug("File saved to {FilePath} in {ElapsedMilliseconds}ms", result.FilePath, sw.ElapsedMilliseconds);
+                    preferenceService.LastExportDate = DateTimeOffset.Now;
+                }
+                else
+                {
+                    logger.LogDebug("File save cancelled or failed after {ElapsedMilliseconds}ms: {Exception}", sw.ElapsedMilliseconds, result.Exception?.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+                total.Stop();
+                logger.LogWarning(
+                    ex,
+                    "Failed to save file after {ElapsedMilliseconds}ms (total {TotalElapsedMilliseconds}ms)",
+                    sw.ElapsedMilliseconds,
+                    total.ElapsedMilliseconds);
+                await dialogService.ShowJaMessageBox($"Failed to save file: {ex.Message}.");
+                return;
+            }
+
             total.Stop();
             logger.LogInformation("Finished export wizard in {ElapsedMilliseconds}ms", total.ElapsedMilliseconds);
         }
-
-        public async Task ShareBackup(string path)
-        {
-            logger.LogDebug("Share request for {Path}", path);
-
-            await share.RequestAsync(new ShareFileRequest
-            {
-                Title = "Good Diary backup",
-                File = new ShareFile(path)
-        });
-    }
 }
