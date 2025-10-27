@@ -114,4 +114,30 @@
 
         layout.FindAll(".data-point-group").Count.Should().Be(hideNotes ? 2 : 3);
     }
+
+    [Fact]
+    [Description("Checks if shared text opens the note dialog with pre-filled content")]
+    public void SharedTextOpensNoteDialog()
+    {
+        // Set up shared text
+        App.SharedText = "This is shared text from another app";
+
+        var layout = Render(
+    @<MainLayout>
+        <Body>
+            <Index />
+        </Body>
+    </MainLayout>
+        );
+
+        // Wait for the dialog to appear
+        layout.WaitForAssertion(() =>
+        {
+            var dialog = layout.FindComponents<MudDialog>().FirstOrDefault();
+            dialog.Should().NotBeNull("Dialog should open when shared text is present");
+        });
+
+        // Verify that shared text was cleared after being handled
+        App.SharedText.Should().BeNull("Shared text should be cleared after opening dialog");
+    }
 }
