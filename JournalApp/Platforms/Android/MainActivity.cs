@@ -7,7 +7,7 @@ using JournalApp.Platforms.Android;
 
 namespace JournalApp;
 
-[Activity(Theme = "@style/Maui.SplashTheme", LaunchMode = LaunchMode.SingleInstance, MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
+[Activity(Theme = "@style/Maui.SplashTheme", LaunchMode = LaunchMode.SingleInstance, MainLauncher = true, Exported = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
 [IntentFilter(
     [Intent.ActionSend, Intent.ActionView],
     Categories = [Intent.CategoryDefault],
@@ -28,8 +28,9 @@ namespace JournalApp;
 // Accept text sharing for creating notes.
 [IntentFilter(
     [Intent.ActionSend],
-    Categories = [Intent.CategoryDefault],
-    DataMimeType = "text/plain"
+    Categories = [Intent.CategoryDefault, Intent.CategoryBrowsable],
+    DataMimeType = "text/*",
+    Label = "New note"
 )]
 public class MainActivity : MauiAppCompatActivity
 {
@@ -59,7 +60,7 @@ public class MainActivity : MauiAppCompatActivity
             return; // Already importing or handling shared text.
 
         // Handle shared text for creating notes.
-        if (intent.Action == Intent.ActionSend && intent.Type == "text/plain")
+        if (intent.Action == Intent.ActionSend && intent.Type?.StartsWith("text/") == true)
         {
             var sharedText = intent.GetStringExtra(Intent.ExtraText);
             if (!string.IsNullOrWhiteSpace(sharedText))
