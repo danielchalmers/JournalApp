@@ -23,7 +23,13 @@ namespace JournalApp;
     [Intent.ActionSend, Intent.ActionView],
     Categories = [Intent.CategoryDefault],
     DataSchemes = ["content", "file"],
-    DataMimeType = "*/*"
+    DataMimeType = "application/octet-stream"
+)]
+[IntentFilter(
+    [Intent.ActionSend, Intent.ActionView],
+    Categories = [Intent.CategoryDefault],
+    DataSchemes = ["content", "file"],
+    DataMimeType = "application/zip"
 )]
 public class MainActivity : MauiAppCompatActivity
 {
