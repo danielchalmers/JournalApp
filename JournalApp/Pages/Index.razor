@@ -135,6 +135,7 @@
     AppDbContext db;
     Day _day;
     DateTimeOffset _stoppedDate;
+    bool _hasHandledSharedText;
 
     [Parameter]
     public string OpenToDateString { get; set; }
@@ -165,9 +166,18 @@
 
         // Subscribe to new intent events for shared text.
         App.NewIntent += OnNewIntent;
+    }
 
-        // Handle shared text if available.
-        await HandleSharedText();
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (firstRender && !_hasHandledSharedText)
+        {
+            _hasHandledSharedText = true;
+            // Handle shared text after the first render when dialog service is ready.
+            await HandleSharedText();
+        }
     }
 
     protected override void OnWindowDeactivatedOrDestroying(object sender, EventArgs e)
