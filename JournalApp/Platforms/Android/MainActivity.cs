@@ -76,7 +76,7 @@ public class MainActivity : MauiAppCompatActivity
         }
 
         // Only process files with .journalapp extension
-        if (!filePath.EndsWith(".journalapp", StringComparison.OrdinalIgnoreCase))
+        if (string.IsNullOrEmpty(filePath) || !filePath.EndsWith(".journalapp", StringComparison.OrdinalIgnoreCase))
             return;
 
         var inputStream = ContentResolver.OpenInputStream(streamUri);
