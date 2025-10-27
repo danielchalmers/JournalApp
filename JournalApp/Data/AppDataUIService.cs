@@ -100,32 +100,36 @@ namespace JournalApp;
             sw.Restart();
 
             // Create a memory stream to write the archive to
-            using var memoryStream = new MemoryStream();
-            try
+            byte[] archiveBytes;
+            using (var memoryStream = new MemoryStream())
             {
-                await backupFile.WriteArchive(memoryStream);
-                memoryStream.Position = 0;
+                try
+                {
+                    await backupFile.WriteArchive(memoryStream);
+                    archiveBytes = memoryStream.ToArray();
 
-                logger.LogDebug("Archive created in memory in {ElapsedMilliseconds}ms", sw.ElapsedMilliseconds);
-            }
-            catch (Exception ex)
-            {
-                total.Stop();
-                logger.LogWarning(
-                    ex,
-                    "Failed to create archive after {ElapsedMilliseconds}ms (total {TotalElapsedMilliseconds}ms)",
-                    sw.ElapsedMilliseconds,
-                    total.ElapsedMilliseconds);
-                await dialogService.ShowJaMessageBox($"Nothing happened; Failed to create archive: {ex.Message}.");
-                return;
+                    logger.LogDebug("Archive created in memory in {ElapsedMilliseconds}ms", sw.ElapsedMilliseconds);
+                }
+                catch (Exception ex)
+                {
+                    total.Stop();
+                    logger.LogWarning(
+                        ex,
+                        "Failed to create archive after {ElapsedMilliseconds}ms (total {TotalElapsedMilliseconds}ms)",
+                        sw.ElapsedMilliseconds,
+                        total.ElapsedMilliseconds);
+                    await dialogService.ShowJaMessageBox($"Nothing happened; Failed to create archive: {ex.Message}.");
+                    return;
+                }
             }
 
             // Prompt the user to save the file.
             sw.Restart();
             try
             {
+                using var saveStream = new MemoryStream(archiveBytes);
                 var fileName = $"backup-{DateTime.Now:yyyy-MM-dd}.journalapp";
-                var result = await fileSaver.SaveAsync(fileName, memoryStream);
+                var result = await fileSaver.SaveAsync(fileName, saveStream);
 
                 if (result.IsSuccessful)
                 {
