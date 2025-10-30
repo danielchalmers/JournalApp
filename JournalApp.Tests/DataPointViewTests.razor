@@ -56,11 +56,14 @@
         cut.Find(".mud-menu-activator").Click();
 
         // Find and click the sob emoji (😭 is the last item in DataPoint.Moods)
+        var sobEmoji = DataPoint.Moods[^1];  // Get the last mood (sob emoji)
+        sobEmoji.Should().Be("😭");  // Verify it's the sob emoji
+        
         var menuItems = layout.FindAll(".mud-list .mud-menu-item");
-        menuItems[7].Click();  // Index 7 is the sob emoji 😭
+        menuItems[^1].Click();  // Click the last menu item (sob emoji)
 
         // Verify mood was set
-        point.Mood.Should().Be("😭");
+        point.Mood.Should().Be(sobEmoji);
 
         // Verify a snackbar was displayed (MudBlazor creates a snackbar container)
         layout.FindAll(".mud-snackbar").Count.Should().BeGreaterThan(0);

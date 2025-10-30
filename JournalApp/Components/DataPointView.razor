@@ -173,7 +173,7 @@ else if (Point.Type == PointType.Medication)
         Point.Mood = mood;
 
         // Show a motivational quote when the sob emoji is selected
-        if (mood == "😭")
+        if (mood == DataPoint.Moods[^1])  // Sob emoji (😭) is the last mood in the list
         {
             var quote = MotivationalQuotes.GetRandomQuote();
             Snackbar.Add(quote, Severity.Info, c => c.Icon = Icons.Material.Rounded.FavoriteBorder);
