@@ -86,14 +86,10 @@ else if (Point.Type == PointType.Note)
 }
 else if (Point.Type == PointType.Medication)
 {
-    <div class="d-flex flex-grow-1 justify-space-between align-center" style="gap: 8px">
-        <MudToggleGroup T="bool?" @bind-Value="Point.Bool" @bind-Value:after="OnMedicationTakenChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small">
-            <MudToggleItem T="bool?" Value="false">No</MudToggleItem>
-            <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
-        </MudToggleGroup>
-
-        <MudLink OnClick="EditDose" Disabled="@(string.IsNullOrWhiteSpace(Point.Category.MedicationUnit))">Edit dose</MudLink>
-    </div>
+    <MudToggleGroup T="bool?" @bind-Value="Point.Bool" @bind-Value:after="OnMedicationTakenChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small">
+        <MudToggleItem T="bool?" Value="false">No</MudToggleItem>
+        <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
+    </MudToggleGroup>
 }
 
 @code {
@@ -158,7 +154,11 @@ else if (Point.Type == PointType.Medication)
         await StateChanged.InvokeAsync();
     }
 
-    async Task EditDose()
+    /// <summary>
+    /// Opens a dialog to edit the medication dose for this data point.
+    /// This method is public to allow it to be called from the parent page when clicking the medication name header.
+    /// </summary>
+    public async Task EditDose()
     {
         logger.LogDebug("Editing dose in dialog");
         await EditDoseDialog.ShowDialog(DialogService, Point);
@@ -190,6 +190,23 @@ else if (Point.Type == PointType.Medication)
 
         if (point.Type == PointType.Medication && !string.IsNullOrWhiteSpace(category.MedicationUnit))
         {
+            sb.Append(GetMedicationDoseText(point));
+        }
+
+        sb.Append(':');
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// Returns the dose text for a medication point (e.g., " 10mg" or " 5ml*")
+    /// </summary>
+    public static string GetMedicationDoseText(DataPoint point)
+    {
+        var category = point.Category;
+        var sb = new StringBuilder();
+
+        if (!string.IsNullOrWhiteSpace(category.MedicationUnit))
+        {
             // Different dose from the category default.
             if (point.MedicationDose.HasValue && point.MedicationDose != category.MedicationDose)
             {
@@ -202,7 +219,6 @@ else if (Point.Type == PointType.Medication)
             }
         }
 
-        sb.Append(':');
         return sb.ToString();
     }
 }
