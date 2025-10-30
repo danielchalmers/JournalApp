@@ -108,14 +108,14 @@
                     <MudCardActions>
                         @if (group.Key == null)
                         {
-                            <MudLink Href="/manage" Style="display: inline-flex; align-items: center; gap: 8px;">
+                            <MudLink Href="/manage" Class="link-with-icon">
                                 <MudIcon Icon="@Icons.Material.Rounded.DashboardCustomize" Size="Size.Small" />
                                 Manage elements
                             </MudLink>
                         }
                         else if (group.Key == "Medications")
                         {
-                            <MudLink Href="/manage/Medications" Style="display: inline-flex; align-items: center; gap: 8px;">
+                            <MudLink Href="/manage/Medications" Class="link-with-icon">
                                 <MudIcon Icon="@Icons.Material.Rounded.Medication" Size="Size.Small" />
                                 Manage medications
                             </MudLink>

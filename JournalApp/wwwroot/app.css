@@ -214,3 +214,9 @@ body {
     background-color: #FFF8F9;
   }
 }
+
+.link-with-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}

@@ -2,7 +2,7 @@
 @inject ILogger<WorksheetView> logger
 
 <li class="worksheet-view">
-	<MudLink Href="@Worksheet.SourceUri" Target="_blank" Style="display: inline-flex; align-items: center; gap: 8px;" Color="Color.Primary">
+	<MudLink Href="@Worksheet.SourceUri" Target="_blank" Class="link-with-icon" Color="Color.Primary">
 		<MudIcon Icon="@Icons.Material.Rounded.Link" Size="Size.Small" />
 		<MudText Typo="Typo.h5">@Worksheet.Title</MudText>
 	</MudLink>
