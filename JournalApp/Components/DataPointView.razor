@@ -154,6 +154,10 @@ else if (Point.Type == PointType.Medication)
         await StateChanged.InvokeAsync();
     }
 
+    /// <summary>
+    /// Opens a dialog to edit the medication dose for this data point.
+    /// This method is public to allow it to be called from the parent page when clicking the medication name header.
+    /// </summary>
     public async Task EditDose()
     {
         logger.LogDebug("Editing dose in dialog");
