@@ -1,6 +1,5 @@
 ﻿@namespace JournalApp
 @page "/{OpenToDateString?}"
-@using System.Text
 @using CommunityToolkit.Maui.Storage;
 @inherits JaPage
 @implements IDisposable
@@ -91,7 +90,7 @@
                                                 @if (point.Type == PointType.Medication && !string.IsNullOrWhiteSpace(point.Category.MedicationUnit))
                                                 {
                                                     <MudText HtmlTag="h6">
-                                                        <MudLink OnClick="@(() => dataPointViewRef?.EditDose())">@(GetMedicationNamePart(point))</MudLink>@(GetMedicationDosePart(point))
+                                                        <MudLink OnClick="@(() => dataPointViewRef?.EditDose())">@category.Name</MudLink>@(GetMedicationDosePart(point))
                                                     </MudText>
                                                 }
                                                 else
@@ -317,32 +316,9 @@
         await db.SaveChangesAsync();
     }
 
-    string GetMedicationNamePart(DataPoint point)
-    {
-        return point.Category.Name;
-    }
-
     string GetMedicationDosePart(DataPoint point)
     {
-        var category = point.Category;
-        var sb = new StringBuilder();
-
-        if (!string.IsNullOrWhiteSpace(category.MedicationUnit))
-        {
-            // Different dose from the category default.
-            if (point.MedicationDose.HasValue && point.MedicationDose != category.MedicationDose)
-            {
-                sb.Append(' ').Append($"{point.MedicationDose:0.##}{category.MedicationUnit}*");
-            }
-            // The default dose and unit.
-            else if (category.MedicationDose.HasValue)
-            {
-                sb.Append(' ').Append($"{category.MedicationDose:0.##}{category.MedicationUnit}");
-            }
-        }
-
-        sb.Append(':');
-        return sb.ToString();
+        return DataPointView.GetMedicationDoseText(point) + ":";
     }
 
     protected override void SaveState()
