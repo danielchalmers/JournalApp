@@ -90,7 +90,7 @@
                                                 @if (point.Type == PointType.Medication && !string.IsNullOrWhiteSpace(point.Category.MedicationUnit))
                                                 {
                                                     <MudText HtmlTag="h6">
-                                                        <MudLink OnClick="@(() => dataPointViewRef?.EditDose())">@category.Name</MudLink>@(GetMedicationDosePart(point))
+                                                        @category.Name<MudLink OnClick="@(() => dataPointViewRef?.EditDose())">@(GetMedicationDosePart(point))</MudLink>
                                                     </MudText>
                                                 }
                                                 else
