@@ -90,7 +90,7 @@
                                                 @if (point.Type == PointType.Medication && !string.IsNullOrWhiteSpace(point.Category.MedicationUnit))
                                                 {
                                                     <MudText HtmlTag="h6">
-                                                        @category.Name<MudLink OnClick="@(() => dataPointViewRef?.EditDose())">@(GetMedicationDosePart(point))</MudLink>
+                                                        @category.Name<MudLink OnClick="@(() => dataPointViewRef?.EditDose())">@(DataPointView.GetMedicationDoseText(point))</MudLink>:
                                                     </MudText>
                                                 }
                                                 else
@@ -314,11 +314,6 @@
         logger.LogInformation("Saving new note");
         note.Category.Points.Add(note);
         await db.SaveChangesAsync();
-    }
-
-    string GetMedicationDosePart(DataPoint point)
-    {
-        return DataPointView.GetMedicationDoseText(point) + ":";
     }
 
     protected override void SaveState()
