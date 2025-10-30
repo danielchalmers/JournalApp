@@ -18,7 +18,7 @@
 
 <main class="page-body">
     <div id="trends-category-list">
-        @foreach (var (category, points) in AllPoints.OrderBy(x => x.Key.Group).ThenBy(x => x.Key.Index))
+        @foreach (var (category, points) in VisibleCategories)
         {
             @if (category.Group == "Notes" && Preferences.Get("hide_notes", false))
             {
@@ -51,6 +51,7 @@
     public IReadOnlyList<DateOnly> SelectedDates { get; set; }
 
     Dictionary<DataPointCategory, IReadOnlyDictionary<int, IReadOnlyCollection<DataPoint>>> AllPoints = new();
+    List<KeyValuePair<DataPointCategory, IReadOnlyDictionary<int, IReadOnlyCollection<DataPoint>>>> VisibleCategories = new();
 
     protected override void OnInitialized()
     {
@@ -99,6 +100,34 @@
 
         sw.Stop();
         logger.LogInformation("Loaded trends data in {ElapsedMilliseconds}ms (categories: {CategoryCount})", sw.ElapsedMilliseconds, AllPoints.Count);
+
+        // Progressive loading: render charts from top to bottom
+        await LoadCategoriesProgressively();
+    }
+
+    async Task LoadCategoriesProgressively()
+    {
+        VisibleCategories.Clear();
+        
+        var orderedCategories = AllPoints.OrderBy(x => x.Key.Group).ThenBy(x => x.Key.Index).ToList();
+        
+        if (orderedCategories.Count == 0)
+        {
+            return;
+        }
+
+        // Load first category immediately
+        VisibleCategories.Add(orderedCategories[0]);
+        StateHasChanged();
+
+        // Load remaining categories progressively
+        for (int i = 1; i < orderedCategories.Count; i++)
+        {
+            // Small delay to allow the previous chart to render
+            await Task.Delay(50);
+            VisibleCategories.Add(orderedCategories[i]);
+            StateHasChanged();
+        }
     }
 
     void Close()
