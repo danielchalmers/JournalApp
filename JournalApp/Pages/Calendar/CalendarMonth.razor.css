@@ -8,13 +8,13 @@
 ::deep .calendar-month-grid {
   display: flex;
   flex-direction: column;
-  padding: 12px;
+  padding: 0;
 }
 
 ::deep .calendar-day-cell {
   display: flex;
   flex: 1 1 0;
-  margin: 2px;
+  margin: 1px;
   padding: 1%;
   min-width: 32px;
   max-width: 96px;
