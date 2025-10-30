@@ -196,7 +196,7 @@
 
         var cut = layout.FindComponent<DataPointView>();
 
-        cut.Find(".mud-link").Click();
+        cut.Find(".edit-note-button").Click();
 
         var noteEditor = layout.FindComponent<EditNoteDialog>();
         noteEditor.Find("textarea").Input("123");
@@ -204,7 +204,7 @@
 
         point.Text.Should().Be("123");
 
-        cut.Find(".mud-link").Click();
+        cut.Find(".edit-note-button").Click();
 
         noteEditor = layout.FindComponent<EditNoteDialog>();
         noteEditor.Find("textarea").Input("EXTRA TEXT THAT WILL BE DISCARDED");
@@ -294,7 +294,7 @@
         cut.FindAll(".mud-toggle-item-selected").Count.Should().Be(0);
 
         // Change dose to empty via dialog.
-        cut.Find(".mud-link").Click();
+        cut.Find(".edit-dose-button").Click();
         var doseEditor = layout.FindComponent<EditDoseDialog>();
         doseEditor.Find("input").Input("");
         layout.Find(".submit-button").Click();
@@ -304,7 +304,7 @@
         cut.FindAll(".mud-toggle-item")[0].ClassList.Should().Contain("mud-toggle-item-selected");
 
         // Change dose via dialog.
-        cut.Find(".mud-link").Click();
+        cut.Find(".edit-dose-button").Click();
         doseEditor = layout.FindComponent<EditDoseDialog>();
         doseEditor.Find("input").Input("99");
         layout.Find(".submit-button").Click();
@@ -314,7 +314,7 @@
         cut.FindAll(".mud-toggle-item")[1].ClassList.Should().Contain("mud-toggle-item-selected");
 
         // Cancel dialog.
-        cut.Find(".mud-link").Click();
+        cut.Find(".edit-dose-button").Click();
         doseEditor = layout.FindComponent<EditDoseDialog>();
         doseEditor.Find("input").Input("88");
         layout.Find(".cancel-button").Click();
@@ -346,7 +346,7 @@
 
         var cut = layout.FindComponent<DataPointView>();
 
-        cut.Find(".mud-link").ClassList.Should().Contain("mud-link-disabled");
+        cut.Find(".edit-dose-button").HasAttribute("disabled").Should().BeTrue();
     }
 
     [Fact]
@@ -377,13 +377,13 @@
         layout.FindAll(".mud-dialog").Count.Should().Be(0);
 
         // Submit.
-        cut.Find(".mud-link").Click();
+        cut.Find(".edit-dose-button").Click();
         layout.FindAll(".mud-dialog").Count.Should().Be(1);
         layout.Find(".submit-button").Click();
         layout.FindAll(".mud-dialog").Count.Should().Be(0);
 
         // Cancel.
-        cut.Find(".mud-link").Click();
+        cut.Find(".edit-dose-button").Click();
         layout.FindAll(".mud-dialog").Count.Should().Be(1);
         layout.Find(".cancel-button").Click();
         layout.FindAll(".mud-dialog").Count.Should().Be(0);

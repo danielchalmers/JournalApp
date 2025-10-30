@@ -2,9 +2,10 @@
 @inject ILogger<WorksheetView> logger
 
 <li class="worksheet-view">
-	<MudButton OnClick="OnResourceClicked" StartIcon="@Icons.Material.Rounded.Link" Color="Color.Primary">
+	<MudLink Href="@Worksheet.SourceUri" Target="_blank" Style="display: inline-flex; align-items: center; gap: 8px;" Color="Color.Primary">
+		<MudIcon Icon="@Icons.Material.Rounded.Link" Size="Size.Small" />
 		<MudText Typo="Typo.h5">@Worksheet.Title</MudText>
-	</MudButton>
+	</MudLink>
 
 	@if (!string.IsNullOrEmpty(Worksheet.Description))
 	{
@@ -15,10 +16,4 @@
 @code {
 	[Parameter]
 	public Worksheet Worksheet { get; set; }
-
-	async Task OnResourceClicked()
-	{
-		logger.LogInformation($"Clicked <{Worksheet.Title}> and going to <{Worksheet.SourceUri}>");
-		await Browser.Default.OpenAsync(Worksheet.SourceUri);
-	}
 }

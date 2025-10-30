@@ -80,7 +80,7 @@ else if (Point.Type == PointType.Note)
                           AutoGrow Lines="1" MaxLines="10" />
         }
 
-        <MudLink Typo="Typo.body2" OnClick="EditTextInDialog">Edit note</MudLink>
+        <MudButton Class="edit-note-button" OnClick="EditTextInDialog" Variant="Variant.Text" Style="font-size: 0.875rem;">Edit note</MudButton>
     </div>
 }
 else if (Point.Type == PointType.Medication)
@@ -91,7 +91,7 @@ else if (Point.Type == PointType.Medication)
             <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
         </MudToggleGroup>
 
-        <MudLink OnClick="EditDose" Disabled="@(string.IsNullOrWhiteSpace(Point.Category.MedicationUnit))">Edit dose</MudLink>
+        <MudButton Class="edit-dose-button" OnClick="EditDose" Disabled="@(string.IsNullOrWhiteSpace(Point.Category.MedicationUnit))" Variant="Variant.Text">Edit dose</MudButton>
     </div>
 }
 

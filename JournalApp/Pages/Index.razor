@@ -108,15 +108,17 @@
                     <MudCardActions>
                         @if (group.Key == null)
                         {
-                            <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Rounded.DashboardCustomize" OnClick="ManageCategories">
+                            <MudLink Href="/manage" Style="display: inline-flex; align-items: center; gap: 8px;">
+                                <MudIcon Icon="@Icons.Material.Rounded.DashboardCustomize" Size="Size.Small" />
                                 Manage elements
-                            </MudButton>
+                            </MudLink>
                         }
                         else if (group.Key == "Medications")
                         {
-                            <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Rounded.Medication" OnClick="ManageMedications">
+                            <MudLink Href="/manage/Medications" Style="display: inline-flex; align-items: center; gap: 8px;">
+                                <MudIcon Icon="@Icons.Material.Rounded.Medication" Size="Size.Small" />
                                 Manage medications
-                            </MudButton>
+                            </MudLink>
                         }
                         else if (group.Key == "Notes")
                         {
