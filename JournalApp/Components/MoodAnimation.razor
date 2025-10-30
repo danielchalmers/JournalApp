@@ -1,0 +1,40 @@
+@namespace JournalApp
+@inject PreferenceService PreferenceService
+
+@if (_isVisible)
+{
+    <div class="mood-animation-overlay" style="background-color: @_color;" @onclick="Hide">
+        <div class="mood-animation-content">
+            <div class="mood-animation-emoji">@_emoji</div>
+        </div>
+    </div>
+}
+
+@code {
+    private bool _isVisible = false;
+    private string _emoji = "";
+    private string _color = "transparent";
+
+    public void Show(string emoji)
+    {
+        _emoji = emoji;
+        _color = PreferenceService.GetMoodColor(emoji);
+        _isVisible = true;
+        StateHasChanged();
+
+        // Auto-hide after animation completes
+        Task.Delay(1500).ContinueWith(_ =>
+        {
+            InvokeAsync(() =>
+            {
+                Hide();
+            });
+        });
+    }
+
+    private void Hide()
+    {
+        _isVisible = false;
+        StateHasChanged();
+    }
+}

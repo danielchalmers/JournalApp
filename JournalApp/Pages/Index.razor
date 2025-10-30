@@ -97,7 +97,7 @@
                                         }
 
                                         <div class="data-point-view">
-                                            <DataPointView Point="point" StateChanged="_ => StateHasChanged()" />
+                                            <DataPointView Point="point" StateChanged="_ => StateHasChanged()" MoodAnimation="_moodAnimation" />
                                         </div>
                                     </li>
                                 }
@@ -131,10 +131,13 @@
     </div>
 </main>
 
+<MoodAnimation @ref="_moodAnimation" />
+
 @code {
     AppDbContext db;
     Day _day;
     DateTimeOffset _stoppedDate;
+    MoodAnimation _moodAnimation;
 
     [Parameter]
     public string OpenToDateString { get; set; }

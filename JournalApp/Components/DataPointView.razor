@@ -15,7 +15,7 @@
         <ChildContent>
             @foreach (var mood in DataPoint.Moods)
             {
-                <MudMenuItem OnClick="@(() => Point.Mood = mood)">
+                <MudMenuItem OnClick="@(() => OnMoodSelected(mood))">
                     <Emoji>@mood</Emoji>
                 </MudMenuItem>
             }
@@ -102,6 +102,9 @@ else if (Point.Type == PointType.Medication)
     [Parameter]
     public EventCallback StateChanged { get; set; }
 
+    [Parameter]
+    public MoodAnimation MoodAnimation { get; set; }
+
     public int ScaleIndexForMudRating
     {
         get => Point.ScaleIndex ?? 0;
@@ -123,6 +126,18 @@ else if (Point.Type == PointType.Medication)
             }
 
             return null;
+        }
+    }
+
+    void OnMoodSelected(string mood)
+    {
+        logger.LogDebug("Mood selected: {Mood}", mood);
+        Point.Mood = mood;
+        
+        // Trigger the animation if MoodAnimation is provided
+        if (MoodAnimation != null && mood != "🤔")
+        {
+            MoodAnimation.Show(mood);
         }
     }
 

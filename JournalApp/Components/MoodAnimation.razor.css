@@ -1,0 +1,67 @@
+.mood-animation-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeInOut 1.5s ease-in-out;
+    cursor: pointer;
+}
+
+.mood-animation-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: scaleAndBounce 1.5s ease-out;
+}
+
+.mood-animation-emoji {
+    font-size: 20vw;
+    animation: rotate 1.5s ease-in-out;
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+    }
+    20% {
+        opacity: 1;
+    }
+    80% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes scaleAndBounce {
+    0% {
+        transform: scale(0) rotate(0deg);
+    }
+    50% {
+        transform: scale(1.2) rotate(180deg);
+    }
+    65% {
+        transform: scale(0.9) rotate(180deg);
+    }
+    80% {
+        transform: scale(1.05) rotate(180deg);
+    }
+    100% {
+        transform: scale(1) rotate(180deg);
+    }
+}
+
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
