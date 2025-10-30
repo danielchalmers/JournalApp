@@ -81,7 +81,14 @@ else if (Point.Type == PointType.Note)
                           AutoGrow Lines="1" MaxLines="10" />
         }
 
-        <MudLink Typo="Typo.body2" OnClick="EditTextInDialog">Edit note</MudLink>
+        <div class="d-flex align-center" style="gap: 4px">
+            <MudIconButton Icon="@Icons.Material.Rounded.Edit" aria-label="Edit note" OnClick="EditTextInDialog" Size="Size.Small" />
+            <MudIconButton Icon="@(Point.IsPinned ? Icons.Material.Filled.PushPin : Icons.Material.Outlined.PushPin)" 
+                          aria-label="@(Point.IsPinned ? "Unpin note" : "Pin note")" 
+                          OnClick="TogglePin" 
+                          Size="Size.Small" 
+                          Color="@(Point.IsPinned ? Color.Primary : Color.Default)" />
+        </div>
     </div>
 }
 else if (Point.Type == PointType.Medication)
@@ -145,6 +152,13 @@ else if (Point.Type == PointType.Medication)
         await EditNoteDialog.ShowDialog(DialogService, Point);
         logger.LogDebug("Finished editing note in dialog");
 
+        await StateChanged.InvokeAsync();
+    }
+
+    async Task TogglePin()
+    {
+        logger.LogDebug("Toggling pin for note");
+        Point.IsPinned = !Point.IsPinned;
         await StateChanged.InvokeAsync();
     }
 

@@ -76,6 +76,11 @@ public class DataPoint
     public decimal? MedicationDose { get; set; }
 
     /// <summary>
+    /// Indicates whether the data point is pinned.
+    /// </summary>
+    public bool IsPinned { get; set; }
+
+    /// <summary>
     /// Indicates whether the data point is a timestamped note.
     /// </summary>
     [JsonIgnore]
