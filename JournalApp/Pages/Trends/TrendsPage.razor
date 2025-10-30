@@ -43,6 +43,8 @@
 </main>
 
 @code {
+    const int CategoryLoadDelayMs = 50;
+
     [Parameter]
     public string OpenToDateString { get; set; }
 
@@ -105,7 +107,7 @@
         await LoadCategoriesProgressively();
     }
 
-    async Task LoadCategoriesProgressively()
+    private async Task LoadCategoriesProgressively()
     {
         VisibleCategories.Clear();
         
@@ -124,7 +126,7 @@
         for (int i = 1; i < orderedCategories.Count; i++)
         {
             // Small delay to allow the previous chart to render
-            await Task.Delay(50);
+            await Task.Delay(CategoryLoadDelayMs);
             VisibleCategories.Add(orderedCategories[i]);
             StateHasChanged();
         }
