@@ -106,19 +106,7 @@
                     </MudCardContent>
 
                     <MudCardActions>
-                        @if (group.Key == null)
-                        {
-                            <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Rounded.DashboardCustomize" OnClick="ManageCategories">
-                                Manage elements
-                            </MudButton>
-                        }
-                        else if (group.Key == "Medications")
-                        {
-                            <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Rounded.Medication" OnClick="ManageMedications">
-                                Manage medications
-                            </MudButton>
-                        }
-                        else if (group.Key == "Notes")
+                        @if (group.Key == "Notes")
                         {
                             <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Rounded.Chat" OnClick="NewNote">
                                 New note

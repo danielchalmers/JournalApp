@@ -2,6 +2,7 @@
 @using System.Text
 @inject ILogger<DataPointView> logger
 @inject IDialogService DialogService
+@inject ISnackbar Snackbar
 
 @if (Point.Type == PointType.Mood)
 {
@@ -179,6 +180,19 @@ else if (Point.Type == PointType.Medication)
         logger.LogDebug("Finished editing dose in dialog");
 
         await StateChanged.InvokeAsync();
+    }
+
+    void OnMoodSelected(string mood)
+    {
+        logger.LogDebug("Mood selected: {mood}", mood);
+        Point.Mood = mood;
+
+        // Show a motivational quote when the sob emoji is selected
+        if (mood == DataPoint.Moods[^1])  // Sob emoji (😭) is the last mood in the list
+        {
+            var quote = MotivationalQuotes.GetRandomQuote();
+            Snackbar.Add(quote, Severity.Info, c => c.Icon = Icons.Material.Rounded.FavoriteBorder);
+        }
     }
 
     /// <summary>
