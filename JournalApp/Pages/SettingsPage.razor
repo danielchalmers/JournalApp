@@ -165,10 +165,18 @@ else
     {
         try
         {
-            _busy = true;
-            StateHasChanged();
-
             var path = App.ActivatedFilePath;
+
+            // Show loading in the background without blocking UI
+            var loadingTask = Task.Run(async () =>
+            {
+                await Task.Delay(100); // Give UI time to render
+                await InvokeAsync(() =>
+                {
+                    _busy = true;
+                    StateHasChanged();
+                });
+            });
 
             await AppDataUIService.StartImportWizard(DialogService, App.ActivatedFilePath);
         }
@@ -176,6 +184,7 @@ else
         {
             App.ActivatedFilePath = null;
             _busy = false;
+            StateHasChanged();
         }
     }
 
@@ -183,14 +192,23 @@ else
     {
         try
         {
-            _busy = true;
-            StateHasChanged();
+            // Show loading in the background without blocking UI
+            var loadingTask = Task.Run(async () =>
+            {
+                await Task.Delay(100); // Give UI time to render
+                await InvokeAsync(() =>
+                {
+                    _busy = true;
+                    StateHasChanged();
+                });
+            });
 
             await AppDataUIService.StartExportWizard(DialogService);
         }
         finally
         {
             _busy = false;
+            StateHasChanged();
         }
     }
 
