@@ -20,7 +20,6 @@
         <MudMenu Icon="@Icons.Material.Rounded.MoreVert" aria-label="More options" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
             <MudMenuItem Icon="@Icons.Material.Rounded.DashboardCustomize" OnClick="ManageCategories" AutoClose="false">Elements</MudMenuItem>
             <MudMenuItem Icon="@Icons.Material.Rounded.Medication" OnClick="ManageMedications" AutoClose="false">Medications</MudMenuItem>
-            <MudMenuItem Icon="@Icons.Material.Rounded.Chat" OnClick="NewNote">New note</MudMenuItem>
             <MudMenuItem Icon="@Icons.Material.Rounded.ShowChart" OnClick="OpenTrends" AutoClose="false">Trends</MudMenuItem>
             <MudMenuItem Icon="@Icons.Material.Rounded.LibraryBooks" OnClick="OpenWorksheets" AutoClose="false">Worksheets</MudMenuItem>
 
@@ -105,19 +104,23 @@
                         </ul>
                     </MudCardContent>
 
-                    <MudCardActions>
-                        @if (group.Key == "Notes")
-                        {
-                            <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Rounded.Chat" OnClick="NewNote">
-                                New note
-                            </MudButton>
-                        }
-                    </MudCardActions>
+                    @if (group.Key != "Notes")
+                    {
+                        <MudCardActions>
+                        </MudCardActions>
+                    }
                 </MudCard>
             </div>
         }
     </div>
 </main>
+
+<MudFab Class="floating-fab" 
+        Color="Color.Primary" 
+        StartIcon="@Icons.Material.Rounded.Chat" 
+        Size="Size.Large"
+        OnClick="NewNote" 
+        aria-label="New note" />
 
 @code {
     AppDbContext db;
