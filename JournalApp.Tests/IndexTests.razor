@@ -114,4 +114,131 @@
 
         layout.FindAll(".data-point-group").Count.Should().Be(hideNotes ? 2 : 3);
     }
+
+    [Fact]
+    public async Task MedicationDoseHeaderLink_CanEditDose()
+    {
+        var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
+        using var db = await dbf.CreateDbContextAsync();
+
+        // Create a medication category with a unit
+        var category = new DataPointCategory
+        {
+            Guid = Guid.NewGuid(),
+            Name = "TestMed",
+            Type = PointType.Medication,
+            MedicationUnit = "mg",
+            MedicationDose = 10,
+            Enabled = true,
+            Group = "Medications"
+        };
+        db.Categories.Add(category);
+        await db.SaveChangesAsync();
+
+        var layout = Render(
+            @<MainLayout>
+                <Body>
+                    <Index />
+                </Body>
+            </MainLayout>);
+
+        // Find the medication header link (the dose part should be clickable)
+        var headerLinks = layout.FindAll(".data-point-header .mud-link");
+        headerLinks.Count.Should().BeGreaterThan(0, "there should be at least one medication dose link");
+
+        // Click the dose link to open the edit dialog
+        headerLinks[0].Click();
+        
+        // Dialog should be open
+        layout.FindAll(".mud-dialog").Count.Should().Be(1);
+        
+        var doseEditor = layout.FindComponent<EditDoseDialog>();
+        doseEditor.Find("input").Input("25");
+        layout.Find(".submit-button").Click();
+
+        // Dialog should be closed
+        layout.FindAll(".mud-dialog").Count.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task MedicationDoseHeaderLink_DialogCanBeCanceled()
+    {
+        var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
+        using var db = await dbf.CreateDbContextAsync();
+
+        var category = new DataPointCategory
+        {
+            Guid = Guid.NewGuid(),
+            Name = "TestMed2",
+            Type = PointType.Medication,
+            MedicationUnit = "mg",
+            MedicationDose = 10,
+            Enabled = true,
+            Group = "Medications"
+        };
+        db.Categories.Add(category);
+        await db.SaveChangesAsync();
+
+        var layout = Render(
+            @<MainLayout>
+                <Body>
+                    <Index />
+                </Body>
+            </MainLayout>);
+
+        var headerLinks = layout.FindAll(".data-point-header .mud-link");
+        
+        // Click to open dialog
+        headerLinks[0].Click();
+        layout.FindAll(".mud-dialog").Count.Should().Be(1);
+
+        // Change value but cancel
+        var doseEditor = layout.FindComponent<EditDoseDialog>();
+        doseEditor.Find("input").Input("99");
+        layout.Find(".cancel-button").Click();
+
+        // Dialog should be closed
+        layout.FindAll(".mud-dialog").Count.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task MedicationDoseHeaderLink_NotVisibleWithoutUnit()
+    {
+        var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
+        using var db = await dbf.CreateDbContextAsync();
+
+        // Create medication without a unit
+        var category = new DataPointCategory
+        {
+            Guid = Guid.NewGuid(),
+            Name = "TestMedNoUnit",
+            Type = PointType.Medication,
+            MedicationUnit = null, // No unit
+            MedicationDose = 10,
+            Enabled = true,
+            Group = "Medications"
+        };
+        db.Categories.Add(category);
+        await db.SaveChangesAsync();
+
+        var layout = Render(
+            @<MainLayout>
+                <Body>
+                    <Index />
+                </Body>
+            </MainLayout>);
+
+        // Find all data point containers
+        var containers = layout.FindAll(".data-point-container");
+        
+        // Find the one for our medication
+        var medContainer = containers.FirstOrDefault(c => 
+            c.GetAttribute("data-category-guid") == category.Guid.ToString());
+        
+        medContainer.Should().NotBeNull("medication container should exist");
+        
+        // The header should NOT have a link since there's no unit
+        var headerLinks = medContainer.QuerySelectorAll(".data-point-header .mud-link");
+        headerLinks.Count().Should().Be(0, "medication without unit should not have a clickable dose link");
+    }
 }
