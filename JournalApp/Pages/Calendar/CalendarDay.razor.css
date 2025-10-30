@@ -20,3 +20,27 @@
   bottom: 0;
   right: 0;
 }
+
+.streak-indicator {
+  position: absolute;
+  z-index: 1;
+}
+
+.streak-start {
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  background-color: #3A2F36;
+  border-radius: 50%;
+}
+
+.streak-line {
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  width: 50%;
+  height: 2px;
+  background-color: #3A2F36;
+}

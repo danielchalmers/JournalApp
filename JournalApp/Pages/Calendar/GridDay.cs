@@ -1,3 +1,3 @@
 ﻿namespace JournalApp;
 
-public readonly record struct GridDay(int Index, DateOnly? Date, string Emoji);
+public readonly record struct GridDay(int Index, DateOnly? Date, string Emoji, StreakInfo? StreakInfo = null);

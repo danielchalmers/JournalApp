@@ -5,6 +5,15 @@
     <div class="@GetContentClass()" @onclick="this.AsNonRenderingEventHandler(async () => await DayClicked.InvokeAsync(Day.Date))">
         @if (Day.Date != null)
         {
+            @if (Day.StreakInfo?.IsStreakStart == true)
+            {
+                <span class="streak-indicator streak-start"></span>
+            }
+            @if (Day.StreakInfo?.HasNext == true)
+            {
+                <span class="streak-indicator streak-line"></span>
+            }
+
             <span class="calendar-day-number">
                 @Day.Date.Value.Day
             </span>

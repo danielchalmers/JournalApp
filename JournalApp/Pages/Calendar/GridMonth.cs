@@ -6,13 +6,13 @@ public readonly record struct GridMonth
 {
     private readonly CultureInfo _culture;
 
-    public GridMonth(int year, int month, CultureInfo culture, Dictionary<DateOnly, DataPoint> moodPoints)
+    public GridMonth(int year, int month, CultureInfo culture, Dictionary<DateOnly, DataPoint> moodPoints, Dictionary<DateOnly, StreakInfo> streakInfo)
     {
         Year = year;
         Month = month;
         _culture = culture;
         Name = culture.DateTimeFormat.GetMonthName(Month);
-        GridDays = GetGridDays(moodPoints).ToList();
+        GridDays = GetGridDays(moodPoints, streakInfo).ToList();
         DaysOfWeek = GetDaysOfWeek().ToList();
     }
 
@@ -22,7 +22,7 @@ public readonly record struct GridMonth
     public IReadOnlyList<GridDay> GridDays { get; }
     public IReadOnlyList<DayOfWeek> DaysOfWeek { get; }
 
-    private IEnumerable<GridDay> GetGridDays(Dictionary<DateOnly, DataPoint> moodPoints)
+    private IEnumerable<GridDay> GetGridDays(Dictionary<DateOnly, DataPoint> moodPoints, Dictionary<DateOnly, StreakInfo> streakInfo)
     {
         var firstDate = new DateOnly(Year, Month, 1);
         var daysInMonth = DateTime.DaysInMonth(Year, Month);
@@ -36,19 +36,22 @@ public readonly record struct GridMonth
         {
             DateOnly? date = null;
             DataPoint point = null;
+            StreakInfo? streak = null;
 
             // If the index is a valid day number, assign the date and corresponding point.
             if (i >= 1 && i <= daysInMonth)
             {
                 date = new(firstDate.Year, firstDate.Month, i);
                 point = moodPoints.GetValueOrDefault(date.Value);
+                if (date.HasValue && streakInfo.TryGetValue(date.Value, out var s))
+                    streak = s;
             }
 
             // Don't start a new row if we've already gone past the last valid day.
             if (i == offset + 35 && date == null)
                 yield break;
 
-            yield return new GridDay(i, date, point?.Mood);
+            yield return new GridDay(i, date, point?.Mood, streak);
         }
     }
 
