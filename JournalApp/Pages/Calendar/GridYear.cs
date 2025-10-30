@@ -10,13 +10,14 @@ public readonly record struct GridYear
     {
         Year = year;
         _culture = culture;
-        GridMonths = GetGridMonths(moodPoints).ToList();
+        var streakInfo = StreakService.CalculateStreaks(moodPoints);
+        GridMonths = GetGridMonths(moodPoints, streakInfo).ToList();
     }
 
-    private IEnumerable<GridMonth> GetGridMonths(Dictionary<DateOnly, DataPoint> moodPoints)
+    private IEnumerable<GridMonth> GetGridMonths(Dictionary<DateOnly, DataPoint> moodPoints, Dictionary<DateOnly, StreakInfo> streakInfo)
     {
         for (var i = 1; i <= 12; i++)
-            yield return new GridMonth(Year, i, _culture, moodPoints.Where(x => x.Key.Month == i).ToDictionary());
+            yield return new GridMonth(Year, i, _culture, moodPoints.Where(x => x.Key.Month == i).ToDictionary(), streakInfo);
     }
 
     public int Year { get; }

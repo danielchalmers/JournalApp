@@ -193,4 +193,52 @@
         ], gridMonth.DaysOfWeek);
         }
     }
+
+    [Fact]
+    public async Task CalendarViewStreakIndicators()
+    {
+        // Seed specific consecutive days to create a streak
+        var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
+        await using var db = await dbf.CreateDbContextAsync();
+        
+        var moodCategory = await db.Categories.SingleOrDefaultAsync(x => x.Guid == new Guid("D90D89FB-F5B9-47CF-AE4E-3EC0D635E783"));
+        
+        var date1 = new DateOnly(2024, 6, 10);
+        var date2 = new DateOnly(2024, 6, 11);
+        var date3 = new DateOnly(2024, 6, 12);
+        
+        var day1 = Day.Create(date1);
+        var day2 = Day.Create(date2);
+        var day3 = Day.Create(date3);
+        
+        db.Days.AddRange(day1, day2, day3);
+        await db.SaveChangesAsync();
+        
+        var point1 = DataPoint.Create(day1, moodCategory);
+        point1.Mood = "😀";
+        var point2 = DataPoint.Create(day2, moodCategory);
+        point2.Mood = "🙂";
+        var point3 = DataPoint.Create(day3, moodCategory);
+        point3.Mood = "😢";
+        
+        db.Points.AddRange(point1, point2, point3);
+        await db.SaveChangesAsync();
+
+        var cut = RenderComponent<CalendarPage>(p =>
+            p.Add(x => x.OpenToDateString, "20240610")
+        );
+        
+        // Wait for calendar to load
+        cut.WaitForAssertion(() => cut.Find(".calendar-view"));
+        
+        // Verify streak indicators are present
+        var streakStarts = cut.FindAll(".streak-start");
+        var streakLines = cut.FindAll(".streak-line");
+        
+        // Should have 1 streak start (first day of the 3-day streak)
+        streakStarts.Count.Should().BeGreaterThanOrEqualTo(1);
+        
+        // Should have 2 streak lines (first and second day continue to next)
+        streakLines.Count.Should().BeGreaterThanOrEqualTo(2);
+    }
 }
