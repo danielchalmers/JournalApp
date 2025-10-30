@@ -21,6 +21,12 @@
 
     public void Show(string emoji)
     {
+        // Skip animation if disabled in settings
+        if (PreferenceService.DisableExtraAnimations)
+        {
+            return;
+        }
+
         _emoji = emoji;
         _color = PreferenceService.GetMoodColor(emoji);
         _isVisible = true;

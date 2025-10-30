@@ -23,26 +23,6 @@
   align-items: center;
   justify-items: center;
   column-gap: 8px;
-  animation: slideInLeft 0.3s ease-out backwards;
-}
-
-/* Stagger animations for data points */
-.data-point-container:nth-child(1) { animation-delay: 0s; }
-.data-point-container:nth-child(2) { animation-delay: 0.05s; }
-.data-point-container:nth-child(3) { animation-delay: 0.1s; }
-.data-point-container:nth-child(4) { animation-delay: 0.15s; }
-.data-point-container:nth-child(5) { animation-delay: 0.2s; }
-.data-point-container:nth-child(6) { animation-delay: 0.25s; }
-
-@keyframes slideInLeft {
-  0% {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(0);
-  }
 }
 
 .data-point-header {
@@ -54,13 +34,9 @@
   flex-grow: 1;
 }
 
-/* MD3 Expressive: Press animation only for buttons */
+/* MD3 Expressive: Color transitions only - press animations removed per request */
 .data-point-view button {
-  transition: transform 0.1s cubic-bezier(0.2, 0, 0, 1), background-color 0.2s cubic-bezier(0.2, 0, 0, 1);
-}
-
-.data-point-view button:active {
-  transform: scale(0.95);
+  transition: background-color 0.2s cubic-bezier(0.2, 0, 0, 1);
 }
 
 /* MD3 Expressive: Slider color transitions */
@@ -68,56 +44,34 @@
   transition: opacity 0.2s ease-out, background-color 0.2s cubic-bezier(0.2, 0, 0, 1);
 }
 
-/* Day switcher animations - press only */
+/* Day switcher - color transitions only */
 .day-switcher-back,
 .day-switcher-forward {
-  transition: transform 0.1s cubic-bezier(0.2, 0, 0, 1), background-color 0.2s cubic-bezier(0.2, 0, 0, 1);
+  transition: background-color 0.2s cubic-bezier(0.2, 0, 0, 1);
 }
 
-.day-switcher-back:active:not(:disabled) {
-  transform: translateX(-2px) scale(0.95);
-}
-
-.day-switcher-forward:active:not(:disabled) {
-  transform: translateX(2px) scale(0.95);
-}
-
-/* MD3 Expressive: Rating stars press animation */
+/* MD3 Expressive: Rating stars - color transitions only */
 .mud-rating {
   transition: transform 0.1s cubic-bezier(0.2, 0, 0, 1);
 }
 
 .mud-rating-item {
-  transition: transform 0.1s cubic-bezier(0.2, 0, 0, 1), color 0.2s cubic-bezier(0.2, 0, 0, 1);
+  transition: color 0.2s cubic-bezier(0.2, 0, 0, 1);
 }
 
-.mud-rating-item:active {
-  transform: scale(0.9);
-}
-
-/* MD3 Expressive: Sleep controls press animation */
+/* MD3 Expressive: Sleep controls - color transitions only */
 .less-sleep,
 .more-sleep {
-  transition: transform 0.1s cubic-bezier(0.2, 0, 0, 1), background-color 0.2s cubic-bezier(0.2, 0, 0, 1);
+  transition: background-color 0.2s cubic-bezier(0.2, 0, 0, 1);
 }
 
-.less-sleep:active:not(:disabled),
-.more-sleep:active:not(:disabled) {
-  transform: scale(0.9);
-}
-
-/* MD3 Expressive: Toggle button press animation with color transitions */
+/* MD3 Expressive: Toggle button - color transitions only */
 .mud-toggle-item {
-  transition: transform 0.1s cubic-bezier(0.2, 0, 0, 1), background-color 0.2s cubic-bezier(0.2, 0, 0, 1);
-}
-
-.mud-toggle-item:active {
-  transform: scale(0.95);
+  transition: background-color 0.2s cubic-bezier(0.2, 0, 0, 1);
 }
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
-  .data-point-container,
   .data-point-view button,
   .day-switcher-back,
   .day-switcher-forward,
@@ -125,7 +79,6 @@
   .less-sleep,
   .more-sleep,
   .mud-toggle-item {
-    animation: none !important;
     transition: none !important;
   }
 }

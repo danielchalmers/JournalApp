@@ -64,6 +64,12 @@ public sealed class PreferenceService : IPreferences, IDisposable
         set => _preferenceStore.Set("hide_notes", value);
     }
 
+    public bool DisableExtraAnimations
+    {
+        get => _preferenceStore.Get("disable_extra_animations", false);
+        set => _preferenceStore.Set("disable_extra_animations", value);
+    }
+
     public MudColor PrimaryColor
     {
         get
