@@ -1,5 +1,9 @@
 ﻿using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Core.Platform;
+using JournalApp.Data;
+using MaterialColorUtilities.Maui;
+using MaterialColorUtilities.Palettes;
+using MaterialColorUtilities.Schemes;
 using MudBlazor.Utilities;
 
 namespace JournalApp;
@@ -9,13 +13,15 @@ public sealed class PreferenceService : IPreferences, IDisposable
     private readonly ILogger<PreferenceService> logger;
     private readonly IPreferences _preferenceStore;
     private readonly Application _application;
+    private readonly MaterialColorService _materialColorService;
     private Dictionary<string, string> _moodColors;
     private AppTheme? _theme;
 
-    public PreferenceService(ILogger<PreferenceService> logger, IPreferences preferenceStore)
+    public PreferenceService(ILogger<PreferenceService> logger, IPreferences preferenceStore, MaterialColorService materialColorService)
     {
         this.logger = logger;
         _preferenceStore = preferenceStore;
+        _materialColorService = materialColorService;
 
         // Not available in unit tests.
         if (Application.Current != null)
@@ -135,15 +141,45 @@ public sealed class PreferenceService : IPreferences, IDisposable
         {
             logger.LogDebug("Updating status bar");
 #pragma warning disable CS0618 // Type or member is obsolete
-            if (IsDarkMode)
+            try
             {
-                StatusBar.SetColor(Color.FromHex("#EAB8D6"));
-                StatusBar.SetStyle(StatusBarStyle.DarkContent);
+                // Get colors from MaterialColorService for dynamic theming
+                uint seed = _materialColorService?.Seed ?? 0xFE73D8;
+                var corePalette = CorePalette.Of(seed);
+                
+                Color statusBarColor;
+                StatusBarStyle statusBarStyle;
+                
+                if (IsDarkMode)
+                {
+                    var darkScheme = new DarkSchemeMapper().Map(corePalette);
+                    statusBarColor = Microsoft.Maui.Graphics.Color.FromUint(darkScheme.Primary);
+                    statusBarStyle = StatusBarStyle.DarkContent;
+                }
+                else
+                {
+                    var lightScheme = new LightSchemeMapper().Map(corePalette);
+                    statusBarColor = Microsoft.Maui.Graphics.Color.FromUint(lightScheme.Primary);
+                    statusBarStyle = StatusBarStyle.LightContent;
+                }
+                
+                StatusBar.SetColor(statusBarColor);
+                StatusBar.SetStyle(statusBarStyle);
             }
-            else
+            catch (Exception ex)
             {
-                StatusBar.SetColor(Color.FromHex("#854C73"));
-                StatusBar.SetStyle(StatusBarStyle.LightContent);
+                // Fallback to original hardcoded colors if something goes wrong
+                logger.LogWarning(ex, "Error setting dynamic status bar color, using fallback");
+                if (IsDarkMode)
+                {
+                    StatusBar.SetColor(Color.FromHex("#EAB8D6"));
+                    StatusBar.SetStyle(StatusBarStyle.DarkContent);
+                }
+                else
+                {
+                    StatusBar.SetColor(Color.FromHex("#854C73"));
+                    StatusBar.SetStyle(StatusBarStyle.LightContent);
+                }
             }
 #pragma warning restore CS0618 // Type or member is obsolete
         }
