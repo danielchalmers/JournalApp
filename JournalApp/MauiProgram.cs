@@ -55,6 +55,7 @@ public static class MauiProgram
         builder.Services.AddSingleton(FilePicker.Default);
         builder.Services.AddSingleton(Browser.Default);
         builder.Services.AddSingleton(Clipboard.Default);
+        builder.Services.AddSingleton(CommunityToolkit.Maui.Storage.FileSaver.Default);
 
         // Seed the database with required data.
         using var provider = builder.Services.BuildServiceProvider();
