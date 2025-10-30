@@ -78,7 +78,7 @@
         await JSRuntime.InvokeVoidAsync("scrollToTopOfNestedElement", ".page-body", $"#calendar-month-{month}", smooth ? "smooth" : "instant");
     }
 
-    Task ScrollToOpenToDate() => ScrollToMonth(OpenToDate.Month);
+    Task ScrollToOpenToDate() => ScrollToMonth(OpenToDate.Month, smooth: false);
 
     async Task OnYearClicked() => await JSRuntime.InvokeVoidAsync("scrollToAbsoluteTop", "instant");
 
