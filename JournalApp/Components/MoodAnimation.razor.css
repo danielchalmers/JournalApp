@@ -10,28 +10,30 @@
     justify-content: center;
     animation: fadeInOut 1.5s ease-in-out;
     cursor: pointer;
+    pointer-events: all;
 }
 
 .mood-animation-content {
     display: flex;
     align-items: center;
     justify-content: center;
-    animation: scaleAndBounce 1.5s ease-out;
+    animation: scaleAndBounce 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
 }
 
 .mood-animation-emoji {
     font-size: 20vw;
     animation: rotate 1.5s ease-in-out;
+    user-select: none;
 }
 
 @keyframes fadeInOut {
     0% {
         opacity: 0;
     }
-    20% {
+    15% {
         opacity: 1;
     }
-    80% {
+    85% {
         opacity: 1;
     }
     100% {
@@ -44,10 +46,10 @@
         transform: scale(0) rotate(0deg);
     }
     50% {
-        transform: scale(1.2) rotate(180deg);
+        transform: scale(1.3) rotate(180deg);
     }
     65% {
-        transform: scale(0.9) rotate(180deg);
+        transform: scale(0.85) rotate(180deg);
     }
     80% {
         transform: scale(1.05) rotate(180deg);
