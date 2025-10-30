@@ -8,7 +8,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    animation: fadeInOut 1.4s ease-in-out forwards;
+    animation: fadeInOut 1s ease-in-out forwards;
     cursor: pointer;
     pointer-events: all;
 }
@@ -17,12 +17,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    animation: scaleAndBounce 1.4s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
+    animation: scaleUp 1s cubic-bezier(0.05, 0.7, 0.1, 1) forwards;
 }
 
 .mood-animation-emoji {
     font-size: 20vw;
-    animation: rotate 1.4s ease-in-out forwards;
     user-select: none;
 }
 
@@ -50,179 +49,15 @@
     }
 }
 
-@keyframes scaleAndBounce {
+/* Material Design 3 Expressive: Simplified scale animation */
+@keyframes scaleUp {
     0% {
-        transform: scale(0) rotate(0deg);
-    }
-    50% {
-        transform: scale(1.3) rotate(180deg);
-    }
-    65% {
-        transform: scale(0.85) rotate(180deg);
-    }
-    80% {
-        transform: scale(1.05) rotate(180deg);
-    }
-    100% {
-        transform: scale(1) rotate(180deg);
-    }
-}
-
-@keyframes rotate {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-/* Emoji-specific animations */
-.crying-animation .mood-animation-emoji {
-    animation: shakeCry 1.4s ease-in-out forwards;
-}
-
-.sad-animation .mood-animation-emoji {
-    animation: gentleShake 1.4s ease-in-out forwards;
-}
-
-.confused-animation .mood-animation-emoji {
-    animation: tilt 1.4s ease-in-out forwards;
-}
-
-.neutral-animation .mood-animation-emoji {
-    animation: simpleScale 1.4s ease-in-out forwards;
-}
-
-.slight-smile-animation .mood-animation-emoji {
-    animation: gentleBounce 1.4s ease-in-out forwards;
-}
-
-.happy-animation .mood-animation-emoji {
-    animation: happyBounce 1.4s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
-}
-
-.excited-animation .mood-animation-emoji {
-    animation: excitedSpin 1.4s cubic-bezier(0.68, -0.55, 0.27, 1.55) forwards;
-}
-
-@keyframes shakeCry {
-    0%, 100% {
-        transform: translateX(0) scale(0);
-    }
-    10% {
-        transform: translateX(0) scale(1);
-    }
-    20%, 30%, 40%, 50%, 60%, 70%, 80% {
-        transform: translateX(-10px) scale(1);
-    }
-    25%, 35%, 45%, 55%, 65%, 75%, 85% {
-        transform: translateX(10px) scale(1);
-    }
-    90% {
-        transform: translateX(0) scale(1);
-    }
-}
-
-@keyframes gentleShake {
-    0%, 100% {
-        transform: translateX(0) scale(0);
-    }
-    10% {
-        transform: translateX(0) scale(1);
-    }
-    20%, 40%, 60%, 80% {
-        transform: translateX(-5px) scale(1);
-    }
-    30%, 50%, 70%, 90% {
-        transform: translateX(5px) scale(1);
-    }
-}
-
-@keyframes tilt {
-    0% {
-        transform: rotate(0deg) scale(0);
-    }
-    20% {
-        transform: rotate(-15deg) scale(1);
-    }
-    40% {
-        transform: rotate(15deg) scale(1);
-    }
-    60% {
-        transform: rotate(-10deg) scale(1);
-    }
-    80% {
-        transform: rotate(10deg) scale(1);
-    }
-    100% {
-        transform: rotate(0deg) scale(1);
-    }
-}
-
-@keyframes simpleScale {
-    0% {
-        transform: scale(0);
-    }
-    50% {
-        transform: scale(1.1);
+        transform: scale(0.8);
+        opacity: 0;
     }
     100% {
         transform: scale(1);
-    }
-}
-
-@keyframes gentleBounce {
-    0% {
-        transform: scale(0) translateY(0);
-    }
-    40% {
-        transform: scale(1.2) translateY(-20px);
-    }
-    60% {
-        transform: scale(0.9) translateY(0);
-    }
-    80% {
-        transform: scale(1.05) translateY(-10px);
-    }
-    100% {
-        transform: scale(1) translateY(0);
-    }
-}
-
-@keyframes happyBounce {
-    0% {
-        transform: scale(0) rotate(0deg) translateY(0);
-    }
-    40% {
-        transform: scale(1.3) rotate(180deg) translateY(-30px);
-    }
-    60% {
-        transform: scale(0.85) rotate(180deg) translateY(0);
-    }
-    80% {
-        transform: scale(1.1) rotate(180deg) translateY(-15px);
-    }
-    100% {
-        transform: scale(1) rotate(180deg) translateY(0);
-    }
-}
-
-@keyframes excitedSpin {
-    0% {
-        transform: scale(0) rotate(0deg);
-    }
-    50% {
-        transform: scale(1.4) rotate(360deg);
-    }
-    65% {
-        transform: scale(0.8) rotate(360deg);
-    }
-    80% {
-        transform: scale(1.1) rotate(360deg);
-    }
-    100% {
-        transform: scale(1) rotate(360deg);
+        opacity: 1;
     }
 }
 
@@ -316,7 +151,7 @@
         radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.6) 1px, transparent 1px),
         radial-gradient(circle at 40% 70%, rgba(255, 255, 255, 0.7) 1px, transparent 1px),
         radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.5) 1px, transparent 1px);
-    animation: sparkle 1.4s ease-in-out;
+    animation: sparkle 1s ease-in-out;
 }
 
 @keyframes sparkle {
@@ -334,7 +169,7 @@
     font-size: 10vw;
     top: 10%;
     right: 15%;
-    animation: sunRise 1.4s ease-out;
+    animation: sunRise 1s ease-out;
     opacity: 0.8;
 }
 
@@ -361,7 +196,7 @@
     content: '⭐';
     position: absolute;
     font-size: 5vw;
-    animation: starTwinkle 1.4s ease-in-out infinite;
+    animation: starTwinkle 1s ease-in-out infinite;
 }
 
 .stars-effect::before {
@@ -391,7 +226,7 @@
         radial-gradient(circle at 30% 40%, rgba(255, 255, 100, 0.6) 2px, transparent 2px),
         radial-gradient(circle at 70% 30%, rgba(255, 255, 150, 0.5) 2px, transparent 2px),
         radial-gradient(circle at 50% 80%, rgba(255, 255, 200, 0.4) 2px, transparent 2px);
-    animation: twinkle 1.4s ease-in-out;
+    animation: twinkle 1s ease-in-out;
 }
 
 @keyframes twinkle {
@@ -406,7 +241,7 @@
 /* Reduced motion support for accessibility */
 @media (prefers-reduced-motion: reduce) {
     .mood-animation-overlay {
-        animation: fadeInOutReduced 1.4s ease-in-out forwards;
+        animation: fadeInOutReduced 1s ease-in-out forwards;
     }
 
     .mood-animation-content {

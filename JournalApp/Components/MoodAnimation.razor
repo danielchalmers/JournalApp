@@ -3,7 +3,7 @@
 
 @if (_isVisible)
 {
-    <div class="mood-animation-overlay @GetAnimationClass()" style="background-color: @_color;" @onclick="Hide">
+    <div class="mood-animation-overlay" style="background-color: @_color;" @onclick="Hide">
         <div class="mood-animation-content">
             <div class="mood-animation-emoji">@_emoji</div>
         </div>
@@ -26,8 +26,8 @@
         _isVisible = true;
         StateHasChanged();
 
-        // Auto-hide after animation completes (slightly before animation ends to avoid lag)
-        Task.Delay(1400).ContinueWith(_ =>
+        // Auto-hide after animation completes (faster animation)
+        Task.Delay(1000).ContinueWith(_ =>
         {
             InvokeAsync(() =>
             {
@@ -40,21 +40,6 @@
     {
         _isVisible = false;
         StateHasChanged();
-    }
-
-    private string GetAnimationClass()
-    {
-        return _emoji switch
-        {
-            "😭" => "crying-animation",
-            "😢" => "sad-animation",
-            "😕" => "confused-animation",
-            "😐" => "neutral-animation",
-            "🙂" => "slight-smile-animation",
-            "😀" => "happy-animation",
-            "🤩" => "excited-animation",
-            _ => ""
-        };
     }
 
     private string GetEffectClass()

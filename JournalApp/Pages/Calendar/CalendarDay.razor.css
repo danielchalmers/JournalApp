@@ -1,12 +1,7 @@
 .calendar-day-cell {
-  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+  /* MD3 Expressive: Press animation only with color transitions */
+  transition: transform 0.1s cubic-bezier(0.2, 0, 0, 1), background-color 0.2s cubic-bezier(0.2, 0, 0, 1);
   animation: calendarDayAppear 0.3s ease-out backwards;
-}
-
-.calendar-day-cell:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 1;
 }
 
 .calendar-day-cell:active {
@@ -61,35 +56,25 @@
   top: 0;
   left: 0;
   font-weight: bold;
-  transition: transform 0.2s ease-out;
-}
-
-.calendar-day-cell:hover .calendar-day-number {
-  transform: scale(1.1);
 }
 
 .calendar-day-emoji {
   position: absolute;
   bottom: 0;
   right: 0;
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.calendar-day-cell:hover .calendar-day-emoji {
-  transform: scale(1.2) rotate(10deg);
 }
 
 .calendar-day-with-mood .calendar-day-emoji {
-  animation: emojiPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+  animation: emojiPop 0.5s cubic-bezier(0.05, 0.7, 0.1, 1) backwards;
 }
 
 @keyframes emojiPop {
   0% {
-    transform: scale(0) rotate(-180deg);
+    transform: scale(0);
     opacity: 0;
   }
   100% {
-    transform: scale(1) rotate(0deg);
+    transform: scale(1);
     opacity: 1;
   }
 }
