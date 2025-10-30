@@ -1,3 +1,51 @@
+.calendar-day-cell {
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+  animation: calendarDayAppear 0.3s ease-out backwards;
+}
+
+.calendar-day-cell:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1;
+}
+
+.calendar-day-cell:active {
+  transform: scale(0.95);
+}
+
+.calendar-day-current {
+  animation: currentDayPulse 2s ease-in-out infinite;
+}
+
+@keyframes currentDayPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
+  }
+}
+
+@keyframes calendarDayAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Stagger animation for calendar days */
+.calendar-day-cell:nth-child(1) { animation-delay: 0s; }
+.calendar-day-cell:nth-child(2) { animation-delay: 0.02s; }
+.calendar-day-cell:nth-child(3) { animation-delay: 0.04s; }
+.calendar-day-cell:nth-child(4) { animation-delay: 0.06s; }
+.calendar-day-cell:nth-child(5) { animation-delay: 0.08s; }
+.calendar-day-cell:nth-child(6) { animation-delay: 0.1s; }
+.calendar-day-cell:nth-child(7) { animation-delay: 0.12s; }
+
 .calendar-day-content {
   position: relative;
   width: 100%;
@@ -13,10 +61,46 @@
   top: 0;
   left: 0;
   font-weight: bold;
+  transition: transform 0.2s ease-out;
+}
+
+.calendar-day-cell:hover .calendar-day-number {
+  transform: scale(1.1);
 }
 
 .calendar-day-emoji {
   position: absolute;
   bottom: 0;
   right: 0;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.calendar-day-cell:hover .calendar-day-emoji {
+  transform: scale(1.2) rotate(10deg);
+}
+
+.calendar-day-with-mood .calendar-day-emoji {
+  animation: emojiPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+
+@keyframes emojiPop {
+  0% {
+    transform: scale(0) rotate(-180deg);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .calendar-day-cell,
+  .calendar-day-current,
+  .calendar-day-number,
+  .calendar-day-emoji {
+    animation: none !important;
+    transition: none !important;
+  }
 }

@@ -19,7 +19,8 @@ body {
   color: #3A2F36;
   position: fixed;
   width: 100%;
-  height: 100%
+  height: 100%;
+  animation: fadeIn 0.3s ease-in-out;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -33,6 +34,18 @@ body {
 #loading-text {
   font-family: sans-serif;
   font-size: 6vw;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
 }
 
 .switcher {
@@ -40,6 +53,7 @@ body {
   justify-content: center;
   align-items: center;
   box-shadow: var(--mud-elevation-1);
+  transition: transform 0.2s ease-out;
 }
 
 .switcher-header {
@@ -73,6 +87,18 @@ body {
   position: sticky !important;
   background-color: var(--mud-palette-surface);
   color: var(--mud-palette-primary-text);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .page-body {
@@ -81,6 +107,18 @@ body {
   margin: 0 auto !important;
   padding: 8px !important;
   padding-bottom: 15vh !important;
+  animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .mud-dialog-width-full {
@@ -109,10 +147,25 @@ body {
 .mud-toggle-group {
   flex-grow: 1;
   border-radius: 20px;
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+}
+
+.mud-toggle-group:active {
+  transform: scale(0.98);
 }
 
 .mud-button {
   border-radius: 20px;
+  transition: transform 0.15s ease-out, box-shadow 0.2s ease-out;
+}
+
+.mud-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.mud-button:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
 }
 
 .mud-button-group-root {
@@ -127,13 +180,50 @@ body {
   padding: 12px !important;
   gap: 12px !important;
   border-radius: 28px;
+  animation: scaleIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes scaleIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .mud-card {
   padding: 12px !important;
   gap: 12px !important;
   border-radius: 12px;
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+  animation: cardAppear 0.4s ease-out backwards;
 }
+
+.mud-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+@keyframes cardAppear {
+  0% {
+    opacity: 0;
+    transform: translateY(15px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Stagger animation for multiple cards */
+.data-point-group:nth-child(1) .mud-card { animation-delay: 0s; }
+.data-point-group:nth-child(2) .mud-card { animation-delay: 0.05s; }
+.data-point-group:nth-child(3) .mud-card { animation-delay: 0.1s; }
+.data-point-group:nth-child(4) .mud-card { animation-delay: 0.15s; }
+.data-point-group:nth-child(5) .mud-card { animation-delay: 0.2s; }
 
 .mud-dialog-title, .mud-card-header {
   padding: 0 !important;
@@ -156,11 +246,35 @@ body {
 .mud-snackbar {
   background-color: var(--mud-palette-primary);
   color: var(--mud-palette-primary-text);
+  animation: slideInUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideInUp {
+  0% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .emoji-menu-list .mud-menu-list {
   min-width: unset;
   /*z-index: 998 !important;*/
+  animation: menuAppear 0.2s ease-out;
+}
+
+@keyframes menuAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .list-group-title {
@@ -171,6 +285,38 @@ body {
   letter-spacing: var(--mud-typography-subtitle2-letterspacing);
   text-transform: var(--mud-typography-subtitle2-text-transform);
   margin-bottom: 8px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Icon button animations */
+.mud-icon-button {
+  transition: transform 0.15s ease-out, opacity 0.15s ease-out;
+}
+
+.mud-icon-button:hover:not(:disabled) {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.mud-icon-button:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+/* Menu item animations */
+.mud-menu-item {
+  transition: transform 0.15s ease-out, background-color 0.2s ease-out;
+}
+
+.mud-menu-item:hover {
+  transform: translateX(4px);
 }
 
 #blazor-error-ui {
@@ -212,5 +358,16 @@ body {
 @media (prefers-color-scheme: light) {
   .status-bar-safe-area {
     background-color: #FFF8F9;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
