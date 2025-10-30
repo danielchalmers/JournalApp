@@ -17,7 +17,7 @@ public abstract class JaTestContext : TestContext, IAsyncLifetime
         
         // Register MaterialColorService dependencies for ThemeService
         Services.AddSingleton<IOptions<MaterialColorOptions>>(sp =>
-            Options.Create(new MaterialColorOptions { FallbackSeed = 0xFE73D8 }));
+            Options.Create(new MaterialColorOptions { FallbackSeed = ThemeConstants.DefaultSeedColor }));
         Services.AddSingleton<IDynamicColorService, DynamicColorService>();
         Services.AddSingleton<MaterialColorService>();
         

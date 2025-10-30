@@ -32,7 +32,7 @@ public sealed class ThemeService
     {
         // Generate both light and dark color schemes manually from a seed
         // This approach ensures we have both palettes regardless of current system theme
-        uint seed = 0xFE73D8; // Default fallback seed (pink)
+        uint seed = ThemeConstants.DefaultSeedColor;
         
         try
         {

@@ -144,7 +144,7 @@ public sealed class PreferenceService : IPreferences, IDisposable
             try
             {
                 // Get colors from MaterialColorService for dynamic theming
-                uint seed = _materialColorService?.Seed ?? 0xFE73D8;
+                uint seed = _materialColorService?.Seed ?? ThemeConstants.DefaultSeedColor;
                 var corePalette = CorePalette.Of(seed);
                 
                 Color statusBarColor;
@@ -154,14 +154,17 @@ public sealed class PreferenceService : IPreferences, IDisposable
                 {
                     var darkScheme = new DarkSchemeMapper().Map(corePalette);
                     statusBarColor = Microsoft.Maui.Graphics.Color.FromUint(darkScheme.Primary);
-                    statusBarStyle = StatusBarStyle.DarkContent;
                 }
                 else
                 {
                     var lightScheme = new LightSchemeMapper().Map(corePalette);
                     statusBarColor = Microsoft.Maui.Graphics.Color.FromUint(lightScheme.Primary);
-                    statusBarStyle = StatusBarStyle.LightContent;
                 }
+                
+                // Determine status bar style based on color luminance
+                // Use dark content (dark icons) for light backgrounds, light content for dark backgrounds
+                var luminance = 0.2126 * statusBarColor.Red + 0.7152 * statusBarColor.Green + 0.0722 * statusBarColor.Blue;
+                statusBarStyle = luminance > 0.5 ? StatusBarStyle.DarkContent : StatusBarStyle.LightContent;
                 
                 StatusBar.SetColor(statusBarColor);
                 StatusBar.SetStyle(statusBarStyle);
