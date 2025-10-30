@@ -74,9 +74,13 @@
     {
         logger.LogDebug("Loading pinned notes");
         pinnedNotes = await db.Points
+            .Include(p => p.Day)
+            .Include(p => p.Category)
             .Where(p => p.IsPinned && !p.Deleted && p.Type == PointType.Note)
-            .OrderByDescending(p => p.CreatedAt)
             .ToListAsync();
+        
+        // Sort in memory to avoid SQLite DateTimeOffset ordering issue
+        pinnedNotes = pinnedNotes.OrderByDescending(p => p.CreatedAt).ToList();
         
         logger.LogInformation("Loaded {Count} pinned notes", pinnedNotes.Count);
         StateHasChanged();

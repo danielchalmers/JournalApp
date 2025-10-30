@@ -1,0 +1,106 @@
+@namespace JournalApp.Tests
+@inherits JaTestContext
+
+@code {
+    public override async Task InitializeAsync()
+    {
+        await base.InitializeAsync();
+
+        AddDbContext();
+        Services.GetService<AppDbSeeder>().SeedCategories();
+    }
+
+    [Fact]
+    public void CanTogglePin()
+    {
+        var dbContext = Services.GetService<IDbContextFactory<AppDbContext>>().CreateDbContext();
+        var category = new DataPointCategory
+        {
+            Guid = Guid.NewGuid(),
+            Type = PointType.Note,
+            Group = "Notes",
+        };
+
+        var day = Day.Create(new(2024, 01, 01));
+        var point = DataPoint.Create(day, category);
+        point.Text = "Test note";
+        point.IsPinned = false;
+
+        var layout = Render(
+            @<MainLayout>
+                <Body>
+                    <DataPointView Point="point" />
+                </Body>
+            </MainLayout>);
+
+        var cut = layout.FindComponent<DataPointView>();
+        
+        // Pin should be false initially
+        point.IsPinned.Should().BeFalse();
+
+        // Find and click the pin button (second icon button)
+        cut.InvokeAsync(() =>
+        {
+            var iconButtons = cut.FindAll(".mud-icon-button");
+            // Should have 2 buttons: edit and pin
+            iconButtons.Should().HaveCount(2);
+            iconButtons[1].Click();
+        });
+
+        // Pin should now be true
+        point.IsPinned.Should().BeTrue();
+
+        // Click again to unpin
+        cut.InvokeAsync(() =>
+        {
+            var iconButtons = cut.FindAll(".mud-icon-button");
+            iconButtons[1].Click();
+        });
+        
+        point.IsPinned.Should().BeFalse();
+    }
+
+    [Fact]
+    public void PinnedNotesPageShowsPinnedNotes()
+    {
+        // Create a test note and pin it
+        var dbContext = Services.GetService<IDbContextFactory<AppDbContext>>().CreateDbContext();
+        var day = Day.Create(DateOnly.FromDateTime(DateTime.Now));
+        dbContext.Days.Add(day);
+        
+        var category = dbContext.Categories.Single(x => x.Guid == new Guid("BF394F35-2228-4933-BF38-AF5B1B97AEF7")); // Notes category
+        var note = DataPoint.Create(day, category);
+        note.Text = "My pinned note";
+        note.IsPinned = true;
+        
+        dbContext.Points.Add(note);
+        dbContext.SaveChanges();
+
+        // Render the PinnedNotesPage
+        var layout = Render(
+    @<MainLayout>
+        <Body>
+            <PinnedNotesPage />
+        </Body>
+    </MainLayout>
+        );
+
+        // Check that the pinned note is displayed
+        layout.Markup.Should().Contain("My pinned note");
+    }
+
+    [Fact]
+    public void PinnedNotesPageShowsEmptyStateWhenNoPinnedNotes()
+    {
+        var layout = Render(
+    @<MainLayout>
+        <Body>
+            <PinnedNotesPage />
+        </Body>
+    </MainLayout>
+        );
+
+        // Check that empty state message is displayed
+        layout.Markup.Should().Contain("No pinned notes yet");
+    }
+}
