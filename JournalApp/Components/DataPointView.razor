@@ -86,14 +86,10 @@ else if (Point.Type == PointType.Note)
 }
 else if (Point.Type == PointType.Medication)
 {
-    <div class="d-flex flex-grow-1 justify-space-between align-center" style="gap: 8px">
-        <MudToggleGroup T="bool?" @bind-Value="Point.Bool" @bind-Value:after="OnMedicationTakenChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small">
-            <MudToggleItem T="bool?" Value="false">No</MudToggleItem>
-            <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
-        </MudToggleGroup>
-
-        <MudLink OnClick="EditDose" Disabled="@(string.IsNullOrWhiteSpace(Point.Category.MedicationUnit))">Edit dose</MudLink>
-    </div>
+    <MudToggleGroup T="bool?" @bind-Value="Point.Bool" @bind-Value:after="OnMedicationTakenChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small">
+        <MudToggleItem T="bool?" Value="false">No</MudToggleItem>
+        <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
+    </MudToggleGroup>
 }
 
 @code {
@@ -158,7 +154,7 @@ else if (Point.Type == PointType.Medication)
         await StateChanged.InvokeAsync();
     }
 
-    async Task EditDose()
+    public async Task EditDose()
     {
         logger.LogDebug("Editing dose in dialog");
         await EditDoseDialog.ShowDialog(DialogService, Point);
