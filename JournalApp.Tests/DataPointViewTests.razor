@@ -32,6 +32,42 @@
     }
 
     [Fact]
+    public void Mood_SobEmoji_ShowsMotivationalQuote()
+    {
+        var category = new DataPointCategory
+        {
+            Guid = Guid.NewGuid(),
+            Type = PointType.Mood,
+        };
+
+        var day = Day.Create(new(2024, 01, 01));
+        var point = DataPoint.Create(day, category);
+
+        var layout = Render(
+            @<MainLayout>
+                <Body>
+                    <DataPointView Point="point" />
+                </Body>
+            </MainLayout>);
+
+        var cut = layout.FindComponent<DataPointView>();
+
+        // Open the mood menu
+        cut.Find(".mud-menu-activator").Click();
+
+        // Find and click the sob emoji (😭 is the last item in DataPoint.Moods)
+        var menuItems = layout.FindAll(".mud-list .mud-menu-item");
+        menuItems[7].Click();  // Index 7 is the sob emoji 😭
+
+        // Verify mood was set
+        point.Mood.Should().Be("😭");
+
+        // Verify a snackbar was displayed (MudBlazor creates a snackbar container)
+        layout.FindAll(".mud-snackbar").Count.Should().BeGreaterThan(0);
+    }
+
+
+    [Fact]
     public void Sleep()
     {
         var category = new DataPointCategory
