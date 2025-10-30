@@ -25,5 +25,7 @@ public static class CommonServices
         services.AddSingleton<KeyEventService>();
         services.AddSingleton<PreferenceService>();
         services.AddSingleton<CalendarService>();
+        services.AddSingleton<BackupCreator>();
+        services.AddSingleton<ExportWizard>();
     }
 }
