@@ -1,0 +1,122 @@
+@namespace JournalApp
+@page "/pinned-notes"
+@inherits JaPage
+@implements IDisposable
+@inject ILogger<PinnedNotesPage> logger
+@inject IDbContextFactory<AppDbContext> DbFactory
+
+<header class="page-header">
+    <div class="page-toolbar">
+        <MudIconButton Icon="@Icons.Material.Rounded.ArrowBack" OnClick="GoBack" aria-label="Go back" />
+
+        <MudText Typo="Typo.h6">Pinned notes</MudText>
+
+        <MudSpacer />
+    </div>
+</header>
+
+<main class="page-body">
+    <div class="main-timeline">
+        @if (!pinnedNotes.Any())
+        {
+            <MudCard>
+                <MudCardContent>
+                    <MudText Typo="Typo.body1" Align="Align.Center" Style="padding: 2rem;">
+                        No pinned notes yet. Pin notes from the main timeline to see them here.
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
+        }
+        else
+        {
+            <MudCard>
+                <MudCardContent>
+                    <ul class="data-point-list">
+                        @foreach (var point in pinnedNotes)
+                        {
+                            <li class="data-point-container pinned-note-item" @onclick="() => NavigateToNote(point)" style="cursor: pointer;">
+                                <div class="data-point-header">
+                                    <MudText HtmlTag="h6">
+                                        @GetNoteHeader(point)
+                                    </MudText>
+                                </div>
+
+                                @if (!string.IsNullOrWhiteSpace(point.Text))
+                                {
+                                    <MudFlexBreak />
+                                    <div class="data-point-view">
+                                        <MudText Typo="Typo.body2" Style="white-space: pre-wrap;">@point.Text</MudText>
+                                    </div>
+                                }
+                            </li>
+                        }
+                    </ul>
+                </MudCardContent>
+            </MudCard>
+        }
+    </div>
+</main>
+
+@code {
+    AppDbContext db;
+    List<DataPoint> pinnedNotes = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        logger.LogDebug("Initializing PinnedNotesPage");
+        db = await DbFactory.CreateDbContextAsync();
+        await base.OnInitializedAsync();
+
+        await LoadPinnedNotes();
+    }
+
+    async Task LoadPinnedNotes()
+    {
+        logger.LogDebug("Loading pinned notes");
+        pinnedNotes = await db.Points
+            .Where(p => p.IsPinned && !p.Deleted && p.Type == PointType.Note)
+            .OrderByDescending(p => p.CreatedAt)
+            .ToListAsync();
+        
+        logger.LogInformation("Loaded {Count} pinned notes", pinnedNotes.Count);
+        StateHasChanged();
+    }
+
+    void GoBack()
+    {
+        logger.LogDebug("Going back from PinnedNotesPage");
+        NavigationManager.NavigateTo("/", false, true);
+    }
+
+    void NavigateToNote(DataPoint point)
+    {
+        logger.LogInformation("Navigating to note on {Date}", point.Day.Date);
+        var dateString = point.Day.Date.ToString("yyyyMMdd");
+        NavigationManager.NavigateTo($"/{dateString}#note-{point.Guid}", false, true);
+    }
+
+    string GetNoteHeader(DataPoint point)
+    {
+        var localTime = point.CreatedAt.ToLocalTime();
+        var dayText = point.Day.Date.ToString("ddd, MMM d");
+        
+        if (point.IsTimestampedNote)
+        {
+            var timeText = localTime.ToString("h:mm tt");
+            return $"{dayText} at {timeText}";
+        }
+        else if (!string.IsNullOrEmpty(point.Category?.Name))
+        {
+            return $"{dayText} - {point.Category.Name}";
+        }
+        
+        return dayText;
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        logger.LogDebug("Disposing PinnedNotesPage");
+        base.Dispose(disposing);
+        db?.Dispose();
+    }
+}
