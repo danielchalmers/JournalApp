@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui;
 using JournalApp.Data;
+using MaterialColorUtilities.Maui;
 
 namespace JournalApp;
 
@@ -17,6 +18,11 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder()
             .UseMauiApp<App>()
             .UseMauiCommunityToolkit()
+            .UseMaterialColors(options =>
+            {
+                // Fallback seed color (pink) for devices below API 27 or when dynamic colors are unavailable
+                options.FallbackSeed = ThemeConstants.DefaultSeedColor;
+            })
             .ConfigureFonts(fonts => fonts.AddFont("Roboto-Regular.ttf", "RobotoRegular"));
 
         // Enable Blazor WebView.
