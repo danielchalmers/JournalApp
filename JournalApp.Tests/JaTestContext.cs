@@ -1,6 +1,9 @@
 ﻿using JournalApp.Data;
+using MaterialColorUtilities.Maui;
+using MaterialColorUtilities.Palettes;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace JournalApp.Tests;
 
@@ -11,6 +14,13 @@ public abstract class JaTestContext : TestContext, IAsyncLifetime
     public virtual Task InitializeAsync()
     {
         Services.AddLogging();
+        
+        // Register MaterialColorService dependencies for ThemeService
+        Services.AddSingleton<IOptions<MaterialColorOptions>>(sp =>
+            Options.Create(new MaterialColorOptions { FallbackSeed = 0xFE73D8 }));
+        Services.AddSingleton<IDynamicColorService, DynamicColorService>();
+        Services.AddSingleton<MaterialColorService>();
+        
         Services.AddCommonJournalAppServices();
         Services.AddSingleton<AppDataUIService>();
         Services.AddSingleton<IPreferences, InMemoryPreferences>();

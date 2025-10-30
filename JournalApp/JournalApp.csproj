@@ -49,6 +49,7 @@
   <ItemGroup>
     <PackageReference Include="Blazor-ApexCharts" Version="6.0.2" />
     <PackageReference Include="CommunityToolkit.Maui" Version="12.2.0" />
+    <PackageReference Include="MaterialColorUtilities.Maui" Version="0.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="9.0.110" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="9.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.9" />

@@ -5,6 +5,7 @@
 @inject KeyEventService KeyEventService
 @inject NavigationManager NavigationManager
 @inject PreferenceService PreferenceService
+@inject ThemeService ThemeService
 
 <MudThemeProvider Theme="_theme" IsDarkMode="PreferenceService.IsDarkMode" DefaultScrollbar />
 
@@ -25,65 +26,18 @@
 
 @code {
     bool _hasInitiallyRendered;
-
-    MudTheme _theme = new()
-    {
-        PaletteLight = new PaletteLight()
-        {
-            // https://materialkolor.com Seed FFFE73D8, Spec 2025.
-            Primary = "#854C73",
-            TextPrimary = "#3A2F36",
-            PrimaryContrastText = "#FFF7F8",
-            Secondary = "#715867",
-            TextSecondary = "#FFF7F8",
-            SecondaryContrastText = "#FFF7F8",
-            Error = "#A8364B",
-            Background = "#FEF0F6",
-            Surface = "#FAEAF0",
-
-            HoverOpacity = 0.1,
-        },
-
-        PaletteDark = new PaletteDark()
-        {
-            // https://materialkolor.com Seed FFFE73D8, Spec 2025.
-            Primary = "#EAB8D6",
-            TextPrimary = "#DECCD4",
-            PrimaryContrastText = "#59344D",
-            Secondary = "#DDBECF",
-            TextSecondary = "#503A47",
-            Error = "#F97386",
-            Background = "#1F171C",
-            Surface = "#120D10",
-
-            HoverOpacity = 0.1,
-        },
-
-        LayoutProperties = new()
-        {
-            DefaultBorderRadius = "4px",
-        },
-
-        Typography = new()
-        {
-            Button = new ButtonTypography()
-            {
-                TextTransform = "none",
-            },
-
-            Caption = new CaptionTypography()
-            {
-                LineHeight = "1",
-            },
-        },
-    };
+    MudTheme _theme;
 
     protected override void OnInitialized()
     {
         logger.LogDebug("Initializing");
         base.OnInitialized();
 
+        // Initialize theme from ThemeService
+        _theme = ThemeService.CreateMudTheme();
+
         PreferenceService.ThemeChanged += OnThemeChanged;
+        ThemeService.PaletteChanged += OnPaletteChanged;
         App.NewIntent += OnNewIntent;
 
         if (App.Window is not null) // Not available in tests.
@@ -116,6 +70,14 @@
             StateHasChanged();
     }
 
+    void OnPaletteChanged(object sender, EventArgs e)
+    {
+        logger.LogDebug("Palette changed, regenerating theme");
+        _theme = ThemeService.CreateMudTheme();
+        if (_hasInitiallyRendered)
+            StateHasChanged();
+    }
+
     void OnNewIntent(object sender, EventArgs e)
     {
         logger.LogDebug("New intent");
@@ -125,6 +87,7 @@
     public void Dispose()
     {
         PreferenceService.ThemeChanged -= OnThemeChanged;
+        ThemeService.PaletteChanged -= OnPaletteChanged;
         App.NewIntent -= OnNewIntent;
     }
 }
