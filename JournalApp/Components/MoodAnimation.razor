@@ -1,0 +1,65 @@
+@namespace JournalApp
+@inject PreferenceService PreferenceService
+
+@if (_isVisible)
+{
+    <div class="mood-animation-overlay" style="background-color: @_color;" @onclick="Hide">
+        <div class="mood-animation-content">
+            <div class="mood-animation-emoji">@_emoji</div>
+        </div>
+        @if (!string.IsNullOrEmpty(GetEffectClass()))
+        {
+            <div class="mood-animation-effects @GetEffectClass()"></div>
+        }
+    </div>
+}
+
+@code {
+    private bool _isVisible = false;
+    private string _emoji = "";
+    private string _color = "transparent";
+
+    public void Show(string emoji)
+    {
+        // Skip animation if disabled in settings
+        if (PreferenceService.DisableExtraAnimations)
+        {
+            return;
+        }
+
+        _emoji = emoji;
+        _color = PreferenceService.GetMoodColor(emoji);
+        _isVisible = true;
+        StateHasChanged();
+
+        // Auto-hide after animation completes (faster animation)
+        Task.Delay(1000).ContinueWith(_ =>
+        {
+            InvokeAsync(() =>
+            {
+                Hide();
+            });
+        });
+    }
+
+    private void Hide()
+    {
+        _isVisible = false;
+        StateHasChanged();
+    }
+
+    private string GetEffectClass()
+    {
+        return _emoji switch
+        {
+            "😭" => "rain-effect",
+            "😢" => "rain-effect light",
+            "😕" => "clouds-effect",
+            "😐" => "",
+            "🙂" => "sparkles-effect",
+            "😀" => "sunshine-effect",
+            "🤩" => "stars-effect",
+            _ => ""
+        };
+    }
+}

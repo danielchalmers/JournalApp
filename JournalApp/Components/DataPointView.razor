@@ -103,6 +103,9 @@ else if (Point.Type == PointType.Medication)
     [Parameter]
     public EventCallback StateChanged { get; set; }
 
+    [Parameter]
+    public MoodAnimation MoodAnimation { get; set; }
+
     public int ScaleIndexForMudRating
     {
         get => Point.ScaleIndex ?? 0;
@@ -124,6 +127,25 @@ else if (Point.Type == PointType.Medication)
             }
 
             return null;
+        }
+    }
+
+    void OnMoodSelected(string mood)
+    {
+        logger.LogDebug("Mood selected: {Mood}", mood);
+        Point.Mood = mood;
+        
+        // Trigger the animation if MoodAnimation is provided
+        if (MoodAnimation != null && mood != "🤔")
+        {
+            MoodAnimation.Show(mood);
+        }
+
+        // Show a motivational quote when the sob emoji is selected
+        if (mood == DataPoint.Moods[^1])  // Sob emoji (😭) is the last mood in the list
+        {
+            var quote = MotivationalQuotes.GetRandomQuote();
+            Snackbar.Add(quote, Severity.Info, c => c.Icon = Icons.Material.Rounded.FavoriteBorder);
         }
     }
 
@@ -165,19 +187,6 @@ else if (Point.Type == PointType.Medication)
         logger.LogDebug("Finished editing dose in dialog");
 
         await StateChanged.InvokeAsync();
-    }
-
-    void OnMoodSelected(string mood)
-    {
-        logger.LogDebug("Mood selected: {mood}", mood);
-        Point.Mood = mood;
-
-        // Show a motivational quote when the sob emoji is selected
-        if (mood == DataPoint.Moods[^1])  // Sob emoji (😭) is the last mood in the list
-        {
-            var quote = MotivationalQuotes.GetRandomQuote();
-            Snackbar.Add(quote, Severity.Info, c => c.Icon = Icons.Material.Rounded.FavoriteBorder);
-        }
     }
 
     /// <summary>

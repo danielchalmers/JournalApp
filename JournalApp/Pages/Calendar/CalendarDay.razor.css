@@ -1,3 +1,46 @@
+.calendar-day-cell {
+  /* MD3 Expressive: Press animation only with color transitions */
+  transition: transform 0.1s cubic-bezier(0.2, 0, 0, 1), background-color 0.2s cubic-bezier(0.2, 0, 0, 1);
+  animation: calendarDayAppear 0.3s ease-out backwards;
+}
+
+.calendar-day-cell:active {
+  transform: scale(0.95);
+}
+
+.calendar-day-current {
+  animation: currentDayPulse 2s ease-in-out infinite;
+}
+
+@keyframes currentDayPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.1);
+  }
+}
+
+@keyframes calendarDayAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Stagger animation for calendar days */
+.calendar-day-cell:nth-child(1) { animation-delay: 0s; }
+.calendar-day-cell:nth-child(2) { animation-delay: 0.02s; }
+.calendar-day-cell:nth-child(3) { animation-delay: 0.04s; }
+.calendar-day-cell:nth-child(4) { animation-delay: 0.06s; }
+.calendar-day-cell:nth-child(5) { animation-delay: 0.08s; }
+.calendar-day-cell:nth-child(6) { animation-delay: 0.1s; }
+.calendar-day-cell:nth-child(7) { animation-delay: 0.12s; }
+
 .calendar-day-content {
   position: relative;
   width: 100%;
@@ -19,4 +62,30 @@
   position: absolute;
   bottom: 0;
   right: 0;
+}
+
+.calendar-day-with-mood .calendar-day-emoji {
+  animation: emojiPop 0.5s cubic-bezier(0.05, 0.7, 0.1, 1) backwards;
+}
+
+@keyframes emojiPop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .calendar-day-cell,
+  .calendar-day-current,
+  .calendar-day-number,
+  .calendar-day-emoji {
+    animation: none !important;
+    transition: none !important;
+  }
 }

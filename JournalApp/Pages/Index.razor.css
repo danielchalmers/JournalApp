@@ -33,3 +33,52 @@
   display: flex;
   flex-grow: 1;
 }
+
+/* MD3 Expressive: Color transitions only - press animations removed per request */
+.data-point-view button {
+  transition: background-color 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* MD3 Expressive: Slider color transitions */
+.mud-slider {
+  transition: opacity 0.2s ease-out, background-color 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Day switcher - color transitions only */
+.day-switcher-back,
+.day-switcher-forward {
+  transition: background-color 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* MD3 Expressive: Rating stars - color transitions only */
+.mud-rating {
+  transition: transform 0.1s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.mud-rating-item {
+  transition: color 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* MD3 Expressive: Sleep controls - color transitions only */
+.less-sleep,
+.more-sleep {
+  transition: background-color 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* MD3 Expressive: Toggle button - color transitions only */
+.mud-toggle-item {
+  transition: background-color 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .data-point-view button,
+  .day-switcher-back,
+  .day-switcher-forward,
+  .mud-rating-item,
+  .less-sleep,
+  .more-sleep,
+  .mud-toggle-item {
+    transition: none !important;
+  }
+}
