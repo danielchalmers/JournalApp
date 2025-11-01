@@ -5,10 +5,16 @@ description: Builds and tests
 inputs:
   RELEASE_KEYSTORE_BASE64:
     description: "RELEASE_KEYSTORE_BASE64"
-    required: true
+    required: false
+    default: ""
   RELEASE_KEYSTORE_PASS:
     description: "RELEASE_KEYSTORE_PASS"
-    required: true
+    required: false
+    default: ""
+  ENABLE_SIGNING:
+    description: "Set to 'true' to enable Android signing"
+    required: false
+    default: "false"
 
 runs:
   using: "composite"
@@ -36,13 +42,15 @@ runs:
       run: dotnet test
 
     - name: Create keystore
+      if: inputs.ENABLE_SIGNING == 'true'
       id: create_keystore
       uses: timheuer/base64-to-file@v1.2
       with:
         fileName: release.keystore
         encodedString: "${{ inputs.RELEASE_KEYSTORE_BASE64 }}"
 
-    - name: Build for Android
+    - name: Build for Android (signed)
+      if: inputs.ENABLE_SIGNING == 'true'
       shell: bash
       run: >
         dotnet publish ./JournalApp/JournalApp.csproj -o publish -c:Release -f:net9.0-android
@@ -51,6 +59,12 @@ runs:
         -p:AndroidSigningStorePass="${{ inputs.RELEASE_KEYSTORE_PASS }}"
         -p:AndroidSigningKeyAlias="key"
         -p:AndroidSigningKeyPass="${{ inputs.RELEASE_KEYSTORE_PASS }}"
+
+    - name: Build for Android (unsigned)
+      if: inputs.ENABLE_SIGNING != 'true'
+      shell: bash
+      run: >
+        dotnet publish ./JournalApp/JournalApp.csproj -o publish -c:Release -f:net9.0-android
 
     - name: List build output
       shell: bash
