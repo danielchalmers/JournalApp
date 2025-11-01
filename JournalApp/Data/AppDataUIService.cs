@@ -85,7 +85,6 @@ namespace JournalApp;
             preferenceService.LastExportDate = DateTimeOffset.Now;
             total.Stop();
             logger.LogInformation("Import completed successfully in {ElapsedMilliseconds}ms", total.ElapsedMilliseconds);
-            await dialogService.ShowJaMessageBox("Your data has been successfully imported!");
             return true;
         }
 
@@ -94,16 +93,6 @@ namespace JournalApp;
         {
             logger.LogInformation("Starting export wizard");
             var total = Stopwatch.StartNew();
-
-            // Prompt the user first before doing any work
-            if (await dialogService.ShowJaMessageBox(
-                "This will create a backup file containing all your journal data. Choose where to save it in the next step.",
-                yesText: "Continue", cancelText: "Cancel") == null)
-            {
-                total.Stop();
-                logger.LogInformation("Export cancelled by user before creating backup");
-                return;
-            }
 
             logger.LogInformation("Preparing backup data for export");
             var sw = Stopwatch.StartNew();
@@ -129,25 +118,28 @@ namespace JournalApp;
             sw.Restart();
 
             // Create a memory stream to write the archive to
-            using var archiveStream = new MemoryStream();
-            try
+            byte[] archiveBytes;
+            using (var memoryStream = new MemoryStream())
             {
-                await backupFile.WriteArchive(archiveStream);
-                archiveStream.Position = 0; // Reset position to beginning for reading
+                try
+                {
+                    await backupFile.WriteArchive(memoryStream);
+                    archiveBytes = memoryStream.ToArray();
 
-                logger.LogInformation("Backup archive created in memory ({SizeKB} KB) in {ElapsedMilliseconds}ms", 
-                    archiveStream.Length / 1024, sw.ElapsedMilliseconds);
-            }
-            catch (Exception ex)
-            {
-                total.Stop();
-                logger.LogError(
-                    ex,
-                    "Failed to create backup archive after {ElapsedMilliseconds}ms (total {TotalElapsedMilliseconds}ms)",
-                    sw.ElapsedMilliseconds,
-                    total.ElapsedMilliseconds);
-                await dialogService.ShowJaMessageBox($"Export failed: Could not create the backup archive. {ex.Message}");
-                return;
+                    logger.LogInformation("Backup archive created in memory ({SizeKB} KB) in {ElapsedMilliseconds}ms", 
+                        archiveBytes.Length / 1024, sw.ElapsedMilliseconds);
+                }
+                catch (Exception ex)
+                {
+                    total.Stop();
+                    logger.LogError(
+                        ex,
+                        "Failed to create backup archive after {ElapsedMilliseconds}ms (total {TotalElapsedMilliseconds}ms)",
+                        sw.ElapsedMilliseconds,
+                        total.ElapsedMilliseconds);
+                    await dialogService.ShowJaMessageBox($"Export failed: Could not create the backup archive. {ex.Message}");
+                    return;
+                }
             }
 
             // Prompt the user to save the file.
@@ -155,8 +147,9 @@ namespace JournalApp;
             sw.Restart();
             try
             {
+                using var saveStream = new MemoryStream(archiveBytes);
                 var fileName = $"backup-{DateTime.Now:yyyy-MM-dd}.journalapp";
-                var result = await fileSaver.SaveAsync(fileName, archiveStream);
+                var result = await fileSaver.SaveAsync(fileName, saveStream);
 
                 if (result.IsSuccessful)
                 {
@@ -165,7 +158,6 @@ namespace JournalApp;
                     preferenceService.LastExportDate = DateTimeOffset.Now;
                     total.Stop();
                     logger.LogInformation("Export completed successfully in {TotalElapsedMilliseconds}ms", total.ElapsedMilliseconds);
-                    await dialogService.ShowJaMessageBox("Your data has been successfully exported!");
                 }
                 else if (result.Exception != null)
                 {
