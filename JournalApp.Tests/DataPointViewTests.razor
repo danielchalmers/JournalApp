@@ -234,7 +234,7 @@
 
         var cut = layout.FindComponent<DataPointView>();
 
-        cut.Find(".mud-link").Click();
+        cut.Find("button[aria-label='Edit note']").Click();
 
         var noteEditor = layout.FindComponent<EditNoteDialog>();
         noteEditor.Find("textarea").Input("123");
@@ -242,7 +242,7 @@
 
         point.Text.Should().Be("123");
 
-        cut.Find(".mud-link").Click();
+        cut.Find("button[aria-label='Edit note']").Click();
 
         noteEditor = layout.FindComponent<EditNoteDialog>();
         noteEditor.Find("textarea").Input("EXTRA TEXT THAT WILL BE DISCARDED");
