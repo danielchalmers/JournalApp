@@ -129,10 +129,9 @@ namespace JournalApp;
             sw.Restart();
 
             // Create a memory stream to write the archive to
-            MemoryStream archiveStream = null;
+            using var archiveStream = new MemoryStream();
             try
             {
-                archiveStream = new MemoryStream();
                 await backupFile.WriteArchive(archiveStream);
                 archiveStream.Position = 0; // Reset position to beginning for reading
 
@@ -141,7 +140,6 @@ namespace JournalApp;
             }
             catch (Exception ex)
             {
-                archiveStream?.Dispose();
                 total.Stop();
                 logger.LogError(
                     ex,
@@ -192,10 +190,6 @@ namespace JournalApp;
                     sw.ElapsedMilliseconds,
                     total.ElapsedMilliseconds);
                 await dialogService.ShowJaMessageBox($"Export failed: Could not save the backup file. {ex.Message}");
-            }
-            finally
-            {
-                archiveStream?.Dispose();
             }
         }
 }
