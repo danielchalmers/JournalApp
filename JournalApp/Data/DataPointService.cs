@@ -1,19 +1,18 @@
 namespace JournalApp.Data;
 
 /// <summary>
-/// Helper methods for handling data point value manipulations.
+/// Service for handling data point value manipulations.
 /// Provides a centralized layer for all data point property changes.
 /// </summary>
-public static class DataPointHelpers
+public class DataPointService
 {
     /// <summary>
     /// Decrements the sleep hours by 0.5, with a minimum of 0.
     /// </summary>
     /// <param name="point">The data point to update.</param>
-    public static void DecrementSleep(DataPoint point)
+    public void DecrementSleep(DataPoint point)
     {
-        if (point == null)
-            throw new ArgumentNullException(nameof(point));
+        ArgumentNullException.ThrowIfNull(point);
 
         if (point.Type != PointType.Sleep)
             throw new ArgumentException("DataPoint must be a sleep type.", nameof(point));
@@ -25,10 +24,9 @@ public static class DataPointHelpers
     /// Increments the sleep hours by 0.5, with a maximum of 24.
     /// </summary>
     /// <param name="point">The data point to update.</param>
-    public static void IncrementSleep(DataPoint point)
+    public void IncrementSleep(DataPoint point)
     {
-        if (point == null)
-            throw new ArgumentNullException(nameof(point));
+        ArgumentNullException.ThrowIfNull(point);
 
         if (point.Type != PointType.Sleep)
             throw new ArgumentException("DataPoint must be a sleep type.", nameof(point));
@@ -41,10 +39,9 @@ public static class DataPointHelpers
     /// </summary>
     /// <param name="point">The data point to update.</param>
     /// <param name="mood">The mood emoji to set.</param>
-    public static void SetMood(DataPoint point, string mood)
+    public void SetMood(DataPoint point, string mood)
     {
-        if (point == null)
-            throw new ArgumentNullException(nameof(point));
+        ArgumentNullException.ThrowIfNull(point);
 
         if (point.Type != PointType.Mood)
             throw new ArgumentException("DataPoint must be a mood type.", nameof(point));
@@ -58,10 +55,9 @@ public static class DataPointHelpers
     /// </summary>
     /// <param name="point">The data point to update.</param>
     /// <param name="value">The scale index value (0 will be converted to null).</param>
-    public static void SetScaleIndex(DataPoint point, int value)
+    public void SetScaleIndex(DataPoint point, int value)
     {
-        if (point == null)
-            throw new ArgumentNullException(nameof(point));
+        ArgumentNullException.ThrowIfNull(point);
 
         if (point.Type != PointType.Scale)
             throw new ArgumentException("DataPoint must be a scale type.", nameof(point));
@@ -75,14 +71,33 @@ public static class DataPointHelpers
     /// </summary>
     /// <param name="point">The data point to read.</param>
     /// <returns>The scale index value (null will be converted to 0).</returns>
-    public static int GetScaleIndex(DataPoint point)
+    public int GetScaleIndex(DataPoint point)
     {
-        if (point == null)
-            throw new ArgumentNullException(nameof(point));
+        ArgumentNullException.ThrowIfNull(point);
 
         if (point.Type != PointType.Scale)
             throw new ArgumentException("DataPoint must be a scale type.", nameof(point));
 
         return point.ScaleIndex ?? 0;
+    }
+
+    /// <summary>
+    /// Updates the medication dose when the "taken" status changes.
+    /// If the medication wasn't taken, resets the dose to the category's default dose.
+    /// This allows users to easily reset custom doses by toggling the button twice.
+    /// </summary>
+    /// <param name="point">The medication data point to update.</param>
+    public void HandleMedicationTakenChanged(DataPoint point)
+    {
+        ArgumentNullException.ThrowIfNull(point);
+
+        if (point.Category?.Type != PointType.Medication)
+            throw new ArgumentException("DataPoint must be a medication type.", nameof(point));
+
+        // If the medication wasn't taken, reset to category's default dose
+        if (point.Bool != true)
+        {
+            point.MedicationDose = point.Category.MedicationDose;
+        }
     }
 }

@@ -3,10 +3,14 @@ using JournalApp.Data;
 namespace JournalApp.Tests.Data;
 
 /// <summary>
-/// Tests for DataPointHelpers class.
+/// Tests for DataPointService class.
 /// </summary>
-public class DataPointHelpersTests
+public class DataPointServiceTests
 {
+    private readonly DataPointService _service = new();
+
+    #region Sleep Operations Tests
+
     [Fact]
     public void DecrementSleep_DecreasesByHalfHour()
     {
@@ -17,7 +21,7 @@ public class DataPointHelpersTests
         point.SleepHours = 8.0m;
 
         // Act
-        DataPointHelpers.DecrementSleep(point);
+        _service.DecrementSleep(point);
 
         // Assert
         point.SleepHours.Should().Be(7.5m);
@@ -33,7 +37,7 @@ public class DataPointHelpersTests
         point.SleepHours = 0.0m;
 
         // Act
-        DataPointHelpers.DecrementSleep(point);
+        _service.DecrementSleep(point);
 
         // Assert
         point.SleepHours.Should().Be(0.0m);
@@ -49,7 +53,7 @@ public class DataPointHelpersTests
         point.SleepHours = null;
 
         // Act
-        DataPointHelpers.DecrementSleep(point);
+        _service.DecrementSleep(point);
 
         // Assert
         point.SleepHours.Should().Be(0.0m);
@@ -59,7 +63,7 @@ public class DataPointHelpersTests
     public void DecrementSleep_ThrowsException_WhenPointIsNull()
     {
         // Act & Assert
-        var act = () => DataPointHelpers.DecrementSleep(null!);
+        var act = () => _service.DecrementSleep(null!);
         act.Should().Throw<ArgumentNullException>()
             .WithParameterName("point");
     }
@@ -73,7 +77,7 @@ public class DataPointHelpersTests
         var point = DataPoint.Create(day, category);
 
         // Act & Assert
-        var act = () => DataPointHelpers.DecrementSleep(point);
+        var act = () => _service.DecrementSleep(point);
         act.Should().Throw<ArgumentException>()
             .WithParameterName("point")
             .WithMessage("DataPoint must be a sleep type.*");
@@ -89,7 +93,7 @@ public class DataPointHelpersTests
         point.SleepHours = 8.0m;
 
         // Act
-        DataPointHelpers.IncrementSleep(point);
+        _service.IncrementSleep(point);
 
         // Assert
         point.SleepHours.Should().Be(8.5m);
@@ -105,7 +109,7 @@ public class DataPointHelpersTests
         point.SleepHours = 24.0m;
 
         // Act
-        DataPointHelpers.IncrementSleep(point);
+        _service.IncrementSleep(point);
 
         // Assert
         point.SleepHours.Should().Be(24.0m);
@@ -121,7 +125,7 @@ public class DataPointHelpersTests
         point.SleepHours = null;
 
         // Act
-        DataPointHelpers.IncrementSleep(point);
+        _service.IncrementSleep(point);
 
         // Assert
         point.SleepHours.Should().Be(0.5m);
@@ -131,7 +135,7 @@ public class DataPointHelpersTests
     public void IncrementSleep_ThrowsException_WhenPointIsNull()
     {
         // Act & Assert
-        var act = () => DataPointHelpers.IncrementSleep(null!);
+        var act = () => _service.IncrementSleep(null!);
         act.Should().Throw<ArgumentNullException>()
             .WithParameterName("point");
     }
@@ -145,11 +149,33 @@ public class DataPointHelpersTests
         var point = DataPoint.Create(day, category);
 
         // Act & Assert
-        var act = () => DataPointHelpers.IncrementSleep(point);
+        var act = () => _service.IncrementSleep(point);
         act.Should().Throw<ArgumentException>()
             .WithParameterName("point")
             .WithMessage("DataPoint must be a sleep type.*");
     }
+
+    [Fact]
+    public void SleepOperations_WorkTogether()
+    {
+        // Arrange
+        var category = new DataPointCategory { Type = PointType.Sleep };
+        var day = Day.Create(new DateOnly(2024, 1, 1));
+        var point = DataPoint.Create(day, category);
+        point.SleepHours = 8.0m;
+
+        // Act - Multiple operations
+        _service.IncrementSleep(point); // 8.5
+        _service.IncrementSleep(point); // 9.0
+        _service.DecrementSleep(point); // 8.5
+
+        // Assert
+        point.SleepHours.Should().Be(8.5m);
+    }
+
+    #endregion
+
+    #region Mood Operations Tests
 
     [Fact]
     public void SetMood_UpdatesMoodValue()
@@ -160,7 +186,7 @@ public class DataPointHelpersTests
         var point = DataPoint.Create(day, category);
 
         // Act
-        DataPointHelpers.SetMood(point, "😀");
+        _service.SetMood(point, "😀");
 
         // Assert
         point.Mood.Should().Be("😀");
@@ -176,7 +202,7 @@ public class DataPointHelpersTests
         point.Mood = "😀";
 
         // Act
-        DataPointHelpers.SetMood(point, null);
+        _service.SetMood(point, null);
 
         // Assert
         point.Mood.Should().BeNull();
@@ -186,7 +212,7 @@ public class DataPointHelpersTests
     public void SetMood_ThrowsException_WhenPointIsNull()
     {
         // Act & Assert
-        var act = () => DataPointHelpers.SetMood(null!, "😀");
+        var act = () => _service.SetMood(null!, "😀");
         act.Should().Throw<ArgumentNullException>()
             .WithParameterName("point");
     }
@@ -200,11 +226,15 @@ public class DataPointHelpersTests
         var point = DataPoint.Create(day, category);
 
         // Act & Assert
-        var act = () => DataPointHelpers.SetMood(point, "😀");
+        var act = () => _service.SetMood(point, "😀");
         act.Should().Throw<ArgumentException>()
             .WithParameterName("point")
             .WithMessage("DataPoint must be a mood type.*");
     }
+
+    #endregion
+
+    #region Scale Operations Tests
 
     [Fact]
     public void SetScaleIndex_SetsValue()
@@ -215,7 +245,7 @@ public class DataPointHelpersTests
         var point = DataPoint.Create(day, category);
 
         // Act
-        DataPointHelpers.SetScaleIndex(point, 3);
+        _service.SetScaleIndex(point, 3);
 
         // Assert
         point.ScaleIndex.Should().Be(3);
@@ -231,7 +261,7 @@ public class DataPointHelpersTests
         point.ScaleIndex = 5;
 
         // Act
-        DataPointHelpers.SetScaleIndex(point, 0);
+        _service.SetScaleIndex(point, 0);
 
         // Assert
         point.ScaleIndex.Should().BeNull();
@@ -241,7 +271,7 @@ public class DataPointHelpersTests
     public void SetScaleIndex_ThrowsException_WhenPointIsNull()
     {
         // Act & Assert
-        var act = () => DataPointHelpers.SetScaleIndex(null!, 3);
+        var act = () => _service.SetScaleIndex(null!, 3);
         act.Should().Throw<ArgumentNullException>()
             .WithParameterName("point");
     }
@@ -255,7 +285,7 @@ public class DataPointHelpersTests
         var point = DataPoint.Create(day, category);
 
         // Act & Assert
-        var act = () => DataPointHelpers.SetScaleIndex(point, 3);
+        var act = () => _service.SetScaleIndex(point, 3);
         act.Should().Throw<ArgumentException>()
             .WithParameterName("point")
             .WithMessage("DataPoint must be a scale type.*");
@@ -271,7 +301,7 @@ public class DataPointHelpersTests
         point.ScaleIndex = 4;
 
         // Act
-        var result = DataPointHelpers.GetScaleIndex(point);
+        var result = _service.GetScaleIndex(point);
 
         // Assert
         result.Should().Be(4);
@@ -287,7 +317,7 @@ public class DataPointHelpersTests
         point.ScaleIndex = null;
 
         // Act
-        var result = DataPointHelpers.GetScaleIndex(point);
+        var result = _service.GetScaleIndex(point);
 
         // Assert
         result.Should().Be(0);
@@ -297,7 +327,7 @@ public class DataPointHelpersTests
     public void GetScaleIndex_ThrowsException_WhenPointIsNull()
     {
         // Act & Assert
-        var act = () => DataPointHelpers.GetScaleIndex(null!);
+        var act = () => _service.GetScaleIndex(null!);
         act.Should().Throw<ArgumentNullException>()
             .WithParameterName("point");
     }
@@ -311,28 +341,10 @@ public class DataPointHelpersTests
         var point = DataPoint.Create(day, category);
 
         // Act & Assert
-        var act = () => DataPointHelpers.GetScaleIndex(point);
+        var act = () => _service.GetScaleIndex(point);
         act.Should().Throw<ArgumentException>()
             .WithParameterName("point")
             .WithMessage("DataPoint must be a scale type.*");
-    }
-
-    [Fact]
-    public void SleepOperations_WorkTogether()
-    {
-        // Arrange
-        var category = new DataPointCategory { Type = PointType.Sleep };
-        var day = Day.Create(new DateOnly(2024, 1, 1));
-        var point = DataPoint.Create(day, category);
-        point.SleepHours = 8.0m;
-
-        // Act - Multiple operations
-        DataPointHelpers.IncrementSleep(point); // 8.5
-        DataPointHelpers.IncrementSleep(point); // 9.0
-        DataPointHelpers.DecrementSleep(point); // 8.5
-
-        // Assert
-        point.SleepHours.Should().Be(8.5m);
     }
 
     [Fact]
@@ -344,15 +356,163 @@ public class DataPointHelpersTests
         var point = DataPoint.Create(day, category);
 
         // Act - Set and get
-        DataPointHelpers.SetScaleIndex(point, 5);
-        var result1 = DataPointHelpers.GetScaleIndex(point);
+        _service.SetScaleIndex(point, 5);
+        var result1 = _service.GetScaleIndex(point);
         
-        DataPointHelpers.SetScaleIndex(point, 0);
-        var result2 = DataPointHelpers.GetScaleIndex(point);
+        _service.SetScaleIndex(point, 0);
+        var result2 = _service.GetScaleIndex(point);
 
         // Assert
         result1.Should().Be(5);
         result2.Should().Be(0);
         point.ScaleIndex.Should().BeNull();
     }
+
+    #endregion
+
+    #region Medication Operations Tests
+
+    [Fact]
+    public void HandleMedicationTakenChanged_ResetsDose_WhenNotTaken()
+    {
+        // Arrange
+        var category = new DataPointCategory
+        {
+            Type = PointType.Medication,
+            MedicationDose = 100m
+        };
+        var day = Day.Create(new DateOnly(2024, 1, 1));
+        var point = DataPoint.Create(day, category);
+        point.Bool = false;
+        point.MedicationDose = 150m; // Custom dose
+
+        // Act
+        _service.HandleMedicationTakenChanged(point);
+
+        // Assert
+        point.MedicationDose.Should().Be(100m); // Reset to category default
+    }
+
+    [Fact]
+    public void HandleMedicationTakenChanged_ResetsDose_WhenNullNotTaken()
+    {
+        // Arrange
+        var category = new DataPointCategory
+        {
+            Type = PointType.Medication,
+            MedicationDose = 100m
+        };
+        var day = Day.Create(new DateOnly(2024, 1, 1));
+        var point = DataPoint.Create(day, category);
+        point.Bool = null; // Not taken (null)
+        point.MedicationDose = 150m; // Custom dose
+
+        // Act
+        _service.HandleMedicationTakenChanged(point);
+
+        // Assert
+        point.MedicationDose.Should().Be(100m); // Reset to category default
+    }
+
+    [Fact]
+    public void HandleMedicationTakenChanged_PreservesDose_WhenTaken()
+    {
+        // Arrange
+        var category = new DataPointCategory
+        {
+            Type = PointType.Medication,
+            MedicationDose = 100m
+        };
+        var day = Day.Create(new DateOnly(2024, 1, 1));
+        var point = DataPoint.Create(day, category);
+        point.Bool = true;
+        point.MedicationDose = 150m; // Custom dose
+
+        // Act
+        _service.HandleMedicationTakenChanged(point);
+
+        // Assert
+        point.MedicationDose.Should().Be(150m); // Preserve custom dose
+    }
+
+    [Fact]
+    public void HandleMedicationTakenChanged_HandlesNullCategoryDose()
+    {
+        // Arrange
+        var category = new DataPointCategory
+        {
+            Type = PointType.Medication,
+            MedicationDose = null // No default dose
+        };
+        var day = Day.Create(new DateOnly(2024, 1, 1));
+        var point = DataPoint.Create(day, category);
+        point.Bool = false;
+        point.MedicationDose = 150m; // Custom dose
+
+        // Act
+        _service.HandleMedicationTakenChanged(point);
+
+        // Assert
+        point.MedicationDose.Should().BeNull(); // Reset to null
+    }
+
+    [Fact]
+    public void HandleMedicationTakenChanged_ThrowsException_WhenPointIsNull()
+    {
+        // Act & Assert
+        var act = () => _service.HandleMedicationTakenChanged(null!);
+        act.Should().Throw<ArgumentNullException>()
+            .WithParameterName("point");
+    }
+
+    [Fact]
+    public void HandleMedicationTakenChanged_ThrowsException_WhenNotMedicationType()
+    {
+        // Arrange
+        var category = new DataPointCategory
+        {
+            Type = PointType.Bool // Not a medication
+        };
+        var day = Day.Create(new DateOnly(2024, 1, 1));
+        var point = DataPoint.Create(day, category);
+
+        // Act & Assert
+        var act = () => _service.HandleMedicationTakenChanged(point);
+        act.Should().Throw<ArgumentException>()
+            .WithParameterName("point")
+            .WithMessage("DataPoint must be a medication type.*");
+    }
+
+    [Fact]
+    public void HandleMedicationTakenChanged_AllowsToggleTwiceToResetDose()
+    {
+        // This test demonstrates the "toggle twice to reset" feature mentioned in the comment
+        
+        // Arrange
+        var category = new DataPointCategory
+        {
+            Type = PointType.Medication,
+            MedicationDose = 100m
+        };
+        var day = Day.Create(new DateOnly(2024, 1, 1));
+        var point = DataPoint.Create(day, category);
+        
+        // User takes medication with custom dose
+        point.Bool = true;
+        point.MedicationDose = 150m;
+        _service.HandleMedicationTakenChanged(point);
+        point.MedicationDose.Should().Be(150m); // Keeps custom dose
+        
+        // User toggles to "not taken"
+        point.Bool = false;
+        _service.HandleMedicationTakenChanged(point);
+        point.MedicationDose.Should().Be(100m); // Resets to default
+        
+        // User toggles back to "taken"
+        point.Bool = true;
+        _service.HandleMedicationTakenChanged(point);
+        point.MedicationDose.Should().Be(100m); // Now has default dose again
+    }
+
+    #endregion
 }
