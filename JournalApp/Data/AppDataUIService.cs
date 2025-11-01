@@ -15,7 +15,7 @@ namespace JournalApp;
 
             // Warn if an export wasn't done in the last week.
             if (DateTimeOffset.Now > preferenceService.LastExportDate.AddDays(7) &&
-                await dialogService.ShowJaMessageBox("It's recommended to create a backup of your current data before importing. You can do this from the Settings page.", yesText: "Continue anyway", cancelText: "Go back") == null)
+                await dialogService.ShowJaMessageBox("Recommended: Back up your current data first from Settings.", yesText: "Continue anyway", cancelText: "Go back") == null)
             {
                 total.Stop();
                 logger.LogInformation("Import cancelled by user after backup recommendation warning");
@@ -43,15 +43,15 @@ namespace JournalApp;
                     "Failed to read backup file in {ElapsedMilliseconds}ms (total {TotalElapsedMilliseconds}ms)",
                     readStopwatch.ElapsedMilliseconds,
                     total.ElapsedMilliseconds);
-                await dialogService.ShowJaMessageBox($"Import failed: Could not read the backup file. {ex.Message}");
+                await dialogService.ShowJaMessageBox($"Import failed: {ex.Message}");
                 return false;
             }
 
             // Warn the user of what's going to happen.
             readStopwatch.Restart();
             if (await dialogService.ShowJaMessageBox(
-                $"The backup file contains {backup.Days.Count} days, {backup.Categories.Count} categories/medications, {backup.Points.Count} points, and {backup.PreferenceBackups.Count} preferences.\n\n" +
-                "⚠️ This will permanently replace ALL of your current data and cannot be undone. The import may take a few minutes to complete.",
+                $"Contains {backup.Days.Count} days, {backup.Categories.Count} categories, {backup.Points.Count} points, {backup.PreferenceBackups.Count} preferences.\n\n" +
+                "⚠️ This will replace ALL current data and cannot be undone.",
                 yesText: "Import", cancelText: "Cancel") == null)
             {
                 total.Stop();
@@ -78,7 +78,7 @@ namespace JournalApp;
                     "Import failed during database operations after {ElapsedMilliseconds}ms (total {TotalElapsedMilliseconds}ms)",
                     readStopwatch.ElapsedMilliseconds,
                     total.ElapsedMilliseconds);
-                await dialogService.ShowJaMessageBox($"Import failed: The database could not be updated. Error: {ex.Message}");
+                await dialogService.ShowJaMessageBox($"Import failed: {ex.Message}");
                 return false;
             }
 
@@ -94,57 +94,38 @@ namespace JournalApp;
             logger.LogInformation("Starting export wizard");
             var total = Stopwatch.StartNew();
 
-            logger.LogInformation("Preparing backup data for export");
-            var sw = Stopwatch.StartNew();
-
             BackupFile backupFile;
+            byte[] archiveBytes;
+            
             try
             {
+                var sw = Stopwatch.StartNew();
+                
                 backupFile = await appDataService.CreateBackup();
-                logger.LogInformation("Backup data prepared in {ElapsedMilliseconds}ms - contains {DayCount} days, {CategoryCount} categories, {PointCount} points", 
+                logger.LogInformation("Backup created in {ElapsedMilliseconds}ms - {DayCount} days, {CategoryCount} categories, {PointCount} points", 
                     sw.ElapsedMilliseconds, backupFile.Days.Count, backupFile.Categories.Count, backupFile.Points.Count);
+                
+                sw.Restart();
+                
+                using (var memoryStream = new MemoryStream())
+                {
+                    await backupFile.WriteArchive(memoryStream);
+                    archiveBytes = memoryStream.ToArray();
+                }
+                
+                logger.LogInformation("Archive created ({SizeKB} KB) in {ElapsedMilliseconds}ms", 
+                    archiveBytes.Length / 1024, sw.ElapsedMilliseconds);
             }
             catch (Exception ex)
             {
                 total.Stop();
-                logger.LogError(
-                    ex,
-                    "Failed to prepare backup data after {ElapsedMilliseconds}ms",
-                    sw.ElapsedMilliseconds);
-                await dialogService.ShowJaMessageBox($"Export failed: Could not prepare your data for backup. {ex.Message}");
+                logger.LogError(ex, "Failed to create backup");
+                await dialogService.ShowJaMessageBox($"Export failed: {ex.Message}");
                 return;
             }
-
-            sw.Restart();
-
-            // Create a memory stream to write the archive to
-            byte[] archiveBytes;
-            using (var memoryStream = new MemoryStream())
-            {
-                try
-                {
-                    await backupFile.WriteArchive(memoryStream);
-                    archiveBytes = memoryStream.ToArray();
-
-                    logger.LogInformation("Backup archive created in memory ({SizeKB} KB) in {ElapsedMilliseconds}ms", 
-                        archiveBytes.Length / 1024, sw.ElapsedMilliseconds);
-                }
-                catch (Exception ex)
-                {
-                    total.Stop();
-                    logger.LogError(
-                        ex,
-                        "Failed to create backup archive after {ElapsedMilliseconds}ms (total {TotalElapsedMilliseconds}ms)",
-                        sw.ElapsedMilliseconds,
-                        total.ElapsedMilliseconds);
-                    await dialogService.ShowJaMessageBox($"Export failed: Could not create the backup archive. {ex.Message}");
-                    return;
-                }
-            }
-
-            // Prompt the user to save the file.
+            
             logger.LogInformation("Prompting user to select save location");
-            sw.Restart();
+            
             try
             {
                 using var saveStream = new MemoryStream(archiveBytes);
@@ -153,35 +134,28 @@ namespace JournalApp;
 
                 if (result.IsSuccessful)
                 {
-                    logger.LogInformation("Backup file saved successfully to {FilePath} in {ElapsedMilliseconds}ms", 
-                        result.FilePath, sw.ElapsedMilliseconds);
+                    logger.LogInformation("File saved to {FilePath}", result.FilePath);
                     preferenceService.LastExportDate = DateTimeOffset.Now;
                     total.Stop();
-                    logger.LogInformation("Export completed successfully in {TotalElapsedMilliseconds}ms", total.ElapsedMilliseconds);
+                    logger.LogInformation("Export completed in {TotalElapsedMilliseconds}ms", total.ElapsedMilliseconds);
                 }
                 else if (result.Exception != null)
                 {
                     total.Stop();
-                    logger.LogError(result.Exception, "File save failed after {ElapsedMilliseconds}ms (total {TotalElapsedMilliseconds}ms)", 
-                        sw.ElapsedMilliseconds, total.ElapsedMilliseconds);
-                    await dialogService.ShowJaMessageBox($"Export failed: Could not save the backup file. {result.Exception.Message}");
+                    logger.LogError(result.Exception, "File save failed");
+                    await dialogService.ShowJaMessageBox($"Export failed: {result.Exception.Message}");
                 }
                 else
                 {
                     total.Stop();
-                    logger.LogInformation("Export cancelled by user after {ElapsedMilliseconds}ms (total {TotalElapsedMilliseconds}ms)", 
-                        sw.ElapsedMilliseconds, total.ElapsedMilliseconds);
+                    logger.LogInformation("Export cancelled by user");
                 }
             }
             catch (Exception ex)
             {
                 total.Stop();
-                logger.LogError(
-                    ex,
-                    "Failed to save backup file after {ElapsedMilliseconds}ms (total {TotalElapsedMilliseconds}ms)",
-                    sw.ElapsedMilliseconds,
-                    total.ElapsedMilliseconds);
-                await dialogService.ShowJaMessageBox($"Export failed: Could not save the backup file. {ex.Message}");
+                logger.LogError(ex, "Failed to save file");
+                await dialogService.ShowJaMessageBox($"Export failed: {ex.Message}");
             }
         }
 }

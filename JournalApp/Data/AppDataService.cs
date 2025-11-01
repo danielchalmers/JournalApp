@@ -10,18 +10,11 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
         var sw = Stopwatch.StartNew();
 
         await using var db = await dbFactory.CreateDbContextAsync();
-        var pointsDeleted = await db.Points.ExecuteDeleteAsync();
-        var daysDeleted = await db.Days.ExecuteDeleteAsync();
-        var categoriesDeleted = await db.Categories.ExecuteDeleteAsync();
+        await DeleteDbSetsInternal(db);
         await db.SaveChangesAsync();
 
         sw.Stop();
-        logger.LogInformation(
-            "Cleared data sets in {ElapsedMilliseconds}ms (points: {PointsDeleted}, days: {DaysDeleted}, categories: {CategoriesDeleted})",
-            sw.ElapsedMilliseconds,
-            pointsDeleted,
-            daysDeleted,
-            categoriesDeleted);
+        logger.LogInformation("Cleared data sets in {ElapsedMilliseconds}ms", sw.ElapsedMilliseconds);
     }
 
     public async Task RestoreDbSets(BackupFile backup)
@@ -29,10 +22,7 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
         var sw = Stopwatch.StartNew();
 
         await using var db = await dbFactory.CreateDbContextAsync();
-        await db.Days.AddRangeAsync(backup.Days);
-        await db.Categories.AddRangeAsync(backup.Categories);
-        await db.Points.AddRangeAsync(backup.Points);
-        await db.SaveChangesAsync();
+        await RestoreDbSetsInternal(db, backup);
 
         sw.Stop();
         logger.LogInformation(
@@ -57,21 +47,10 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
         try
         {
             // Delete all existing data
-            var pointsDeleted = await db.Points.ExecuteDeleteAsync();
-            var daysDeleted = await db.Days.ExecuteDeleteAsync();
-            var categoriesDeleted = await db.Categories.ExecuteDeleteAsync();
+            await DeleteDbSetsInternal(db);
             
-            logger.LogDebug(
-                "Cleared data sets in transaction (points: {PointsDeleted}, days: {DaysDeleted}, categories: {CategoriesDeleted})",
-                pointsDeleted,
-                daysDeleted,
-                categoriesDeleted);
-
             // Restore from backup
-            await db.Days.AddRangeAsync(backup.Days);
-            await db.Categories.AddRangeAsync(backup.Categories);
-            await db.Points.AddRangeAsync(backup.Points);
-            await db.SaveChangesAsync();
+            await RestoreDbSetsInternal(db, backup);
 
             // Commit the transaction - both delete and restore succeed or fail together
             await transaction.CommitAsync();
@@ -90,6 +69,27 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
             await transaction.RollbackAsync();
             throw;
         }
+    }
+
+    private async Task DeleteDbSetsInternal(AppDbContext db)
+    {
+        var pointsDeleted = await db.Points.ExecuteDeleteAsync();
+        var daysDeleted = await db.Days.ExecuteDeleteAsync();
+        var categoriesDeleted = await db.Categories.ExecuteDeleteAsync();
+        
+        logger.LogDebug(
+            "Cleared data sets (points: {PointsDeleted}, days: {DaysDeleted}, categories: {CategoriesDeleted})",
+            pointsDeleted,
+            daysDeleted,
+            categoriesDeleted);
+    }
+
+    private async Task RestoreDbSetsInternal(AppDbContext db, BackupFile backup)
+    {
+        await db.Days.AddRangeAsync(backup.Days);
+        await db.Categories.AddRangeAsync(backup.Categories);
+        await db.Points.AddRangeAsync(backup.Points);
+        await db.SaveChangesAsync();
     }
 
     public void SetPreferences(BackupFile backup)
