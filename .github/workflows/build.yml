@@ -2,20 +2,19 @@ name: Build
 
 on:
   push:
-    branches-ignore:
-      - release
+    branches:
+      - main
   pull_request:
+    branches:
+      - main
 
-jobs: 
+jobs:
   build:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: ./.github/actions/full-build
-        with:
-          RELEASE_KEYSTORE_BASE64: "${{ secrets.RELEASE_KEYSTORE_BASE64 }}"
-          RELEASE_KEYSTORE_PASS: "${{ secrets.RELEASE_KEYSTORE_PASS }}"
 
       - uses: actions/upload-artifact@v4
         with:

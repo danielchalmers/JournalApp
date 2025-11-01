@@ -11,6 +11,7 @@ jobs:
       
       - uses: ./.github/actions/full-build
         with:
+          ENABLE_SIGNING: true
           RELEASE_KEYSTORE_BASE64: "${{ secrets.RELEASE_KEYSTORE_BASE64 }}"
           RELEASE_KEYSTORE_PASS: "${{ secrets.RELEASE_KEYSTORE_PASS }}"
 
