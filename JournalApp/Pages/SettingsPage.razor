@@ -149,7 +149,23 @@ else
     {
         logger.LogInformation("Picking import file");
 
-        var pickResult = await FilePicker.PickAsync();
+        var customFileType = new FilePickerFileType(
+            new Dictionary<DevicePlatform, IEnumerable<string>>
+            {
+                { DevicePlatform.Android, new[] { "application/octet-stream" } },
+                { DevicePlatform.iOS, new[] { "public.data" } },
+                { DevicePlatform.WinUI, new[] { ".journalapp" } },
+                { DevicePlatform.macOS, new[] { "journalapp" } },
+                { DevicePlatform.Tizen, new[] { "*/*" } },
+            });
+
+        var pickOptions = new PickOptions
+        {
+            PickerTitle = "Select a backup file to import",
+            FileTypes = customFileType
+        };
+
+        var pickResult = await FilePicker.PickAsync(pickOptions);
 
         if (pickResult == null)
             return;
