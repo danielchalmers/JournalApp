@@ -60,7 +60,7 @@
             }
 
             <div>
-                @if (!string.IsNullOrEmpty(group.Key))
+                @if (group.Key == "Medications" || group.Key == "Notes")
                 {
                     <MudText Class="list-group-title">
                         @if (group.Key == "Medications")
@@ -75,44 +75,53 @@
                 }
 
                 <MudCard Class="data-point-group">
-                    <MudCardContent>
-                        <ul class="data-point-list">
-                            @foreach (var category in group.OrderBy(x => x.Index).ThenBy(x => x.Name))
-                            {
-                                @foreach (var point in _day.Points.Where(x => !x.Deleted && x.Category.Guid == category.Guid && x.Type == category.Type).OrderBy(x => x.CreatedAt))
+                    @{
+                        var groupPoints = group.SelectMany(category => 
+                            _day.Points.Where(x => !x.Deleted && x.Category.Guid == category.Guid && x.Type == category.Type)
+                        ).ToList();
+                    }
+                    
+                    @if (groupPoints.Any())
+                    {
+                        <MudCardContent>
+                            <ul class="data-point-list">
+                                @foreach (var category in group.OrderBy(x => x.Index).ThenBy(x => x.Name))
                                 {
-                                    <li class="data-point-container" data-category-guid="@category.Guid">
-                                        @if (!string.IsNullOrEmpty(category.Name))
-                                        {
-                                            <div class="data-point-header">
-                                                <MudText HtmlTag="h6">
-                                                    @(DataPointView.GetHeaderText(point))
-                                                </MudText>
+                                    @foreach (var point in _day.Points.Where(x => !x.Deleted && x.Category.Guid == category.Guid && x.Type == category.Type).OrderBy(x => x.CreatedAt))
+                                    {
+                                        <li class="data-point-container" data-category-guid="@category.Guid">
+                                            @if (!string.IsNullOrEmpty(category.Name))
+                                            {
+                                                <div class="data-point-header">
+                                                    <MudText HtmlTag="h6">
+                                                        @(DataPointView.GetHeaderText(point))
+                                                    </MudText>
+                                                </div>
+                                            }
+
+                                            @if (!category.SingleLine)
+                                            {
+                                                <MudFlexBreak />
+                                            }
+
+                                            <div class="data-point-view">
+                                                <DataPointView Point="point" StateChanged="_ => StateHasChanged()" />
                                             </div>
-                                        }
-
-                                        @if (!category.SingleLine)
-                                        {
-                                            <MudFlexBreak />
-                                        }
-
-                                        <div class="data-point-view">
-                                            <DataPointView Point="point" StateChanged="_ => StateHasChanged()" />
-                                        </div>
-                                    </li>
+                                        </li>
+                                    }
                                 }
-                            }
-                        </ul>
-                    </MudCardContent>
+                            </ul>
+                        </MudCardContent>
+                    }
 
-                    <MudCardActions>
-                        @if (group.Key == "Notes")
-                        {
+                    @if (group.Key == "Notes")
+                    {
+                        <MudCardActions>
                             <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Rounded.Chat" OnClick="NewNote">
                                 New note
                             </MudButton>
-                        }
-                    </MudCardActions>
+                        </MudCardActions>
+                    }
                 </MudCard>
             </div>
         }
