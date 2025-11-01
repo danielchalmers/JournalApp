@@ -154,10 +154,8 @@ else if (Point.Type == PointType.Medication)
 
     async Task OnMedicationTakenChanged()
     {
-        // If the medication wasn't taken then having a custom dose doesn't make any sense.
-        // Also allows for an easier way to reset the dose by just clicking the button twice.
-        if (Point.Bool != true)
-            Point.MedicationDose = Point.Category.MedicationDose;
+        // Use helper to handle medication dose reset logic
+        JournalApp.Data.MedicationHelpers.HandleMedicationTakenChanged(Point);
 
         await StateChanged.InvokeAsync();
     }
