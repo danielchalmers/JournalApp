@@ -114,7 +114,7 @@ body {
 }
 
 /* Vertical line before toggle group showing selected color */
-.data-point-view:has(.mud-toggle-group .mud-button-root.mud-selected)::before {
+.data-point-view:has(.mud-toggle-group .mud-selected)::before {
   content: '';
   display: block;
   position: absolute;
@@ -131,22 +131,31 @@ body {
 }
 
 /* Different gradient colors for each toggle item position when selected */
-.mud-toggle-group .mud-button-root.mud-selected:nth-of-type(1) {
+/* Target buttons within toggle group that have the selected class */
+.mud-toggle-group button.mud-selected:nth-of-type(1),
+.mud-toggle-group .mud-button-root.mud-selected:nth-of-type(1),
+.mud-toggle-group > *:nth-child(1).mud-selected {
   background: linear-gradient(135deg, #854C73 0%, #9B5580 100%) !important;
   color: #FFF7F8 !important;
 }
 
-.mud-toggle-group .mud-button-root.mud-selected:nth-of-type(2) {
+.mud-toggle-group button.mud-selected:nth-of-type(2),
+.mud-toggle-group .mud-button-root.mud-selected:nth-of-type(2),
+.mud-toggle-group > *:nth-child(2).mud-selected {
   background: linear-gradient(135deg, #7D5169 0%, #8B5872 100%) !important;
   color: #FFF7F8 !important;
 }
 
-.mud-toggle-group .mud-button-root.mud-selected:nth-of-type(3) {
+.mud-toggle-group button.mud-selected:nth-of-type(3),
+.mud-toggle-group .mud-button-root.mud-selected:nth-of-type(3),
+.mud-toggle-group > *:nth-child(3).mud-selected {
   background: linear-gradient(135deg, #715867 0%, #7F5F6F 100%) !important;
   color: #FFF7F8 !important;
 }
 
-.mud-toggle-group .mud-button-root.mud-selected:nth-of-type(4) {
+.mud-toggle-group button.mud-selected:nth-of-type(4),
+.mud-toggle-group .mud-button-root.mud-selected:nth-of-type(4),
+.mud-toggle-group > *:nth-child(4).mud-selected {
   background: linear-gradient(135deg, #715867 0%, #A8364B 100%) !important;
   color: #FFF7F8 !important;
 }
