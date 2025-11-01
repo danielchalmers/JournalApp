@@ -131,45 +131,28 @@ body {
 }
 
 /* Different shades for each toggle item when selected */
-.mud-toggle-item.mud-selected:nth-child(1) {
+.mud-toggle-group .mud-button-root.mud-selected:nth-of-type(1) {
   background-color: var(--mud-palette-primary) !important;
   color: var(--mud-palette-primary-text) !important;
 }
 
-.mud-toggle-item.mud-selected:nth-child(2) {
+.mud-toggle-group .mud-button-root.mud-selected:nth-of-type(2) {
   background: linear-gradient(135deg, 
     var(--mud-palette-primary) 0%,
     var(--mud-palette-secondary) 100%) !important;
   color: var(--mud-palette-primary-text) !important;
 }
 
-.mud-toggle-item.mud-selected:nth-child(3) {
+.mud-toggle-group .mud-button-root.mud-selected:nth-of-type(3) {
   background-color: var(--mud-palette-secondary) !important;
   color: var(--mud-palette-secondary-text) !important;
 }
 
-.mud-toggle-item.mud-selected:nth-child(4) {
+.mud-toggle-group .mud-button-root.mud-selected:nth-of-type(4) {
   background: linear-gradient(135deg,
     var(--mud-palette-secondary) 0%,
     var(--mud-palette-tertiary) 100%) !important;
   color: var(--mud-palette-tertiary-text) !important;
-}
-
-/* Hover effects with different colors */
-.mud-toggle-item:not(.mud-selected):nth-child(1):hover {
-  background-color: rgba(103, 80, 164, 0.12) !important;
-}
-
-.mud-toggle-item:not(.mud-selected):nth-child(2):hover {
-  background-color: rgba(98, 91, 113, 0.12) !important;
-}
-
-.mud-toggle-item:not(.mud-selected):nth-child(3):hover {
-  background-color: rgba(125, 82, 96, 0.12) !important;
-}
-
-.mud-toggle-item:not(.mud-selected):nth-child(4):hover {
-  background-color: rgba(125, 82, 96, 0.12) !important;
 }
 
 .mud-button {
