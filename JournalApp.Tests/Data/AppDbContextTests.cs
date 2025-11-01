@@ -464,7 +464,7 @@ public class AppDbContextTests : JaTestContext
     }
 
     [Fact]
-    public async Task FixCategoryIndexes_SetsDeletdCategoryIndexToZero()
+    public async Task FixCategoryIndexes_SetsDeletedCategoryIndexToZero()
     {
         // Arrange
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
