@@ -71,7 +71,7 @@ else if (Point.Type == PointType.Text)
 }
 else if (Point.Type == PointType.Note)
 {
-    <div class="d-flex flex-column flex-grow-1" style="position: relative;">
+    <div class="d-flex flex-column flex-grow-1 note-container">
         @if (!string.IsNullOrWhiteSpace(Point.Text))
         {
             <MudTextField @bind-Value="Point.Text"
@@ -81,11 +81,11 @@ else if (Point.Type == PointType.Note)
                           AutoGrow Lines="1" MaxLines="10" />
         }
 
-        <MudIconButton Icon="@Icons.Material.Rounded.Edit" 
+        <MudIconButton Class="note-edit-button"
+                       Icon="@Icons.Material.Rounded.Edit" 
                        aria-label="Edit note" 
                        OnClick="EditTextInDialog" 
-                       Size="Size.Small"
-                       style="position: absolute; top: 0; right: 0; z-index: 1;" />
+                       Size="Size.Small" />
     </div>
 }
 else if (Point.Type == PointType.Medication)

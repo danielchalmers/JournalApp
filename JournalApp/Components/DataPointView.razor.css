@@ -1,0 +1,10 @@
+.note-container {
+  position: relative;
+}
+
+.note-edit-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+}
