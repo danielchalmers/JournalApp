@@ -190,7 +190,11 @@ else if (Point.Type == PointType.Medication)
 
         if (point.Type == PointType.Medication && !string.IsNullOrWhiteSpace(category.MedicationUnit))
         {
-            sb.Append(GetMedicationDoseText(point));
+            var doseText = GetMedicationDoseText(point);
+            if (!string.IsNullOrEmpty(doseText))
+            {
+                sb.Append(' ').Append(doseText);
+            }
         }
 
         sb.Append(':');
@@ -198,7 +202,7 @@ else if (Point.Type == PointType.Medication)
     }
 
     /// <summary>
-    /// Returns the dose text for a medication point (e.g., " 10mg" or " 5ml*")
+    /// Returns the dose text for a medication point (e.g., "10mg" or "5ml*")
     /// </summary>
     public static string GetMedicationDoseText(DataPoint point)
     {
@@ -210,12 +214,12 @@ else if (Point.Type == PointType.Medication)
             // Different dose from the category default.
             if (point.MedicationDose.HasValue && point.MedicationDose != category.MedicationDose)
             {
-                sb.Append(' ').Append($"{point.MedicationDose:0.##}{category.MedicationUnit}*");
+                sb.Append($"{point.MedicationDose:0.##}{category.MedicationUnit}*");
             }
             // The default dose and unit.
             else if (category.MedicationDose.HasValue)
             {
-                sb.Append(' ').Append($"{category.MedicationDose:0.##}{category.MedicationUnit}");
+                sb.Append($"{category.MedicationDose:0.##}{category.MedicationUnit}");
             }
         }
 
