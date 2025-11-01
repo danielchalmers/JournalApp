@@ -12,7 +12,6 @@ inputs:
     required: false
     default: ""
   ENABLE_SIGNING:
-    description: "Set to 'true' to enable Android signing"
     required: false
     default: "false"
 
