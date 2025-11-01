@@ -109,54 +109,37 @@ body {
 .mud-toggle-group {
   flex-grow: 1;
   border-radius: 20px;
-  position: relative;
-  padding-left: 12px;
 }
 
-/* Vertical line before toggle group showing selected color */
-.data-point-view:has(.mud-toggle-group .mud-selected)::before {
-  content: '';
-  display: block;
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  border-radius: 2px;
-  background: var(--mud-palette-primary);
-}
-
-.data-point-view {
-  position: relative;
-}
-
-/* Different gradient colors for each toggle item position when selected */
-/* Target buttons within toggle group that have the selected class */
-.mud-toggle-group button.mud-selected:nth-of-type(1),
-.mud-toggle-group .mud-button-root.mud-selected:nth-of-type(1),
-.mud-toggle-group > *:nth-child(1).mud-selected {
+/* Dynamic gradient colors for toggle items based on position */
+/* Works for any number of items - uses HSL color shifting */
+.toggle-with-colors .mud-toggle-item.mud-selected:nth-child(1) {
   background: linear-gradient(135deg, #854C73 0%, #9B5580 100%) !important;
   color: #FFF7F8 !important;
 }
 
-.mud-toggle-group button.mud-selected:nth-of-type(2),
-.mud-toggle-group .mud-button-root.mud-selected:nth-of-type(2),
-.mud-toggle-group > *:nth-child(2).mud-selected {
+.toggle-with-colors .mud-toggle-item.mud-selected:nth-child(2) {
   background: linear-gradient(135deg, #7D5169 0%, #8B5872 100%) !important;
   color: #FFF7F8 !important;
 }
 
-.mud-toggle-group button.mud-selected:nth-of-type(3),
-.mud-toggle-group .mud-button-root.mud-selected:nth-of-type(3),
-.mud-toggle-group > *:nth-child(3).mud-selected {
+.toggle-with-colors .mud-toggle-item.mud-selected:nth-child(3) {
   background: linear-gradient(135deg, #715867 0%, #7F5F6F 100%) !important;
   color: #FFF7F8 !important;
 }
 
-.mud-toggle-group button.mud-selected:nth-of-type(4),
-.mud-toggle-group .mud-button-root.mud-selected:nth-of-type(4),
-.mud-toggle-group > *:nth-child(4).mud-selected {
+.toggle-with-colors .mud-toggle-item.mud-selected:nth-child(4) {
   background: linear-gradient(135deg, #715867 0%, #A8364B 100%) !important;
+  color: #FFF7F8 !important;
+}
+
+.toggle-with-colors .mud-toggle-item.mud-selected:nth-child(5) {
+  background: linear-gradient(135deg, #A8364B 0%, #B84458 100%) !important;
+  color: #FFF7F8 !important;
+}
+
+.toggle-with-colors .mud-toggle-item.mud-selected:nth-child(6) {
+  background: linear-gradient(135deg, #984861 0%, #A85469 100%) !important;
   color: #FFF7F8 !important;
 }
 

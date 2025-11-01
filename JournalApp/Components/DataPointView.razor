@@ -38,28 +38,46 @@ else if (Point.Type == PointType.Scale)
 }
 else if (Point.Type == PointType.LowToHigh)
 {
-    <MudToggleGroup T="int?" @bind-Value="Point.ScaleIndex" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small">
-        <MudToggleItem T="int?" Value="0">None</MudToggleItem>
-        <MudToggleItem T="int?" Value="1">Low</MudToggleItem>
-        <MudToggleItem T="int?" Value="3">Medium</MudToggleItem>
-        <MudToggleItem T="int?" Value="5">High</MudToggleItem>
-    </MudToggleGroup>
+    <div class="d-flex align-center" style="gap: 4px">
+        @if (Point.ScaleIndex.HasValue)
+        {
+            <div style="width: 4px; align-self: stretch; background: var(--mud-palette-primary); border-radius: 2px;"></div>
+        }
+        <MudToggleGroup T="int?" @bind-Value="Point.ScaleIndex" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" Class="toggle-with-colors">
+            <MudToggleItem T="int?" Value="0">None</MudToggleItem>
+            <MudToggleItem T="int?" Value="1">Low</MudToggleItem>
+            <MudToggleItem T="int?" Value="3">Medium</MudToggleItem>
+            <MudToggleItem T="int?" Value="5">High</MudToggleItem>
+        </MudToggleGroup>
+    </div>
 }
 else if (Point.Type == PointType.MildToSevere)
 {
-    <MudToggleGroup T="int?" @bind-Value="Point.ScaleIndex" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small">
-        <MudToggleItem T="int?" Value="0">None</MudToggleItem>
-        <MudToggleItem T="int?" Value="1">Mild</MudToggleItem>
-        <MudToggleItem T="int?" Value="3">Moderate</MudToggleItem>
-        <MudToggleItem T="int?" Value="5">Severe</MudToggleItem>
-    </MudToggleGroup>
+    <div class="d-flex align-center" style="gap: 4px">
+        @if (Point.ScaleIndex.HasValue)
+        {
+            <div style="width: 4px; align-self: stretch; background: var(--mud-palette-primary); border-radius: 2px;"></div>
+        }
+        <MudToggleGroup T="int?" @bind-Value="Point.ScaleIndex" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" Class="toggle-with-colors">
+            <MudToggleItem T="int?" Value="0">None</MudToggleItem>
+            <MudToggleItem T="int?" Value="1">Mild</MudToggleItem>
+            <MudToggleItem T="int?" Value="3">Moderate</MudToggleItem>
+            <MudToggleItem T="int?" Value="5">Severe</MudToggleItem>
+        </MudToggleGroup>
+    </div>
 }
 else if (Point.Type == PointType.Bool)
 {
-    <MudToggleGroup T="bool?" @bind-Value="Point.Bool" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small">
-        <MudToggleItem T="bool?" Value="false">No</MudToggleItem>
-        <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
-    </MudToggleGroup>
+    <div class="d-flex align-center" style="gap: 4px">
+        @if (Point.Bool.HasValue)
+        {
+            <div style="width: 4px; align-self: stretch; background: var(--mud-palette-primary); border-radius: 2px;"></div>
+        }
+        <MudToggleGroup T="bool?" @bind-Value="Point.Bool" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" Class="toggle-with-colors">
+            <MudToggleItem T="bool?" Value="false">No</MudToggleItem>
+            <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
+        </MudToggleGroup>
+    </div>
 }
 else if (Point.Type == PointType.Number)
 {
@@ -87,10 +105,16 @@ else if (Point.Type == PointType.Note)
 else if (Point.Type == PointType.Medication)
 {
     <div class="d-flex flex-grow-1 justify-space-between align-center" style="gap: 8px">
-        <MudToggleGroup T="bool?" @bind-Value="Point.Bool" @bind-Value:after="OnMedicationTakenChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small">
-            <MudToggleItem T="bool?" Value="false">No</MudToggleItem>
-            <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
-        </MudToggleGroup>
+        <div class="d-flex align-center" style="gap: 4px">
+            @if (Point.Bool.HasValue)
+            {
+                <div style="width: 4px; align-self: stretch; background: var(--mud-palette-primary); border-radius: 2px;"></div>
+            }
+            <MudToggleGroup T="bool?" @bind-Value="Point.Bool" @bind-Value:after="OnMedicationTakenChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" Class="toggle-with-colors">
+                <MudToggleItem T="bool?" Value="false">No</MudToggleItem>
+                <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
+            </MudToggleGroup>
+        </div>
 
         <MudLink OnClick="EditDose" Disabled="@(string.IsNullOrWhiteSpace(Point.Category.MedicationUnit))">Edit dose</MudLink>
     </div>
