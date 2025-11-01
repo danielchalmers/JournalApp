@@ -71,23 +71,29 @@ else if (Point.Type == PointType.Text)
 }
 else if (Point.Type == PointType.Note)
 {
-    <div class="d-flex flex-column flex-grow-1">
-        @if (!string.IsNullOrWhiteSpace(Point.Text))
-        {
-            <MudTextField @bind-Value="Point.Text"
-                          Placeholder="@(Point.IsTimestampedNote ? "What's on your mind?" : null)"
-                          Label="@(NoteLabel)" Typo="Typo.body2"
-                          Immediate ReadOnly Underline="false"
-                          AutoGrow Lines="1" MaxLines="10" />
-        }
+    <div class="d-flex flex-grow-1 justify-space-between align-start" style="gap: 8px">
+        <div class="d-flex flex-column flex-grow-1">
+            @if (!string.IsNullOrWhiteSpace(Point.Text))
+            {
+                <MudTextField @bind-Value="Point.Text"
+                              Placeholder="@(Point.IsTimestampedNote ? "What's on your mind?" : null)"
+                              Label="@(NoteLabel)" Typo="Typo.body2"
+                              Immediate ReadOnly Underline="false"
+                              AutoGrow Lines="1" MaxLines="10" />
+            }
+        </div>
 
         <div class="d-flex align-center" style="gap: 4px">
-            <MudIconButton Icon="@Icons.Material.Rounded.Edit" aria-label="Edit note" OnClick="EditTextInDialog" Size="Size.Small" />
-            <MudIconButton Icon="@(Point.IsPinned ? Icons.Material.Filled.PushPin : Icons.Material.Outlined.PushPin)" 
-                          aria-label="@(Point.IsPinned ? "Unpin note" : "Pin note")" 
-                          OnClick="TogglePin" 
-                          Size="Size.Small" 
-                          Color="@(Point.IsPinned ? Color.Primary : Color.Default)" />
+            <MudTooltip Text="Edit note">
+                <MudIconButton Icon="@Icons.Material.Rounded.Edit" aria-label="Edit note" OnClick="EditTextInDialog" Size="Size.Small" />
+            </MudTooltip>
+            <MudTooltip Text="@(Point.IsPinned ? "Unpin note" : "Pin note")">
+                <MudIconButton Icon="@(Point.IsPinned ? Icons.Material.Filled.PushPin : Icons.Material.Outlined.PushPin)" 
+                              aria-label="@(Point.IsPinned ? "Unpin note" : "Pin note")" 
+                              OnClick="TogglePin" 
+                              Size="Size.Small" 
+                              Color="@(Point.IsPinned ? Color.Primary : Color.Default)" />
+            </MudTooltip>
         </div>
     </div>
 }
