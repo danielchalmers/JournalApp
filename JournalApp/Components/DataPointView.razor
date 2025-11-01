@@ -109,8 +109,8 @@ else if (Point.Type == PointType.Medication)
 
     public int ScaleIndexForMudRating
     {
-        get => Point.ScaleIndex ?? 0;
-        set => Point.ScaleIndex = value == 0 ? null : value;
+        get => JournalApp.Data.DataPointHelpers.GetScaleIndex(Point);
+        set => JournalApp.Data.DataPointHelpers.SetScaleIndex(Point, value);
     }
 
     string NoteLabel
@@ -134,13 +134,13 @@ else if (Point.Type == PointType.Medication)
     void DecrementSleep()
     {
         logger.LogDebug("Decrementing sleep");
-        Point.SleepHours = Math.Max(0m, (Point.SleepHours ?? 0) - 0.5m);
+        JournalApp.Data.DataPointHelpers.DecrementSleep(Point);
     }
 
     void IncrementSleep()
     {
         logger.LogDebug("Incrementing sleep");
-        Point.SleepHours = Math.Min(24m, (Point.SleepHours ?? 0) + 0.5m);
+        JournalApp.Data.DataPointHelpers.IncrementSleep(Point);
     }
 
     async Task EditTextInDialog()
@@ -172,7 +172,7 @@ else if (Point.Type == PointType.Medication)
     void OnMoodSelected(string mood)
     {
         logger.LogDebug("Mood selected: {mood}", mood);
-        Point.Mood = mood;
+        JournalApp.Data.DataPointHelpers.SetMood(Point, mood);
 
         // Show a motivational quote when the sob emoji is selected
         if (mood == DataPoint.Moods[^1])  // Sob emoji (😭) is the last mood in the list
