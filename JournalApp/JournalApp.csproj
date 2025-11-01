@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFrameworks>$(TargetFrameworks);net9.0-android</TargetFrameworks>
-    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>
-    <OutputType Condition="'$(TargetFramework)' != 'net9.0'">Exe</OutputType>
+    <TargetFrameworks>$(TargetFrameworks);net10.0-android</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
+    <OutputType Condition="'$(TargetFramework)' != 'net10.0'">Exe</OutputType>
     <RootNamespace>JournalApp</RootNamespace>
     <UseMaui>true</UseMaui>
     <SingleProject>true</SingleProject>
@@ -49,16 +49,16 @@
   <ItemGroup>
     <PackageReference Include="Blazor-ApexCharts" Version="6.0.2" />
     <PackageReference Include="CommunityToolkit.Maui" Version="12.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="9.0.120" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="9.0.10" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.10" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.10">
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="10.0.0-rc.2.25504.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="10.0.0-rc.2.25502.107" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.0-rc.2.25502.107" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="10.0.0-rc.2.25502.107">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.10" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.10" />
-    <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.120" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.0-rc.2.25502.107" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0-rc.2.25502.107" />
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.0-rc.2.25504.7" />
     <PackageReference Include="MudBlazor" Version="8.13.0" />
     <PackageReference Include="Nerdbank.GitVersioning" Version="3.8.118" PrivateAssets="All" />
   </ItemGroup>
