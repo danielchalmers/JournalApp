@@ -43,6 +43,55 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
             backup.Points.Count);
     }
 
+    /// <summary>
+    /// Atomically deletes all existing data and restores from backup in a single transaction.
+    /// This prevents database corruption if the operation is interrupted.
+    /// </summary>
+    public async Task ReplaceDbSets(BackupFile backup)
+    {
+        var sw = Stopwatch.StartNew();
+
+        await using var db = await dbFactory.CreateDbContextAsync();
+        await using var transaction = await db.Database.BeginTransactionAsync();
+        
+        try
+        {
+            // Delete all existing data
+            var pointsDeleted = await db.Points.ExecuteDeleteAsync();
+            var daysDeleted = await db.Days.ExecuteDeleteAsync();
+            var categoriesDeleted = await db.Categories.ExecuteDeleteAsync();
+            
+            logger.LogDebug(
+                "Cleared data sets in transaction (points: {PointsDeleted}, days: {DaysDeleted}, categories: {CategoriesDeleted})",
+                pointsDeleted,
+                daysDeleted,
+                categoriesDeleted);
+
+            // Restore from backup
+            await db.Days.AddRangeAsync(backup.Days);
+            await db.Categories.AddRangeAsync(backup.Categories);
+            await db.Points.AddRangeAsync(backup.Points);
+            await db.SaveChangesAsync();
+
+            // Commit the transaction - both delete and restore succeed or fail together
+            await transaction.CommitAsync();
+
+            sw.Stop();
+            logger.LogInformation(
+                "Replaced data sets atomically in {ElapsedMilliseconds}ms (days: {DayCount}, categories: {CategoryCount}, points: {PointCount})",
+                sw.ElapsedMilliseconds,
+                backup.Days.Count,
+                backup.Categories.Count,
+                backup.Points.Count);
+        }
+        catch
+        {
+            // Rollback on any error - database remains in original state
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
+
     public void SetPreferences(BackupFile backup)
     {
         logger.LogDebug("Restoring {PreferenceCount} preferences from backup", backup.PreferenceBackups.Count);

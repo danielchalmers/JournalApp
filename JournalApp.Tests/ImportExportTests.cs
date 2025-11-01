@@ -56,6 +56,41 @@ public class ImportExportTests : JaTestContext
         AssertBackupIsRoughlyEqualToDatabase(backup);
     }
 
+    [Fact]
+    public async Task ReplaceDbSetsIsAtomic()
+    {
+        var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDataService = Services.GetService<AppDataService>();
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+
+        // Seed initial data
+        var dates = new DateOnly(2023, 01, 01).DatesTo(new(2023, 01, 08));
+        appDbSeeder.SeedCategories();
+        appDbSeeder.SeedDays(dates);
+
+        var initialBackup = await appDataService.CreateBackup();
+        var initialDayGuids = initialBackup.Days.Select(x => x.Guid).ToList();
+
+        // Create a new backup with different data
+        await appDataService.DeleteDbSets();
+        appDbSeeder.SeedCategories();
+        var dates2 = new DateOnly(2024, 01, 01).DatesTo(new(2024, 01, 03));
+        appDbSeeder.SeedDays(dates2);
+        var newBackup = await appDataService.CreateBackup();
+
+        // Replace atomically - should delete old data and restore new data in a single transaction
+        await appDataService.ReplaceDbSets(newBackup);
+
+        // Verify the new data is present
+        AssertBackupIsRoughlyEqualToDatabase(newBackup);
+
+        // Verify the old data is gone
+        using (var db = dbf.CreateDbContext())
+        {
+            db.Days.Select(x => x.Guid).Should().NotContain(initialDayGuids);
+        }
+    }
+
     private void AssertBackupIsRoughlyEqualToDatabase(BackupFile backup)
     {
         var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();

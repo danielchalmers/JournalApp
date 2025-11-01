@@ -59,16 +59,16 @@ namespace JournalApp;
                 return false;
             }
 
-            logger.LogInformation("Starting data import - deleting existing data and restoring from backup");
-
-            // Restore preferences.
-            appDataService.SetPreferences(backup);
+            logger.LogInformation("Starting data import - replacing all existing data with backup");
 
             try
             {
-                // Import data from backup.
-                await appDataService.DeleteDbSets();
-                await appDataService.RestoreDbSets(backup);
+                // Import data from backup atomically - delete and restore in a single transaction.
+                // If this fails, the database will be rolled back to its original state.
+                await appDataService.ReplaceDbSets(backup);
+                
+                // Only restore preferences after database operations succeed.
+                appDataService.SetPreferences(backup);
             }
             catch (Exception ex)
             {
@@ -78,7 +78,7 @@ namespace JournalApp;
                     "Import failed during database operations after {ElapsedMilliseconds}ms (total {TotalElapsedMilliseconds}ms)",
                     readStopwatch.ElapsedMilliseconds,
                     total.ElapsedMilliseconds);
-                await dialogService.ShowJaMessageBox($"Import failed: The database could not be updated and may be corrupted. You may need to reinstall the app. Error: {ex.Message}");
+                await dialogService.ShowJaMessageBox($"Import failed: The database could not be updated. Error: {ex.Message}");
                 return false;
             }
 
