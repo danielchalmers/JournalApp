@@ -129,28 +129,27 @@ namespace JournalApp;
             sw.Restart();
 
             // Create a memory stream to write the archive to
-            byte[] archiveBytes;
-            using (var memoryStream = new MemoryStream())
+            MemoryStream archiveStream = null;
+            try
             {
-                try
-                {
-                    await backupFile.WriteArchive(memoryStream);
-                    archiveBytes = memoryStream.ToArray();
+                archiveStream = new MemoryStream();
+                await backupFile.WriteArchive(archiveStream);
+                archiveStream.Position = 0; // Reset position to beginning for reading
 
-                    logger.LogInformation("Backup archive created in memory ({SizeKB} KB) in {ElapsedMilliseconds}ms", 
-                        archiveBytes.Length / 1024, sw.ElapsedMilliseconds);
-                }
-                catch (Exception ex)
-                {
-                    total.Stop();
-                    logger.LogError(
-                        ex,
-                        "Failed to create backup archive after {ElapsedMilliseconds}ms (total {TotalElapsedMilliseconds}ms)",
-                        sw.ElapsedMilliseconds,
-                        total.ElapsedMilliseconds);
-                    await dialogService.ShowJaMessageBox($"Export failed: Could not create the backup archive. {ex.Message}");
-                    return;
-                }
+                logger.LogInformation("Backup archive created in memory ({SizeKB} KB) in {ElapsedMilliseconds}ms", 
+                    archiveStream.Length / 1024, sw.ElapsedMilliseconds);
+            }
+            catch (Exception ex)
+            {
+                archiveStream?.Dispose();
+                total.Stop();
+                logger.LogError(
+                    ex,
+                    "Failed to create backup archive after {ElapsedMilliseconds}ms (total {TotalElapsedMilliseconds}ms)",
+                    sw.ElapsedMilliseconds,
+                    total.ElapsedMilliseconds);
+                await dialogService.ShowJaMessageBox($"Export failed: Could not create the backup archive. {ex.Message}");
+                return;
             }
 
             // Prompt the user to save the file.
@@ -158,9 +157,8 @@ namespace JournalApp;
             sw.Restart();
             try
             {
-                using var saveStream = new MemoryStream(archiveBytes);
                 var fileName = $"backup-{DateTime.Now:yyyy-MM-dd}.journalapp";
-                var result = await fileSaver.SaveAsync(fileName, saveStream);
+                var result = await fileSaver.SaveAsync(fileName, archiveStream);
 
                 if (result.IsSuccessful)
                 {
@@ -194,7 +192,10 @@ namespace JournalApp;
                     sw.ElapsedMilliseconds,
                     total.ElapsedMilliseconds);
                 await dialogService.ShowJaMessageBox($"Export failed: Could not save the backup file. {ex.Message}");
-                return;
+            }
+            finally
+            {
+                archiveStream?.Dispose();
             }
         }
 }
