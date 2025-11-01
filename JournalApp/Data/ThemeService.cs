@@ -37,7 +37,12 @@ public sealed class ThemeService
         try
         {
             seed = _materialColorService.Seed;
-            _logger.LogInformation("Creating MudTheme from MaterialColorService seed: #{Seed:X6}", seed);
+            
+            // Log both the seed and compare with fallback to help debug
+            var isUsingFallback = (seed == ThemeConstants.DefaultSeedColor);
+            _logger.LogInformation(
+                "Creating MudTheme from MaterialColorService seed: #{Seed:X6} (Fallback: #{Fallback:X6}, Using Fallback: {IsUsingFallback})",
+                seed, ThemeConstants.DefaultSeedColor, isUsingFallback);
         }
         catch (Exception ex)
         {
