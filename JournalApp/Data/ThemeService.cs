@@ -30,8 +30,8 @@ public sealed class ThemeService
     /// </summary>
     public MudTheme CreateMudTheme()
     {
-        // Get the seed from MaterialColorService which either extracted it from the system
-        // or is using the fallback seed configured in MauiProgram
+        // Get the seed from MaterialColorService which automatically extracts from system
+        // colors on Android API 27+ or uses the fallback seed configured in MauiProgram
         uint seed;
         
         try
@@ -46,6 +46,7 @@ public sealed class ThemeService
         }
 
         // Create core palette from seed
+        // MaterialColorService.Seed already contains the system color if available
         var corePalette = CorePalette.Of(seed);
         
         // Generate light and dark schemes from the core palette
