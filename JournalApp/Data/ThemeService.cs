@@ -30,23 +30,20 @@ public sealed class ThemeService
     /// </summary>
     public MudTheme CreateMudTheme()
     {
-        // Generate both light and dark color schemes manually from a seed
-        // This approach ensures we have both palettes regardless of current system theme
-        uint seed = ThemeConstants.DefaultSeedColor;
+        // Get the seed from MaterialColorService which either extracted it from the system
+        // or is using the fallback seed configured in MauiProgram
+        uint seed;
         
         try
         {
-            if (_materialColorService.Seed != 0)
-            {
-                seed = _materialColorService.Seed;
-            }
+            seed = _materialColorService.Seed;
+            _logger.LogInformation("Creating MudTheme from MaterialColorService seed: #{Seed:X6}", seed);
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Error accessing MaterialColorService.Seed, using fallback");
+            _logger.LogWarning(ex, "Error accessing MaterialColorService.Seed, using hardcoded fallback");
+            seed = ThemeConstants.DefaultSeedColor;
         }
-        
-        _logger.LogInformation("Creating MudTheme from seed: #{Seed:X6}", seed);
 
         // Create core palette from seed
         var corePalette = CorePalette.Of(seed);

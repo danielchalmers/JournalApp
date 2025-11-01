@@ -21,6 +21,7 @@ public static class MauiProgram
             .UseMaterialColors(options =>
             {
                 // Fallback seed color (pink) for devices below API 27 or when dynamic colors are unavailable
+                // Dynamic color extraction is enabled by default
                 options.FallbackSeed = ThemeConstants.DefaultSeedColor;
             })
             .ConfigureFonts(fonts => fonts.AddFont("Roboto-Regular.ttf", "RobotoRegular"));
