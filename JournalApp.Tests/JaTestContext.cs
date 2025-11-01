@@ -1,4 +1,4 @@
-﻿using JournalApp.Data;
+using JournalApp.Data;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,6 +15,7 @@ public abstract class JaTestContext : TestContext, IAsyncLifetime
         Services.AddSingleton<AppDataUIService>();
         Services.AddSingleton<IPreferences, InMemoryPreferences>();
         Services.AddSingleton<IShare, MockShare>();
+        Services.AddSingleton(CommunityToolkit.Maui.Storage.FileSaver.Default);
         Services.AddSingleton<IBrowser, MockBrowser>();
         JSInterop.Mode = JSRuntimeMode.Loose;
         return Task.CompletedTask;
