@@ -109,46 +109,46 @@ body {
 .mud-toggle-group {
   flex-grow: 1;
   border-radius: 20px;
+  position: relative;
+  padding-left: 12px;
 }
 
-/* Horizontal line before toggle group showing selected color */
+/* Vertical line before toggle group showing selected color */
 .data-point-view:has(.mud-toggle-group .mud-button-root.mud-selected)::before {
   content: '';
   display: block;
-  width: 100%;
-  height: 3px;
-  margin-bottom: 8px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
   border-radius: 2px;
   background: var(--mud-palette-primary);
 }
 
-/* Gradient colors for each toggle item position when selected */
+.data-point-view {
+  position: relative;
+}
+
+/* Different gradient colors for each toggle item position when selected */
 .mud-toggle-group .mud-button-root.mud-selected:nth-of-type(1) {
-  background: linear-gradient(135deg, 
-    var(--mud-palette-primary) 0%,
-    color-mix(in srgb, var(--mud-palette-primary) 80%, var(--mud-palette-secondary) 20%) 100%) !important;
-  color: var(--mud-palette-primary-text) !important;
+  background: linear-gradient(135deg, #854C73 0%, #9B5580 100%) !important;
+  color: #FFF7F8 !important;
 }
 
 .mud-toggle-group .mud-button-root.mud-selected:nth-of-type(2) {
-  background: linear-gradient(135deg, 
-    color-mix(in srgb, var(--mud-palette-primary) 60%, var(--mud-palette-secondary) 40%) 0%,
-    color-mix(in srgb, var(--mud-palette-primary) 40%, var(--mud-palette-secondary) 60%) 100%) !important;
-  color: var(--mud-palette-primary-text) !important;
+  background: linear-gradient(135deg, #7D5169 0%, #8B5872 100%) !important;
+  color: #FFF7F8 !important;
 }
 
 .mud-toggle-group .mud-button-root.mud-selected:nth-of-type(3) {
-  background: linear-gradient(135deg,
-    color-mix(in srgb, var(--mud-palette-primary) 20%, var(--mud-palette-secondary) 80%) 0%,
-    var(--mud-palette-secondary) 100%) !important;
-  color: var(--mud-palette-secondary-text) !important;
+  background: linear-gradient(135deg, #715867 0%, #7F5F6F 100%) !important;
+  color: #FFF7F8 !important;
 }
 
 .mud-toggle-group .mud-button-root.mud-selected:nth-of-type(4) {
-  background: linear-gradient(135deg,
-    var(--mud-palette-secondary) 0%,
-    color-mix(in srgb, var(--mud-palette-secondary) 50%, var(--mud-palette-error) 50%) 100%) !important;
-  color: var(--mud-palette-secondary-text) !important;
+  background: linear-gradient(135deg, #715867 0%, #A8364B 100%) !important;
+  color: #FFF7F8 !important;
 }
 
 .mud-button {
