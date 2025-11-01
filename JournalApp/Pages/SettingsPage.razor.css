@@ -10,3 +10,14 @@
   gap: 8px;
   padding: 12px;
 }
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+}
+
+::deep .loading-spinner {
+  height: 33vw;
+  width: 33vw;
+  margin-top: 10vh;
+}
