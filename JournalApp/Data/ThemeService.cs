@@ -38,6 +38,14 @@ public sealed class ThemeService
         {
             seed = _materialColorService.Seed;
             
+            // If Seed is 0, it means MaterialColorService didn't extract a color
+            // In this case, use the fallback seed
+            if (seed == 0)
+            {
+                _logger.LogWarning("MaterialColorService.Seed is 0, using fallback seed");
+                seed = ThemeConstants.DefaultSeedColor;
+            }
+            
             // Log both the seed and compare with fallback to help debug
             var isUsingFallback = (seed == ThemeConstants.DefaultSeedColor);
             _logger.LogInformation(
