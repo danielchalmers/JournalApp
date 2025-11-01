@@ -1,0 +1,12 @@
+.medication-fields {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  gap: 1em;
+}
+
+.more-options-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}

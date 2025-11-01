@@ -1,4 +1,14 @@
+.sleep-controls {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  gap: 8px;
+}
+
 .note-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
   position: relative;
 }
 
@@ -7,4 +17,12 @@
   top: 0;
   right: 0;
   z-index: 1;
+}
+
+.medication-controls {
+  display: flex;
+  flex-grow: 1;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
 }

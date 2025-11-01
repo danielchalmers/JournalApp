@@ -13,6 +13,10 @@
   overflow-x: clip;
 }
 
+::deep .manage-category-enabled-switch {
+  margin-right: -2px;
+}
+
 ::deep .mud-paper {
   padding: 12px;
 }
