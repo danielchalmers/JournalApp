@@ -1,23 +1,31 @@
-﻿@namespace JournalApp
+@namespace JournalApp
 @using System.Collections.Generic
+@using System.Globalization
 @using System.Linq.Expressions
+@using System.Text
 @typeparam TValue
 
-<div class="@ContainerClassname" style="@Style">
-    <MudToggleGroup T="TValue"
-                    Class="ja-toggle-group"
-                    Size="@Size"
-                    SelectionMode="@SelectionMode"
-                    Disabled="@Disabled"
-                    Value="@Value"
-                    ValueChanged="@ValueChanged"
-                    ValueExpression="@ValueExpression"
-                    @attributes="UserAttributes">
-        @ChildContent
-    </MudToggleGroup>
-</div>
+<MudToggleGroup T="TValue"
+                Class="@GroupClass"
+                Style="@GroupStyle"
+                Size="@Size"
+                SelectionMode="@SelectionMode"
+                Disabled="@Disabled"
+                Value="@Value"
+                ValueChanged="@ValueChanged"
+                ValueExpression="@ValueExpression"
+                @attributes="UserAttributes">
+    @ChildContent
+</MudToggleGroup>
 
 @code {
+    private const byte PrimaryRed = 234;
+    private const byte PrimaryGreen = 184;
+    private const byte PrimaryBlue = 214;
+    private static readonly double[] HueOffsets = { 0, 35, -35, 70, -70, 140, -140, 175 };
+    private string _groupStyle;
+    private string _userProvidedClass;
+
     [Parameter]
     public TValue Value { get; set; }
 
@@ -34,9 +42,6 @@
     public string Class { get; set; }
 
     [Parameter]
-    public string Style { get; set; }
-
-    [Parameter]
     public SelectionMode SelectionMode { get; set; } = SelectionMode.ToggleSelection;
 
     [Parameter]
@@ -48,7 +53,159 @@
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object> UserAttributes { get; set; } = new();
 
-    string ContainerClassname => string.IsNullOrWhiteSpace(Class)
-        ? "ja-toggle-group-container"
-        : $"ja-toggle-group-container {Class}";
+    private string GroupClass
+    {
+        get
+        {
+            var classes = new List<string> { "ja-toggle-group" };
+
+            if (!string.IsNullOrWhiteSpace(Class))
+            {
+                classes.Add(Class);
+            }
+
+            if (!string.IsNullOrWhiteSpace(_userProvidedClass))
+            {
+                classes.Add(_userProvidedClass);
+            }
+
+            return string.Join(' ', classes);
+        }
+    }
+
+    private string GroupStyle => _groupStyle ??= BuildStyle();
+
+    protected override void OnParametersSet()
+    {
+        if (UserAttributes != null && UserAttributes.TryGetValue("class", out var additionalClass))
+        {
+            _userProvidedClass = Convert.ToString(additionalClass, CultureInfo.InvariantCulture);
+            UserAttributes.Remove("class");
+        }
+        else
+        {
+            _userProvidedClass = null;
+        }
+
+        _groupStyle = BuildStyle();
+    }
+
+    private string BuildStyle()
+    {
+        var (h, s, l) = RgbToHsl(PrimaryRed, PrimaryGreen, PrimaryBlue);
+        var builder = new StringBuilder();
+
+        for (var i = 0; i < HueOffsets.Length; i++)
+        {
+            var (r, g, b) = FromHsl(ShiftHue(h, HueOffsets[i]), s, l);
+            var textColor = GetReadableText(r, g, b);
+            builder.AppendFormat(CultureInfo.InvariantCulture, "--ja-color-{0}: rgba({1},{2},{3},1);", i + 1, r, g, b);
+            builder.AppendFormat(CultureInfo.InvariantCulture, "--ja-color-{0}-text: {1};", i + 1, textColor);
+        }
+
+        builder.Append("--ja-selected-color: var(--ja-color-1);");
+        builder.Append("--ja-selected-text-color: var(--ja-color-1-text);");
+
+        return builder.ToString();
+    }
+
+    private static (double h, double s, double l) RgbToHsl(byte r, byte g, byte b)
+    {
+        var rd = r / 255d;
+        var gd = g / 255d;
+        var bd = b / 255d;
+
+        var max = Math.Max(rd, Math.Max(gd, bd));
+        var min = Math.Min(rd, Math.Min(gd, bd));
+        var delta = max - min;
+
+        double h;
+        if (delta == 0)
+        {
+            h = 0;
+        }
+        else if (max == rd)
+        {
+            h = 60 * (((gd - bd) / delta) % 6);
+        }
+        else if (max == gd)
+        {
+            h = 60 * (((bd - rd) / delta) + 2);
+        }
+        else
+        {
+            h = 60 * (((rd - gd) / delta) + 4);
+        }
+
+        if (h < 0)
+        {
+            h += 360;
+        }
+
+        var l = (max + min) / 2d;
+        var s = delta == 0 ? 0 : delta / (1 - Math.Abs(2 * l - 1));
+
+        return (h, s, l);
+    }
+
+    private static double ShiftHue(double baseHue, double offset)
+    {
+        var hue = (baseHue + offset) % 360d;
+        return hue < 0 ? hue + 360d : hue;
+    }
+
+    private static (byte r, byte g, byte b) FromHsl(double h, double s, double l)
+    {
+        var c = (1 - Math.Abs(2 * l - 1)) * s;
+        var x = c * (1 - Math.Abs((h / 60d % 2) - 1));
+        var m = l - c / 2d;
+
+        double rd;
+        double gd;
+        double bd;
+
+        if (h < 60)
+        {
+            rd = c; gd = x; bd = 0;
+        }
+        else if (h < 120)
+        {
+            rd = x; gd = c; bd = 0;
+        }
+        else if (h < 180)
+        {
+            rd = 0; gd = c; bd = x;
+        }
+        else if (h < 240)
+        {
+            rd = 0; gd = x; bd = c;
+        }
+        else if (h < 300)
+        {
+            rd = x; gd = 0; bd = c;
+        }
+        else
+        {
+            rd = c; gd = 0; bd = x;
+        }
+
+        var r = (byte)Math.Round((rd + m) * 255);
+        var g = (byte)Math.Round((gd + m) * 255);
+        var b = (byte)Math.Round((bd + m) * 255);
+
+        return (r, g, b);
+    }
+
+    private static string GetReadableText(byte r, byte g, byte b)
+    {
+        static double Linearize(byte channel)
+        {
+            var c = channel / 255d;
+            return c <= 0.04045 ? c / 12.92 : Math.Pow((c + 0.055) / 1.055, 2.4);
+        }
+
+        var luminance = 0.2126 * Linearize(r) + 0.7152 * Linearize(g) + 0.0722 * Linearize(b);
+
+        return luminance > 0.5 ? "rgba(17,24,39,1)" : "rgba(255,255,255,1)";
+    }
 }

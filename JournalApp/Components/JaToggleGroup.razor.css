@@ -1,133 +1,68 @@
-.ja-toggle-group-container {
+.ja-toggle-group {
   position: relative;
-  display: flex;
-  flex-grow: 1;
-}
-
-::deep .ja-toggle-group {
-  --ja-toggle-color-1: #9ca3af;
-  --ja-toggle-color-1-muted: rgba(156, 163, 175, 0.18);
-  --ja-toggle-color-2: #10b981;
-  --ja-toggle-color-2-muted: rgba(16, 185, 129, 0.18);
-  --ja-toggle-color-3: #f59e0b;
-  --ja-toggle-color-3-muted: rgba(245, 158, 11, 0.18);
-  --ja-toggle-color-4: #ef4444;
-  --ja-toggle-color-4-muted: rgba(239, 68, 68, 0.18);
-  --ja-toggle-color-5: #8b5cf6;
-  --ja-toggle-color-5-muted: rgba(139, 92, 246, 0.18);
-  --ja-toggle-color-6: #3b82f6;
-  --ja-toggle-color-6-muted: rgba(59, 130, 246, 0.18);
-  --ja-toggle-selected-color: transparent;
-  border-radius: 20px;
+  padding-left: 8px;
+  border-radius: var(--mud-default-borderradius);
   overflow: hidden;
-  flex-grow: 1;
-  padding-left: 10px;
-  position: relative;
-  display: grid;
-  gap: 0;
-  align-items: stretch;
 }
 
 ::deep .ja-toggle-group::before {
   content: "";
   position: absolute;
   left: 0;
-  top: 0;
-  bottom: 0;
-  width: 6px;
+  top: 6px;
+  bottom: 6px;
+  width: 4px;
   border-radius: 999px;
-  background-color: var(--ja-toggle-selected-color);
+  background-color: var(--ja-selected-color);
   transition: background-color 150ms ease-in-out;
 }
 
 ::deep .ja-toggle-group .mud-toggle-item {
-  border-radius: 0;
   border: none;
-  background-color: var(--ja-toggle-item-color-muted, rgba(148, 163, 184, 0.18));
-  color: var(--ja-toggle-item-color-text, #1f2933);
-  font-weight: 600;
-  transition: background-color 150ms ease-in-out, color 150ms ease-in-out;
-}
-
-::deep .ja-toggle-group .mud-toggle-item:focus-visible {
-  outline: 2px solid currentColor;
-  outline-offset: -2px;
+  border-radius: 0;
 }
 
 ::deep .ja-toggle-group .mud-toggle-item.mud-toggle-item-selected {
-  background-color: var(--ja-toggle-item-color, var(--mud-palette-primary));
-  color: var(--ja-toggle-item-color-selected-text, #0b0f19);
-}
-
-::deep .ja-toggle-group .mud-toggle-item:nth-child(1) {
-  --ja-toggle-item-color: var(--ja-toggle-color-1);
-  --ja-toggle-item-color-muted: var(--ja-toggle-color-1-muted);
-}
-
-::deep .ja-toggle-group .mud-toggle-item:nth-child(2) {
-  --ja-toggle-item-color: var(--ja-toggle-color-2);
-  --ja-toggle-item-color-muted: var(--ja-toggle-color-2-muted);
-}
-
-::deep .ja-toggle-group .mud-toggle-item:nth-child(3) {
-  --ja-toggle-item-color: var(--ja-toggle-color-3);
-  --ja-toggle-item-color-muted: var(--ja-toggle-color-3-muted);
-}
-
-::deep .ja-toggle-group .mud-toggle-item:nth-child(4) {
-  --ja-toggle-item-color: var(--ja-toggle-color-4);
-  --ja-toggle-item-color-muted: var(--ja-toggle-color-4-muted);
-}
-
-::deep .ja-toggle-group .mud-toggle-item:nth-child(5) {
-  --ja-toggle-item-color: var(--ja-toggle-color-5);
-  --ja-toggle-item-color-muted: var(--ja-toggle-color-5-muted);
-}
-
-::deep .ja-toggle-group .mud-toggle-item:nth-child(6) {
-  --ja-toggle-item-color: var(--ja-toggle-color-6);
-  --ja-toggle-item-color-muted: var(--ja-toggle-color-6-muted);
-}
-
-::deep .ja-toggle-group .mud-toggle-item:nth-child(n+7) {
-  --ja-toggle-item-color: var(--ja-toggle-color-6);
-  --ja-toggle-item-color-muted: var(--ja-toggle-color-6-muted);
-}
-
-::deep .ja-toggle-group .mud-toggle-item .mud-button-label {
-  justify-content: center;
-  width: 100%;
-}
-
-::deep .ja-toggle-group .mud-toggle-item .mud-toggle-item-content {
-  justify-content: center;
-  width: 100%;
+  background-color: var(--ja-selected-color);
+  color: var(--ja-selected-text-color);
 }
 
 ::deep .ja-toggle-group:has(> .mud-toggle-item:nth-child(1).mud-toggle-item-selected) {
-  --ja-toggle-selected-color: var(--ja-toggle-color-1);
+  --ja-selected-color: var(--ja-color-1);
+  --ja-selected-text-color: var(--ja-color-1-text);
 }
 
 ::deep .ja-toggle-group:has(> .mud-toggle-item:nth-child(2).mud-toggle-item-selected) {
-  --ja-toggle-selected-color: var(--ja-toggle-color-2);
+  --ja-selected-color: var(--ja-color-2);
+  --ja-selected-text-color: var(--ja-color-2-text);
 }
 
 ::deep .ja-toggle-group:has(> .mud-toggle-item:nth-child(3).mud-toggle-item-selected) {
-  --ja-toggle-selected-color: var(--ja-toggle-color-3);
+  --ja-selected-color: var(--ja-color-3);
+  --ja-selected-text-color: var(--ja-color-3-text);
 }
 
 ::deep .ja-toggle-group:has(> .mud-toggle-item:nth-child(4).mud-toggle-item-selected) {
-  --ja-toggle-selected-color: var(--ja-toggle-color-4);
+  --ja-selected-color: var(--ja-color-4);
+  --ja-selected-text-color: var(--ja-color-4-text);
 }
 
 ::deep .ja-toggle-group:has(> .mud-toggle-item:nth-child(5).mud-toggle-item-selected) {
-  --ja-toggle-selected-color: var(--ja-toggle-color-5);
+  --ja-selected-color: var(--ja-color-5);
+  --ja-selected-text-color: var(--ja-color-5-text);
 }
 
 ::deep .ja-toggle-group:has(> .mud-toggle-item:nth-child(6).mud-toggle-item-selected) {
-  --ja-toggle-selected-color: var(--ja-toggle-color-6);
+  --ja-selected-color: var(--ja-color-6);
+  --ja-selected-text-color: var(--ja-color-6-text);
 }
 
-::deep .ja-toggle-group:has(> .mud-toggle-item:nth-child(n+7).mud-toggle-item-selected) {
-  --ja-toggle-selected-color: var(--ja-toggle-color-6);
+::deep .ja-toggle-group:has(> .mud-toggle-item:nth-child(7).mud-toggle-item-selected) {
+  --ja-selected-color: var(--ja-color-7);
+  --ja-selected-text-color: var(--ja-color-7-text);
+}
+
+::deep .ja-toggle-group:has(> .mud-toggle-item:nth-child(n+8).mud-toggle-item-selected) {
+  --ja-selected-color: var(--ja-color-8);
+  --ja-selected-text-color: var(--ja-color-8-text);
 }
