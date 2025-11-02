@@ -12,14 +12,17 @@
         @(Point.Mood ?? "🤔")
     </Emoji>
 
+    <MudOverlay Visible="@_isMoodPopoverOpen" OnClick="@(() => _isMoodPopoverOpen = false)" ZIndex="990" />
+
     <MudPopover Open="@_isMoodPopoverOpen"
-                AnchorOrigin="Origin.TopLeft"
+                AnchorOrigin="Origin.BottomLeft"
                 TransformOrigin="Origin.TopLeft"
                 Class="emoji-popover">
         <div class="emoji-popover-content">
             @foreach (var mood in DataPoint.Moods)
             {
-                <Emoji OnClick="@(() => OnMoodSelected(mood))">
+                <Emoji OnClick="@(() => OnMoodSelected(mood))"
+                       AriaLabel="@($"Select {mood} mood")">
                     @mood
                 </Emoji>
             }

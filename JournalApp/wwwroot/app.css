@@ -173,10 +173,18 @@ body {
   border-radius: 8px;
 }
 
+.emoji-popover {
+  z-index: 991 !important;
+}
+
 .emoji-popover-content {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  padding: 4px;
+  background-color: var(--mud-palette-surface);
+  border-radius: 12px;
+  box-shadow: var(--mud-elevation-8);
 }
 
 .list-group-title {
