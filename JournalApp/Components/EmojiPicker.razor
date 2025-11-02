@@ -36,10 +36,10 @@
 
     private async Task OnMoodClicked(string mood, MouseEventArgs args)
     {
-        _isOpen = false;
-        
-        // Trigger the visual effect
+        // Trigger the visual effect first while the popover is still open
         await TriggerMoodEffect(mood, args);
+        
+        _isOpen = false;
         
         await OnMoodSelected.InvokeAsync(mood);
     }
