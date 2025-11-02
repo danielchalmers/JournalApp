@@ -5,11 +5,33 @@
   gap: 8px;
 }
 
+.sleep-controls .mud-slider {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sleep-hours {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sleep-hours:active {
+  transform: scale(1.1);
+}
+
 .note-container {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
   position: relative;
+  animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 ::deep .note-edit-button {
@@ -25,4 +47,5 @@
   justify-content: space-between;
   align-items: center;
   gap: 8px;
+  animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }

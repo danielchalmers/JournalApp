@@ -3,6 +3,25 @@
   flex-direction: row;
   align-items: center;
   gap: 4px;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+              background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: categorySlideIn 0.3s cubic-bezier(0.05, 0.7, 0.1, 1);
+}
+
+@keyframes categorySlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.manage-category:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+  border-radius: 8px;
 }
 
 ::deep .manage-category-edit-button {

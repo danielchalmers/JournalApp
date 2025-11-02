@@ -2,6 +2,18 @@
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.calendar-day-content:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.calendar-day-content:active {
+  transform: scale(0.95);
+  transition-duration: 0.1s;
 }
 
 .calendar-day-with-mood {
@@ -19,4 +31,17 @@
   position: absolute;
   bottom: 0;
   right: 0;
+}
+
+.calendar-day-cell.calendar-day-current .calendar-day-content {
+  animation: breathing 3s ease-in-out infinite;
+}
+
+@keyframes breathing {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
 }
