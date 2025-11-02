@@ -1,0 +1,93 @@
+@namespace JournalApp
+@page "/pinned-notes"
+@inherits JaPage
+@implements IDisposable
+@inject ILogger<PinnedNotesPage> logger
+@inject IDbContextFactory<AppDbContext> DbFactory
+
+<header class="page-header">
+    <div class="page-toolbar">
+        <MudIconButton Icon="@Icons.Material.Rounded.ArrowBack" aria-label="Go home" OnClick="Close" />
+        <MudText Typo="Typo.h6">Pinned notes</MudText>
+    </div>
+</header>
+
+<main class="page-body">
+    <div class="pinned-notes-list">
+        @if (!_pinnedNotes.Any())
+        {
+            <MudCard>
+                <MudCardContent>
+                    <MudText Typo="Typo.body2" Align="Align.Center">No pinned notes yet. Pin a note to see it here.</MudText>
+                </MudCardContent>
+            </MudCard>
+        }
+        else
+        {
+            @foreach (var note in _pinnedNotes)
+            {
+                <MudCard Class="pinned-note-card" @onclick="@(() => NavigateToNote(note))">
+                    <MudCardContent>
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">@note.Day.Date.ToString("ddd, MMM d, yyyy") - @note.CreatedAt.ToLocalTime().ToString("h:mm tt")</MudText>
+                        @if (!string.IsNullOrWhiteSpace(note.Text))
+                        {
+                            <MudText Typo="Typo.body2">@note.Text</MudText>
+                        }
+                    </MudCardContent>
+                </MudCard>
+            }
+        }
+    </div>
+</main>
+
+@code {
+    AppDbContext db;
+    List<DataPoint> _pinnedNotes = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        logger.LogDebug("Initializing pinned notes page");
+        db = await DbFactory.CreateDbContextAsync();
+        await base.OnInitializedAsync();
+        
+        await LoadPinnedNotes();
+    }
+
+    async Task LoadPinnedNotes()
+    {
+        logger.LogInformation("Loading pinned notes");
+        _pinnedNotes = await db.Points
+            .Include(p => p.Day)
+            .Include(p => p.Category)
+            .Where(p => p.IsPinned && !p.Deleted && p.Type == PointType.Note)
+            .OrderBy(p => p.Day.Date)
+            .ThenBy(p => p.CreatedAt)
+            .ToListAsync();
+        
+        logger.LogInformation($"Loaded {_pinnedNotes.Count} pinned notes");
+        StateHasChanged();
+    }
+
+    void NavigateToNote(DataPoint note)
+    {
+        logger.LogInformation($"Navigating to note on {note.Day.Date}");
+        
+        // Navigate to the day and use a query parameter to indicate which note to scroll to
+        var dateString = note.Day.Date.ToString("yyyyMMdd");
+        NavigationManager.NavigateTo($"/{dateString}?scrollToNote={note.Guid}");
+    }
+
+    void Close()
+    {
+        logger.LogDebug("Closing pinned notes page");
+        NavigationManager.NavigateTo("/");
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        logger.LogDebug("Disposing");
+        base.Dispose(disposing);
+        
+        db?.Dispose();
+    }
+}

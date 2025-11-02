@@ -67,6 +67,13 @@ else if (Point.Type == PointType.Note)
                           AutoGrow Lines="1" MaxLines="10" />
         }
 
+        <MudIconButton Class="note-pin-button"
+                       Icon="@Icons.Material.Rounded.PushPin"
+                       aria-label="@(Point.IsPinned ? "Unpin note" : "Pin note")"
+                       OnClick="TogglePin"
+                       Color="@(Point.IsPinned ? Color.Primary : Color.Default)"
+                       Size="Size.Small" />
+
         <MudIconButton Class="note-edit-button"
                        Icon="@Icons.Material.Rounded.Edit" 
                        aria-label="Edit note" 
@@ -136,6 +143,12 @@ else if (Point.Type == PointType.Medication)
         logger.LogDebug("Finished editing note in dialog");
 
         await StateChanged.InvokeAsync();
+    }
+
+    void TogglePin()
+    {
+        logger.LogDebug("Toggling pin for note");
+        Point.IsPinned = !Point.IsPinned;
     }
 
     async Task OnMedicationTakenChanged()
