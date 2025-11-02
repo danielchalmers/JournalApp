@@ -1,0 +1,54 @@
+﻿@namespace JournalApp
+@using System.Collections.Generic
+@using System.Linq.Expressions
+@typeparam TValue
+
+<div class="@ContainerClassname" style="@Style">
+    <MudToggleGroup T="TValue"
+                    Class="ja-toggle-group"
+                    Size="@Size"
+                    SelectionMode="@SelectionMode"
+                    Disabled="@Disabled"
+                    Value="@Value"
+                    ValueChanged="@ValueChanged"
+                    ValueExpression="@ValueExpression"
+                    @attributes="UserAttributes">
+        @ChildContent
+    </MudToggleGroup>
+</div>
+
+@code {
+    [Parameter]
+    public TValue Value { get; set; }
+
+    [Parameter]
+    public EventCallback<TValue> ValueChanged { get; set; }
+
+    [Parameter]
+    public Expression<Func<TValue>> ValueExpression { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public string Class { get; set; }
+
+    [Parameter]
+    public string Style { get; set; }
+
+    [Parameter]
+    public SelectionMode SelectionMode { get; set; } = SelectionMode.ToggleSelection;
+
+    [Parameter]
+    public Size Size { get; set; } = Size.Small;
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> UserAttributes { get; set; } = new();
+
+    string ContainerClassname => string.IsNullOrWhiteSpace(Class)
+        ? "ja-toggle-group-container"
+        : $"ja-toggle-group-container {Class}";
+}

@@ -39,28 +39,28 @@ else if (Point.Type == PointType.Scale)
 }
 else if (Point.Type == PointType.LowToHigh)
 {
-    <MudToggleGroup T="int?" @bind-Value="Point.ScaleIndex" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small">
+    <JaToggleGroup T="int?" @bind-Value="Point.ScaleIndex" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small">
         <MudToggleItem T="int?" Value="0">None</MudToggleItem>
         <MudToggleItem T="int?" Value="1">Low</MudToggleItem>
         <MudToggleItem T="int?" Value="3">Medium</MudToggleItem>
         <MudToggleItem T="int?" Value="5">High</MudToggleItem>
-    </MudToggleGroup>
+    </JaToggleGroup>
 }
 else if (Point.Type == PointType.MildToSevere)
 {
-    <MudToggleGroup T="int?" @bind-Value="Point.ScaleIndex" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small">
+    <JaToggleGroup T="int?" @bind-Value="Point.ScaleIndex" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small">
         <MudToggleItem T="int?" Value="0">None</MudToggleItem>
         <MudToggleItem T="int?" Value="1">Mild</MudToggleItem>
         <MudToggleItem T="int?" Value="3">Moderate</MudToggleItem>
         <MudToggleItem T="int?" Value="5">Severe</MudToggleItem>
-    </MudToggleGroup>
+    </JaToggleGroup>
 }
 else if (Point.Type == PointType.Bool)
 {
-    <MudToggleGroup T="bool?" @bind-Value="Point.Bool" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small">
+    <JaToggleGroup T="bool?" @bind-Value="Point.Bool" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small">
         <MudToggleItem T="bool?" Value="false">No</MudToggleItem>
         <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
-    </MudToggleGroup>
+    </JaToggleGroup>
 }
 else if (Point.Type == PointType.Number)
 {
@@ -92,10 +92,10 @@ else if (Point.Type == PointType.Note)
 else if (Point.Type == PointType.Medication)
 {
     <div class="medication-controls">
-        <MudToggleGroup T="bool?" @bind-Value="Point.Bool" @bind-Value:after="OnMedicationTakenChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small">
+        <JaToggleGroup T="bool?" @bind-Value="Point.Bool" @bind-Value:after="OnMedicationTakenChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small">
             <MudToggleItem T="bool?" Value="false">No</MudToggleItem>
             <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
-        </MudToggleGroup>
+        </JaToggleGroup>
 
         <MudLink OnClick="EditDose" Disabled="@(string.IsNullOrWhiteSpace(Point.Category.MedicationUnit))">Edit dose</MudLink>
     </div>

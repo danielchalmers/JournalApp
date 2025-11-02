@@ -106,11 +106,6 @@ body {
   gap: 8px;
 }
 
-.mud-toggle-group {
-  flex-grow: 1;
-  border-radius: 20px;
-}
-
 .mud-button {
   border-radius: 20px;
 }
