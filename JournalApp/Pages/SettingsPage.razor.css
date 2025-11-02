@@ -14,14 +14,13 @@
 .loading-container {
   display: flex;
   justify-content: center;
-  animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 ::deep .loading-spinner {
   height: 33vw;
   width: 33vw;
   margin-top: 10vh;
-  animation: pulseGrow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  animation: pulseGrow 1.5s ease-in-out infinite;
 }
 
 @keyframes pulseGrow {
@@ -30,7 +29,7 @@
     opacity: 1;
   }
   50% {
-    transform: scale(1.05);
-    opacity: 0.9;
+    transform: scale(1.08);
+    opacity: 0.85;
   }
 }

@@ -4,23 +4,11 @@
   aspect-ratio: 1 / 1;
   cursor: pointer;
   touch-action: manipulation;
-  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.calendar-day-content:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transition: transform 0.1s ease-out;
 }
 
 .calendar-day-content:active {
   transform: scale(0.95);
-  transition-duration: 0.1s;
-}
-
-.calendar-day-content:focus-visible {
-  outline: 2px solid currentColor;
-  outline-offset: 2px;
-  transform: scale(1.05);
 }
 
 .calendar-day-with-mood {
