@@ -1,7 +1,9 @@
 ﻿@namespace JournalApp
+@inject IJSRuntime JSRuntime
 
 <EmojiButton OnClick="@(() => _isOpen = !_isOpen)"
-             AriaLabel="Choose emoji for day's mood">
+             AriaLabel="Choose emoji for day's mood"
+             @ref="_mainButton">
     @(SelectedMood ?? DataPoint.Moods[0])
 </EmojiButton>
 
@@ -12,7 +14,7 @@
     <div class="emoji-popover-content">
         @foreach (var mood in DataPoint.Moods)
         {
-            <EmojiButton OnClick="@(() => OnMoodClicked(mood))"
+            <EmojiButton OnClick="@((args) => OnMoodClicked(mood, args))"
                          AriaLabel="@($"Select {mood} mood")">
                 @mood
             </EmojiButton>
@@ -26,6 +28,7 @@
 
 @code {
     private bool _isOpen;
+    private EmojiButton _mainButton;
 
     [Parameter]
     public string SelectedMood { get; set; }
@@ -33,9 +36,29 @@
     [Parameter]
     public EventCallback<string> OnMoodSelected { get; set; }
 
-    private async Task OnMoodClicked(string mood)
+    private async Task OnMoodClicked(string mood, MouseEventArgs args)
     {
         _isOpen = false;
+        
+        // Trigger the visual effect
+        await TriggerMoodEffect(mood, args);
+        
         await OnMoodSelected.InvokeAsync(mood);
+    }
+
+    private async Task TriggerMoodEffect(string mood, MouseEventArgs args)
+    {
+        try
+        {
+            // Use the event target coordinates for the effect origin
+            await JSRuntime.InvokeVoidAsync("moodEffects.showEffect", mood, new { 
+                clientX = args.ClientX, 
+                clientY = args.ClientY 
+            });
+        }
+        catch (Exception)
+        {
+            // Silently fail if JavaScript is not available
+        }
     }
 }

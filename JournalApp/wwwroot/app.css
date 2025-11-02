@@ -241,3 +241,181 @@ body {
     background-color: #FFF8F9;
   }
 }
+
+/* Mood Effects Animations */
+.mood-effects-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.mood-effect-particle {
+  position: absolute;
+  pointer-events: none;
+  font-size: 24px;
+  transform-origin: center;
+}
+
+/* Rain Drop Animation */
+.rain-drop {
+  animation: rainFall 300ms ease-in forwards;
+  opacity: 0;
+}
+
+@keyframes rainFall {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(120px) scale(1);
+  }
+}
+
+/* Rain Line Animation */
+.rain-line {
+  width: 2px;
+  height: 40px;
+  background: linear-gradient(to bottom, rgba(100, 150, 200, 0.4), transparent);
+  animation: rainLineFall 300ms ease-in forwards;
+  opacity: 0;
+}
+
+@keyframes rainLineFall {
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  20% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(100px);
+  }
+}
+
+/* Cloud Animation */
+.cloud {
+  animation: cloudFloat 300ms ease-in-out forwards;
+  opacity: 0;
+  font-size: 20px;
+}
+
+@keyframes cloudFloat {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.3);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translate(0, -10px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(0, -15px) scale(1.1);
+  }
+}
+
+/* Sparkle Animation */
+.sparkle {
+  animation: sparkleOut 300ms ease-out forwards;
+  opacity: 0;
+  font-size: 16px;
+}
+
+@keyframes sparkleOut {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1.2) rotate(180deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.5) rotate(360deg);
+  }
+}
+
+/* Sunshine Animation */
+.sun-center {
+  animation: sunPulse 300ms ease-in-out forwards;
+  font-size: 32px;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 0 10px rgba(255, 200, 0, 0.6));
+}
+
+@keyframes sunPulse {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+  }
+}
+
+.sun-ray {
+  width: 3px;
+  height: 40px;
+  background: linear-gradient(to bottom, rgba(255, 200, 0, 0.6), transparent);
+  animation: sunRayExtend 300ms ease-out forwards;
+  transform-origin: top center;
+  opacity: 0;
+}
+
+@keyframes sunRayExtend {
+  0% {
+    opacity: 0;
+    transform: scaleY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleY(1.2);
+  }
+}
+
+/* Star Animation */
+.star {
+  animation: starTwinkle 300ms ease-in-out forwards;
+  opacity: 0;
+  font-size: 18px;
+}
+
+@keyframes starTwinkle {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0) rotate(0deg);
+  }
+  30% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1.3) rotate(90deg);
+  }
+  60% {
+    opacity: 1;
+    transform: translate(0, 0) scale(0.9) rotate(180deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.3) rotate(360deg);
+  }
+}
