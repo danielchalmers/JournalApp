@@ -64,7 +64,7 @@ body {
 }
 
 .page-header {
-  z-index: 999;
+  z-index: var(--mud-zindex-appbar);
   display: flex;
   flex-direction: column;
   padding: 0 !important;
@@ -81,6 +81,18 @@ body {
   margin: 0 auto !important;
   padding: 8px !important;
   padding-bottom: 15vh !important;
+  animation: fadeInUp 0.15s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .mud-dialog-width-full {
@@ -130,6 +142,7 @@ body {
   border-radius: 12px;
 }
 
+
 .mud-dialog-title, .mud-card-header {
   padding: 0 !important;
   padding-top: 8px !important;
@@ -148,14 +161,28 @@ body {
   padding: 0 !important;
 }
 
+.mud-card-content:has(> .data-point-list:empty) {
+  display: none;
+}
+
+.mud-card-actions:empty {
+  display: none;
+}
+
 .mud-snackbar {
   background-color: var(--mud-palette-primary);
   color: var(--mud-palette-primary-text);
 }
 
-.emoji-menu-list .mud-menu-list {
-  min-width: unset;
-  /*z-index: 998 !important;*/
+.emoji-button {
+  padding: 0;
+}
+
+.emoji-popover-content {
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  box-shadow: var(--mud-elevation-8);
 }
 
 .list-group-title {
