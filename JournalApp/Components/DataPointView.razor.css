@@ -25,15 +25,6 @@
   animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 ::deep .note-edit-button {
   position: absolute !important;
   top: 0;

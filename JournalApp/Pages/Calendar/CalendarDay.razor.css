@@ -3,6 +3,7 @@
   width: 100%;
   aspect-ratio: 1 / 1;
   cursor: pointer;
+  touch-action: manipulation;
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -14,6 +15,12 @@
 .calendar-day-content:active {
   transform: scale(0.95);
   transition-duration: 0.1s;
+}
+
+.calendar-day-content:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+  transform: scale(1.05);
 }
 
 .calendar-day-with-mood {
@@ -35,6 +42,7 @@
 
 .calendar-day-cell.calendar-day-current .calendar-day-content {
   animation: breathing 3s ease-in-out infinite;
+  will-change: transform;
 }
 
 @keyframes breathing {

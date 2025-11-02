@@ -101,6 +101,15 @@ body {
   }
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .mud-dialog-width-full {
   width: calc(100% - 32px) !important;
 }
