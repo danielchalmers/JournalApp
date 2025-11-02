@@ -3,6 +3,7 @@
 @inject ILogger<DataPointView> logger
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
+@inject DataPointService DataPointService
 
 @if (Point.Type == PointType.Mood)
 {
@@ -109,8 +110,8 @@ else if (Point.Type == PointType.Medication)
 
     public int ScaleIndexForMudRating
     {
-        get => Point.ScaleIndex ?? 0;
-        set => Point.ScaleIndex = value == 0 ? null : value;
+        get => DataPointService.GetScaleIndex(Point);
+        set => DataPointService.SetScaleIndex(Point, value);
     }
 
     string NoteLabel
@@ -134,13 +135,13 @@ else if (Point.Type == PointType.Medication)
     void DecrementSleep()
     {
         logger.LogDebug("Decrementing sleep");
-        Point.SleepHours = Math.Max(0m, (Point.SleepHours ?? 0) - 0.5m);
+        DataPointService.DecrementSleep(Point);
     }
 
     void IncrementSleep()
     {
         logger.LogDebug("Incrementing sleep");
-        Point.SleepHours = Math.Min(24m, (Point.SleepHours ?? 0) + 0.5m);
+        DataPointService.IncrementSleep(Point);
     }
 
     async Task EditTextInDialog()
@@ -154,10 +155,8 @@ else if (Point.Type == PointType.Medication)
 
     async Task OnMedicationTakenChanged()
     {
-        // If the medication wasn't taken then having a custom dose doesn't make any sense.
-        // Also allows for an easier way to reset the dose by just clicking the button twice.
-        if (Point.Bool != true)
-            Point.MedicationDose = Point.Category.MedicationDose;
+        // Use service to handle medication dose reset logic
+        DataPointService.HandleMedicationTakenChanged(Point);
 
         await StateChanged.InvokeAsync();
     }
@@ -174,7 +173,7 @@ else if (Point.Type == PointType.Medication)
     void OnMoodSelected(string mood)
     {
         logger.LogDebug("Mood selected: {mood}", mood);
-        Point.Mood = mood;
+        DataPointService.SetMood(Point, mood);
 
         // Show a motivational quote when the sob emoji is selected
         if (mood == DataPoint.Moods[^1])  // Sob emoji (😭) is the last mood in the list
