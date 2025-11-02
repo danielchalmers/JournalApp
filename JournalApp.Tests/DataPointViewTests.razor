@@ -24,10 +24,15 @@
 
         var cut = layout.FindComponent<DataPointView>();
 
-        cut.Find(".mud-menu-activator").Click();
+        // Click the emoji button to open the popover
+        cut.Find(".emoji-button").Click();
 
         layout.FindAll("div.mud-popover-open").Count.Should().Be(1);
-        layout.FindAll(".mud-list .mud-menu-item")[0].Click();
+        
+        // Click the first emoji button in the popover
+        var emojiButtons = layout.FindAll(".emoji-popover-content .emoji-button");
+        emojiButtons[0].Click();
+        
         point.Mood.Should().Be("🤔");
     }
 
@@ -52,15 +57,15 @@
 
         var cut = layout.FindComponent<DataPointView>();
 
-        // Open the mood menu
-        cut.Find(".mud-menu-activator").Click();
+        // Open the mood popover
+        cut.Find(".emoji-button").Click();
 
         // Find and click the sob emoji (😭 is the last item in DataPoint.Moods)
         var sobEmoji = DataPoint.Moods[^1];  // Get the last mood (sob emoji)
         sobEmoji.Should().Be("😭");  // Verify it's the sob emoji
         
-        var menuItems = layout.FindAll(".mud-list .mud-menu-item");
-        menuItems[^1].Click();  // Click the last menu item (sob emoji)
+        var emojiButtons = layout.FindAll(".emoji-popover-content .emoji-button");
+        emojiButtons[^1].Click();  // Click the last emoji button (sob emoji)
 
         // Verify mood was set
         point.Mood.Should().Be(sobEmoji);

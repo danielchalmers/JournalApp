@@ -167,9 +167,21 @@ body {
   color: var(--mud-palette-primary-text);
 }
 
-.emoji-menu-list .mud-menu-list {
+.emoji-button {
   min-width: unset;
-  /*z-index: 998 !important;*/
+  padding: 0;
+  border-radius: 8px;
+}
+
+.emoji-popover {
+  min-width: unset;
+}
+
+.emoji-popover-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px;
 }
 
 .list-group-title {
