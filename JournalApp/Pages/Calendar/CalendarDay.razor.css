@@ -2,6 +2,11 @@
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
+  transition: transform 0.1s ease-out;
+}
+
+.calendar-day-content:active {
+  transform: scale(0.95);
 }
 
 .calendar-day-with-mood {
