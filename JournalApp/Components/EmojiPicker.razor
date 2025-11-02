@@ -1,14 +1,9 @@
-@namespace JournalApp
+﻿@namespace JournalApp
 
-<Emoji OnClick="@(() => _isOpen = !_isOpen)"
-       AriaLabel="Choose emoji for day's mood">
-    @(SelectedMood ?? "🤔")
-</Emoji>
-
-<MudOverlay Visible="@_isOpen" 
-            OnClick="@(() => _isOpen = false)" 
-            ZIndex="990" 
-            LockScroll="false" />
+<EmojiButton OnClick="@(() => _isOpen = !_isOpen)"
+             AriaLabel="Choose emoji for day's mood">
+    @(SelectedMood ?? DataPoint.Moods[0])
+</EmojiButton>
 
 <MudPopover Open="@_isOpen"
             AnchorOrigin="Origin.TopLeft"
@@ -17,13 +12,17 @@
     <div class="emoji-popover-content">
         @foreach (var mood in DataPoint.Moods)
         {
-            <Emoji OnClick="@(() => OnMoodClicked(mood))"
-                   AriaLabel="@($"Select {mood} mood")">
+            <EmojiButton OnClick="@(() => OnMoodClicked(mood))"
+                         AriaLabel="@($"Select {mood} mood")">
                 @mood
-            </Emoji>
+            </EmojiButton>
         }
     </div>
 </MudPopover>
+
+<MudOverlay @bind-Visible="@_isOpen"
+            AutoClose
+            LockScroll="false" />
 
 @code {
     private bool _isOpen;

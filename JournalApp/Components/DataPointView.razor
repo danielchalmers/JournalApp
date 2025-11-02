@@ -7,7 +7,7 @@
 
 @if (Point.Type == PointType.Mood)
 {
-    <EmojiPicker SelectedMood="Point.Mood" OnMoodSelected="OnMoodSelected" />
+    <EmojiPicker SelectedMood="@Point.Mood" OnMoodSelected="OnMoodSelected" />
 }
 else if (Point.Type == PointType.Sleep)
 {
