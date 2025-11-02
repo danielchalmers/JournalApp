@@ -2,8 +2,7 @@
 @inject IJSRuntime JSRuntime
 
 <EmojiButton OnClick="@(() => _isOpen = !_isOpen)"
-             AriaLabel="Choose emoji for day's mood"
-             @ref="_mainButton">
+             AriaLabel="Choose emoji for day's mood">
     @(SelectedMood ?? DataPoint.Moods[0])
 </EmojiButton>
 
@@ -28,7 +27,6 @@
 
 @code {
     private bool _isOpen;
-    private EmojiButton _mainButton;
 
     [Parameter]
     public string SelectedMood { get; set; }
