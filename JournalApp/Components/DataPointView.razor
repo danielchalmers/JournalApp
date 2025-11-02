@@ -149,6 +149,8 @@ else if (Point.Type == PointType.Medication)
     {
         logger.LogDebug("Toggling pin for note");
         Point.IsPinned = !Point.IsPinned;
+        // Note: Changes are persisted by the parent page's SaveState method
+        // which is called on navigation, window deactivation, or disposal
     }
 
     async Task OnMedicationTakenChanged()

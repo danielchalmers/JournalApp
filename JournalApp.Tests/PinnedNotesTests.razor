@@ -74,11 +74,8 @@
     </MainLayout>
         );
 
-        // Wait for the component to load
-        await Task.Delay(100);
-
-        // Assert - Pinned note should be displayed
-        layout.FindAll(".pinned-note-card").Count.Should().BeGreaterThan(0);
+        // Assert - Wait for the component to render and show pinned notes
+        layout.WaitForState(() => layout.FindAll(".pinned-note-card").Count > 0, timeout: TimeSpan.FromSeconds(5));
         layout.Markup.Should().Contain("Pinned test note");
     }
 
