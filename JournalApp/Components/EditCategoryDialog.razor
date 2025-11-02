@@ -14,7 +14,7 @@
 
             @if (Group == null)
             {
-                <MudSelect Label="Type" @bind-Value="Type" Disabled="@(Category != null)" TransformOrigin="Origin.CenterCenter" Immediate>
+                <MudSelect Label="Type" @bind-Value="Type" Disabled="@(Category != null)" Immediate>
                     <MudSelectItem Value="PointType.Bool">Yes or no</MudSelectItem>
                     <MudSelectItem Value="PointType.LowToHigh">Low to high</MudSelectItem>
                     <MudSelectItem Value="PointType.MildToSevere">Mild to severe</MudSelectItem>
