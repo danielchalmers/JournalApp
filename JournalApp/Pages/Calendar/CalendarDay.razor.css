@@ -2,13 +2,6 @@
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
-  cursor: pointer;
-  touch-action: manipulation;
-  transition: transform 0.1s ease-out;
-}
-
-.calendar-day-content:active {
-  transform: scale(0.95);
 }
 
 .calendar-day-with-mood {
@@ -26,18 +19,4 @@
   position: absolute;
   bottom: 0;
   right: 0;
-}
-
-.calendar-day-cell.calendar-day-current .calendar-day-content {
-  animation: breathing 3s ease-in-out infinite;
-  will-change: transform;
-}
-
-@keyframes breathing {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.02);
-  }
 }

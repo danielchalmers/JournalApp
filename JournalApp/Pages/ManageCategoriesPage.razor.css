@@ -3,19 +3,6 @@
   flex-direction: row;
   align-items: center;
   gap: 4px;
-  transition: all 0.2s ease-in-out;
-  animation: categoryFadeIn 0.2s ease-out;
-}
-
-@keyframes categoryFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 ::deep .manage-category-edit-button {

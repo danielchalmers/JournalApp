@@ -5,14 +5,6 @@
 body {
   user-select: none;
   --mud-palette-action-default: var(--mud-palette-text-primary);
-  transition: background-color 0.2s ease-in-out, 
-              color 0.2s ease-in-out;
-}
-
-* {
-  transition: background-color 0.2s ease-in-out, 
-              color 0.2s ease-in-out, 
-              border-color 0.2s ease-in-out;
 }
 
   body::-webkit-scrollbar {
@@ -105,15 +97,6 @@ body {
   }
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
 .mud-dialog-width-full {
   width: calc(100% - 32px) !important;
 }
@@ -142,10 +125,6 @@ body {
   border-radius: 20px;
 }
 
-.mud-slider {
-  transition: all 0.2s ease-in-out;
-}
-
 .mud-button {
   border-radius: 20px;
 }
@@ -162,19 +141,6 @@ body {
   padding: 12px !important;
   gap: 12px !important;
   border-radius: 28px;
-  animation: dialogEnter 0.15s cubic-bezier(0.2, 0, 0, 1);
-  transform-origin: center;
-}
-
-@keyframes dialogEnter {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
 }
 
 .mud-card {
