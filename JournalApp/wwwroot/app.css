@@ -181,7 +181,6 @@ body {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 4px;
   background-color: var(--mud-palette-surface);
   border-radius: 12px;
   box-shadow: var(--mud-elevation-8);
