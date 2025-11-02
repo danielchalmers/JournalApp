@@ -81,7 +81,7 @@ body {
   margin: 0 auto !important;
   padding: 8px !important;
   padding-bottom: 15vh !important;
-  animation: fadeInUp 0.1s ease-out;
+  animation: fadeInUp 0.15s ease-out;
 }
 
 @keyframes fadeInUp {
