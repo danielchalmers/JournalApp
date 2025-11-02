@@ -7,22 +7,7 @@
 
 @if (Point.Type == PointType.Mood)
 {
-    <MudMenu PopoverClass="emoji-menu-list" Dense AnchorOrigin="Origin.TopLeft">
-        <ActivatorContent>
-            <MudButton aria-label="Choose emoji for day's mood'">
-                <Emoji>@(Point.Mood ?? "🤔")</Emoji>
-            </MudButton>
-        </ActivatorContent>
-
-        <ChildContent>
-            @foreach (var mood in DataPoint.Moods)
-            {
-                <MudMenuItem OnClick="@(() => OnMoodSelected(mood))">
-                    <Emoji>@mood</Emoji>
-                </MudMenuItem>
-            }
-        </ChildContent>
-    </MudMenu>
+    <EmojiPicker SelectedMood="@Point.Mood" OnMoodSelected="OnMoodSelected" />
 }
 else if (Point.Type == PointType.Sleep)
 {

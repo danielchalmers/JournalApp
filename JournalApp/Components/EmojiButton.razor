@@ -1,0 +1,21 @@
+﻿@namespace JournalApp
+
+<MudButton Class="emoji-button"
+           OnClick="OnClick"
+           aria-label="@AriaLabel">
+    @if (ChildContent != null)
+    {
+        <MudText Typo="Typo.h4" HtmlTag="span">@ChildContent</MudText>
+    }
+</MudButton>
+
+@code {
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClick { get; set; }
+
+    [Parameter]
+    public string AriaLabel { get; set; }
+}

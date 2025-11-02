@@ -64,7 +64,7 @@ body {
 }
 
 .page-header {
-  z-index: 999;
+  z-index: var(--mud-zindex-appbar);
   display: flex;
   flex-direction: column;
   padding: 0 !important;
@@ -167,9 +167,15 @@ body {
   color: var(--mud-palette-primary-text);
 }
 
-.emoji-menu-list .mud-menu-list {
-  min-width: unset;
-  /*z-index: 998 !important;*/
+.emoji-button {
+  padding: 0;
+}
+
+.emoji-popover-content {
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  box-shadow: var(--mud-elevation-8);
 }
 
 .list-group-title {
