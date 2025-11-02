@@ -60,9 +60,13 @@
             .Include(p => p.Day)
             .Include(p => p.Category)
             .Where(p => p.IsPinned && !p.Deleted && p.Type == PointType.Note)
+            .ToListAsync();
+
+        // Order on the client side to avoid SQLite DateTimeOffset ordering issues
+        _pinnedNotes = _pinnedNotes
             .OrderBy(p => p.Day.Date)
             .ThenBy(p => p.CreatedAt)
-            .ToListAsync();
+            .ToList();
         
         logger.LogInformation($"Loaded {_pinnedNotes.Count} pinned notes");
         StateHasChanged();

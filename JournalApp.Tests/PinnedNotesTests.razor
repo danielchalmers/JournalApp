@@ -1,0 +1,102 @@
+@namespace JournalApp.Tests
+@inherits JaTestContext
+
+@code {
+    public override async Task InitializeAsync()
+    {
+        await base.InitializeAsync();
+
+        AddDbContext();
+        Services.GetService<AppDbSeeder>().SeedCategories();
+    }
+
+    [Fact]
+    public void CanPinAndUnpinNote()
+    {
+        // Arrange
+        var category = new DataPointCategory
+        {
+            Guid = Guid.NewGuid(),
+            Type = PointType.Note,
+            Group = "Notes",
+        };
+
+        var day = Day.Create(new(2024, 01, 01));
+        var point = DataPoint.Create(day, category);
+        point.Text = "Test note";
+
+        var layout = Render(
+    @<MainLayout>
+        <Body>
+            <DataPointView Point="point" />
+        </Body>
+    </MainLayout>
+        );
+
+        // Assert - Note should not be pinned initially
+        point.IsPinned.Should().BeFalse();
+
+        // Act - Pin the note
+        var pinButton = layout.Find(".note-pin-button");
+        pinButton.Click();
+
+        // Assert - Note should be pinned
+        point.IsPinned.Should().BeTrue();
+
+        // Act - Unpin the note
+        pinButton.Click();
+
+        // Assert - Note should be unpinned
+        point.IsPinned.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task PinnedNotesPageShowsPinnedNotes()
+    {
+        // Arrange
+        using var db = Services.GetService<IDbContextFactory<AppDbContext>>().CreateDbContext();
+        var today = DateOnly.FromDateTime(DateTime.Now);
+        var day = await db.GetOrCreateDayAndAddPoints(today);
+        
+        // Create and pin a note
+        var note = db.CreateNote(day);
+        note.Text = "Pinned test note";
+        note.IsPinned = true;
+        note.Category.Points.Add(note);
+        await db.SaveChangesAsync();
+
+        // Act
+        var layout = Render(
+    @<MainLayout>
+        <Body>
+            <PinnedNotesPage />
+        </Body>
+    </MainLayout>
+        );
+
+        // Wait for the component to load
+        await Task.Delay(100);
+
+        // Assert - Pinned note should be displayed
+        layout.FindAll(".pinned-note-card").Count.Should().BeGreaterThan(0);
+        layout.Markup.Should().Contain("Pinned test note");
+    }
+
+    [Fact]
+    public void PinnedNotesPageShowsEmptyMessageWhenNoPinnedNotes()
+    {
+        // Arrange - No pinned notes
+
+        // Act
+        var layout = Render(
+    @<MainLayout>
+        <Body>
+            <PinnedNotesPage />
+        </Body>
+    </MainLayout>
+        );
+
+        // Assert
+        layout.Markup.Should().Contain("No pinned notes yet");
+    }
+}
