@@ -1,45 +1,45 @@
 @namespace JournalApp
+@using Microsoft.AspNetCore.Components
+@using System
 @using System.Collections.Generic
 @using System.Globalization
-@using System.Linq.Expressions
+@using System.Linq
 @using System.Text
 @typeparam TValue
 
 <MudToggleGroup T="TValue"
-                Class="@GroupClass"
-                Style="@GroupStyle"
+                Id="@_groupId"
+                Class="@CssClass"
                 Size="@Size"
                 SelectionMode="@SelectionMode"
                 Disabled="@Disabled"
                 Value="@Value"
                 ValueChanged="@ValueChanged"
-                ValueExpression="@ValueExpression"
-                @attributes="UserAttributes">
+                @attributes="AdditionalAttributesWithoutClass">
     @ChildContent
 </MudToggleGroup>
+
+<style>@((MarkupString)_dynamicCss)</style>
 
 @code {
     private const byte PrimaryRed = 234;
     private const byte PrimaryGreen = 184;
     private const byte PrimaryBlue = 214;
     private static readonly double[] HueOffsets = { 0, 35, -35, 70, -70, 140, -140, 175 };
-    private string _groupStyle;
-    private string _userProvidedClass;
+    private readonly string _groupId = $"ja-toggle-group-{Guid.NewGuid():N}";
+    private string _dynamicCss = string.Empty;
 
     [Parameter]
-    public TValue Value { get; set; }
+    public TValue Value { get; set; } = default!;
 
     [Parameter]
     public EventCallback<TValue> ValueChanged { get; set; }
 
     [Parameter]
-    public Expression<Func<TValue>> ValueExpression { get; set; }
+    public RenderFragment ChildContent { get; set; } = default!;
 
     [Parameter]
-    public RenderFragment ChildContent { get; set; }
-
-    [Parameter]
-    public string Class { get; set; }
+    public string? Class { get; set; }
 
     [Parameter]
     public SelectionMode SelectionMode { get; set; } = SelectionMode.ToggleSelection;
@@ -51,62 +51,107 @@
     public bool Disabled { get; set; }
 
     [Parameter(CaptureUnmatchedValues = true)]
-    public Dictionary<string, object> UserAttributes { get; set; } = new();
+    public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
-    private string GroupClass
+    private string CssClass
     {
         get
         {
-            var classes = new List<string> { "ja-toggle-group" };
+            var builder = new StringBuilder("ja-toggle-group");
 
             if (!string.IsNullOrWhiteSpace(Class))
             {
-                classes.Add(Class);
+                builder.Append(' ').Append(Class);
             }
 
-            if (!string.IsNullOrWhiteSpace(_userProvidedClass))
+            if (AdditionalAttributes != null && AdditionalAttributes.TryGetValue("class", out var extraClass))
             {
-                classes.Add(_userProvidedClass);
+                var classValue = Convert.ToString(extraClass, CultureInfo.InvariantCulture);
+                if (!string.IsNullOrWhiteSpace(classValue))
+                {
+                    builder.Append(' ').Append(classValue);
+                }
             }
 
-            return string.Join(' ', classes);
+            return builder.ToString();
         }
     }
 
-    private string GroupStyle => _groupStyle ??= BuildStyle();
+    private IReadOnlyDictionary<string, object>? AdditionalAttributesWithoutClass
+    {
+        get
+        {
+            if (AdditionalAttributes == null || !AdditionalAttributes.ContainsKey("class"))
+            {
+                return AdditionalAttributes;
+            }
+
+            return AdditionalAttributes
+                .Where(kvp => !string.Equals(kvp.Key, "class", StringComparison.OrdinalIgnoreCase))
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+        }
+    }
 
     protected override void OnParametersSet()
     {
-        if (UserAttributes != null && UserAttributes.TryGetValue("class", out var additionalClass))
-        {
-            _userProvidedClass = Convert.ToString(additionalClass, CultureInfo.InvariantCulture);
-            UserAttributes.Remove("class");
-        }
-        else
-        {
-            _userProvidedClass = null;
-        }
-
-        _groupStyle = BuildStyle();
+        _dynamicCss = BuildCss();
     }
 
-    private string BuildStyle()
+    private string BuildCss()
     {
-        var (h, s, l) = RgbToHsl(PrimaryRed, PrimaryGreen, PrimaryBlue);
+        var colors = BuildPalette();
         var builder = new StringBuilder();
+
+        AppendIndicatorRule(builder, $"#{_groupId}::before", colors[0]);
 
         for (var i = 0; i < HueOffsets.Length; i++)
         {
-            var (r, g, b) = FromHsl(ShiftHue(h, HueOffsets[i]), s, l);
-            var textColor = GetReadableText(r, g, b);
-            builder.AppendFormat(CultureInfo.InvariantCulture, "--ja-color-{0}: rgba({1},{2},{3},1);", i + 1, r, g, b);
-            builder.AppendFormat(CultureInfo.InvariantCulture, "--ja-color-{0}-text: {1};", i + 1, textColor);
+            var color = colors[Math.Min(i, colors.Count - 1)];
+            var index = i + 1;
+            var nthSelector = $"#{_groupId} .mud-toggle-item:nth-child({index})";
+            AppendSelectionRule(builder, nthSelector, color);
+            AppendIndicatorRule(builder, $"#{_groupId}:has(> .mud-toggle-item:nth-child({index}).mud-toggle-item-selected)::before", color);
         }
 
-        builder.Append("--ja-selected-color: var(--ja-color-1);");
-        builder.Append("--ja-selected-text-color: var(--ja-color-1-text);");
+        var fallback = colors[^1];
+        var fallbackNth = HueOffsets.Length + 1;
+        AppendSelectionRule(builder, $"#{_groupId} .mud-toggle-item:nth-child(n+{fallbackNth})", fallback);
+        AppendIndicatorRule(builder, $"#{_groupId}:has(> .mud-toggle-item:nth-child(n+{fallbackNth}).mud-toggle-item-selected)::before", fallback);
 
         return builder.ToString();
+    }
+
+    private List<(string Background, string Text)> BuildPalette()
+    {
+        var (h, s, l) = RgbToHsl(PrimaryRed, PrimaryGreen, PrimaryBlue);
+        var colors = new List<(string, string)>(HueOffsets.Length);
+
+        foreach (var offset in HueOffsets)
+        {
+            var (r, g, b) = FromHsl(ShiftHue(h, offset), s, l);
+            var textColor = GetReadableText(r, g, b);
+            colors.Add(($"rgba({r},{g},{b},1)", textColor));
+        }
+
+        return colors;
+    }
+
+    private static void AppendSelectionRule(StringBuilder builder, string selector, (string Background, string Text) color)
+    {
+        builder.Append(selector)
+               .Append(".mud-toggle-item-selected{background-color:")
+               .Append(color.Background)
+               .Append(";color:")
+               .Append(color.Text)
+               .Append(";}");
+    }
+
+    private static void AppendIndicatorRule(StringBuilder builder, string selector, (string Background, string Text) color)
+    {
+        builder.Append(selector)
+               .Append("{background-color:")
+               .Append(color.Background)
+               .Append(";}");
     }
 
     private static (double h, double s, double l) RgbToHsl(byte r, byte g, byte b)
