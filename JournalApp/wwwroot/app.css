@@ -40,14 +40,12 @@ body {
   justify-content: center;
   align-items: center;
   box-shadow: var(--mud-elevation-1);
-  transition: all 0.2s ease-in-out;
 }
 
 .switcher-header {
   display: flex;
   justify-content: center;
   width: 55vw;
-  transition: all 0.2s ease-in-out;
 }
 
 .page {
@@ -83,7 +81,7 @@ body {
   margin: 0 auto !important;
   padding: 8px !important;
   padding-bottom: 15vh !important;
-  animation: fadeInUp 0.15s ease-out;
+  animation: fadeInUp 0.1s ease-out;
 }
 
 @keyframes fadeInUp {
