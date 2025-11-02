@@ -1,186 +1,296 @@
 // Mood emoji visual effects
 window.moodEffects = {
     // Create and display mood effect based on selected emoji
-    showEffect: function (emoji, position) {
-        // Get center position from the provided coordinates
-        const centerX = position.clientX;
-        const centerY = position.clientY;
-
+    showEffect: function (emoji) {
         // Determine which effect to show
         switch (emoji) {
-            case '😭': // Crying - Heavy rain with drops
-                this.createRainEffect(centerX, centerY, true);
+            case '😭': // Crying - Heavy downpour with puddles
+                this.createCryingEffect();
                 break;
-            case '😢': // Sad - Light rain
-                this.createRainEffect(centerX, centerY, false);
+            case '😢': // Sad - Gentle rain with teardrops
+                this.createSadEffect();
                 break;
-            case '😕': // Confused - Floating clouds
-                this.createCloudEffect(centerX, centerY);
+            case '😕': // Confused - Swirling question marks
+                this.createConfusedEffect();
                 break;
-            case '🤔': // Thinking - Also clouds
-                this.createCloudEffect(centerX, centerY);
+            case '🤔': // Thinking - Light bulbs appearing
+                this.createThinkingEffect();
                 break;
-            case '😐': // Neutral - No effect
+            case '😐': // Neutral - Calm waves
+                this.createNeutralEffect();
                 break;
-            case '🙂': // Slight smile - Sparkles
-                this.createSparkleEffect(centerX, centerY);
+            case '🙂': // Slight smile - Gentle sparkles
+                this.createSlightSmileEffect();
                 break;
-            case '😀': // Happy - Sunshine with warm glow
-                this.createSunshineEffect(centerX, centerY);
+            case '😀': // Happy - Bursting sunshine across screen
+                this.createHappyEffect();
                 break;
-            case '🤩': // Excited - Twinkling stars
-                this.createStarEffect(centerX, centerY);
+            case '🤩': // Excited - Fireworks and explosions
+                this.createExcitedEffect();
                 break;
         }
     },
 
-    // Rain effect (heavy or light)
-    createRainEffect: function (x, y, isHeavy) {
+    // 😭 Crying - Heavy downpour with puddles forming
+    createCryingEffect: function () {
         const container = this.createContainer();
-        const particleCount = isHeavy ? 30 : 15;
-        const emoji = '💧';
-
-        for (let i = 0; i < particleCount; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'mood-effect-particle rain-drop';
-            particle.textContent = emoji;
-            
-            // Random position across entire viewport width
-            const posX = Math.random() * window.innerWidth;
-            const delay = Math.random() * 200;
-            
-            particle.style.left = posX + 'px';
-            particle.style.top = '-20px';
-            particle.style.animationDelay = delay + 'ms';
-            
-            container.appendChild(particle);
-        }
-
-        // Add rain lines for crying effect
-        if (isHeavy) {
-            for (let i = 0; i < 12; i++) {
-                const line = document.createElement('div');
-                line.className = 'mood-effect-particle rain-line';
-                const posX = Math.random() * window.innerWidth;
-                line.style.left = posX + 'px';
-                line.style.top = '-30px';
-                line.style.animationDelay = (Math.random() * 250) + 'ms';
-                container.appendChild(line);
-            }
-        }
-
-        this.autoRemove(container, 600);
-    },
-
-    // Cloud effect for confused/thinking
-    createCloudEffect: function (x, y) {
-        const container = this.createContainer();
-        const particleCount = 8;
-        const emoji = '☁️';
-
-        for (let i = 0; i < particleCount; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'mood-effect-particle cloud';
-            particle.textContent = emoji;
-            
-            // Random position across viewport
-            const posX = Math.random() * window.innerWidth;
-            const posY = Math.random() * window.innerHeight;
-            
-            particle.style.left = posX + 'px';
-            particle.style.top = posY + 'px';
-            particle.style.animationDelay = (i * 75) + 'ms';
-            
-            container.appendChild(particle);
-        }
-
-        this.autoRemove(container, 600);
-    },
-
-    // Sparkle effect for slight smile
-    createSparkleEffect: function (x, y) {
-        const container = this.createContainer();
-        const particleCount = 25;
-        const sparkles = ['✨', '⭐', '💫'];
-
-        for (let i = 0; i < particleCount; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'mood-effect-particle sparkle';
-            particle.textContent = sparkles[Math.floor(Math.random() * sparkles.length)];
-            
-            // Random position across viewport
-            const posX = Math.random() * window.innerWidth;
-            const posY = Math.random() * window.innerHeight;
-            
-            particle.style.left = posX + 'px';
-            particle.style.top = posY + 'px';
-            particle.style.animationDelay = (Math.random() * 200) + 'ms';
-            
-            container.appendChild(particle);
-        }
-
-        this.autoRemove(container, 600);
-    },
-
-    // Sunshine effect for happy
-    createSunshineEffect: function (x, y) {
-        const container = this.createContainer();
+        const dropCount = 40;
         
-        // Center of viewport
-        const centerX = window.innerWidth / 2;
-        const centerY = window.innerHeight / 2;
+        // Heavy rain drops falling
+        for (let i = 0; i < dropCount; i++) {
+            const drop = document.createElement('div');
+            drop.className = 'mood-effect-particle crying-drop';
+            drop.textContent = '💧';
+            drop.style.left = Math.random() * window.innerWidth + 'px';
+            drop.style.top = '-30px';
+            drop.style.animationDelay = (Math.random() * 400) + 'ms';
+            container.appendChild(drop);
+        }
         
-        // Central sun
-        const sun = document.createElement('div');
-        sun.className = 'mood-effect-particle sun-center';
-        sun.textContent = '☀️';
-        sun.style.left = centerX + 'px';
-        sun.style.top = centerY + 'px';
-        container.appendChild(sun);
-
-        // Warm glow rays extending across screen
-        const rayCount = 12;
-        for (let i = 0; i < rayCount; i++) {
-            const ray = document.createElement('div');
-            ray.className = 'mood-effect-particle sun-ray';
-            const angle = (Math.PI * 2 * i) / rayCount;
-            const startDist = 40;
-            const offsetX = Math.cos(angle) * startDist;
-            const offsetY = Math.sin(angle) * startDist;
-            
-            ray.style.left = (centerX + offsetX) + 'px';
-            ray.style.top = (centerY + offsetY) + 'px';
-            ray.style.setProperty('--ray-angle', angle + 'rad');
-            
-            container.appendChild(ray);
+        // Puddles forming at bottom
+        for (let i = 0; i < 6; i++) {
+            const puddle = document.createElement('div');
+            puddle.className = 'mood-effect-particle puddle';
+            puddle.textContent = '💦';
+            puddle.style.left = (Math.random() * 80 + 10) + '%';
+            puddle.style.bottom = '0px';
+            puddle.style.animationDelay = (500 + Math.random() * 500) + 'ms';
+            container.appendChild(puddle);
         }
 
-        this.autoRemove(container, 600);
+        this.autoRemove(container, 1600);
     },
 
-    // Star effect for excited
-    createStarEffect: function (x, y) {
+    // 😢 Sad - Gentle rain with falling teardrops
+    createSadEffect: function () {
         const container = this.createContainer();
-        const particleCount = 30;
-        const emoji = '⭐';
-
-        for (let i = 0; i < particleCount; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'mood-effect-particle star';
-            particle.textContent = emoji;
-            
-            // Random position across viewport
-            const posX = Math.random() * window.innerWidth;
-            const posY = Math.random() * window.innerHeight;
-            
-            particle.style.left = posX + 'px';
-            particle.style.top = posY + 'px';
-            particle.style.animationDelay = (Math.random() * 250) + 'ms';
-            
-            container.appendChild(particle);
+        const tearCount = 20;
+        
+        // Teardrops falling gently
+        for (let i = 0; i < tearCount; i++) {
+            const tear = document.createElement('div');
+            tear.className = 'mood-effect-particle sad-tear';
+            tear.textContent = ['💧', '💦'][Math.floor(Math.random() * 2)];
+            tear.style.left = Math.random() * window.innerWidth + 'px';
+            tear.style.top = '-20px';
+            tear.style.animationDelay = (Math.random() * 600) + 'ms';
+            container.appendChild(tear);
+        }
+        
+        // Gentle clouds drifting
+        for (let i = 0; i < 4; i++) {
+            const cloud = document.createElement('div');
+            cloud.className = 'mood-effect-particle sad-cloud';
+            cloud.textContent = '☁️';
+            cloud.style.left = (Math.random() * 100) + '%';
+            cloud.style.top = (Math.random() * 40) + '%';
+            cloud.style.animationDelay = (i * 200) + 'ms';
+            container.appendChild(cloud);
         }
 
-        this.autoRemove(container, 600);
+        this.autoRemove(container, 1600);
+    },
+
+    // 😕 Confused - Swirling question marks
+    createConfusedEffect: function () {
+        const container = this.createContainer();
+        const questionCount = 15;
+        
+        // Question marks swirling around
+        for (let i = 0; i < questionCount; i++) {
+            const question = document.createElement('div');
+            question.className = 'mood-effect-particle confused-question';
+            question.textContent = ['❓', '❔'][Math.floor(Math.random() * 2)];
+            question.style.left = Math.random() * window.innerWidth + 'px';
+            question.style.top = Math.random() * window.innerHeight + 'px';
+            question.style.animationDelay = (Math.random() * 400) + 'ms';
+            container.appendChild(question);
+        }
+        
+        // Dizzy spirals
+        for (let i = 0; i < 8; i++) {
+            const spiral = document.createElement('div');
+            spiral.className = 'mood-effect-particle confused-spiral';
+            spiral.textContent = '💫';
+            spiral.style.left = Math.random() * window.innerWidth + 'px';
+            spiral.style.top = Math.random() * window.innerHeight + 'px';
+            spiral.style.animationDelay = (Math.random() * 500) + 'ms';
+            container.appendChild(spiral);
+        }
+
+        this.autoRemove(container, 1600);
+    },
+
+    // 🤔 Thinking - Light bulbs appearing and ideas floating
+    createThinkingEffect: function () {
+        const container = this.createContainer();
+        const ideaCount = 12;
+        
+        // Light bulbs appearing (idea moments)
+        for (let i = 0; i < ideaCount; i++) {
+            const bulb = document.createElement('div');
+            bulb.className = 'mood-effect-particle thinking-bulb';
+            bulb.textContent = '💡';
+            bulb.style.left = Math.random() * window.innerWidth + 'px';
+            bulb.style.top = Math.random() * window.innerHeight + 'px';
+            bulb.style.animationDelay = (Math.random() * 600) + 'ms';
+            container.appendChild(bulb);
+        }
+        
+        // Brain and thought bubbles
+        for (let i = 0; i < 6; i++) {
+            const thought = document.createElement('div');
+            thought.className = 'mood-effect-particle thinking-thought';
+            thought.textContent = ['🧠', '💭'][Math.floor(Math.random() * 2)];
+            thought.style.left = Math.random() * window.innerWidth + 'px';
+            thought.style.bottom = '-40px';
+            thought.style.animationDelay = (Math.random() * 400) + 'ms';
+            container.appendChild(thought);
+        }
+
+        this.autoRemove(container, 1600);
+    },
+
+    // 😐 Neutral - Calm rippling waves
+    createNeutralEffect: function () {
+        const container = this.createContainer();
+        const waveCount = 10;
+        
+        // Rippling waves across screen
+        for (let i = 0; i < waveCount; i++) {
+            const wave = document.createElement('div');
+            wave.className = 'mood-effect-particle neutral-wave';
+            wave.textContent = '〰️';
+            wave.style.left = (i * 10 + Math.random() * 5) + '%';
+            wave.style.top = (30 + Math.random() * 40) + '%';
+            wave.style.animationDelay = (i * 150) + 'ms';
+            container.appendChild(wave);
+        }
+        
+        // Zen circles
+        for (let i = 0; i < 5; i++) {
+            const circle = document.createElement('div');
+            circle.className = 'mood-effect-particle neutral-circle';
+            circle.textContent = '⭕';
+            circle.style.left = Math.random() * window.innerWidth + 'px';
+            circle.style.top = Math.random() * window.innerHeight + 'px';
+            circle.style.animationDelay = (Math.random() * 500) + 'ms';
+            container.appendChild(circle);
+        }
+
+        this.autoRemove(container, 1600);
+    },
+
+    // 🙂 Slight smile - Gentle floating hearts and sparkles
+    createSlightSmileEffect: function () {
+        const container = this.createContainer();
+        const particleCount = 20;
+        
+        // Gentle hearts floating up
+        for (let i = 0; i < particleCount; i++) {
+            const heart = document.createElement('div');
+            heart.className = 'mood-effect-particle smile-heart';
+            heart.textContent = ['💗', '💖', '✨'][Math.floor(Math.random() * 3)];
+            heart.style.left = Math.random() * window.innerWidth + 'px';
+            heart.style.bottom = '-30px';
+            heart.style.animationDelay = (Math.random() * 500) + 'ms';
+            container.appendChild(heart);
+        }
+        
+        // Soft sparkles
+        for (let i = 0; i < 15; i++) {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'mood-effect-particle smile-sparkle';
+            sparkle.textContent = '✨';
+            sparkle.style.left = Math.random() * window.innerWidth + 'px';
+            sparkle.style.top = Math.random() * window.innerHeight + 'px';
+            sparkle.style.animationDelay = (Math.random() * 600) + 'ms';
+            container.appendChild(sparkle);
+        }
+
+        this.autoRemove(container, 1600);
+    },
+
+    // 😀 Happy - Multiple suns bursting across the screen
+    createHappyEffect: function () {
+        const container = this.createContainer();
+        const sunCount = 8;
+        
+        // Multiple suns appearing across screen
+        for (let i = 0; i < sunCount; i++) {
+            const sun = document.createElement('div');
+            sun.className = 'mood-effect-particle happy-sun';
+            sun.textContent = '☀️';
+            sun.style.left = Math.random() * window.innerWidth + 'px';
+            sun.style.top = Math.random() * window.innerHeight + 'px';
+            sun.style.animationDelay = (i * 150) + 'ms';
+            container.appendChild(sun);
+        }
+        
+        // Rainbow elements
+        for (let i = 0; i < 5; i++) {
+            const rainbow = document.createElement('div');
+            rainbow.className = 'mood-effect-particle happy-rainbow';
+            rainbow.textContent = '🌈';
+            rainbow.style.left = (i * 20 + Math.random() * 10) + '%';
+            rainbow.style.top = (20 + Math.random() * 30) + '%';
+            rainbow.style.animationDelay = (300 + i * 200) + 'ms';
+            container.appendChild(rainbow);
+        }
+        
+        // Joy particles
+        for (let i = 0; i < 20; i++) {
+            const joy = document.createElement('div');
+            joy.className = 'mood-effect-particle happy-joy';
+            joy.textContent = ['✨', '🌟', '💛'][Math.floor(Math.random() * 3)];
+            joy.style.left = Math.random() * window.innerWidth + 'px';
+            joy.style.top = Math.random() * window.innerHeight + 'px';
+            joy.style.animationDelay = (Math.random() * 700) + 'ms';
+            container.appendChild(joy);
+        }
+
+        this.autoRemove(container, 1600);
+    },
+
+    // 🤩 Excited - Fireworks and celebration explosions
+    createExcitedEffect: function () {
+        const container = this.createContainer();
+        const fireworkCount = 10;
+        
+        // Fireworks bursting
+        for (let i = 0; i < fireworkCount; i++) {
+            const firework = document.createElement('div');
+            firework.className = 'mood-effect-particle excited-firework';
+            firework.textContent = '🎆';
+            firework.style.left = (20 + Math.random() * 60) + '%';
+            firework.style.top = (20 + Math.random() * 60) + '%';
+            firework.style.animationDelay = (Math.random() * 600) + 'ms';
+            container.appendChild(firework);
+        }
+        
+        // Exploding stars
+        for (let i = 0; i < 25; i++) {
+            const star = document.createElement('div');
+            star.className = 'mood-effect-particle excited-star';
+            star.textContent = ['⭐', '🌟', '✨', '💫'][Math.floor(Math.random() * 4)];
+            star.style.left = Math.random() * window.innerWidth + 'px';
+            star.style.top = Math.random() * window.innerHeight + 'px';
+            star.style.animationDelay = (Math.random() * 500) + 'ms';
+            container.appendChild(star);
+        }
+        
+        // Celebration confetti
+        for (let i = 0; i < 15; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'mood-effect-particle excited-confetti';
+            confetti.textContent = '🎉';
+            confetti.style.left = Math.random() * window.innerWidth + 'px';
+            confetti.style.top = '-20px';
+            confetti.style.animationDelay = (Math.random() * 400) + 'ms';
+            container.appendChild(confetti);
+        }
+
+        this.autoRemove(container, 1600);
     },
 
     // Helper to create effect container

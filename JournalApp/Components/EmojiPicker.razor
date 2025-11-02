@@ -48,11 +48,8 @@
     {
         try
         {
-            // Use the event target coordinates for the effect origin
-            await JSRuntime.InvokeVoidAsync("moodEffects.showEffect", mood, new { 
-                clientX = args.ClientX, 
-                clientY = args.ClientY 
-            });
+            // Trigger full-screen effect (no coordinates needed)
+            await JSRuntime.InvokeVoidAsync("moodEffects.showEffect", mood);
         }
         catch (Exception)
         {

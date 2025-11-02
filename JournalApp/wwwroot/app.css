@@ -256,17 +256,174 @@ body {
 .mood-effect-particle {
   position: absolute;
   pointer-events: none;
-  font-size: 24px;
+  font-size: 28px;
   transform-origin: center;
 }
 
-/* Rain Drop Animation */
-.rain-drop {
-  animation: rainFall 500ms ease-in forwards;
+/* 😭 Crying Effects */
+.crying-drop {
+  animation: cryingDrop 1.5s ease-in forwards;
   opacity: 0;
 }
 
-@keyframes rainFall {
+@keyframes cryingDrop {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.3) rotate(0deg);
+  }
+  10% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(100vh) scale(1.2) rotate(360deg);
+  }
+}
+
+.puddle {
+  animation: puddleForm 1.5s ease-out forwards;
+  opacity: 0;
+  font-size: 36px;
+}
+
+@keyframes puddleForm {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  40% {
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 0.3;
+    transform: scale(1.5);
+  }
+}
+
+/* 😢 Sad Effects */
+.sad-tear {
+  animation: sadTear 1.5s ease-in forwards;
+  opacity: 0;
+}
+
+@keyframes sadTear {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+  15% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(80vh) scale(1) translateX(-20px);
+  }
+}
+
+.sad-cloud {
+  animation: sadCloud 1.5s ease-in-out forwards;
+  opacity: 0;
+  font-size: 32px;
+}
+
+@keyframes sadCloud {
+  0% {
+    opacity: 0;
+    transform: translateX(-50px) scale(0.5);
+  }
+  30% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(100px) scale(1);
+  }
+}
+
+/* 😕 Confused Effects */
+.confused-question {
+  animation: confusedQuestion 1.5s ease-in-out forwards;
+  opacity: 0;
+  font-size: 32px;
+}
+
+@keyframes confusedQuestion {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1.2) rotate(180deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1) rotate(360deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.5) rotate(540deg);
+  }
+}
+
+.confused-spiral {
+  animation: confusedSpiral 1.5s ease-in-out forwards;
+  opacity: 0;
+}
+
+@keyframes confusedSpiral {
+  0% {
+    opacity: 0;
+    transform: rotate(0deg) scale(0);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(720deg) scale(2);
+  }
+}
+
+/* 🤔 Thinking Effects */
+.thinking-bulb {
+  animation: thinkingBulb 1.5s ease-out forwards;
+  opacity: 0;
+  font-size: 36px;
+}
+
+@keyframes thinkingBulb {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+    filter: brightness(1);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1.3);
+    filter: brightness(2);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+.thinking-thought {
+  animation: thinkingThought 1.5s ease-out forwards;
+  opacity: 0;
+  font-size: 32px;
+}
+
+@keyframes thinkingThought {
   0% {
     opacity: 0;
     transform: translateY(0) scale(0.5);
@@ -276,146 +433,237 @@ body {
   }
   100% {
     opacity: 0;
-    transform: translateY(200px) scale(1);
+    transform: translateY(-80vh) scale(1.2);
   }
 }
 
-/* Rain Line Animation */
-.rain-line {
-  width: 2px;
-  height: 60px;
-  background: linear-gradient(to bottom, rgba(100, 150, 200, 0.4), transparent);
-  animation: rainLineFall 500ms ease-in forwards;
+/* 😐 Neutral Effects */
+.neutral-wave {
+  animation: neutralWave 1.5s ease-in-out forwards;
   opacity: 0;
+  font-size: 24px;
 }
 
-@keyframes rainLineFall {
+@keyframes neutralWave {
   0% {
     opacity: 0;
-    transform: translateY(0);
+    transform: translateX(-30px) scale(0.5);
+  }
+  30% {
+    opacity: 0.7;
+  }
+  70% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(30px) scale(1);
+  }
+}
+
+.neutral-circle {
+  animation: neutralCircle 1.5s ease-in-out forwards;
+  opacity: 0;
+  font-size: 40px;
+}
+
+@keyframes neutralCircle {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+  }
+  40% {
+    opacity: 0.5;
+    transform: scale(1) rotate(180deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2) rotate(360deg);
+  }
+}
+
+/* 🙂 Slight Smile Effects */
+.smile-heart {
+  animation: smileHeart 1.5s ease-out forwards;
+  opacity: 0;
+  font-size: 28px;
+}
+
+@keyframes smileHeart {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
   }
   20% {
-    opacity: 0.6;
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(180px);
-  }
-}
-
-/* Cloud Animation */
-.cloud {
-  animation: cloudFloat 500ms ease-in-out forwards;
-  opacity: 0;
-  font-size: 20px;
-}
-
-@keyframes cloudFloat {
-  0% {
-    opacity: 0;
-    transform: translate(0, 0) scale(0.3);
-  }
-  50% {
-    opacity: 0.8;
-    transform: translate(0, -20px) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(0, -30px) scale(1.1);
-  }
-}
-
-/* Sparkle Animation */
-.sparkle {
-  animation: sparkleOut 500ms ease-out forwards;
-  opacity: 0;
-  font-size: 16px;
-}
-
-@keyframes sparkleOut {
-  0% {
-    opacity: 0;
-    transform: translate(0, 0) scale(0) rotate(0deg);
-  }
-  50% {
     opacity: 1;
-    transform: translate(0, 0) scale(1.2) rotate(180deg);
   }
   100% {
     opacity: 0;
-    transform: translate(0, 0) scale(0.5) rotate(360deg);
+    transform: translateY(-100vh) scale(1.2) translateX(calc(-50px + 100px * var(--random, 0.5)));
   }
 }
 
-/* Sunshine Animation */
-.sun-center {
-  animation: sunPulse 500ms ease-in-out forwards;
+.smile-sparkle {
+  animation: smileSparkle 1.5s ease-in-out forwards;
+  opacity: 0;
+  font-size: 24px;
+}
+
+@keyframes smileSparkle {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.3) rotate(180deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.5) rotate(360deg);
+  }
+}
+
+/* 😀 Happy Effects */
+.happy-sun {
+  animation: happySun 1.5s ease-out forwards;
+  opacity: 0;
   font-size: 48px;
-  transform: translate(-50%, -50%);
-  filter: drop-shadow(0 0 20px rgba(255, 200, 0, 0.8));
 }
 
-@keyframes sunPulse {
+@keyframes happySun {
   0% {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0.3);
-  }
-  50% {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1.3);
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(0.9);
-  }
-}
-
-.sun-ray {
-  width: 4px;
-  height: 80px;
-  background: linear-gradient(to bottom, rgba(255, 200, 0, 0.7), transparent);
-  animation: sunRayExtend 500ms ease-out forwards;
-  transform-origin: top center;
-  opacity: 0;
-}
-
-@keyframes sunRayExtend {
-  0% {
-    opacity: 0;
-    transform: scaleY(0);
-  }
-  50% {
-    opacity: 1;
-    transform: scaleY(1);
-  }
-  100% {
-    opacity: 0;
-    transform: scaleY(1.5);
-  }
-}
-
-/* Star Animation */
-.star {
-  animation: starTwinkle 500ms ease-in-out forwards;
-  opacity: 0;
-  font-size: 18px;
-}
-
-@keyframes starTwinkle {
-  0% {
-    opacity: 0;
-    transform: translate(0, 0) scale(0) rotate(0deg);
+    transform: scale(0) rotate(0deg);
+    filter: brightness(1);
   }
   30% {
     opacity: 1;
-    transform: translate(0, 0) scale(1.3) rotate(90deg);
+    transform: scale(1.5) rotate(180deg);
+    filter: brightness(2);
   }
-  60% {
+  70% {
     opacity: 1;
-    transform: translate(0, 0) scale(0.9) rotate(180deg);
+    transform: scale(1.3) rotate(270deg);
   }
   100% {
     opacity: 0;
-    transform: translate(0, 0) scale(0.3) rotate(360deg);
+    transform: scale(0.8) rotate(360deg);
+  }
+}
+
+.happy-rainbow {
+  animation: happyRainbow 1.5s ease-in-out forwards;
+  opacity: 0;
+  font-size: 36px;
+}
+
+@keyframes happyRainbow {
+  0% {
+    opacity: 0;
+    transform: translateY(50px) scale(0.3);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(0) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-30px) scale(1);
+  }
+}
+
+.happy-joy {
+  animation: happyJoy 1.5s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes happyJoy {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1.4) rotate(180deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.6) rotate(360deg);
+  }
+}
+
+/* 🤩 Excited Effects */
+.excited-firework {
+  animation: excitedFirework 1.5s ease-out forwards;
+  opacity: 0;
+  font-size: 40px;
+}
+
+@keyframes excitedFirework {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(0.5);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.5);
+  }
+  70% {
+    opacity: 0.8;
+    transform: scale(1.8);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.5);
+  }
+}
+
+.excited-star {
+  animation: excitedStar 1.5s ease-out forwards;
+  opacity: 0;
+  font-size: 24px;
+}
+
+@keyframes excitedStar {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+  }
+  25% {
+    opacity: 1;
+    transform: scale(1.5) rotate(180deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2) rotate(360deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.4) rotate(720deg);
+  }
+}
+
+.excited-confetti {
+  animation: excitedConfetti 1.5s ease-in forwards;
+  opacity: 0;
+  font-size: 28px;
+}
+
+@keyframes excitedConfetti {
+  0% {
+    opacity: 0;
+    transform: translateY(0) rotate(0deg);
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(100vh) rotate(1080deg) scale(1.5);
   }
 }
