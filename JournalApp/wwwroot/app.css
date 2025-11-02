@@ -135,6 +135,7 @@ body {
   border-radius: 12px;
 }
 
+
 .mud-dialog-title, .mud-card-header {
   padding: 0 !important;
   padding-top: 8px !important;
@@ -151,6 +152,14 @@ body {
 
 .mud-dialog-actions, .mud-card-actions {
   padding: 0 !important;
+}
+
+.mud-card-content:has(> .data-point-list:empty) {
+  display: none;
+}
+
+.mud-card-actions:empty {
+  display: none;
 }
 
 .mud-snackbar {
