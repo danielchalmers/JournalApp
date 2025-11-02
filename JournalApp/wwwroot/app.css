@@ -262,7 +262,7 @@ body {
 
 /* Rain Drop Animation */
 .rain-drop {
-  animation: rainFall 300ms ease-in forwards;
+  animation: rainFall 500ms ease-in forwards;
   opacity: 0;
 }
 
@@ -276,16 +276,16 @@ body {
   }
   100% {
     opacity: 0;
-    transform: translateY(120px) scale(1);
+    transform: translateY(200px) scale(1);
   }
 }
 
 /* Rain Line Animation */
 .rain-line {
   width: 2px;
-  height: 40px;
+  height: 60px;
   background: linear-gradient(to bottom, rgba(100, 150, 200, 0.4), transparent);
-  animation: rainLineFall 300ms ease-in forwards;
+  animation: rainLineFall 500ms ease-in forwards;
   opacity: 0;
 }
 
@@ -299,13 +299,13 @@ body {
   }
   100% {
     opacity: 0;
-    transform: translateY(100px);
+    transform: translateY(180px);
   }
 }
 
 /* Cloud Animation */
 .cloud {
-  animation: cloudFloat 300ms ease-in-out forwards;
+  animation: cloudFloat 500ms ease-in-out forwards;
   opacity: 0;
   font-size: 20px;
 }
@@ -317,17 +317,17 @@ body {
   }
   50% {
     opacity: 0.8;
-    transform: translate(0, -10px) scale(1);
+    transform: translate(0, -20px) scale(1);
   }
   100% {
     opacity: 0;
-    transform: translate(0, -15px) scale(1.1);
+    transform: translate(0, -30px) scale(1.1);
   }
 }
 
 /* Sparkle Animation */
 .sparkle {
-  animation: sparkleOut 300ms ease-out forwards;
+  animation: sparkleOut 500ms ease-out forwards;
   opacity: 0;
   font-size: 16px;
 }
@@ -349,10 +349,10 @@ body {
 
 /* Sunshine Animation */
 .sun-center {
-  animation: sunPulse 300ms ease-in-out forwards;
-  font-size: 32px;
+  animation: sunPulse 500ms ease-in-out forwards;
+  font-size: 48px;
   transform: translate(-50%, -50%);
-  filter: drop-shadow(0 0 10px rgba(255, 200, 0, 0.6));
+  filter: drop-shadow(0 0 20px rgba(255, 200, 0, 0.8));
 }
 
 @keyframes sunPulse {
@@ -362,19 +362,19 @@ body {
   }
   50% {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1.2);
+    transform: translate(-50%, -50%) scale(1.3);
   }
   100% {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0.8);
+    transform: translate(-50%, -50%) scale(0.9);
   }
 }
 
 .sun-ray {
-  width: 3px;
-  height: 40px;
-  background: linear-gradient(to bottom, rgba(255, 200, 0, 0.6), transparent);
-  animation: sunRayExtend 300ms ease-out forwards;
+  width: 4px;
+  height: 80px;
+  background: linear-gradient(to bottom, rgba(255, 200, 0, 0.7), transparent);
+  animation: sunRayExtend 500ms ease-out forwards;
   transform-origin: top center;
   opacity: 0;
 }
@@ -390,13 +390,13 @@ body {
   }
   100% {
     opacity: 0;
-    transform: scaleY(1.2);
+    transform: scaleY(1.5);
   }
 }
 
 /* Star Animation */
 .star {
-  animation: starTwinkle 300ms ease-in-out forwards;
+  animation: starTwinkle 500ms ease-in-out forwards;
   opacity: 0;
   font-size: 18px;
 }
