@@ -7,8 +7,7 @@
 
 @if (Point.Type == PointType.Mood)
 {
-    <Emoji @ref="_moodAnchor"
-           OnClick="@(() => _isMoodPopoverOpen = !_isMoodPopoverOpen)"
+    <Emoji OnClick="@(() => _isMoodPopoverOpen = !_isMoodPopoverOpen)"
            AriaLabel="Choose emoji for day's mood">
         @(Point.Mood ?? "🤔")
     </Emoji>
@@ -107,7 +106,6 @@ else if (Point.Type == PointType.Medication)
 
 @code {
     private bool _isMoodPopoverOpen;
-    private Emoji _moodAnchor;
 
     [Parameter]
     public DataPoint Point { get; set; }
