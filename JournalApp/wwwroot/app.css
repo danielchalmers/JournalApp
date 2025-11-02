@@ -173,15 +173,10 @@ body {
   border-radius: 8px;
 }
 
-.emoji-popover {
-  min-width: unset;
-}
-
 .emoji-popover-content {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 4px;
 }
 
 .list-group-title {

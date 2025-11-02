@@ -13,14 +13,13 @@
     </Emoji>
 
     <MudPopover Open="@_isMoodPopoverOpen"
-                AnchorOrigin="Origin.BottomLeft"
+                AnchorOrigin="Origin.TopLeft"
                 TransformOrigin="Origin.TopLeft"
                 Class="emoji-popover">
         <div class="emoji-popover-content">
             @foreach (var mood in DataPoint.Moods)
             {
-                <Emoji OnClick="@(() => OnMoodSelected(mood))"
-                       AriaLabel="@($"Select {mood} mood")">
+                <Emoji OnClick="@(() => OnMoodSelected(mood))">
                     @mood
                 </Emoji>
             }
