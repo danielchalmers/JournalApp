@@ -1,0 +1,42 @@
+@namespace JournalApp
+
+<Emoji OnClick="@(() => _isOpen = !_isOpen)"
+       AriaLabel="Choose emoji for day's mood">
+    @(SelectedMood ?? "🤔")
+</Emoji>
+
+<MudOverlay Visible="@_isOpen" 
+            OnClick="@(() => _isOpen = false)" 
+            ZIndex="990" 
+            LockScroll="false" />
+
+<MudPopover Open="@_isOpen"
+            AnchorOrigin="Origin.TopLeft"
+            TransformOrigin="Origin.TopLeft"
+            Class="emoji-popover">
+    <div class="emoji-popover-content">
+        @foreach (var mood in DataPoint.Moods)
+        {
+            <Emoji OnClick="@(() => OnMoodClicked(mood))"
+                   AriaLabel="@($"Select {mood} mood")">
+                @mood
+            </Emoji>
+        }
+    </div>
+</MudPopover>
+
+@code {
+    private bool _isOpen;
+
+    [Parameter]
+    public string SelectedMood { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnMoodSelected { get; set; }
+
+    private async Task OnMoodClicked(string mood)
+    {
+        _isOpen = false;
+        await OnMoodSelected.InvokeAsync(mood);
+    }
+}

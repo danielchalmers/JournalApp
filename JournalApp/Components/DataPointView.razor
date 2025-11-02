@@ -7,27 +7,7 @@
 
 @if (Point.Type == PointType.Mood)
 {
-    <Emoji OnClick="@(() => _isMoodPopoverOpen = !_isMoodPopoverOpen)"
-           AriaLabel="Choose emoji for day's mood">
-        @(Point.Mood ?? "🤔")
-    </Emoji>
-
-    <MudOverlay Visible="@_isMoodPopoverOpen" OnClick="@(() => _isMoodPopoverOpen = false)" ZIndex="990" />
-
-    <MudPopover Open="@_isMoodPopoverOpen"
-                AnchorOrigin="Origin.TopLeft"
-                TransformOrigin="Origin.TopLeft"
-                Class="emoji-popover">
-        <div class="emoji-popover-content">
-            @foreach (var mood in DataPoint.Moods)
-            {
-                <Emoji OnClick="@(() => OnMoodSelected(mood))"
-                       AriaLabel="@($"Select {mood} mood")">
-                    @mood
-                </Emoji>
-            }
-        </div>
-    </MudPopover>
+    <EmojiPicker SelectedMood="Point.Mood" OnMoodSelected="OnMoodSelected" />
 }
 else if (Point.Type == PointType.Sleep)
 {
@@ -107,8 +87,6 @@ else if (Point.Type == PointType.Medication)
 }
 
 @code {
-    private bool _isMoodPopoverOpen;
-
     [Parameter]
     public DataPoint Point { get; set; }
 
@@ -181,9 +159,6 @@ else if (Point.Type == PointType.Medication)
     {
         logger.LogDebug("Mood selected: {mood}", mood);
         DataPointService.SetMood(Point, mood);
-
-        // Close the popover
-        _isMoodPopoverOpen = false;
 
         // Show a motivational quote when the sob emoji is selected
         if (mood == DataPoint.Moods[^1])  // Sob emoji (😭) is the last mood in the list
