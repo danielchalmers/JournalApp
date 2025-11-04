@@ -574,6 +574,7 @@ public class AppDataServiceTests : JaTestContext
         // Arrange
         var appDataService = Services.GetService<AppDataService>();
         
+        // Intentionally using null! to test null handling behavior
         var backup = new BackupFile
         {
             PreferenceBackups = null!

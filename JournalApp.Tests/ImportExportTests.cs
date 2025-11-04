@@ -124,7 +124,7 @@ public class ImportExportTests : JaTestContext
             {
                 // Create an entry with wrong name
                 var entry = archive.CreateEntry("wrong-name.json");
-                await using var entryStream = entry.Open();
+                using var entryStream = entry.Open();
                 await entryStream.WriteAsync(System.Text.Encoding.UTF8.GetBytes("{}"));
             }
 
@@ -152,7 +152,7 @@ public class ImportExportTests : JaTestContext
             using (var archive = new System.IO.Compression.ZipArchive(stream, System.IO.Compression.ZipArchiveMode.Create))
             {
                 var entry = archive.CreateEntry("journalapp-data.json");
-                await using var entryStream = entry.Open();
+                using var entryStream = entry.Open();
                 await entryStream.WriteAsync(System.Text.Encoding.UTF8.GetBytes("{invalid json content"));
             }
 
