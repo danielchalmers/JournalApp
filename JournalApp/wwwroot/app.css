@@ -170,10 +170,6 @@ body {
   display: none;
 }
 
-.mud-card-actions:empty {
-  display: none;
-}
-
 .mud-snackbar {
   background-color: var(--mud-palette-primary);
   color: var(--mud-palette-primary-text);
