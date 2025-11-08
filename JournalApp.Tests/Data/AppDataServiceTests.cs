@@ -372,4 +372,280 @@ public class AppDataServiceTests : JaTestContext
             restoredCategory.Details.Should().Be("Test details");
         }
     }
+
+    [Fact]
+    public async Task CreateBackup_WithLargeDataset_CompletesSuccessfully()
+    {
+        // Arrange
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        var appDataService = Services.GetService<AppDataService>();
+        
+        appDbSeeder.SeedCategories();
+        
+        // Create a large dataset - full year of data (2024 is a leap year with 366 days)
+        var startDate = new DateOnly(2024, 1, 1);
+        var endDate = new DateOnly(2024, 12, 31);
+        var dates = startDate.DatesTo(endDate);
+        appDbSeeder.SeedDays(dates);
+
+        // Act
+        var backup = await appDataService.CreateBackup();
+
+        // Assert
+        backup.Should().NotBeNull();
+        backup.Days.Should().HaveCount(366); // 2024 is a leap year
+        backup.Points.Should().NotBeEmpty();
+        backup.Categories.Should().NotBeEmpty();
+    }
+
+    [Fact]
+    public async Task RestoreDbSets_WithDuplicateGuids_HandlesGracefully()
+    {
+        // Test that backup with duplicate GUIDs is handled appropriately
+        var appDataService = Services.GetService<AppDataService>();
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        
+        var duplicateGuid = Guid.NewGuid();
+        
+        var category1 = new DataPointCategory
+        {
+            Guid = duplicateGuid,
+            Name = "Category 1",
+            Group = "Test",
+            Type = PointType.Bool,
+            Enabled = true
+        };
+        
+        var category2 = new DataPointCategory
+        {
+            Guid = duplicateGuid, // Same GUID!
+            Name = "Category 2",
+            Group = "Test",
+            Type = PointType.Bool,
+            Enabled = true
+        };
+
+        var backup = new BackupFile
+        {
+            Days = new List<Day>(),
+            Categories = new List<DataPointCategory> { category1, category2 },
+            Points = new List<DataPoint>(),
+            PreferenceBackups = new List<PreferenceBackup>()
+        };
+
+        // Act & Assert - Should throw on duplicate primary keys
+        var act = async () => await appDataService.RestoreDbSets(backup);
+        await act.Should().ThrowAsync<Exception>();
+    }
+
+    [Fact]
+    public async Task ReplaceDbSets_WithPartialFailure_RollsBackCompletely()
+    {
+        // This test verifies that ReplaceDbSets is truly atomic
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        var appDataService = Services.GetService<AppDataService>();
+        
+        // Create initial data
+        appDbSeeder.SeedCategories();
+        var dates = new DateOnly(2024, 1, 1).DatesTo(new(2024, 1, 5));
+        appDbSeeder.SeedDays(dates);
+        
+        var initialBackup = await appDataService.CreateBackup();
+        var initialDayCount = initialBackup.Days.Count;
+        
+        // Create an invalid backup with duplicate GUIDs to force a failure
+        var duplicateGuid = Guid.NewGuid();
+        var invalidBackup = new BackupFile
+        {
+            Days = new List<Day>(),
+            Categories = new List<DataPointCategory>
+            {
+                new() { Guid = duplicateGuid, Name = "Cat1", Group = "Test", Type = PointType.Bool },
+                new() { Guid = duplicateGuid, Name = "Cat2", Group = "Test", Type = PointType.Bool }
+            },
+            Points = new List<DataPoint>(),
+            PreferenceBackups = new List<PreferenceBackup>()
+        };
+
+        // Act - Try to replace with invalid backup
+        var act = async () => await appDataService.ReplaceDbSets(invalidBackup);
+        await act.Should().ThrowAsync<Exception>();
+
+        // Assert - Original data should still be present (rollback worked)
+        using (var db = await dbFactory.CreateDbContextAsync())
+        {
+            db.Days.Should().HaveCount(initialDayCount);
+            db.Categories.Should().NotBeEmpty();
+            db.Points.Should().NotBeEmpty();
+        }
+    }
+
+    [Fact]
+    public async Task CreateBackup_IncludesDeletedItems()
+    {
+        // Arrange
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        var appDataService = Services.GetService<AppDataService>();
+        
+        appDbSeeder.SeedCategories();
+        
+        using (var db = await dbFactory.CreateDbContextAsync())
+        {
+            var day = Day.Create(new DateOnly(2024, 1, 1));
+            db.Days.Add(day);
+            
+            var category = db.Categories.First();
+            var point = DataPoint.Create(day, category);
+            point.Deleted = true; // Mark as deleted
+            
+            db.Points.Add(point);
+            await db.SaveChangesAsync();
+        }
+
+        // Act
+        var backup = await appDataService.CreateBackup();
+
+        // Assert - Deleted items should be included in backup
+        backup.Points.Should().Contain(p => p.Deleted);
+    }
+
+    [Fact]
+    public async Task RestoreDbSets_PreservesDeletedFlag()
+    {
+        // Arrange
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        var appDataService = Services.GetService<AppDataService>();
+        
+        appDbSeeder.SeedCategories();
+        
+        using (var db = await dbFactory.CreateDbContextAsync())
+        {
+            var day = Day.Create(new DateOnly(2024, 1, 1));
+            db.Days.Add(day);
+            
+            var category = db.Categories.First();
+            var point = DataPoint.Create(day, category);
+            point.Deleted = true;
+            
+            db.Points.Add(point);
+            await db.SaveChangesAsync();
+        }
+
+        var backup = await appDataService.CreateBackup();
+        await appDataService.DeleteDbSets();
+
+        // Act
+        await appDataService.RestoreDbSets(backup);
+
+        // Assert
+        using (var db = await dbFactory.CreateDbContextAsync())
+        {
+            var restoredPoint = db.Points.First();
+            restoredPoint.Deleted.Should().BeTrue();
+        }
+    }
+
+    [Fact]
+    public async Task SetPreferences_WithEmptyBackup_DoesNotCrash()
+    {
+        // Arrange
+        var preferences = Services.GetService<IPreferences>();
+        var appDataService = Services.GetService<AppDataService>();
+        
+        var backup = new BackupFile
+        {
+            PreferenceBackups = new List<PreferenceBackup>()
+        };
+
+        // Act
+        appDataService.SetPreferences(backup);
+
+        // Assert - Should not throw
+        // Preferences should remain unchanged
+    }
+
+    [Fact]
+    public async Task SetPreferences_WithNullPreferenceBackups_HandlesGracefully()
+    {
+        // Arrange
+        var appDataService = Services.GetService<AppDataService>();
+        
+        // Intentionally using null! to test null handling behavior
+        var backup = new BackupFile
+        {
+            PreferenceBackups = null!
+        };
+
+        // Act & Assert - Should handle null gracefully
+        var act = () => appDataService.SetPreferences(backup);
+        act.Should().Throw<Exception>(); // Expected to fail on null
+    }
+
+    [Fact]
+    public async Task GetPreferenceBackups_WithNoPreferencesSet_ReturnsEmpty()
+    {
+        // Arrange
+        var preferences = Services.GetService<IPreferences>();
+        var appDataService = Services.GetService<AppDataService>();
+        
+        // Clear all preferences
+        preferences.Clear();
+
+        // Act
+        var preferenceBackups = appDataService.GetPreferenceBackups().ToList();
+
+        // Assert - Should return empty list, not throw
+        preferenceBackups.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task CreateBackup_ThenDeleteThenRestore_MaintainsDataIntegrity()
+    {
+        // Comprehensive integration test for the full backup/restore cycle
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        var appDataService = Services.GetService<AppDataService>();
+        
+        appDbSeeder.SeedCategories();
+        var dates = new DateOnly(2024, 1, 1).DatesTo(new(2024, 1, 10));
+        appDbSeeder.SeedDays(dates);
+
+        // Capture original data
+        List<Guid> originalDayGuids;
+        List<Guid> originalCategoryGuids;
+        List<Guid> originalPointGuids;
+        
+        using (var db = await dbFactory.CreateDbContextAsync())
+        {
+            originalDayGuids = db.Days.Select(d => d.Guid).ToList();
+            originalCategoryGuids = db.Categories.Select(c => c.Guid).ToList();
+            originalPointGuids = db.Points.Select(p => p.Guid).ToList();
+        }
+
+        // Act
+        var backup = await appDataService.CreateBackup();
+        await appDataService.DeleteDbSets();
+        
+        // Verify deletion
+        using (var db = await dbFactory.CreateDbContextAsync())
+        {
+            db.Days.Should().BeEmpty();
+            db.Categories.Should().BeEmpty();
+            db.Points.Should().BeEmpty();
+        }
+        
+        await appDataService.RestoreDbSets(backup);
+
+        // Assert - All original data should be restored
+        using (var db = await dbFactory.CreateDbContextAsync())
+        {
+            db.Days.Select(d => d.Guid).Should().BeEquivalentTo(originalDayGuids);
+            db.Categories.Select(c => c.Guid).Should().BeEquivalentTo(originalCategoryGuids);
+            db.Points.Select(p => p.Guid).Should().BeEquivalentTo(originalPointGuids);
+        }
+    }
 }

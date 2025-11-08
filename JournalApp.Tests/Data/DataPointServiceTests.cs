@@ -515,4 +515,199 @@ public class DataPointServiceTests
     }
 
     #endregion
+
+    #region Edge Cases and Null Handling
+
+    [Fact]
+    public void IncrementSleep_WithNegativeValue_CorrectsBehavior()
+    {
+        // Arrange
+        var category = new DataPointCategory { Type = PointType.Sleep };
+        var day = Day.Create(new DateOnly(2024, 1, 1));
+        var point = DataPoint.Create(day, category);
+        point.SleepHours = -5m; // Invalid negative value
+
+        // Act
+        _service.IncrementSleep(point);
+
+        // Assert - Should increment from -5 to -4.5
+        // The service doesn't validate negative values, just applies increment
+        point.SleepHours.Should().Be(-4.5m);
+    }
+
+    [Fact]
+    public void DecrementSleep_WithNegativeValue_StopsAtZero()
+    {
+        // Arrange
+        var category = new DataPointCategory { Type = PointType.Sleep };
+        var day = Day.Create(new DateOnly(2024, 1, 1));
+        var point = DataPoint.Create(day, category);
+        point.SleepHours = -5m;
+
+        // Act
+        _service.DecrementSleep(point);
+
+        // Assert - Math.Max ensures it doesn't go more negative
+        point.SleepHours.Should().Be(0m);
+    }
+
+    [Fact]
+    public void IncrementSleep_BeyondMaximum_StopsAt24()
+    {
+        // Arrange
+        var category = new DataPointCategory { Type = PointType.Sleep };
+        var day = Day.Create(new DateOnly(2024, 1, 1));
+        var point = DataPoint.Create(day, category);
+        point.SleepHours = 23.75m;
+
+        // Act - Try to increment multiple times
+        _service.IncrementSleep(point); // 24.0
+        _service.IncrementSleep(point); // Should stay 24.0
+        _service.IncrementSleep(point); // Should stay 24.0
+
+        // Assert
+        point.SleepHours.Should().Be(24.0m);
+    }
+
+    [Fact]
+    public void SetMood_WithEmptyString_AcceptsValue()
+    {
+        // Arrange
+        var category = new DataPointCategory { Type = PointType.Mood };
+        var day = Day.Create(new DateOnly(2024, 1, 1));
+        var point = DataPoint.Create(day, category);
+
+        // Act
+        _service.SetMood(point, string.Empty);
+
+        // Assert
+        point.Mood.Should().Be(string.Empty);
+    }
+
+    [Fact]
+    public void SetMood_WithVeryLongString_AcceptsValue()
+    {
+        // Arrange
+        var category = new DataPointCategory { Type = PointType.Mood };
+        var day = Day.Create(new DateOnly(2024, 1, 1));
+        var point = DataPoint.Create(day, category);
+        var longMood = string.Concat(Enumerable.Repeat("😀", 100));
+
+        // Act
+        _service.SetMood(point, longMood);
+
+        // Assert
+        point.Mood.Should().Be(longMood);
+    }
+
+    [Fact]
+    public void SetScaleIndex_WithNegativeValue_AcceptsValue()
+    {
+        // Arrange
+        var category = new DataPointCategory { Type = PointType.Scale };
+        var day = Day.Create(new DateOnly(2024, 1, 1));
+        var point = DataPoint.Create(day, category);
+
+        // Act
+        _service.SetScaleIndex(point, -5);
+
+        // Assert - Service doesn't validate range, just stores the value
+        point.ScaleIndex.Should().Be(-5);
+    }
+
+    [Fact]
+    public void SetScaleIndex_WithVeryLargeValue_AcceptsValue()
+    {
+        // Arrange
+        var category = new DataPointCategory { Type = PointType.Scale };
+        var day = Day.Create(new DateOnly(2024, 1, 1));
+        var point = DataPoint.Create(day, category);
+
+        // Act
+        _service.SetScaleIndex(point, 999999);
+
+        // Assert
+        point.ScaleIndex.Should().Be(999999);
+    }
+
+    [Fact]
+    public void HandleMedicationTakenChanged_WithZeroDose_HandlesCorrectly()
+    {
+        // Arrange
+        var category = new DataPointCategory
+        {
+            Type = PointType.Medication,
+            MedicationDose = 0m
+        };
+        var day = Day.Create(new DateOnly(2024, 1, 1));
+        var point = DataPoint.Create(day, category);
+        point.Bool = false;
+        point.MedicationDose = 100m;
+
+        // Act
+        _service.HandleMedicationTakenChanged(point);
+
+        // Assert - Should reset to category's zero dose
+        point.MedicationDose.Should().Be(0m);
+    }
+
+    [Fact]
+    public void HandleMedicationTakenChanged_WithNegativeDose_HandlesCorrectly()
+    {
+        // Arrange
+        var category = new DataPointCategory
+        {
+            Type = PointType.Medication,
+            MedicationDose = -50m // Invalid but testing behavior
+        };
+        var day = Day.Create(new DateOnly(2024, 1, 1));
+        var point = DataPoint.Create(day, category);
+        point.Bool = false;
+        point.MedicationDose = 100m;
+
+        // Act
+        _service.HandleMedicationTakenChanged(point);
+
+        // Assert - Should reset to category's dose, even if negative
+        point.MedicationDose.Should().Be(-50m);
+    }
+
+    [Fact]
+    public void GetScaleIndex_MultipleCallsSamePoint_ReturnsConsistentValue()
+    {
+        // Arrange
+        var category = new DataPointCategory { Type = PointType.Scale };
+        var day = Day.Create(new DateOnly(2024, 1, 1));
+        var point = DataPoint.Create(day, category);
+        point.ScaleIndex = 5;
+
+        // Act
+        var result1 = _service.GetScaleIndex(point);
+        var result2 = _service.GetScaleIndex(point);
+        var result3 = _service.GetScaleIndex(point);
+
+        // Assert
+        result1.Should().Be(5);
+        result2.Should().Be(5);
+        result3.Should().Be(5);
+    }
+
+    [Fact]
+    public void SleepOperations_WithDecimalPrecision_MaintainPrecision()
+    {
+        // Arrange
+        var category = new DataPointCategory { Type = PointType.Sleep };
+        var day = Day.Create(new DateOnly(2024, 1, 1));
+        var point = DataPoint.Create(day, category);
+        point.SleepHours = 7.75m;
+
+        // Act
+        _service.IncrementSleep(point); // 8.25
+        _service.DecrementSleep(point); // 7.75
+
+        // Assert - Should maintain decimal precision
+        point.SleepHours.Should().Be(7.75m);
+    }
+
+    #endregion
 }
