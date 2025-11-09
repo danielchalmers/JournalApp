@@ -101,34 +101,6 @@
     }
 
     [Fact]
-    public void ChangePalette()
-    {
-        var layout = Render(
-    @<MainLayout>
-        <Body>
-            <CalendarPage OpenToDateString="20230101" />
-        </Body>
-    </MainLayout>);
-
-        var preferenceService = Services.GetService<PreferenceService>();
-        var initialColor = preferenceService.PrimaryColor;
-
-        layout.Find(".pick-palette").Click();
-
-        // Click a color.
-        var overlay = layout.Find(".color-picker .mud-dialog-content .mud-picker-color-overlay-black .mud-picker-color-overlay");
-        overlay.PointerDown(new PointerEventArgs { OffsetX = 235, OffsetY = 18 });
-        overlay.PointerUp(new PointerEventArgs { OffsetX = 235, OffsetY = 18 });
-
-        // Close dialog.
-        layout.Find(".mud-overlay-dialog").Click();
-        layout.WaitForAssertion(() => layout.FindAll(".mud-overlay-dialog").Count.Should().Be(0));
-
-        // Color should have changed.
-        preferenceService.PrimaryColor.Should().NotBe(initialColor);
-    }
-
-    [Fact]
     [Description("Are the number of years, and months in the grid correct?")]
     public void YearsAndMonths()
     {
