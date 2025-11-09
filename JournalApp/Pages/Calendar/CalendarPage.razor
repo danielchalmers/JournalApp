@@ -14,8 +14,6 @@
         <MudText Typo="Typo.h6">Calendar</MudText>
 
         <MudSpacer />
-
-        <MudIconButton Class="pick-palette" Icon="@Icons.Material.Rounded.Palette" aria-label="Pick color palette" OnClick="OpenColorPicker" />
     </div>
 
     <CalendarSwitcher @ref="_switcher" @bind-SelectedYear="SelectedYear" @bind-SelectedYear:after="AfterSelectedYearChanged" YearClicked="OnYearClicked" />
@@ -115,17 +113,6 @@
             logger.LogDebug("Switching to next month from same year");
 
             await ScrollToMonth(month + 1);
-        }
-    }
-
-    async Task OpenColorPicker()
-    {
-        logger.LogInformation("Opening color picker");
-
-        if (await ColorPickerDialog.ShowDialog(DialogService, PreferenceService.PrimaryColor) is MudColor selectedColor)
-        {
-            PreferenceService.PrimaryColor = selectedColor;
-            StateHasChanged();
         }
     }
 
