@@ -2,9 +2,11 @@
 
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
-    <DisableStaticWebAssets>true</DisableStaticWebAssets>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
   </PropertyGroup>
 
+  <!-- Workaround for .NET 10 static web assets conflict with referenced MAUI projects -->
   <Target Name="RemoveDiscoveredStaticWebAssets" BeforeTargets="ResolveStaticWebAssetsInputs">
     <ItemGroup>
       <StaticWebAsset Remove="@(StaticWebAsset)" Condition="'%(SourceType)' == 'Discovered'" />
