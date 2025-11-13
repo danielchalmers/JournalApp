@@ -52,7 +52,7 @@ runs:
       if: inputs.ENABLE_SIGNING == 'true'
       shell: bash
       run: >
-        dotnet publish ./JournalApp/JournalApp.csproj -o publish -c:Release -f:net9.0-android
+        dotnet publish ./JournalApp/JournalApp.csproj -o publish -c:Release -f:net10.0-android
         -p:AndroidKeyStore=True
         -p:AndroidSigningKeyStore="${{ steps.create_keystore.outputs.filePath }}"
         -p:AndroidSigningStorePass="${{ inputs.RELEASE_KEYSTORE_PASS }}"
@@ -63,7 +63,7 @@ runs:
       if: inputs.ENABLE_SIGNING != 'true'
       shell: bash
       run: >
-        dotnet publish ./JournalApp/JournalApp.csproj -o publish -c:Release -f:net9.0-android
+        dotnet publish ./JournalApp/JournalApp.csproj -o publish -c:Release -f:net10.0-android
 
     - name: List build output
       shell: bash
