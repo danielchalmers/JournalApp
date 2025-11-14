@@ -29,7 +29,7 @@ namespace JournalApp;
             BackupFile backup;
             try
             {
-                backup = await BackupFile.ReadArchive(path);
+                backup = await BackupFile.ReadArchive(path).ConfigureAwait(false);
                 readStopwatch.Stop();
                 logger.LogInformation("Backup file read successfully in {ElapsedMilliseconds}ms - contains {DayCount} days, {CategoryCount} categories, {PointCount} points", 
                     readStopwatch.ElapsedMilliseconds, backup.Days.Count, backup.Categories.Count, backup.Points.Count);
@@ -51,7 +51,8 @@ namespace JournalApp;
             readStopwatch.Restart();
             if (await dialogService.ShowJaMessageBox(
                 $"Contains {backup.Days.Count} days, {backup.Categories.Count} categories, {backup.Points.Count} points, {backup.PreferenceBackups.Count} preferences.\n\n" +
-                "⚠️ This will replace ALL current data and cannot be undone.",
+                "⚠️ This will replace ALL current data and cannot be undone.\n\n" +
+                "⚠️ Do not close the app during import.",
                 yesText: "Import", cancelText: "Cancel") == null)
             {
                 total.Stop();
@@ -65,7 +66,7 @@ namespace JournalApp;
             {
                 // Import data from backup atomically - delete and restore in a single transaction.
                 // If this fails, the database will be rolled back to its original state.
-                await appDataService.ReplaceDbSets(backup);
+                await appDataService.ReplaceDbSets(backup).ConfigureAwait(false);
                 
                 // Only restore preferences after database operations succeed.
                 appDataService.SetPreferences(backup);
@@ -101,7 +102,7 @@ namespace JournalApp;
             {
                 var sw = Stopwatch.StartNew();
                 
-                backupFile = await appDataService.CreateBackup();
+                backupFile = await appDataService.CreateBackup().ConfigureAwait(false);
                 logger.LogInformation("Backup created in {ElapsedMilliseconds}ms - {DayCount} days, {CategoryCount} categories, {PointCount} points", 
                     sw.ElapsedMilliseconds, backupFile.Days.Count, backupFile.Categories.Count, backupFile.Points.Count);
                 
@@ -109,7 +110,7 @@ namespace JournalApp;
                 
                 using (var memoryStream = new MemoryStream())
                 {
-                    await backupFile.WriteArchive(memoryStream);
+                    await backupFile.WriteArchive(memoryStream).ConfigureAwait(false);
                     archiveBytes = memoryStream.ToArray();
                 }
                 

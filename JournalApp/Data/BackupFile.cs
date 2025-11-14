@@ -29,17 +29,17 @@ public class BackupFile
     /// <summary>
     /// Reads a backup file from the specified stream.
     /// </summary>
-    public static async Task<BackupFile> ReadArchive(Stream stream)
+    public static async Task<BackupFile> ReadArchive(Stream stream, CancellationToken cancellationToken = default)
     {
-        await using var archive = await ZipArchive.CreateAsync(stream, ZipArchiveMode.Read, leaveOpen: false, entryNameEncoding: null);
+        await using var archive = await ZipArchive.CreateAsync(stream, ZipArchiveMode.Read, leaveOpen: false, entryNameEncoding: null, cancellationToken).ConfigureAwait(false);
 
         foreach (var entry in archive.Entries)
         {
             if (entry.FullName == InternalBackupFileName)
             {
-                await using var entryStream = await entry.OpenAsync();
+                await using var entryStream = await entry.OpenAsync(cancellationToken).ConfigureAwait(false);
 
-                return await JsonSerializer.DeserializeAsync<BackupFile>(entryStream, SerializerOptions);
+                return await JsonSerializer.DeserializeAsync<BackupFile>(entryStream, SerializerOptions, cancellationToken).ConfigureAwait(false);
             }
         }
 
@@ -49,32 +49,32 @@ public class BackupFile
     /// <summary>
     /// Reads a backup file from the specified path.
     /// </summary>
-    public static async Task<BackupFile> ReadArchive(string path)
+    public static async Task<BackupFile> ReadArchive(string path, CancellationToken cancellationToken = default)
     {
         await using var fs = File.Open(path, FileMode.Open);
-        return await ReadArchive(fs);
+        return await ReadArchive(fs, cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
     /// Writes the backup file to the specified stream.
     /// </summary>
-    public async Task WriteArchive(Stream stream)
+    public async Task WriteArchive(Stream stream, CancellationToken cancellationToken = default)
     {
-        await using var archive = await ZipArchive.CreateAsync(stream, ZipArchiveMode.Create, leaveOpen: false, entryNameEncoding: null);
+        await using var archive = await ZipArchive.CreateAsync(stream, ZipArchiveMode.Create, leaveOpen: false, entryNameEncoding: null, cancellationToken).ConfigureAwait(false);
 
         var entry = archive.CreateEntry(InternalBackupFileName);
-        await using var entryStream = await entry.OpenAsync();
+        await using var entryStream = await entry.OpenAsync(cancellationToken).ConfigureAwait(false);
 
-        await JsonSerializer.SerializeAsync(entryStream, this, SerializerOptions);
+        await JsonSerializer.SerializeAsync(entryStream, this, SerializerOptions, cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
     /// Writes the backup file to the specified path.
     /// </summary>
-    public async Task WriteArchive(string path)
+    public async Task WriteArchive(string path, CancellationToken cancellationToken = default)
     {
         await using var stream = File.Create(path);
-        await WriteArchive(stream);
+        await WriteArchive(stream, cancellationToken).ConfigureAwait(false);
     }
 }
 

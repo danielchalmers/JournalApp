@@ -5,24 +5,24 @@
 /// </summary>
 public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<AppDbContext> dbFactory, PreferenceService preferences)
 {
-    public async Task DeleteDbSets()
+    public async Task DeleteDbSets(CancellationToken cancellationToken = default)
     {
         var sw = Stopwatch.StartNew();
 
-        await using var db = await dbFactory.CreateDbContextAsync();
-        await DeleteDbSetsInternal(db);
-        await db.SaveChangesAsync();
+        await using var db = await dbFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        await DeleteDbSetsInternal(db, cancellationToken).ConfigureAwait(false);
+        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
         sw.Stop();
         logger.LogInformation("Cleared data sets in {ElapsedMilliseconds}ms", sw.ElapsedMilliseconds);
     }
 
-    public async Task RestoreDbSets(BackupFile backup)
+    public async Task RestoreDbSets(BackupFile backup, CancellationToken cancellationToken = default)
     {
         var sw = Stopwatch.StartNew();
 
-        await using var db = await dbFactory.CreateDbContextAsync();
-        await RestoreDbSetsInternal(db, backup);
+        await using var db = await dbFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        await RestoreDbSetsInternal(db, backup, cancellationToken).ConfigureAwait(false);
 
         sw.Stop();
         logger.LogInformation(
@@ -37,23 +37,23 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
     /// Atomically deletes all existing data and restores from backup in a single transaction.
     /// This prevents database corruption if the operation is interrupted.
     /// </summary>
-    public async Task ReplaceDbSets(BackupFile backup)
+    public async Task ReplaceDbSets(BackupFile backup, CancellationToken cancellationToken = default)
     {
         var sw = Stopwatch.StartNew();
 
-        await using var db = await dbFactory.CreateDbContextAsync();
-        await using var transaction = await db.Database.BeginTransactionAsync();
+        await using var db = await dbFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
+        await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
         
         try
         {
             // Delete all existing data
-            await DeleteDbSetsInternal(db);
+            await DeleteDbSetsInternal(db, cancellationToken).ConfigureAwait(false);
             
             // Restore from backup
-            await RestoreDbSetsInternal(db, backup);
+            await RestoreDbSetsInternal(db, backup, cancellationToken).ConfigureAwait(false);
 
             // Commit the transaction - both delete and restore succeed or fail together
-            await transaction.CommitAsync();
+            await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
 
             sw.Stop();
             logger.LogInformation(
@@ -66,16 +66,16 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
         catch
         {
             // Rollback on any error - database remains in original state
-            await transaction.RollbackAsync();
+            await transaction.RollbackAsync(cancellationToken).ConfigureAwait(false);
             throw;
         }
     }
 
-    private async Task DeleteDbSetsInternal(AppDbContext db)
+    private async Task DeleteDbSetsInternal(AppDbContext db, CancellationToken cancellationToken = default)
     {
-        var pointsDeleted = await db.Points.ExecuteDeleteAsync();
-        var daysDeleted = await db.Days.ExecuteDeleteAsync();
-        var categoriesDeleted = await db.Categories.ExecuteDeleteAsync();
+        var pointsDeleted = await db.Points.ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
+        var daysDeleted = await db.Days.ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
+        var categoriesDeleted = await db.Categories.ExecuteDeleteAsync(cancellationToken).ConfigureAwait(false);
         
         logger.LogDebug(
             "Cleared data sets (points: {PointsDeleted}, days: {DaysDeleted}, categories: {CategoriesDeleted})",
@@ -84,12 +84,12 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
             categoriesDeleted);
     }
 
-    private async Task RestoreDbSetsInternal(AppDbContext db, BackupFile backup)
+    private async Task RestoreDbSetsInternal(AppDbContext db, BackupFile backup, CancellationToken cancellationToken = default)
     {
-        await db.Days.AddRangeAsync(backup.Days);
-        await db.Categories.AddRangeAsync(backup.Categories);
-        await db.Points.AddRangeAsync(backup.Points);
-        await db.SaveChangesAsync();
+        await db.Days.AddRangeAsync(backup.Days, cancellationToken).ConfigureAwait(false);
+        await db.Categories.AddRangeAsync(backup.Categories, cancellationToken).ConfigureAwait(false);
+        await db.Points.AddRangeAsync(backup.Points, cancellationToken).ConfigureAwait(false);
+        await db.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
     public void SetPreferences(BackupFile backup)
@@ -110,14 +110,14 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
         }
     }
 
-    public async Task<BackupFile> CreateBackup()
+    public async Task<BackupFile> CreateBackup(CancellationToken cancellationToken = default)
     {
         var sw = Stopwatch.StartNew();
-        await using var db = await dbFactory.CreateDbContextAsync();
+        await using var db = await dbFactory.CreateDbContextAsync(cancellationToken).ConfigureAwait(false);
 
-        var days = await db.Days.Include(d => d.Points).ToListAsync();
-        var categories = await db.Categories.Include(c => c.Points).ToListAsync();
-        var points = await db.Points.ToListAsync();
+        var days = await db.Days.Include(d => d.Points).ToListAsync(cancellationToken).ConfigureAwait(false);
+        var categories = await db.Categories.Include(c => c.Points).ToListAsync(cancellationToken).ConfigureAwait(false);
+        var points = await db.Points.ToListAsync(cancellationToken).ConfigureAwait(false);
         var preferencesBackup = GetPreferenceBackups().ToList();
 
         sw.Stop();
