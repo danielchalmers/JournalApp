@@ -119,12 +119,12 @@ public class ImportExportTests : JaTestContext
         
         try
         {
-            using (var stream = File.Create(zipPath))
-            using (var archive = new System.IO.Compression.ZipArchive(stream, System.IO.Compression.ZipArchiveMode.Create))
+            await using (var stream = File.Create(zipPath))
+            await using (var archive = await System.IO.Compression.ZipArchive.CreateAsync(stream, System.IO.Compression.ZipArchiveMode.Create, leaveOpen: false, entryNameEncoding: null))
             {
                 // Create an entry with wrong name
                 var entry = archive.CreateEntry("wrong-name.json");
-                using var entryStream = entry.Open();
+                await using var entryStream = await entry.OpenAsync();
                 await entryStream.WriteAsync(System.Text.Encoding.UTF8.GetBytes("{}"));
             }
 
@@ -148,11 +148,11 @@ public class ImportExportTests : JaTestContext
         
         try
         {
-            using (var stream = File.Create(zipPath))
-            using (var archive = new System.IO.Compression.ZipArchive(stream, System.IO.Compression.ZipArchiveMode.Create))
+            await using (var stream = File.Create(zipPath))
+            await using (var archive = await System.IO.Compression.ZipArchive.CreateAsync(stream, System.IO.Compression.ZipArchiveMode.Create, leaveOpen: false, entryNameEncoding: null))
             {
                 var entry = archive.CreateEntry("journalapp-data.json");
-                using var entryStream = entry.Open();
+                await using var entryStream = await entry.OpenAsync();
                 await entryStream.WriteAsync(System.Text.Encoding.UTF8.GetBytes("{invalid json content"));
             }
 
