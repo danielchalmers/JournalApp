@@ -51,8 +51,7 @@ namespace JournalApp;
             readStopwatch.Restart();
             if (await dialogService.ShowJaMessageBox(
                 $"Contains {backup.Days.Count} days, {backup.Categories.Count} categories, {backup.Points.Count} points, {backup.PreferenceBackups.Count} preferences.\n\n" +
-                "⚠️ This will replace ALL current data and cannot be undone.\n\n" +
-                "⚠️ Do not close the app during import.",
+                "⚠️ This will replace ALL current data and cannot be undone.",
                 yesText: "Import", cancelText: "Cancel") == null)
             {
                 total.Stop();

@@ -11,6 +11,8 @@
     @* TODO: Replace with separate page so we can change state of inline fields and have it updated properly in settings *@
     <div class="loading-container">
         <MudProgressCircular Class="loading-spinner" Color="Color.Primary" Indeterminate />
+        <MudText Typo="Typo.h6" Align="Align.Center" Style="margin-top: 1rem;">@_busyMessage</MudText>
+        <MudText Typo="Typo.body2" Align="Align.Center" Style="margin-top: 0.5rem; color: var(--mud-palette-warning);">⚠️ Do not close the app</MudText>
     </div>
 }
 else
@@ -106,6 +108,7 @@ else
 
 @code {
     bool _busy;
+    string _busyMessage;
     bool _creditsExpanded;
 
     public string CreditsText { get; private set; }
@@ -164,6 +167,7 @@ else
         try
         {
             _busy = true;
+            _busyMessage = "Importing data...";
             StateHasChanged();
 
             var path = App.ActivatedFilePath;
@@ -174,6 +178,7 @@ else
         {
             App.ActivatedFilePath = null;
             _busy = false;
+            _busyMessage = null;
         }
     }
 
@@ -182,6 +187,7 @@ else
         try
         {
             _busy = true;
+            _busyMessage = "Exporting data...";
             StateHasChanged();
 
             await AppDataUIService.StartExportWizard(DialogService);
@@ -189,6 +195,7 @@ else
         finally
         {
             _busy = false;
+            _busyMessage = null;
         }
     }
 
