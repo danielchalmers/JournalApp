@@ -1,0 +1,22 @@
+.pinned-notes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.pinned-note-card {
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+.pinned-note-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pinned-note-card .mud-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
