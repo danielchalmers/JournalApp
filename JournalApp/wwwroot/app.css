@@ -80,7 +80,7 @@ body {
   max-width: 960px;
   margin: 0 auto !important;
   padding: 8px !important;
-  padding-bottom: 15vh !important;
+  padding-bottom: calc(15vh + env(safe-area-inset-bottom)) !important;
   animation: fadeInUp 0.15s ease-out;
 }
 
@@ -214,10 +214,6 @@ body {
   height: env(safe-area-inset-top);
   width: 100%;
   z-index: 1;
-}
-
-.page-body {
-  padding-bottom: calc(15vh + env(safe-area-inset-bottom)) !important;
 }
 
 .flex-column, .navbar-brand {
