@@ -3,6 +3,7 @@ using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using AndroidX.Activity;
+using AndroidX.Core.View;
 using JournalApp.Platforms.Android;
 
 namespace JournalApp;
@@ -13,6 +14,12 @@ public class MainActivity : MauiAppCompatActivity
     protected override void OnCreate(Bundle savedInstanceState)
     {
         base.OnCreate(savedInstanceState);
+
+        // Enable edge-to-edge display
+        if (Window != null)
+        {
+            WindowCompat.SetDecorFitsSystemWindows(Window, false);
+        }
 
         var backCallback = new OnBackPressedCallbackProxy(() =>
         {
