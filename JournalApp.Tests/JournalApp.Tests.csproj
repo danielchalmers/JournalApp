@@ -2,15 +2,24 @@
 
   <PropertyGroup>
     <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
   </PropertyGroup>
+
+  <!-- Workaround for .NET 10 static web assets conflict with referenced MAUI projects -->
+  <Target Name="RemoveDiscoveredStaticWebAssets" BeforeTargets="ResolveStaticWebAssetsInputs">
+    <ItemGroup>
+      <StaticWebAsset Remove="@(StaticWebAsset)" Condition="'%(SourceType)' == 'Discovered'" />
+    </ItemGroup>
+  </Target>
 
   <ItemGroup>
     <PackageReference Include="bunit" Version="1.40.0" />
-    <PackageReference Include="FluentAssertions" Version="8.7.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.9" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="FluentAssertions" Version="8.8.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageReference Include="xunit" Version="2.9.3" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" PrivateAssets="all">
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5" PrivateAssets="all">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
 
