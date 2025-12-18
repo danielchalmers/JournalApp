@@ -207,7 +207,7 @@
             return db.Categories.Single(c => c.Guid == new Guid(guid));
         }
 
-        var cut = RenderComponent<ManageCategoriesPage>();
+        var cut = Render<ManageCategoriesPage>();
 
         for (int i = 6; i > 1; i--)
         {

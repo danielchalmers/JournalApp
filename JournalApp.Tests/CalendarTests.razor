@@ -20,7 +20,7 @@
     [Fact]
     public void SwitchYear()
     {
-        var cut = RenderComponent<CalendarPage>(p =>
+        var cut = Render<CalendarPage>(p =>
         p.Add(x => x.OpenToDateString, "20000101")
     );
 
@@ -51,7 +51,7 @@
     [Fact]
     public async Task CalendarViewMoodBlockCount()
     {
-        var cut = RenderComponent<CalendarPage>(p =>
+        var cut = Render<CalendarPage>(p =>
         p.Add(x => x.OpenToDateString, "20230101")
     );
         cut.Instance.SelectedYear.Should().Be(2023);
@@ -82,7 +82,7 @@
         _culture.DateTimeFormat.FirstDayOfWeek = DayOfWeek.Wednesday;
         Thread.CurrentThread.CurrentCulture = _culture;
 
-        var cut = RenderComponent<CalendarPage>(p =>
+        var cut = Render<CalendarPage>(p =>
         p.Add(x => x.OpenToDateString, "20230101")
     );
         cut.Instance.SelectedYear.Should().Be(2023);

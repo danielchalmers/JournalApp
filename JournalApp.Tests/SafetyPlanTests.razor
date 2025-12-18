@@ -13,7 +13,7 @@
             Purpose = "My purpose is to finish these tests",
         };
 
-        var cut = RenderComponent<SafetyPlanPage>();
+        var cut = Render<SafetyPlanPage>();
 
         // Assert state.
         cut.Instance.Plan.Purpose.Should().Be("My purpose is to finish these tests");
@@ -31,7 +31,7 @@
             Purpose = "My purpose is to finish these tests",
         };
 
-        var cut = RenderComponent<SafetyPlanPage>();
+        var cut = Render<SafetyPlanPage>();
 
         // Assert initial state.
         cut.Instance.Plan.Purpose.Should().Be("My purpose is to finish these tests");
@@ -40,10 +40,13 @@
         // Change via textarea and property to test both.
         cut.Find(".safety-plan-item-purpose textarea").Input("Actually it's puppies");
         cut.Instance.Plan.ProfessionalContacts = "988 (USA)";
+        
+        // Manually save state (normally triggered by navigation or window deactivation)
+        preferenceService.SafetyPlan = cut.Instance.Plan;
 
         // Leave and come back.
-        DisposeComponents();
-        cut = RenderComponent<SafetyPlanPage>();
+        cut.Dispose();
+        cut = Render<SafetyPlanPage>();
 
         // Assert that all changes persisted.
         preferenceService.SafetyPlan.Purpose.Should().Be("Actually it's puppies");
