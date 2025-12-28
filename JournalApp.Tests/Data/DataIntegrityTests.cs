@@ -19,7 +19,7 @@ public class DataIntegrityTests : JaTestContext
         // Arrange
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         using var db = await dbFactory.CreateDbContextAsync();
-        
+
         var day = new Day { Date = default };
         db.Days.Add(day);
 
@@ -60,12 +60,12 @@ public class DataIntegrityTests : JaTestContext
     public async Task GetOrCreateDayAndAddPoints_HandlesMultipleConcurrentCalls()
     {
         // Test that multiple calls for the same date don't create duplicates
-        
+
         // Arrange
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         var date = new DateOnly(2024, 1, 1);
 
         // Act - Call multiple times
@@ -74,7 +74,7 @@ public class DataIntegrityTests : JaTestContext
             await db.GetOrCreateDayAndAddPoints(date);
             await db.SaveChangesAsync();
         }
-        
+
         using (var db = await dbFactory.CreateDbContextAsync())
         {
             await db.GetOrCreateDayAndAddPoints(date);
@@ -94,7 +94,7 @@ public class DataIntegrityTests : JaTestContext
         // Arrange
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         using var db = await dbFactory.CreateDbContextAsync();
-        
+
         var guid = Guid.NewGuid();
         var category1 = new DataPointCategory
         {
@@ -103,10 +103,10 @@ public class DataIntegrityTests : JaTestContext
             Group = "Test",
             Type = PointType.Bool
         };
-        
+
         db.Categories.Add(category1);
         await db.SaveChangesAsync();
-        
+
         // Create a new context to simulate a separate operation
         using var db2 = await dbFactory.CreateDbContextAsync();
         var category2 = new DataPointCategory
@@ -116,7 +116,7 @@ public class DataIntegrityTests : JaTestContext
             Group = "Test",
             Type = PointType.Bool
         };
-        
+
         db2.Categories.Add(category2);
 
         // Act & Assert - Should throw on duplicate GUID
@@ -129,15 +129,15 @@ public class DataIntegrityTests : JaTestContext
     {
         // Note: In practice, the app logic prevents duplicate dates,
         // but the database schema doesn't enforce it
-        
+
         // Arrange
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         using var db = await dbFactory.CreateDbContextAsync();
-        
+
         var date = new DateOnly(2024, 1, 1);
         var day1 = Day.Create(date);
         var day2 = Day.Create(date);
-        
+
         db.Days.Add(day1);
         db.Days.Add(day2);
 
@@ -153,7 +153,7 @@ public class DataIntegrityTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
         var day = Day.Create(new DateOnly(2024, 1, 1));
         var category = db.Categories.First(c => c.Enabled && !c.Deleted && c.Group != "Notes");
@@ -176,7 +176,7 @@ public class DataIntegrityTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
         var day = Day.Create(new DateOnly(2024, 1, 1));
         var category = db.Categories.First(c => c.Enabled && !c.Deleted && c.Group != "Notes");
@@ -188,7 +188,7 @@ public class DataIntegrityTests : JaTestContext
         // Assert - Should create point with random data (for appropriate types)
         points.Should().HaveCount(1);
         var point = points.First();
-        
+
         // Random data should be populated based on category type
         if (category.Type == PointType.Mood)
         {
@@ -221,7 +221,7 @@ public class DataIntegrityTests : JaTestContext
         // Arrange
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         using var db = await dbFactory.CreateDbContextAsync();
-        
+
         var category = new DataPointCategory
         {
             Name = "Solo Category",
@@ -246,7 +246,7 @@ public class DataIntegrityTests : JaTestContext
         // Arrange
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         using var db = await dbFactory.CreateDbContextAsync();
-        
+
         var category = new DataPointCategory
         {
             Name = "First Category",
@@ -269,15 +269,15 @@ public class DataIntegrityTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
         var day = Day.Create(new DateOnly(2024, 1, 1));
         db.Days.Add(day);
-        
+
         var category = db.Categories.First();
         var point = DataPoint.Create(day, category);
         var originalGuid = point.Guid;
-        
+
         db.Points.Add(point);
 
         // Act
@@ -299,15 +299,15 @@ public class DataIntegrityTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
         var day = Day.Create(new DateOnly(2024, 1, 1));
         db.Days.Add(day);
-        
+
         var category = db.Categories.First(c => c.Type == PointType.Medication);
         var point = DataPoint.Create(day, category);
         point.MedicationDose = null;
-        
+
         db.Points.Add(point);
 
         // Act & Assert - Should save successfully with null dose
@@ -321,7 +321,7 @@ public class DataIntegrityTests : JaTestContext
         // Arrange
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         using var db = await dbFactory.CreateDbContextAsync();
-        
+
         var category = new DataPointCategory
         {
             Name = "Test Med",
@@ -329,7 +329,7 @@ public class DataIntegrityTests : JaTestContext
             Type = PointType.Medication,
             MedicationEveryDaySince = null
         };
-        
+
         db.AddCategory(category);
 
         // Act & Assert - Should save successfully with null
@@ -342,12 +342,12 @@ public class DataIntegrityTests : JaTestContext
     {
         // Test that calling GetOrCreateDayAndAddPoints multiple times
         // doesn't create duplicate points
-        
+
         // Arrange
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         var date = new DateOnly(2024, 1, 1);
 
         // Act - Call twice
@@ -356,7 +356,7 @@ public class DataIntegrityTests : JaTestContext
             await db.GetOrCreateDayAndAddPoints(date);
             await db.SaveChangesAsync();
         }
-        
+
         using (var db = await dbFactory.CreateDbContextAsync())
         {
             await db.GetOrCreateDayAndAddPoints(date);
@@ -368,10 +368,10 @@ public class DataIntegrityTests : JaTestContext
         {
             var day = db.Days.Include(d => d.Points).First(d => d.Date == date);
             var enabledCategories = db.Categories.Where(c => c.Enabled && !c.Deleted && c.Group != "Notes").ToList();
-            
+
             foreach (var category in enabledCategories)
             {
-                day.Points.Count(p => p.Category.Guid == category.Guid).Should().Be(1, 
+                day.Points.Count(p => p.Category.Guid == category.Guid).Should().Be(1,
                     $"Category {category.Name} should have exactly one point");
             }
         }
@@ -384,15 +384,15 @@ public class DataIntegrityTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
         var day = Day.Create(new DateOnly(2024, 1, 1));
         db.Days.Add(day);
-        
+
         var category = db.Categories.First();
         var point = DataPoint.Create(day, category);
         point.Text = null;
-        
+
         db.Points.Add(point);
 
         // Act & Assert - Should save successfully with null text
@@ -407,15 +407,15 @@ public class DataIntegrityTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
         var day = Day.Create(new DateOnly(2024, 1, 1));
         db.Days.Add(day);
-        
+
         var category = db.Categories.First();
         var point = DataPoint.Create(day, category);
         point.Guid = Guid.Empty;
-        
+
         db.Points.Add(point);
 
         // Act & Assert - Should either generate a new GUID or throw
@@ -441,10 +441,10 @@ public class DataIntegrityTests : JaTestContext
         // Arrange
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         using var db = await dbFactory.CreateDbContextAsync();
-        
+
         var futureDate = DateOnly.FromDateTime(DateTime.Now.AddYears(10));
         var day = Day.Create(futureDate);
-        
+
         db.Days.Add(day);
 
         // Act & Assert - Should save successfully
@@ -458,10 +458,10 @@ public class DataIntegrityTests : JaTestContext
         // Arrange
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         using var db = await dbFactory.CreateDbContextAsync();
-        
+
         var oldDate = new DateOnly(1900, 1, 1);
         var day = Day.Create(oldDate);
-        
+
         db.Days.Add(day);
 
         // Act & Assert - Should save successfully
@@ -475,7 +475,7 @@ public class DataIntegrityTests : JaTestContext
         // Arrange
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         using var db = await dbFactory.CreateDbContextAsync();
-        
+
         var longName = new string('A', 1000); // 1000 character name
         var category = new DataPointCategory
         {
@@ -483,12 +483,12 @@ public class DataIntegrityTests : JaTestContext
             Group = "Test",
             Type = PointType.Bool
         };
-        
+
         db.AddCategory(category);
 
         // Act - Try to save
         var act = async () => await db.SaveChangesAsync();
-        
+
         // Assert - May succeed or fail depending on DB column limits
         // We just need to ensure it doesn't corrupt data
         try
@@ -509,15 +509,15 @@ public class DataIntegrityTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
         var day = Day.Create(new DateOnly(2024, 1, 1));
         db.Days.Add(day);
-        
+
         var category = db.Categories.First(c => c.Type == PointType.Mood);
         var point = DataPoint.Create(day, category);
         point.Mood = null;
-        
+
         db.Points.Add(point);
 
         // Act & Assert
@@ -532,28 +532,28 @@ public class DataIntegrityTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
         var day = Day.Create(new DateOnly(2024, 1, 1));
         db.Days.Add(day);
-        
+
         var category = db.Categories.First(c => c.Type == PointType.Number);
-        
+
         // Test very large number
         var point1 = DataPoint.Create(day, category);
         point1.Number = double.MaxValue;
         db.Points.Add(point1);
-        
+
         // Test very small number
         var point2 = DataPoint.Create(day, category);
         point2.Number = double.MinValue;
         db.Points.Add(point2);
-        
+
         // Test zero
         var point3 = DataPoint.Create(day, category);
         point3.Number = 0;
         db.Points.Add(point3);
-        
+
         // Test negative
         var point4 = DataPoint.Create(day, category);
         point4.Number = -999999.999;
@@ -561,7 +561,7 @@ public class DataIntegrityTests : JaTestContext
 
         // Act & Assert
         await db.SaveChangesAsync();
-        
+
         point1.Number.Should().Be(double.MaxValue);
         point2.Number.Should().Be(double.MinValue);
         point3.Number.Should().Be(0);
@@ -575,29 +575,29 @@ public class DataIntegrityTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
         var day = Day.Create(new DateOnly(2024, 1, 1));
         db.Days.Add(day);
-        
+
         var category = db.Categories.First(c => c.Type == PointType.Sleep);
-        
+
         // Test boundary values for sleep hours
         var point1 = DataPoint.Create(day, category);
         point1.SleepHours = 24m; // Max
         db.Points.Add(point1);
-        
+
         var point2 = DataPoint.Create(day, category);
         point2.SleepHours = 0m; // Min
         db.Points.Add(point2);
-        
+
         var point3 = DataPoint.Create(day, category);
         point3.SleepHours = 12.5m; // Typical
         db.Points.Add(point3);
 
         // Act & Assert
         await db.SaveChangesAsync();
-        
+
         point1.SleepHours.Should().Be(24m);
         point2.SleepHours.Should().Be(0m);
         point3.SleepHours.Should().Be(12.5m);
@@ -609,7 +609,7 @@ public class DataIntegrityTests : JaTestContext
         // Arrange
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         using var db = await dbFactory.CreateDbContextAsync();
-        
+
         var category = new DataPointCategory
         {
             Name = "Test Med",
@@ -618,7 +618,7 @@ public class DataIntegrityTests : JaTestContext
             MedicationDose = 100m,
             MedicationUnit = null
         };
-        
+
         db.AddCategory(category);
 
         // Act & Assert
@@ -633,18 +633,18 @@ public class DataIntegrityTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
         var day = Day.Create(new DateOnly(2024, 1, 1));
         db.Days.Add(day);
-        
+
         var category = db.Categories.First();
         var point = DataPoint.Create(day, category);
         var originalTimestamp = point.CreatedAt;
-        
+
         db.Points.Add(point);
         await db.SaveChangesAsync();
-        
+
         // Detach and reload
         var pointGuid = point.Guid;
         db.Entry(point).State = EntityState.Detached;
@@ -663,16 +663,16 @@ public class DataIntegrityTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
-        
+
         // Disable all categories
         foreach (var category in db.Categories)
         {
             category.Enabled = false;
         }
         await db.SaveChangesAsync();
-        
+
         var date = new DateOnly(2024, 1, 1);
 
         // Act
@@ -695,15 +695,15 @@ public class DataIntegrityTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
         var day = Day.Create(new DateOnly(2024, 1, 1));
         db.Days.Add(day);
-        
+
         var category = db.Categories.First();
         var point = DataPoint.Create(day, category);
         point.Deleted = true;
-        
+
         db.Points.Add(point);
         await db.SaveChangesAsync();
 

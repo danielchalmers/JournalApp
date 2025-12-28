@@ -43,12 +43,12 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
 
         await using var db = await dbFactory.CreateDbContextAsync();
         await using var transaction = await db.Database.BeginTransactionAsync();
-        
+
         try
         {
             // Delete all existing data
             await DeleteDbSetsInternal(db);
-            
+
             // Restore from backup
             await RestoreDbSetsInternal(db, backup);
 
@@ -76,7 +76,7 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
         var pointsDeleted = await db.Points.ExecuteDeleteAsync();
         var daysDeleted = await db.Days.ExecuteDeleteAsync();
         var categoriesDeleted = await db.Categories.ExecuteDeleteAsync();
-        
+
         logger.LogDebug(
             "Cleared data sets (points: {PointsDeleted}, days: {DaysDeleted}, categories: {CategoriesDeleted})",
             pointsDeleted,

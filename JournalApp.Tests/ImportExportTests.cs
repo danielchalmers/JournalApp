@@ -116,7 +116,7 @@ public class ImportExportTests : JaTestContext
     {
         // Arrange - Create a valid ZIP without the required internal file
         var zipPath = Path.Combine(Path.GetTempPath(), $"empty-{Guid.NewGuid()}.journalapp");
-        
+
         try
         {
             using (var stream = File.Create(zipPath))
@@ -145,7 +145,7 @@ public class ImportExportTests : JaTestContext
     {
         // Arrange - Create a valid ZIP with corrupted JSON
         var zipPath = Path.Combine(Path.GetTempPath(), $"corrupted-{Guid.NewGuid()}.journalapp");
-        
+
         try
         {
             using (var stream = File.Create(zipPath))
@@ -172,7 +172,7 @@ public class ImportExportTests : JaTestContext
     {
         // Arrange - Create a valid ZIP with valid but empty JSON
         var zipPath = Path.Combine(Path.GetTempPath(), $"empty-backup-{Guid.NewGuid()}.journalapp");
-        
+
         try
         {
             var emptyBackup = new BackupFile
@@ -207,11 +207,11 @@ public class ImportExportTests : JaTestContext
         // Arrange
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         var appDataService = Services.GetService<AppDataService>();
-        
+
         appDbSeeder.SeedCategories();
         var dates = new DateOnly(2024, 1, 1).DatesTo(new(2024, 1, 3));
         appDbSeeder.SeedDays(dates);
-        
+
         var backup = await appDataService.CreateBackup();
         var zipPath = Path.Combine(Path.GetTempPath(), $"test-backup-{Guid.NewGuid()}.journalapp");
 
@@ -222,7 +222,7 @@ public class ImportExportTests : JaTestContext
 
             // Assert
             File.Exists(zipPath).Should().BeTrue();
-            
+
             // Verify it can be read back
             var restoredBackup = await BackupFile.ReadArchive(zipPath);
             restoredBackup.Days.Select(d => d.Guid).Should().BeEquivalentTo(backup.Days.Select(d => d.Guid));
@@ -243,35 +243,35 @@ public class ImportExportTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         var appDataService = Services.GetService<AppDataService>();
-        
+
         appDbSeeder.SeedCategories();
-        
+
         // Create data with various properties set
         using (var db = await dbFactory.CreateDbContextAsync())
         {
             var day = Day.Create(new DateOnly(2024, 1, 1));
             db.Days.Add(day);
-            
+
             // Add a mood point
             var moodCategory = db.Categories.First(c => c.Type == PointType.Mood);
             var moodPoint = DataPoint.Create(day, moodCategory);
             moodPoint.Mood = "😀";
             moodPoint.Text = "Test note with special chars: é, ñ, 中文";
             db.Points.Add(moodPoint);
-            
+
             // Add a medication point
             var medCategory = db.Categories.First(c => c.Type == PointType.Medication);
             var medPoint = DataPoint.Create(day, medCategory);
             medPoint.Bool = true;
             medPoint.MedicationDose = 150.5m;
             db.Points.Add(medPoint);
-            
+
             // Add a LowToHigh point (seeded categories use this instead of Scale)
             var scaleCategory = db.Categories.First(c => c.Type == PointType.LowToHigh);
             var scalePoint = DataPoint.Create(day, scaleCategory);
             scalePoint.ScaleIndex = 3;
             db.Points.Add(scalePoint);
-            
+
             await db.SaveChangesAsync();
         }
 
@@ -282,10 +282,10 @@ public class ImportExportTests : JaTestContext
             // Act - Export to file
             var originalBackup = await appDataService.CreateBackup();
             await originalBackup.WriteArchive(zipPath);
-            
+
             // Clear database
             await appDataService.DeleteDbSets();
-            
+
             // Import from file
             var restoredBackup = await BackupFile.ReadArchive(zipPath);
             await appDataService.RestoreDbSets(restoredBackup);
@@ -296,11 +296,11 @@ public class ImportExportTests : JaTestContext
                 var moodPoint = db.Points.Include(p => p.Category).First(p => p.Category.Type == PointType.Mood);
                 moodPoint.Mood.Should().Be("😀");
                 moodPoint.Text.Should().Be("Test note with special chars: é, ñ, 中文");
-                
+
                 var medPoint = db.Points.Include(p => p.Category).First(p => p.Category.Type == PointType.Medication);
                 medPoint.Bool.Should().BeTrue();
                 medPoint.MedicationDose.Should().Be(150.5m);
-                
+
                 var scalePoint = db.Points.Include(p => p.Category).First(p => p.Category.Type == PointType.LowToHigh);
                 scalePoint.ScaleIndex.Should().Be(3);
             }
@@ -318,7 +318,7 @@ public class ImportExportTests : JaTestContext
         // Test that data points without valid day/category references can be handled gracefully
         var appDataService = Services.GetService<AppDataService>();
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-        
+
         // Create a backup with orphaned points (points referencing non-existent days/categories)
         var category = new DataPointCategory
         {
@@ -328,9 +328,9 @@ public class ImportExportTests : JaTestContext
             Type = PointType.Bool,
             Enabled = true
         };
-        
+
         var day = Day.Create(new DateOnly(2024, 1, 1));
-        
+
         var orphanedPoint = new DataPoint
         {
             Guid = Guid.NewGuid(),

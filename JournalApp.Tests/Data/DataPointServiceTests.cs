@@ -358,7 +358,7 @@ public class DataPointServiceTests
         // Act - Set and get
         _service.SetScaleIndex(point, 5);
         var result1 = _service.GetScaleIndex(point);
-        
+
         _service.SetScaleIndex(point, 0);
         var result2 = _service.GetScaleIndex(point);
 
@@ -487,7 +487,7 @@ public class DataPointServiceTests
     public void HandleMedicationTakenChanged_AllowsToggleTwiceToResetDose()
     {
         // This test demonstrates the "toggle twice to reset" feature mentioned in the comment
-        
+
         // Arrange
         var category = new DataPointCategory
         {
@@ -496,18 +496,18 @@ public class DataPointServiceTests
         };
         var day = Day.Create(new DateOnly(2024, 1, 1));
         var point = DataPoint.Create(day, category);
-        
+
         // User takes medication with custom dose
         point.Bool = true;
         point.MedicationDose = 150m;
         _service.HandleMedicationTakenChanged(point);
         point.MedicationDose.Should().Be(150m); // Keeps custom dose
-        
+
         // User toggles to "not taken"
         point.Bool = false;
         _service.HandleMedicationTakenChanged(point);
         point.MedicationDose.Should().Be(100m); // Resets to default
-        
+
         // User toggles back to "taken"
         point.Bool = true;
         _service.HandleMedicationTakenChanged(point);

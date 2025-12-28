@@ -17,7 +17,7 @@ public class AppDbContextTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
         var date = new DateOnly(2024, 1, 1);
 
@@ -38,10 +38,10 @@ public class AppDbContextTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
         var date = new DateOnly(2024, 1, 1);
-        
+
         // Create day first
         var originalDay = await db.GetOrCreateDayAndAddPoints(date);
         await db.SaveChangesAsync();
@@ -63,7 +63,7 @@ public class AppDbContextTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
         var date = new DateOnly(2024, 1, 1);
 
@@ -74,7 +74,7 @@ public class AppDbContextTests : JaTestContext
         // Assert
         var enabledCategories = db.Categories.Where(c => c.Enabled && !c.Deleted).ToList();
         enabledCategories.Should().NotBeEmpty();
-        
+
         // Each enabled non-Notes category should have a point
         foreach (var category in enabledCategories.Where(c => c.Group != "Notes"))
         {
@@ -89,14 +89,14 @@ public class AppDbContextTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
-        
+
         // Disable a category
         var categoryToDisable = db.Categories.First(c => c.Enabled && !c.Deleted);
         categoryToDisable.Enabled = false;
         await db.SaveChangesAsync();
-        
+
         var date = new DateOnly(2024, 1, 1);
 
         // Act
@@ -114,14 +114,14 @@ public class AppDbContextTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
-        
+
         // Delete a category
         var categoryToDelete = db.Categories.First(c => c.Enabled && !c.Deleted);
         categoryToDelete.Deleted = true;
         await db.SaveChangesAsync();
-        
+
         var date = new DateOnly(2024, 1, 1);
 
         // Act
@@ -139,7 +139,7 @@ public class AppDbContextTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
         var day = Day.Create(new DateOnly(2024, 1, 1));
         var category = db.Categories.First();
@@ -159,7 +159,7 @@ public class AppDbContextTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
         var day = Day.Create(new DateOnly(2024, 1, 1));
         var category = db.Categories.First();
@@ -179,7 +179,7 @@ public class AppDbContextTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
         var day = Day.Create(new DateOnly(2024, 1, 1));
         var category = db.Categories.First(c => c.Enabled && !c.Deleted && c.Group != "Notes");
@@ -200,11 +200,11 @@ public class AppDbContextTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
         var day = Day.Create(new DateOnly(2024, 1, 1));
         var category = db.Categories.First(c => c.Enabled && !c.Deleted && c.Group != "Notes");
-        
+
         // Add existing point
         var existingPoint = DataPoint.Create(day, category);
         day.Points.Add(existingPoint);
@@ -223,11 +223,11 @@ public class AppDbContextTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
         var today = DateOnly.FromDateTime(DateTime.Now);
         var day = Day.Create(today);
-        
+
         var medicationCategory = db.Categories.First(c => c.Type == PointType.Medication);
         medicationCategory.MedicationEveryDaySince = DateTime.Now.AddDays(-5);
 
@@ -246,11 +246,11 @@ public class AppDbContextTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
         var yesterday = DateOnly.FromDateTime(DateTime.Now.AddDays(-1));
         var day = Day.Create(yesterday);
-        
+
         var medicationCategory = db.Categories.First(c => c.Type == PointType.Medication);
         medicationCategory.MedicationEveryDaySince = DateTime.Now; // Today, so yesterday shouldn't be marked
 
@@ -269,7 +269,7 @@ public class AppDbContextTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
         var newCategory = new DataPointCategory
         {
@@ -293,9 +293,9 @@ public class AppDbContextTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
-        
+
         var testGroup = "Test Group";
         var category1 = new DataPointCategory
         {
@@ -305,7 +305,7 @@ public class AppDbContextTests : JaTestContext
         };
         db.AddCategory(category1);
         await db.SaveChangesAsync();
-        
+
         var category2 = new DataPointCategory
         {
             Name = "Category 2",
@@ -328,7 +328,7 @@ public class AppDbContextTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
         var newCategory = new DataPointCategory
         {
@@ -352,9 +352,9 @@ public class AppDbContextTests : JaTestContext
         // Arrange
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         // Don't seed categories - use a clean slate
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
-        
+
         var testGroup = "Test Group Unique";
         var category1 = new DataPointCategory
         {
@@ -370,7 +370,7 @@ public class AppDbContextTests : JaTestContext
             Type = PointType.Bool,
             Index = 2
         };
-        
+
         db.Categories.Add(category1);
         db.Categories.Add(category2);
         await db.SaveChangesAsync();
@@ -391,9 +391,9 @@ public class AppDbContextTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
-        
+
         var testGroup = "Test Group";
         var category = new DataPointCategory
         {
@@ -401,10 +401,10 @@ public class AppDbContextTests : JaTestContext
             Group = testGroup,
             Type = PointType.Bool
         };
-        
+
         db.AddCategory(category);
         await db.SaveChangesAsync();
-        
+
         var originalIndex = category.Index;
 
         // Act
@@ -422,9 +422,9 @@ public class AppDbContextTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
-        
+
         var testGroup = "Test Group";
         var category1 = new DataPointCategory
         {
@@ -447,7 +447,7 @@ public class AppDbContextTests : JaTestContext
             Type = PointType.Bool,
             Index = 10
         };
-        
+
         db.Categories.Add(category1);
         db.Categories.Add(category2);
         db.Categories.Add(category3);
@@ -470,9 +470,9 @@ public class AppDbContextTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
-        
+
         var testGroup = "Test Group";
         var category1 = new DataPointCategory
         {
@@ -489,7 +489,7 @@ public class AppDbContextTests : JaTestContext
             Index = 2,
             Deleted = true
         };
-        
+
         db.Categories.Add(category1);
         db.Categories.Add(category2);
         await db.SaveChangesAsync();
@@ -510,9 +510,9 @@ public class AppDbContextTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
-        
+
         var group1Category1 = new DataPointCategory
         {
             Name = "G1 Cat 1",
@@ -534,7 +534,7 @@ public class AppDbContextTests : JaTestContext
             Type = PointType.Bool,
             Index = 3
         };
-        
+
         db.Categories.Add(group1Category1);
         db.Categories.Add(group1Category2);
         db.Categories.Add(group2Category1);
@@ -557,7 +557,7 @@ public class AppDbContextTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         appDbSeeder.SeedCategories();
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
         var day = Day.Create(new DateOnly(2024, 1, 1));
 
@@ -577,7 +577,7 @@ public class AppDbContextTests : JaTestContext
         // Arrange
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         // Don't seed categories
-        
+
         using var db = await dbFactory.CreateDbContextAsync();
         var day = Day.Create(new DateOnly(2024, 1, 1));
 

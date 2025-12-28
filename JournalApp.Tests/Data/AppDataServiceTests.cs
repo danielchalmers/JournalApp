@@ -17,7 +17,7 @@ public class AppDataServiceTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         var appDataService = Services.GetService<AppDataService>();
-        
+
         appDbSeeder.SeedCategories();
         var dates = new DateOnly(2024, 1, 1).DatesTo(new(2024, 1, 5));
         appDbSeeder.SeedDays(dates);
@@ -49,14 +49,14 @@ public class AppDataServiceTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         var appDataService = Services.GetService<AppDataService>();
-        
+
         appDbSeeder.SeedCategories();
         var dates = new DateOnly(2024, 1, 1).DatesTo(new(2024, 1, 5));
         appDbSeeder.SeedDays(dates);
 
         // Create backup
         var backup = await appDataService.CreateBackup();
-        
+
         // Clear database
         await appDataService.DeleteDbSets();
 
@@ -79,12 +79,12 @@ public class AppDataServiceTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         var appDataService = Services.GetService<AppDataService>();
-        
+
         // Create initial data
         appDbSeeder.SeedCategories();
         var dates1 = new DateOnly(2024, 1, 1).DatesTo(new(2024, 1, 5));
         appDbSeeder.SeedDays(dates1);
-        
+
         var initialDayGuids = (await dbFactory.CreateDbContextAsync()).Days.Select(d => d.Guid).ToList();
 
         // Create new data for backup
@@ -93,7 +93,7 @@ public class AppDataServiceTests : JaTestContext
         var dates2 = new DateOnly(2024, 2, 1).DatesTo(new(2024, 2, 3));
         appDbSeeder.SeedDays(dates2);
         var newBackup = await appDataService.CreateBackup();
-        
+
         // Clear and add back initial data
         await appDataService.DeleteDbSets();
         appDbSeeder.SeedCategories();
@@ -107,7 +107,7 @@ public class AppDataServiceTests : JaTestContext
         {
             // Should have new data
             db.Days.Select(d => d.Guid).Should().BeEquivalentTo(newBackup.Days.Select(d => d.Guid));
-            
+
             // Should not have old data
             db.Days.Select(d => d.Guid).Should().NotContain(initialDayGuids);
         }
@@ -128,7 +128,7 @@ public class AppDataServiceTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         var appDataService = Services.GetService<AppDataService>();
-        
+
         appDbSeeder.SeedCategories();
         var dates = new DateOnly(2024, 1, 1).DatesTo(new(2024, 1, 5));
         appDbSeeder.SeedDays(dates);
@@ -141,7 +141,7 @@ public class AppDataServiceTests : JaTestContext
         backup.Days.Should().NotBeEmpty();
         backup.Categories.Should().NotBeEmpty();
         backup.Points.Should().NotBeEmpty();
-        
+
         using (var db = await dbFactory.CreateDbContextAsync())
         {
             backup.Days.Count.Should().Be(db.Days.Count());
@@ -157,7 +157,7 @@ public class AppDataServiceTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         var appDataService = Services.GetService<AppDataService>();
-        
+
         appDbSeeder.SeedCategories();
         var dates = new DateOnly(2024, 1, 1).DatesTo(new(2024, 1, 3));
         appDbSeeder.SeedDays(dates);
@@ -167,12 +167,12 @@ public class AppDataServiceTests : JaTestContext
 
         // Assert
         // Days should have their points loaded
-        backup.Days.Should().AllSatisfy(day => 
+        backup.Days.Should().AllSatisfy(day =>
             day.Points.Should().NotBeNull()
         );
-        
+
         // Categories should have their points loaded
-        backup.Categories.Should().AllSatisfy(category => 
+        backup.Categories.Should().AllSatisfy(category =>
             category.Points.Should().NotBeNull()
         );
     }
@@ -183,7 +183,7 @@ public class AppDataServiceTests : JaTestContext
         // Arrange
         var preferences = Services.GetService<IPreferences>();
         var appDataService = Services.GetService<AppDataService>();
-        
+
         preferences.Set("safety_plan", "Test safety plan");
         preferences.Set("mood_palette", "Test palette");
 
@@ -202,7 +202,7 @@ public class AppDataServiceTests : JaTestContext
         // Arrange
         var preferences = Services.GetService<IPreferences>();
         var appDataService = Services.GetService<AppDataService>();
-        
+
         var backup = new BackupFile
         {
             PreferenceBackups = new List<PreferenceBackup>
@@ -226,7 +226,7 @@ public class AppDataServiceTests : JaTestContext
         // Arrange
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDataService = Services.GetService<AppDataService>();
-        
+
         var emptyBackup = new BackupFile
         {
             Days = new List<Day>(),
@@ -253,7 +253,7 @@ public class AppDataServiceTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         var appDataService = Services.GetService<AppDataService>();
-        
+
         appDbSeeder.SeedCategories();
 
         // Act
@@ -292,21 +292,21 @@ public class AppDataServiceTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         var appDataService = Services.GetService<AppDataService>();
-        
+
         appDbSeeder.SeedCategories();
-        
+
         using (var db = await dbFactory.CreateDbContextAsync())
         {
             var day = Day.Create(new DateOnly(2024, 1, 1));
             db.Days.Add(day);
-            
+
             var category = db.Categories.First(c => c.Type == PointType.Mood);
             var point = DataPoint.Create(day, category);
             point.Mood = "😀";
             point.Text = "Test note";
             point.Number = 42;
             point.Bool = true;
-            
+
             db.Points.Add(point);
             await db.SaveChangesAsync();
         }
@@ -334,7 +334,7 @@ public class AppDataServiceTests : JaTestContext
         // Arrange
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDataService = Services.GetService<AppDataService>();
-        
+
         using (var db = await dbFactory.CreateDbContextAsync())
         {
             var category = new DataPointCategory
@@ -348,7 +348,7 @@ public class AppDataServiceTests : JaTestContext
                 MedicationEveryDaySince = DateTimeOffset.Now.AddDays(-10),
                 Details = "Test details"
             };
-            
+
             db.AddCategory(category);
             await db.SaveChangesAsync();
         }
@@ -380,9 +380,9 @@ public class AppDataServiceTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         var appDataService = Services.GetService<AppDataService>();
-        
+
         appDbSeeder.SeedCategories();
-        
+
         // Create a large dataset - full year of data (2024 is a leap year with 366 days)
         var startDate = new DateOnly(2024, 1, 1);
         var endDate = new DateOnly(2024, 12, 31);
@@ -405,9 +405,9 @@ public class AppDataServiceTests : JaTestContext
         // Test that backup with duplicate GUIDs is handled appropriately
         var appDataService = Services.GetService<AppDataService>();
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-        
+
         var duplicateGuid = Guid.NewGuid();
-        
+
         var category1 = new DataPointCategory
         {
             Guid = duplicateGuid,
@@ -416,7 +416,7 @@ public class AppDataServiceTests : JaTestContext
             Type = PointType.Bool,
             Enabled = true
         };
-        
+
         var category2 = new DataPointCategory
         {
             Guid = duplicateGuid, // Same GUID!
@@ -446,15 +446,15 @@ public class AppDataServiceTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         var appDataService = Services.GetService<AppDataService>();
-        
+
         // Create initial data
         appDbSeeder.SeedCategories();
         var dates = new DateOnly(2024, 1, 1).DatesTo(new(2024, 1, 5));
         appDbSeeder.SeedDays(dates);
-        
+
         var initialBackup = await appDataService.CreateBackup();
         var initialDayCount = initialBackup.Days.Count;
-        
+
         // Create an invalid backup with duplicate GUIDs to force a failure
         var duplicateGuid = Guid.NewGuid();
         var invalidBackup = new BackupFile
@@ -489,18 +489,18 @@ public class AppDataServiceTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         var appDataService = Services.GetService<AppDataService>();
-        
+
         appDbSeeder.SeedCategories();
-        
+
         using (var db = await dbFactory.CreateDbContextAsync())
         {
             var day = Day.Create(new DateOnly(2024, 1, 1));
             db.Days.Add(day);
-            
+
             var category = db.Categories.First();
             var point = DataPoint.Create(day, category);
             point.Deleted = true; // Mark as deleted
-            
+
             db.Points.Add(point);
             await db.SaveChangesAsync();
         }
@@ -519,18 +519,18 @@ public class AppDataServiceTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         var appDataService = Services.GetService<AppDataService>();
-        
+
         appDbSeeder.SeedCategories();
-        
+
         using (var db = await dbFactory.CreateDbContextAsync())
         {
             var day = Day.Create(new DateOnly(2024, 1, 1));
             db.Days.Add(day);
-            
+
             var category = db.Categories.First();
             var point = DataPoint.Create(day, category);
             point.Deleted = true;
-            
+
             db.Points.Add(point);
             await db.SaveChangesAsync();
         }
@@ -555,7 +555,7 @@ public class AppDataServiceTests : JaTestContext
         // Arrange
         var preferences = Services.GetService<IPreferences>();
         var appDataService = Services.GetService<AppDataService>();
-        
+
         var backup = new BackupFile
         {
             PreferenceBackups = new List<PreferenceBackup>()
@@ -573,7 +573,7 @@ public class AppDataServiceTests : JaTestContext
     {
         // Arrange
         var appDataService = Services.GetService<AppDataService>();
-        
+
         // Intentionally using null! to test null handling behavior
         var backup = new BackupFile
         {
@@ -591,7 +591,7 @@ public class AppDataServiceTests : JaTestContext
         // Arrange
         var preferences = Services.GetService<IPreferences>();
         var appDataService = Services.GetService<AppDataService>();
-        
+
         // Clear all preferences
         preferences.Clear();
 
@@ -609,7 +609,7 @@ public class AppDataServiceTests : JaTestContext
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDbSeeder = Services.GetService<AppDbSeeder>();
         var appDataService = Services.GetService<AppDataService>();
-        
+
         appDbSeeder.SeedCategories();
         var dates = new DateOnly(2024, 1, 1).DatesTo(new(2024, 1, 10));
         appDbSeeder.SeedDays(dates);
@@ -618,7 +618,7 @@ public class AppDataServiceTests : JaTestContext
         List<Guid> originalDayGuids;
         List<Guid> originalCategoryGuids;
         List<Guid> originalPointGuids;
-        
+
         using (var db = await dbFactory.CreateDbContextAsync())
         {
             originalDayGuids = db.Days.Select(d => d.Guid).ToList();
@@ -629,7 +629,7 @@ public class AppDataServiceTests : JaTestContext
         // Act
         var backup = await appDataService.CreateBackup();
         await appDataService.DeleteDbSets();
-        
+
         // Verify deletion
         using (var db = await dbFactory.CreateDbContextAsync())
         {
@@ -637,7 +637,7 @@ public class AppDataServiceTests : JaTestContext
             db.Categories.Should().BeEmpty();
             db.Points.Should().BeEmpty();
         }
-        
+
         await appDataService.RestoreDbSets(backup);
 
         // Assert - All original data should be restored
