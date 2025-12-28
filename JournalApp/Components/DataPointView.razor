@@ -82,7 +82,11 @@ else if (Point.Type == PointType.Medication)
             <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
         </MudToggleGroup>
 
-        <MudLink OnClick="EditDose" Disabled="@(string.IsNullOrWhiteSpace(Point.Category.MedicationUnit))">Edit dose</MudLink>
+        <MudLink OnClick="EditDose"
+                 Disabled="@(string.IsNullOrWhiteSpace(Point.Category.MedicationUnit))">
+            <MudIcon Icon="@Icons.Material.Rounded.Edit" />
+            Edit dose
+        </MudLink>
     </div>
 }
 

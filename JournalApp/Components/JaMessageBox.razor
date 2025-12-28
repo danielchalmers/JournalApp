@@ -26,7 +26,10 @@
     <DialogActions>
         @if (ShowFeedbackLink)
         {
-            <MudLink Href="@Feedback.NewGitHubIssue" Typo="Typo.inherit">Send feedback</MudLink>
+            <MudLink Href="@Feedback.NewGitHubIssue" Typo="Typo.inherit">
+                <MudIcon Icon="@Icons.Material.Rounded.Feedback" />
+                Send feedback
+            </MudLink>
         }
 
         <MudSpacer />
