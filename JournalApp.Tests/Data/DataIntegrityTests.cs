@@ -420,7 +420,6 @@ public class DataIntegrityTests : JaTestContext
 
         // Act & Assert - Should either generate a new GUID or throw
         // The behavior depends on how the database handles empty GUIDs
-        async Task<int> act() => await db.SaveChangesAsync();
         // Most databases will either auto-generate or reject empty GUIDs
         // We just need to ensure it doesn't cause data corruption
         try
@@ -487,8 +486,6 @@ public class DataIntegrityTests : JaTestContext
         db.AddCategory(category);
 
         // Act - Try to save
-        async Task<int> act() => await db.SaveChangesAsync();
-
         // Assert - May succeed or fail depending on DB column limits
         // We just need to ensure it doesn't corrupt data
         try

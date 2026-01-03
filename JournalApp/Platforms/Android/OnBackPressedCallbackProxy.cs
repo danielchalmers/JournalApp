@@ -1,4 +1,6 @@
-﻿namespace JournalApp.Platforms.Android;
+﻿using AndroidX.Activity;
+
+namespace JournalApp.Platforms.Android;
 
 internal class OnBackPressedCallbackProxy(Action onBackPressed) : OnBackPressedCallback(true)
 {
