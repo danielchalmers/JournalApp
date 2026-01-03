@@ -14,15 +14,8 @@ indent_size = 2
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-[*.{razor,cshtml,html}]
+[*.{cs,csx,vb,vbx,razor,cshtml,html}]
 charset = utf-8-bom
-indent_size = 4
-end_of_line = crlf
-insert_final_newline = true
-trim_trailing_whitespace = true
-
-# Code files
-[*.{cs,csx,vb,vbx}]
 indent_size = 4
 end_of_line = crlf
 insert_final_newline = true

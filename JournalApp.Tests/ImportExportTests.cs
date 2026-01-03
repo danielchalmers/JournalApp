@@ -177,10 +177,10 @@ public class ImportExportTests : JaTestContext
         {
             var emptyBackup = new BackupFile
             {
-                Days = new List<Day>(),
-                Categories = new List<DataPointCategory>(),
-                Points = new List<DataPoint>(),
-                PreferenceBackups = new List<PreferenceBackup>()
+                Days = [],
+                Categories = [],
+                Points = [],
+                PreferenceBackups = []
             };
 
             await emptyBackup.WriteArchive(zipPath);
@@ -342,10 +342,10 @@ public class ImportExportTests : JaTestContext
 
         var backup = new BackupFile
         {
-            Days = new List<Day> { day },
-            Categories = new List<DataPointCategory> { category },
-            Points = new List<DataPoint> { orphanedPoint },
-            PreferenceBackups = new List<PreferenceBackup>()
+            Days = [day],
+            Categories = [category],
+            Points = [orphanedPoint],
+            PreferenceBackups = []
         };
 
         // Act - This should restore without throwing

@@ -1,10 +1,9 @@
 ﻿using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Core.Platform;
-using MudBlazor.Utilities;
 
 namespace JournalApp;
 
-public sealed class PreferenceService : IPreferences, IDisposable
+public sealed partial class PreferenceService : IPreferences, IDisposable
 {
     private readonly ILogger<PreferenceService> logger;
     private readonly IPreferences _preferenceStore;

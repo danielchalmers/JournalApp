@@ -68,9 +68,9 @@ else if (Point.Type == PointType.Note)
         }
 
         <MudIconButton Class="note-edit-button"
-                       Icon="@Icons.Material.Rounded.Edit" 
-                       aria-label="Edit note" 
-                       OnClick="EditTextInDialog" 
+                       Icon="@Icons.Material.Rounded.Edit"
+                       aria-label="Edit note"
+                       OnClick="EditTextInDialog"
                        Size="Size.Small" />
     </div>
 }
@@ -84,7 +84,6 @@ else if (Point.Type == PointType.Medication)
 
         <MudLink OnClick="EditDose"
                  Disabled="@(string.IsNullOrWhiteSpace(Point.Category.MedicationUnit))">
-            <MudIcon Icon="@Icons.Material.Rounded.Edit" />
             Edit dose
         </MudLink>
     </div>

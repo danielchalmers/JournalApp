@@ -4,10 +4,10 @@
              xmlns:local="clr-namespace:JournalApp"
              x:Class="JournalApp.MainPage">
 
-	<BlazorWebView HostPage="wwwroot/index.html">
-		<BlazorWebView.RootComponents>
-			<RootComponent Selector="#app" ComponentType="{x:Type local:Routes}" />
-		</BlazorWebView.RootComponents>
-	</BlazorWebView>
+    <BlazorWebView HostPage="wwwroot/index.html">
+        <BlazorWebView.RootComponents>
+            <RootComponent Selector="#app" ComponentType="{x:Type local:Routes}" />
+        </BlazorWebView.RootComponents>
+    </BlazorWebView>
 
 </ContentPage>

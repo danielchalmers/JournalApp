@@ -1,4 +1,4 @@
-namespace JournalApp;
+﻿namespace JournalApp;
 
 /// <summary>
 /// Provides motivational quotes to display when users need encouragement.

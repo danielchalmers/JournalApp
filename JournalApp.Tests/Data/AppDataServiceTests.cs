@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace JournalApp.Tests.Data;
 
@@ -205,11 +205,11 @@ public class AppDataServiceTests : JaTestContext
 
         var backup = new BackupFile
         {
-            PreferenceBackups = new List<PreferenceBackup>
-            {
+            PreferenceBackups =
+            [
                 new("safety_plan", "Restored plan"),
                 new("mood_palette", "Restored palette")
-            }
+            ]
         };
 
         // Act
@@ -229,9 +229,9 @@ public class AppDataServiceTests : JaTestContext
 
         var emptyBackup = new BackupFile
         {
-            Days = new List<Day>(),
-            Categories = new List<DataPointCategory>(),
-            Points = new List<DataPoint>()
+            Days = [],
+            Categories = [],
+            Points = []
         };
 
         // Act
@@ -428,10 +428,10 @@ public class AppDataServiceTests : JaTestContext
 
         var backup = new BackupFile
         {
-            Days = new List<Day>(),
-            Categories = new List<DataPointCategory> { category1, category2 },
-            Points = new List<DataPoint>(),
-            PreferenceBackups = new List<PreferenceBackup>()
+            Days = [],
+            Categories = [category1, category2],
+            Points = [],
+            PreferenceBackups = []
         };
 
         // Act & Assert - Should throw on duplicate primary keys
@@ -459,14 +459,14 @@ public class AppDataServiceTests : JaTestContext
         var duplicateGuid = Guid.NewGuid();
         var invalidBackup = new BackupFile
         {
-            Days = new List<Day>(),
-            Categories = new List<DataPointCategory>
-            {
+            Days = [],
+            Categories =
+            [
                 new() { Guid = duplicateGuid, Name = "Cat1", Group = "Test", Type = PointType.Bool },
                 new() { Guid = duplicateGuid, Name = "Cat2", Group = "Test", Type = PointType.Bool }
-            },
-            Points = new List<DataPoint>(),
-            PreferenceBackups = new List<PreferenceBackup>()
+            ],
+            Points = [],
+            PreferenceBackups = []
         };
 
         // Act - Try to replace with invalid backup
@@ -558,7 +558,7 @@ public class AppDataServiceTests : JaTestContext
 
         var backup = new BackupFile
         {
-            PreferenceBackups = new List<PreferenceBackup>()
+            PreferenceBackups = []
         };
 
         // Act

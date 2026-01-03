@@ -1,4 +1,4 @@
-using JournalApp.Data;
+﻿using JournalApp.Data;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 

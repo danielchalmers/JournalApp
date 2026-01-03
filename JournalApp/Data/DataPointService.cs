@@ -1,4 +1,4 @@
-namespace JournalApp.Data;
+﻿namespace JournalApp.Data;
 
 /// <summary>
 /// Service for handling data point value manipulations.

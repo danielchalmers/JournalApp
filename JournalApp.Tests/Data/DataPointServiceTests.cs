@@ -1,4 +1,4 @@
-using JournalApp.Data;
+﻿using JournalApp.Data;
 
 namespace JournalApp.Tests.Data;
 

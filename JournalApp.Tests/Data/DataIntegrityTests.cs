@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace JournalApp.Tests.Data;
 
@@ -25,7 +25,7 @@ public class DataIntegrityTests : JaTestContext
 
         // Act & Assert - SaveChangesAsync should succeed even with default DateOnly
         await db.SaveChangesAsync();
-        day.Date.Should().Be(default(DateOnly));
+        day.Date.Should().Be(default);
     }
 
     [Fact(Skip = "SQLite doesn't enforce foreign key constraints by default")]
@@ -420,7 +420,7 @@ public class DataIntegrityTests : JaTestContext
 
         // Act & Assert - Should either generate a new GUID or throw
         // The behavior depends on how the database handles empty GUIDs
-        var act = async () => await db.SaveChangesAsync();
+        async Task<int> act() => await db.SaveChangesAsync();
         // Most databases will either auto-generate or reject empty GUIDs
         // We just need to ensure it doesn't cause data corruption
         try
@@ -487,7 +487,7 @@ public class DataIntegrityTests : JaTestContext
         db.AddCategory(category);
 
         // Act - Try to save
-        var act = async () => await db.SaveChangesAsync();
+        async Task<int> act() => await db.SaveChangesAsync();
 
         // Assert - May succeed or fail depending on DB column limits
         // We just need to ensure it doesn't corrupt data
@@ -671,6 +671,7 @@ public class DataIntegrityTests : JaTestContext
         {
             category.Enabled = false;
         }
+
         await db.SaveChangesAsync();
 
         var date = new DateOnly(2024, 1, 1);
