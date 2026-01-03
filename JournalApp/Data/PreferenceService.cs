@@ -8,13 +8,15 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
     private readonly ILogger<PreferenceService> logger;
     private readonly IPreferences _preferenceStore;
     private readonly Application _application;
+    private readonly SystemColorService _systemColorService;
     private Dictionary<string, string> _moodColors;
     private AppTheme? _theme;
 
-    public PreferenceService(ILogger<PreferenceService> logger, IPreferences preferenceStore)
+    public PreferenceService(ILogger<PreferenceService> logger, IPreferences preferenceStore, SystemColorService systemColorService)
     {
         this.logger = logger;
         _preferenceStore = preferenceStore;
+        _systemColorService = systemColorService;
 
         // Not available in unit tests.
         if (Application.Current != null)
@@ -118,13 +120,13 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
 #pragma warning disable CS0618 // Type or member is obsolete
             if (IsDarkMode)
             {
-                StatusBar.SetColor(Color.FromHex("#EAB8D6"));
-                StatusBar.SetStyle(StatusBarStyle.DarkContent);
+                StatusBar.SetColor(Color.FromHex("#111111"));
+                StatusBar.SetStyle(StatusBarStyle.LightContent);
             }
             else
             {
-                StatusBar.SetColor(Color.FromHex("#854C73"));
-                StatusBar.SetStyle(StatusBarStyle.LightContent);
+                StatusBar.SetColor(Color.FromHex("#FFFFFF"));
+                StatusBar.SetStyle(StatusBarStyle.DarkContent);
             }
 #pragma warning restore CS0618 // Type or member is obsolete
         }
@@ -134,7 +136,7 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
     {
         var emojis = DataPoint.Moods.Where(x => x != "🤔").ToList();
 #pragma warning disable CS0618 // Type or member is obsolete
-        var primary = Color.FromHex("#FF9FDF");
+        var primary = Color.FromHex(_systemColorService.GetSourceColorHex());
 #pragma warning restore CS0618 // Type or member is obsolete
         var complementary = primary.GetComplementary();
 

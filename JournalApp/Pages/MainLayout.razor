@@ -5,6 +5,8 @@
 @inject KeyEventService KeyEventService
 @inject NavigationManager NavigationManager
 @inject PreferenceService PreferenceService
+@inject SystemColorService SystemColorService
+@inject IJSRuntime JSRuntime
 
 <MudThemeProvider Theme="_theme" IsDarkMode="PreferenceService.IsDarkMode" DefaultScrollbar />
 
@@ -25,58 +27,9 @@
 
 @code {
     bool _hasInitiallyRendered;
+    IJSObjectReference _themeModule;
 
-    MudTheme _theme = new()
-    {
-        PaletteLight = new PaletteLight()
-        {
-            // https://materialkolor.com Seed FFFE73D8, Spec 2025.
-            Primary = "#854C73",
-            TextPrimary = "#3A2F36",
-            PrimaryContrastText = "#FFF7F8",
-            Secondary = "#715867",
-            TextSecondary = "#FFF7F8",
-            SecondaryContrastText = "#FFF7F8",
-            Error = "#A8364B",
-            Background = "#FEF0F6",
-            Surface = "#FAEAF0",
-
-            HoverOpacity = 0.1,
-        },
-
-        PaletteDark = new PaletteDark()
-        {
-            // https://materialkolor.com Seed FFFE73D8, Spec 2025.
-            Primary = "#EAB8D6",
-            TextPrimary = "#DECCD4",
-            PrimaryContrastText = "#59344D",
-            Secondary = "#DDBECF",
-            TextSecondary = "#503A47",
-            Error = "#F97386",
-            Background = "#1F171C",
-            Surface = "#120D10",
-
-            HoverOpacity = 0.1,
-        },
-
-        LayoutProperties = new()
-        {
-            DefaultBorderRadius = "4px",
-        },
-
-        Typography = new()
-        {
-            Button = new ButtonTypography()
-            {
-                TextTransform = "none",
-            },
-
-            Caption = new CaptionTypography()
-            {
-                LineHeight = "1",
-            },
-        },
-    };
+    MudTheme _theme = CreateBaseTheme();
 
     protected override void OnInitialized()
     {
@@ -107,13 +60,14 @@
         if (firstRender)
         {
             _hasInitiallyRendered = true;
+            _ = ApplyDynamicThemeAsync();
         }
     }
 
     public void OnThemeChanged(object sender, bool isDarkMode)
     {
         if (_hasInitiallyRendered)
-            StateHasChanged();
+            _ = InvokeAsync(ApplyDynamicThemeAsync);
     }
 
     void OnNewIntent(object sender, EventArgs e)
@@ -126,5 +80,104 @@
     {
         PreferenceService.ThemeChanged -= OnThemeChanged;
         App.NewIntent -= OnNewIntent;
+        if (_themeModule != null)
+            _ = _themeModule.DisposeAsync();
+    }
+
+    static MudTheme CreateBaseTheme()
+    {
+        return new MudTheme
+        {
+            PaletteLight = new PaletteLight
+            {
+                Primary = "#5B5B5B",
+                PrimaryContrastText = "#FFFFFF",
+                Secondary = "#6B6B6B",
+                SecondaryContrastText = "#FFFFFF",
+                TextPrimary = "#1F1F1F",
+                TextSecondary = "#3B3B3B",
+                Error = "#B3261E",
+                Background = "#FFFFFF",
+                Surface = "#F5F5F5",
+                HoverOpacity = 0.1,
+            },
+            PaletteDark = new PaletteDark
+            {
+                Primary = "#C7C7C7",
+                PrimaryContrastText = "#1F1F1F",
+                Secondary = "#B0B0B0",
+                SecondaryContrastText = "#1F1F1F",
+                TextPrimary = "#F1F1F1",
+                TextSecondary = "#CFCFCF",
+                Error = "#F2B8B5",
+                Background = "#0F0F0F",
+                Surface = "#1A1A1A",
+                HoverOpacity = 0.1,
+            },
+            LayoutProperties = new LayoutProperties
+            {
+                DefaultBorderRadius = "4px",
+            },
+            Typography = new Typography
+            {
+                Button = new ButtonTypography
+                {
+                    TextTransform = "none",
+                },
+                Caption = new CaptionTypography
+                {
+                    LineHeight = "1",
+                },
+            },
+        };
+    }
+
+    async Task ApplyDynamicThemeAsync()
+    {
+        try
+        {
+            _themeModule ??= await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./theme/material-theme.js");
+            var sourceColor = SystemColorService.GetSourceColorHex();
+
+            var lightTokens = await _themeModule.InvokeAsync<MaterialThemeTokens>("getThemeTokens", sourceColor, false);
+            var darkTokens = await _themeModule.InvokeAsync<MaterialThemeTokens>("getThemeTokens", sourceColor, true);
+
+            ApplyTokens(_theme.PaletteLight, lightTokens);
+            ApplyTokens(_theme.PaletteDark, darkTokens);
+
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Failed to apply dynamic theme. Using fallback palette.");
+        }
+    }
+
+    static void ApplyTokens(PaletteLight palette, MaterialThemeTokens tokens)
+    {
+        palette.Primary = tokens.Primary;
+        palette.PrimaryContrastText = tokens.OnPrimary;
+        palette.Secondary = tokens.Secondary;
+        palette.SecondaryContrastText = tokens.OnSecondary;
+        palette.TextPrimary = tokens.OnBackground;
+        palette.TextSecondary = tokens.OnSurfaceVariant;
+        palette.Error = tokens.Error;
+        palette.Background = tokens.Background;
+        palette.Surface = tokens.Surface;
+        palette.HoverOpacity = 0.1;
+    }
+
+    static void ApplyTokens(PaletteDark palette, MaterialThemeTokens tokens)
+    {
+        palette.Primary = tokens.Primary;
+        palette.PrimaryContrastText = tokens.OnPrimary;
+        palette.Secondary = tokens.Secondary;
+        palette.SecondaryContrastText = tokens.OnSecondary;
+        palette.TextPrimary = tokens.OnBackground;
+        palette.TextSecondary = tokens.OnSurfaceVariant;
+        palette.Error = tokens.Error;
+        palette.Background = tokens.Background;
+        palette.Surface = tokens.Surface;
+        palette.HoverOpacity = 0.1;
     }
 }

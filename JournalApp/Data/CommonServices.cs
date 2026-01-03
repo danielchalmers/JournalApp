@@ -24,6 +24,7 @@ public static class CommonServices
         services.AddSingleton<AppDbSeeder>();
         services.AddSingleton<KeyEventService>();
         services.AddSingleton<PreferenceService>();
+        services.AddSingleton<SystemColorService>();
         services.AddSingleton<CalendarService>();
         services.AddSingleton<DataPointService>();
     }

@@ -15,8 +15,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #FEF0F6;
-  color: #3A2F36;
+  background-color: #FFFFFF;
+  color: #1F1F1F;
   position: fixed;
   width: 100%;
   height: 100%
@@ -25,8 +25,8 @@ body {
 @media (prefers-color-scheme: dark) {
   #splash-screen {
     /*The splash screen should use the system theme so it blends in, even if the app itself uses a different theme.*/
-    background-color: #1F171C;
-    color: #DECCD4;
+    background-color: #111111;
+    color: #F1F1F1;
   }
 }
 
@@ -58,9 +58,9 @@ body {
   gap: 8px;
   padding: 0;
   box-shadow: none;
-  background-color: var(--mud-palette-primary);
-  color: var(--mud-palette-primary-text);
-  --mud-palette-action-default: var(--mud-palette-primary-text);
+  background-color: var(--mud-palette-surface);
+  color: var(--mud-palette-text-primary);
+  --mud-palette-action-default: var(--mud-palette-text-primary);
 }
 
 .page-header {
@@ -72,7 +72,7 @@ body {
   top: 0 !important;
   position: sticky !important;
   background-color: var(--mud-palette-surface);
-  color: var(--mud-palette-primary-text);
+  color: var(--mud-palette-text-primary);
 }
 
 .page-body {
@@ -175,8 +175,8 @@ body {
 }
 
 .mud-snackbar {
-  background-color: var(--mud-palette-primary);
-  color: var(--mud-palette-primary-text);
+  background-color: var(--mud-palette-surface);
+  color: var(--mud-palette-text-primary);
 }
 
 .emoji-button {
@@ -232,12 +232,12 @@ body {
 
 @media (prefers-color-scheme: dark) {
   .status-bar-safe-area {
-    background-color: #120D10;
+    background-color: #111111;
   }
 }
 
 @media (prefers-color-scheme: light) {
   .status-bar-safe-area {
-    background-color: #FFF8F9;
+    background-color: #FFFFFF;
   }
 }
