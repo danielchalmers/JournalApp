@@ -5,6 +5,7 @@
 body {
   user-select: none;
   --mud-palette-action-default: var(--mud-palette-text-primary);
+  color-scheme: light dark;
 }
 
   body::-webkit-scrollbar {
@@ -15,23 +16,15 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #FEF0F6;
-  color: #3A2F36;
+  background-color: Canvas;
+  color: CanvasText;
   position: fixed;
   width: 100%;
   height: 100%
 }
 
-@media (prefers-color-scheme: dark) {
-  #splash-screen {
-    /*The splash screen should use the system theme so it blends in, even if the app itself uses a different theme.*/
-    background-color: #1F171C;
-    color: #DECCD4;
-  }
-}
-
 #loading-text {
-  font-family: sans-serif;
+  font-family: "Roboto", system-ui, sans-serif;
   font-size: 6vw;
 }
 

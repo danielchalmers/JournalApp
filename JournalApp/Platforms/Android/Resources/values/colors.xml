@@ -2,4 +2,5 @@
 <resources>
     <color name="colorPrimary">#854C73</color>
     <color name="colorPrimaryDark">#854C73</color>
+    <color name="splash_background">@android:color/background_light</color>
 </resources>
