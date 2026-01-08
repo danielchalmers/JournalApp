@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#854C73</color>
-    <color name="colorPrimaryDark">#854C73</color>
+    <color name="colorPrimary">#933998</color>
+    <color name="colorPrimaryDark">#933998</color>
     <color name="splash_background">@android:color/background_light</color>
 </resources>

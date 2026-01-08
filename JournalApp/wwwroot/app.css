@@ -225,12 +225,12 @@ body {
 
 @media (prefers-color-scheme: dark) {
   .status-bar-safe-area {
-    background-color: #120D10;
+    background-color: #160A16;
   }
 }
 
 @media (prefers-color-scheme: light) {
   .status-bar-safe-area {
-    background-color: #FFF8F9;
+    background-color: #FFF7FA;
   }
 }
