@@ -118,12 +118,12 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
 #pragma warning disable CS0618 // Type or member is obsolete
             if (IsDarkMode)
             {
-                StatusBar.SetColor(Color.FromHex("#FFA9FD"));
+                StatusBar.SetColor(Color.FromHex("#EAB8D6"));
                 StatusBar.SetStyle(StatusBarStyle.DarkContent);
             }
             else
             {
-                StatusBar.SetColor(Color.FromHex("#933998"));
+                StatusBar.SetColor(Color.FromHex("#854C73"));
                 StatusBar.SetStyle(StatusBarStyle.LightContent);
             }
 #pragma warning restore CS0618 // Type or member is obsolete
@@ -134,7 +134,7 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
     {
         var emojis = DataPoint.Moods.Where(x => x != "🤔").ToList();
 #pragma warning disable CS0618 // Type or member is obsolete
-        var primary = Color.FromHex("#FF99FF");
+        var primary = Color.FromHex("#FF9FDF");
 #pragma warning restore CS0618 // Type or member is obsolete
         var complementary = primary.GetComplementary();
 
