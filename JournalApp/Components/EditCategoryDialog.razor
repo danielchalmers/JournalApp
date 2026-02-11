@@ -40,7 +40,7 @@
                             <MudSwitch @bind-Value="MedicationEveryDay" Label="Mark as taken every day" Color="Color.Primary" />
                         }
 
-                        <MudTextField @bind-Value="Details" Immediate AutoGrow MaxLines="10"
+                        <MudTextField @bind-Value="Details" Immediate Sizing="InputSizing.Auto" MaxLines="10"
                                       Label="Details"
                                       Placeholder="@(Group == "Medications" ? "Start date, side effects, etc" : "Explanation, scoring criteria, etc")" />
                     </div>
@@ -52,12 +52,12 @@
     <DialogActions>
         @if (Category != null)
         {
-            <MudButton Class="delete-button" StartIcon="@Icons.Material.Rounded.DeleteForever" aria-label="Delete forever" OnClick="Delete"  Color="Color.Error">Delete</MudButton>
+            <MudButton Class="delete-button" StartIcon="@Icons.Material.Rounded.DeleteForever" OnClick="Delete" Color="Color.Error">Delete</MudButton>
         }
 
-        <MudButton Class="cancel-button" StartIcon="@Icons.Material.Rounded.Close" aria-label="Cancel" OnClick="Cancel">Cancel</MudButton>
+        <MudButton Class="cancel-button" StartIcon="@Icons.Material.Rounded.Close" OnClick="Cancel">Cancel</MudButton>
 
-        <MudButton Class="submit-button" StartIcon="@Icons.Material.Rounded.Check" aria-label="Submit" OnClick="Submit" Variant="Variant.Filled" Color="Color.Primary">Submit</MudButton>
+        <MudButton Class="submit-button" StartIcon="@Icons.Material.Rounded.Check" OnClick="Submit" Variant="Variant.Filled" Color="Color.Primary">Submit</MudButton>
     </DialogActions>
 </MudDialog>
 

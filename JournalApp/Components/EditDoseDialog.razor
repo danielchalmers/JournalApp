@@ -18,15 +18,15 @@
 
             @if (!string.IsNullOrWhiteSpace(CategoryDetails))
             {
-                <MudTextField Value="CategoryDetails" ReadOnly AutoGrow MaxLines="10" Label="Details" Underline="false" />
+                <MudTextField Value="CategoryDetails" ReadOnly Sizing="InputSizing.Auto" MaxLines="10" Label="Details" Underline="false" />
             }
         </MudForm>
     </DialogContent>
 
     <DialogActions>
-        <MudButton Class="cancel-button" StartIcon="@Icons.Material.Rounded.Close" aria-label="Cancel" OnClick="Cancel">Cancel</MudButton>
+        <MudButton Class="cancel-button" StartIcon="@Icons.Material.Rounded.Close" OnClick="Cancel">Cancel</MudButton>
 
-        <MudButton Class="submit-button" StartIcon="@Icons.Material.Rounded.Check" aria-label="Submit" OnClick="Submit" Variant="Variant.Filled" Color="Color.Primary">Submit</MudButton>
+        <MudButton Class="submit-button" StartIcon="@Icons.Material.Rounded.Check" OnClick="Submit" Variant="Variant.Filled" Color="Color.Primary">Submit</MudButton>
     </DialogActions>
 </MudDialog>
 

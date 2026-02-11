@@ -64,7 +64,7 @@ else if (Point.Type == PointType.Note)
                           Placeholder="@(Point.IsTimestampedNote ? "What's on your mind?" : null)"
                           Label="@(NoteLabel)" Typo="Typo.body2"
                           Immediate ReadOnly Underline="false"
-                          AutoGrow Lines="1" MaxLines="10" />
+                          Sizing="InputSizing.Auto" Lines="1" MaxLines="10" />
         }
 
         <MudIconButton Class="note-edit-button"

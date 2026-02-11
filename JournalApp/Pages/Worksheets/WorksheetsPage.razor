@@ -22,8 +22,8 @@
                     {
                         <li class="worksheet-group-toc-item">
                             <MudLink OnClick="async () => await ScrollToGroup(MarkupUtil.ToClassName(group.Key))"
-                                     aria-label="Scroll to group">
-                                <MudIcon Icon="@Icons.Material.Rounded.Label" />
+                                     aria-label="Scroll to group"
+                                     StartIcon="@Icons.Material.Rounded.Label">
                                 @group.Key
                             </MudLink>
                         </li>

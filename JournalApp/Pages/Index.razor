@@ -40,7 +40,7 @@
         <MudIconButton Class="day-switcher-back" Icon="@Icons.Material.Rounded.ArrowBackIos" aria-label="Previous day" OnClick="PreviousDay" Disabled="@(_day.Date.DayNumber <= 1)" />
 
         <div class="switcher-header">
-            <MudButton OnClick="OpenCalendar" aria-label="Open Calendar">
+            <MudButton OnClick="OpenCalendar">
                 <MudText Typo="Typo.h5" HtmlTag="p" Align="Align.Center" GutterBottom="false">@_day.Date.ToString("ddd, MMM d")</MudText>
             </MudButton>
         </div>

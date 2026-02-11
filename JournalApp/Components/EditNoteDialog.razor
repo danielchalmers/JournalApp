@@ -9,13 +9,13 @@
     </TitleContent>
 
     <DialogContent>
-        <MudTextField @bind-Value="Text" Typo="Typo.body2" Placeholder="@Placeholder" Lines="8" AutoGrow Underline="false" Immediate />
+        <MudTextField @bind-Value="Text" Typo="Typo.body2" Placeholder="@Placeholder" Lines="8" Sizing="InputSizing.Auto" Underline="false" Immediate />
     </DialogContent>
 
     <DialogActions>
-        <MudButton Class="cancel-button" StartIcon="@Icons.Material.Rounded.Close" aria-label="Cancel" OnClick="Cancel">Cancel</MudButton>
+        <MudButton Class="cancel-button" StartIcon="@Icons.Material.Rounded.Close" OnClick="Cancel">Cancel</MudButton>
 
-        <MudButton Class="submit-button" StartIcon="@Icons.Material.Rounded.Check" aria-label="Submit" OnClick="Submit" Variant="Variant.Filled" Color="Color.Primary">Submit</MudButton>
+        <MudButton Class="submit-button" StartIcon="@Icons.Material.Rounded.Check" OnClick="Submit" Variant="Variant.Filled" Color="Color.Primary">Submit</MudButton>
     </DialogActions>
 </MudDialog>
 

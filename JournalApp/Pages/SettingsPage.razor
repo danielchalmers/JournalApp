@@ -81,18 +81,9 @@ else
                     <MudCopyText Text="@($"Good Diary {ThisAssembly.AssemblyInformationalVersion}")" />
                     <MudCopyText Text="@($"{DeviceInfo.Current.Platform} {DeviceInfo.Current.VersionString}")" />
 
-                    <MudLink Href="https://github.com/danielchalmers/JournalApp/issues/new">
-                        <MudIcon Icon="@Icons.Material.Rounded.Feedback" />
-                        Submit feedback
-                    </MudLink>
-                    <MudLink Href="https://play.google.com/store/apps/details?id=com.danielchalmers.journalapp">
-                        <MudIcon Icon="@Icons.Material.Rounded.Shop" />
-                        View on Play Store
-                    </MudLink>
-                    <MudLink Href="https://github.com/danielchalmers/JournalApp">
-                        <MudIcon Icon="@Icons.Material.Rounded.Code" />
-                        View source code
-                    </MudLink>
+                    <MudLink Href="https://github.com/danielchalmers/JournalApp/issues/new" StartIcon="@Icons.Material.Rounded.Feedback">Submit feedback</MudLink>
+                    <MudLink Href="https://play.google.com/store/apps/details?id=com.danielchalmers.journalapp" StartIcon="@Icons.Material.Rounded.Shop">View on Play Store</MudLink>
+                    <MudLink Href="https://github.com/danielchalmers/JournalApp" StartIcon="@Icons.Material.Rounded.Code">View source code</MudLink>
                 </MudPaper>
             </section>
 
@@ -101,12 +92,11 @@ else
 
                 <MudPaper Class="settings-group">
                     <MudTextField T="string" Text="@CreditsText" Typo="Typo.body2" ReadOnly Underline="false"
-                                  AutoGrow MaxLines="_creditsExpanded ? 0 : 10" FullWidth />
+                                  Sizing="InputSizing.Auto" MaxLines="_creditsExpanded ? 0 : 10" FullWidth />
 
                     @if (!_creditsExpanded)
                     {
-                        <MudLink OnClick="() => _creditsExpanded = true">
-                            <MudIcon Icon="@Icons.Material.Rounded.ExpandMore" />
+                        <MudLink OnClick="() => _creditsExpanded = true" StartIcon="@Icons.Material.Rounded.ExpandMore">
                             Expand credits
                         </MudLink>
                     }
