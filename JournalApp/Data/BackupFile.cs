@@ -31,13 +31,13 @@ public class BackupFile
     /// </summary>
     public static async Task<BackupFile> ReadArchive(Stream stream)
     {
-        using var archive = new ZipArchive(stream, ZipArchiveMode.Read);
+        await using var archive = await ZipArchive.CreateAsync(stream, ZipArchiveMode.Read, leaveOpen: true, entryNameEncoding: null);
 
         foreach (var entry in archive.Entries)
         {
             if (entry.FullName == InternalBackupFileName)
             {
-                await using var entryStream = entry.Open();
+                await using var entryStream = await entry.OpenAsync();
 
                 return await JsonSerializer.DeserializeAsync<BackupFile>(entryStream, SerializerOptions);
             }
@@ -60,10 +60,10 @@ public class BackupFile
     /// </summary>
     public async Task WriteArchive(Stream stream)
     {
-        using var archive = new ZipArchive(stream, ZipArchiveMode.Create);
+        await using var archive = await ZipArchive.CreateAsync(stream, ZipArchiveMode.Create, leaveOpen: true, entryNameEncoding: null);
 
         var entry = archive.CreateEntry(InternalBackupFileName);
-        await using var entryStream = entry.Open();
+        await using var entryStream = await entry.OpenAsync();
 
         await JsonSerializer.SerializeAsync(entryStream, this, SerializerOptions);
     }

@@ -11,6 +11,7 @@
     @* TODO: Replace with separate page so we can change state of inline fields and have it updated properly in settings *@
     <div class="loading-container">
         <MudProgressCircular Class="loading-spinner" Color="Color.Primary" Indeterminate />
+        <MudText Typo="Typo.body2" Align="Align.Center" Class="loading-warning">Please do not close the app</MudText>
     </div>
 }
 else
@@ -177,6 +178,7 @@ else
         {
             _busy = true;
             StateHasChanged();
+            await Task.Yield();
 
             var path = App.ActivatedFilePath;
 
@@ -195,6 +197,7 @@ else
         {
             _busy = true;
             StateHasChanged();
+            await Task.Yield();
 
             await AppDataUIService.StartExportWizard(DialogService);
         }
