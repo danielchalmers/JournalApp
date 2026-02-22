@@ -18,6 +18,7 @@
         <MudSpacer />
 
         <MudMenu Icon="@Icons.Material.Rounded.MoreVert" aria-label="More options" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
+            <MudMenuItem Icon="@Icons.Material.Rounded.PushPin" OnClick="OpenPinnedNotes" AutoClose="false">Pinned notes</MudMenuItem>
             <MudMenuItem Icon="@Icons.Material.Rounded.DashboardCustomize" OnClick="ManageCategories" AutoClose="false">Elements</MudMenuItem>
             <MudMenuItem Icon="@Icons.Material.Rounded.Medication" OnClick="ManageMedications" AutoClose="false">Medications</MudMenuItem>
             <MudMenuItem Icon="@Icons.Material.Rounded.ShowChart" OnClick="OpenTrends" AutoClose="false">Trends</MudMenuItem>
@@ -126,6 +127,9 @@
     [Parameter]
     public string OpenToDateString { get; set; }
 
+    [SupplyParameterFromQuery(Name = "scrollToNote")]
+    public string ScrollToNoteGuid { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         logger.LogDebug("Initializing asynchronously");
@@ -149,6 +153,12 @@
 
         logger.LogInformation($"Opening to {date}");
         await GoToDay(date);
+
+        // Scroll to the specific note if requested
+        if (!string.IsNullOrEmpty(ScrollToNoteGuid) && Guid.TryParse(ScrollToNoteGuid, out var noteGuid))
+        {
+            await ScrollToNote(noteGuid);
+        }
     }
 
     protected override void OnWindowDeactivatedOrDestroying(object sender, EventArgs e)
@@ -229,6 +239,12 @@
         NavigationManager.NavigateTo($"/calendar/{_day.Date:yyyyMMdd}", false, true);
     }
 
+    void OpenPinnedNotes()
+    {
+        logger.LogInformation("Opening Pinned notes");
+        NavigationManager.NavigateTo($"/pinned-notes", false, true);
+    }
+
     void ManageCategories()
     {
         logger.LogInformation("Opening category manager");
@@ -290,6 +306,21 @@
         logger.LogInformation("Saving new note");
         note.Category.Points.Add(note);
         await db.SaveChangesAsync();
+    }
+
+    async Task ScrollToNote(Guid noteGuid)
+    {
+        logger.LogInformation($"Scrolling to note {noteGuid}");
+        
+        // Wait for the page to render
+        await Task.Delay(100);
+
+        // Try to scroll to the note's container
+        var categoryGuid = _day.Points.FirstOrDefault(p => p.Guid == noteGuid)?.Category?.Guid;
+        if (categoryGuid.HasValue)
+        {
+            await JSRuntime.InvokeVoidAsync("scrollToTopOfNestedElement", "main", $"[data-category-guid='{categoryGuid.Value}']", "smooth");
+        }
     }
 
     protected override void SaveState()

@@ -41,6 +41,11 @@ public class DataPoint
     public bool Deleted { get; set; }
 
     /// <summary>
+    /// Indicates whether the note is pinned.
+    /// </summary>
+    public bool IsPinned { get; set; }
+
+    /// <summary>
     /// The mood value of the data point, if applicable.
     /// </summary>
     public string Mood { get; set; }
