@@ -18,7 +18,7 @@ public class ImportExportTests : JaTestContext
 
         var appDataService = Services.GetService<AppDataService>();
         await appDataService.RestoreDbSets(backup);
-        AssertBackupIsRoughlyEqualToDatabase(backup);
+        AssertBackupMatchesDatabase(backup);
     }
 
     [Fact]
@@ -36,7 +36,7 @@ public class ImportExportTests : JaTestContext
 
         var backup = await appDataService.CreateBackup();
 
-        AssertBackupIsRoughlyEqualToDatabase(backup);
+        AssertBackupMatchesDatabase(backup);
 
         // Assert that database clears.
 
@@ -53,7 +53,7 @@ public class ImportExportTests : JaTestContext
 
         await appDataService.RestoreDbSets(backup);
 
-        AssertBackupIsRoughlyEqualToDatabase(backup);
+        AssertBackupMatchesDatabase(backup);
     }
 
     [Fact]
@@ -82,7 +82,7 @@ public class ImportExportTests : JaTestContext
         await appDataService.ReplaceDbSets(newBackup);
 
         // Verify the new data is present
-        AssertBackupIsRoughlyEqualToDatabase(newBackup);
+        AssertBackupMatchesDatabase(newBackup);
 
         // Verify the old data is gone
         using (var db = dbf.CreateDbContext())
@@ -360,16 +360,108 @@ public class ImportExportTests : JaTestContext
         }
     }
 
-    private void AssertBackupIsRoughlyEqualToDatabase(BackupFile backup)
+    private void AssertBackupMatchesDatabase(BackupFile backup)
     {
         var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
 
         using var db = dbf.CreateDbContext();
 
-        backup.Days.Select(x => x.Guid).Should().NotBeEmpty().And.BeEquivalentTo(db.Days.Select(x => x.Guid));
-        backup.Categories.Select(x => x.Guid).Should().NotBeEmpty().And.BeEquivalentTo(db.Categories.Select(x => x.Guid));
-        backup.Points.Select(x => x.Guid).Should().NotBeEmpty().And.BeEquivalentTo(db.Points.Select(x => x.Guid));
+        var backupDays = backup.Days.ToList();
+        var backupCategories = backup.Categories.ToList();
+        var backupPoints = backup.Points.ToList();
 
-        // TODO: Test some actual data and linked relationships, not just GUIDs.
+        var dbDays = db.Days.Include(x => x.Points).AsNoTracking().ToList();
+        var dbCategories = db.Categories.Include(x => x.Points).AsNoTracking().ToList();
+        var dbPoints = db.Points.Include(x => x.Day).Include(x => x.Category).AsNoTracking().ToList();
+
+        var backupDayByPoint = backupDays
+            .SelectMany(day => day.Points.Select(point => new { point.Guid, DayGuid = day.Guid }))
+            .ToList();
+        backupDayByPoint.Select(x => x.Guid).Should().OnlyHaveUniqueItems();
+        var backupDayGuidByPoint = backupDayByPoint.ToDictionary(x => x.Guid, x => x.DayGuid);
+        backupDayGuidByPoint.Keys.Should().BeEquivalentTo(backupPoints.Select(x => x.Guid));
+
+        var backupCategoryByPoint = backupCategories
+            .SelectMany(category => category.Points.Select(point => new { point.Guid, CategoryGuid = category.Guid }))
+            .ToList();
+        backupCategoryByPoint.Select(x => x.Guid).Should().OnlyHaveUniqueItems();
+        var backupCategoryGuidByPoint = backupCategoryByPoint.ToDictionary(x => x.Guid, x => x.CategoryGuid);
+        backupCategoryGuidByPoint.Keys.Should().BeEquivalentTo(backupPoints.Select(x => x.Guid));
+
+        backupDays.Select(x => new
+        {
+            x.Guid,
+            x.Date,
+            PointGuids = x.Points.Select(p => p.Guid).OrderBy(g => g).ToList(),
+        }).Should().NotBeEmpty().And.BeEquivalentTo(dbDays.Select(x => new
+        {
+            x.Guid,
+            x.Date,
+            PointGuids = x.Points.Select(p => p.Guid).OrderBy(g => g).ToList(),
+        }));
+
+        backupCategories.Select(x => new
+        {
+            x.Guid,
+            x.Group,
+            x.Name,
+            x.Index,
+            x.ReadOnly,
+            x.Enabled,
+            x.Deleted,
+            x.Type,
+            x.MedicationDose,
+            x.MedicationUnit,
+            x.MedicationEveryDaySince,
+            x.Details,
+            PointGuids = x.Points.Select(p => p.Guid).OrderBy(g => g).ToList(),
+        }).Should().NotBeEmpty().And.BeEquivalentTo(dbCategories.Select(x => new
+        {
+            x.Guid,
+            x.Group,
+            x.Name,
+            x.Index,
+            x.ReadOnly,
+            x.Enabled,
+            x.Deleted,
+            x.Type,
+            x.MedicationDose,
+            x.MedicationUnit,
+            x.MedicationEveryDaySince,
+            x.Details,
+            PointGuids = x.Points.Select(p => p.Guid).OrderBy(g => g).ToList(),
+        }));
+
+        backupPoints.Select(x => new
+        {
+            x.Guid,
+            x.CreatedAt,
+            x.Type,
+            x.Deleted,
+            x.Mood,
+            x.SleepHours,
+            x.ScaleIndex,
+            x.Bool,
+            x.Number,
+            x.Text,
+            x.MedicationDose,
+            DayGuid = backupDayGuidByPoint[x.Guid],
+            CategoryGuid = backupCategoryGuidByPoint[x.Guid],
+        }).Should().NotBeEmpty().And.BeEquivalentTo(dbPoints.Select(x => new
+        {
+            x.Guid,
+            x.CreatedAt,
+            x.Type,
+            x.Deleted,
+            x.Mood,
+            x.SleepHours,
+            x.ScaleIndex,
+            x.Bool,
+            x.Number,
+            x.Text,
+            x.MedicationDose,
+            DayGuid = x.Day.Guid,
+            CategoryGuid = x.Category.Guid,
+        }));
     }
 }
