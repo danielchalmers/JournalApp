@@ -3,14 +3,12 @@
 <section class="@($"safety-plan-item safety-plan-item-{MarkupUtil.ToClassName(Title)}")">
     <MudText>@Subtitle</MudText>
 
-    <MudTextField T="string" @bind-Text="Text" Placeholder="@Placeholder"
+    <MudTextField T="string" Value="@Text" ValueChanged="OnTextChanged" Placeholder="@Placeholder"
                   Typo="Typo.body2" Variant="Variant.Outlined" Immediate Underline="false"
                   Sizing="InputSizing.Auto" Lines="3" MaxLines="10" />
 </section>
 
 @code {
-    string _text;
-
     [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
 
     [Parameter]
@@ -23,19 +21,17 @@
     public string Placeholder { get; set; }
 
     [Parameter]
-    public string Text
-    {
-        get => _text;
-        set
-        {
-            if (_text == value)
-                return;
-
-            _text = value;
-            TextChanged.InvokeAsync(value);
-        }
-    }
+    public string Text { get; set; } = string.Empty;
 
     [Parameter]
     public EventCallback<string> TextChanged { get; set; }
+
+    async Task OnTextChanged(string value)
+    {
+        if (Text == value)
+            return;
+
+        Text = value;
+        await TextChanged.InvokeAsync(value);
+    }
 }
