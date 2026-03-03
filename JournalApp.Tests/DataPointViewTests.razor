@@ -448,86 +448,32 @@
         DataPointView.GetHeaderText(point).Should().Be("Hello World:");
     }
 
-    [Fact]
-    public void HeaderMedication()
+    [Theory]
+    [InlineData("oz", 10d, null, "Hi 10oz:")]
+    [InlineData("oz", 10d, 20d, "Hi 20oz*:")]
+    [InlineData("oz", null, null, "Hi:")]
+    [InlineData("oz", null, 20d, "Hi 20oz*:")]
+    [InlineData(null, 10d, null, "Hi:")]
+    [InlineData(null, 10d, 20d, "Hi:")]
+    public void HeaderMedication_WithDoseAndUnitCombinations(string unit, double? categoryDose, double? pointDose, string expectedHeader)
     {
         var category = new DataPointCategory
         {
             Guid = Guid.NewGuid(),
             Name = "Hi",
             Type = PointType.Medication,
-            MedicationUnit = "oz",
-            MedicationDose = 10,
+            MedicationUnit = unit,
+            MedicationDose = categoryDose.HasValue ? (decimal?)categoryDose.Value : null,
         };
 
         var day = Day.Create(new(2024, 01, 01));
         var point = DataPoint.Create(day, category);
 
-        DataPointView.GetHeaderText(point).Should().Be("Hi 10oz:");
-    }
-
-    [Fact]
-    public void HeaderMedication_ChangedDose()
-    {
-        var category = new DataPointCategory
+        if (pointDose.HasValue)
         {
-            Guid = Guid.NewGuid(),
-            Name = "Hi",
-            Type = PointType.Medication,
-            MedicationUnit = "oz",
-            MedicationDose = 10,
-        };
+            point.MedicationDose = (decimal)pointDose.Value;
+        }
 
-        var day = Day.Create(new(2024, 01, 01));
-        var point = DataPoint.Create(day, category);
-        point.MedicationDose = 20;
-
-        DataPointView.GetHeaderText(point).Should().Be("Hi 20oz*:");
-    }
-
-    [Fact]
-    public void HeaderMedication_NoCategoryDose()
-    {
-        var category = new DataPointCategory
-        {
-            Guid = Guid.NewGuid(),
-            Name = "Hi",
-            Type = PointType.Medication,
-            MedicationUnit = "oz",
-            MedicationDose = null,
-        };
-
-        var day = Day.Create(new(2024, 01, 01));
-        var point = DataPoint.Create(day, category);
-
-        // No dose so don't show anything.
-        DataPointView.GetHeaderText(point).Should().Be("Hi:");
-
-        // If we specify a dose in the point it should show up in the header where the category's would have been.
-        point.MedicationDose = 20;
-        DataPointView.GetHeaderText(point).Should().Be("Hi 20oz*:");
-    }
-
-    [Fact]
-    public void HeaderMedication_NoUnit()
-    {
-        var category = new DataPointCategory
-        {
-            Guid = Guid.NewGuid(),
-            Name = "Hi",
-            Type = PointType.Medication,
-            MedicationUnit = null,
-            MedicationDose = 10,
-        };
-
-        var day = Day.Create(new(2024, 01, 01));
-        var point = DataPoint.Create(day, category);
-
-        // No unit so don't show anything.
-        DataPointView.GetHeaderText(point).Should().Be("Hi:");
-
-        // If we specify a dose in the point it should still not show up.
-        point.MedicationDose = 20;
-        DataPointView.GetHeaderText(point).Should().Be("Hi:");
+        DataPointView.GetHeaderText(point).Should().Be(expectedHeader);
     }
 }

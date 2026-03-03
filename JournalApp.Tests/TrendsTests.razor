@@ -28,44 +28,20 @@
         TrendCategoryView.GetHeaderText(category).Should().Be("Notes");
     }
 
-    [Fact]
-    public void HeaderMedication()
+    [Theory]
+    [InlineData("oz", "Hi (oz)")]
+    [InlineData("  oz", "Hi (oz)")]
+    [InlineData(null, "Hi")]
+    public void HeaderMedication_WithDifferentUnits(string unit, string expectedHeader)
     {
         var category = new DataPointCategory
         {
             Guid = Guid.NewGuid(),
             Name = "Hi",
             Type = PointType.Medication,
-            MedicationUnit = "oz",
+            MedicationUnit = unit,
         };
 
-        TrendCategoryView.GetHeaderText(category).Should().Be("Hi (oz)");
-    }
-
-    [Fact]
-    public void HeaderMedication_TrimUnit()
-    {
-        var category = new DataPointCategory
-        {
-            Guid = Guid.NewGuid(),
-            Name = "Hi",
-            Type = PointType.Medication,
-            MedicationUnit = "  oz",
-        };
-
-        TrendCategoryView.GetHeaderText(category).Should().Be("Hi (oz)");
-    }
-
-    [Fact]
-    public void HeaderMedication_NoUnit()
-    {
-        var category = new DataPointCategory
-        {
-            Guid = Guid.NewGuid(),
-            Name = "Hi",
-            Type = PointType.Medication,
-        };
-
-        TrendCategoryView.GetHeaderText(category).Should().Be("Hi");
+        TrendCategoryView.GetHeaderText(category).Should().Be(expectedHeader);
     }
 }
