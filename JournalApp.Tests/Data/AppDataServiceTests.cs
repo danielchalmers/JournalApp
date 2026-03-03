@@ -13,8 +13,11 @@ public class AppDataServiceTests : JaTestContext
     [Fact]
     public async Task DeleteDbSets_RemovesAllData()
     {
-        var (dbFactory, appDbSeeder, appDataService) = TestDataHelper.ResolveDataServices(Services);
-        TestDataHelper.SeedCategoriesAndDays(appDbSeeder, new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 5));
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        var appDataService = Services.GetService<AppDataService>();
+        appDbSeeder.SeedCategories();
+        appDbSeeder.SeedDays(new DateOnly(2024, 1, 1).DatesTo(new DateOnly(2024, 1, 5)));
 
         // Verify data exists
         using (var db = await dbFactory.CreateDbContextAsync())
@@ -39,8 +42,11 @@ public class AppDataServiceTests : JaTestContext
     [Fact]
     public async Task RestoreDbSets_RestoresDataFromBackup()
     {
-        var (dbFactory, appDbSeeder, appDataService) = TestDataHelper.ResolveDataServices(Services);
-        TestDataHelper.SeedCategoriesAndDays(appDbSeeder, new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 5));
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        var appDataService = Services.GetService<AppDataService>();
+        appDbSeeder.SeedCategories();
+        appDbSeeder.SeedDays(new DateOnly(2024, 1, 1).DatesTo(new DateOnly(2024, 1, 5)));
 
         // Create backup
         var backup = await appDataService.CreateBackup();
@@ -63,7 +69,9 @@ public class AppDataServiceTests : JaTestContext
     [Fact]
     public async Task ReplaceDbSets_DeletesOldDataAndRestoresNewData()
     {
-        var (dbFactory, appDbSeeder, appDataService) = TestDataHelper.ResolveDataServices(Services);
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        var appDataService = Services.GetService<AppDataService>();
 
         // Create initial data
         appDbSeeder.SeedCategories();
@@ -109,8 +117,11 @@ public class AppDataServiceTests : JaTestContext
     [Fact]
     public async Task CreateBackup_CapturesAllData()
     {
-        var (dbFactory, appDbSeeder, appDataService) = TestDataHelper.ResolveDataServices(Services);
-        TestDataHelper.SeedCategoriesAndDays(appDbSeeder, new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 5));
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        var appDataService = Services.GetService<AppDataService>();
+        appDbSeeder.SeedCategories();
+        appDbSeeder.SeedDays(new DateOnly(2024, 1, 1).DatesTo(new DateOnly(2024, 1, 5)));
 
         // Act
         var backup = await appDataService.CreateBackup();

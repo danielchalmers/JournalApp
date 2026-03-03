@@ -103,7 +103,18 @@
         );
 
         using var db = dbf.CreateDbContext();
-        var expectedGroupCount = JournalApp.Tests.Data.TestDataHelper.ExpectedVisibleGroupCount(db, hideNotes);
+        var groups = db.Categories
+            .Where(c => c.Enabled && !c.Deleted)
+            .Select(c => c.Group)
+            .Distinct()
+            .ToList();
+
+        if (hideNotes)
+        {
+            groups.Remove("Notes");
+        }
+
+        var expectedGroupCount = groups.Count;
 
         layout.FindAll(".data-point-group").Count.Should().Be(expectedGroupCount);
     }
