@@ -2,12 +2,21 @@
 @inherits JaTestContext
 
 @code {
+    private (DateTimeOffset LeftAt, DateOnly LastDate)? _originalIndexDateState;
+
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();
 
+        _originalIndexDateState = App.IndexDateState;
         AddDbContext();
         Services.GetService<AppDbSeeder>().SeedCategories();
+    }
+
+    public override async Task DisposeAsync()
+    {
+        App.IndexDateState = _originalIndexDateState;
+        await base.DisposeAsync();
     }
 
     [Fact]
@@ -122,77 +131,53 @@
     [Fact]
     public void OpenToDateString_UsesProvidedDate_WhenValid()
     {
-        var originalState = App.IndexDateState;
         App.IndexDateState = (DateTimeOffset.Now.AddMinutes(-10), new DateOnly(2001, 1, 1));
 
-        try
-        {
-            var expectedDate = new DateOnly(2024, 2, 15);
-            var layout = Render(
-                @<MainLayout>
-                    <Body>
-                        <Index OpenToDateString="20240215" />
-                    </Body>
-                </MainLayout>
-            );
+        var expectedDate = new DateOnly(2024, 2, 15);
+        var layout = Render(
+            @<MainLayout>
+                <Body>
+                    <Index OpenToDateString="20240215" />
+                </Body>
+            </MainLayout>
+        );
 
-            var selectedDayNumber = int.Parse(layout.Find(".switcher").GetAttribute("data-current-day"));
-            selectedDayNumber.Should().Be(expectedDate.DayNumber);
-        }
-        finally
-        {
-            App.IndexDateState = originalState;
-        }
+        var selectedDayNumber = int.Parse(layout.Find(".switcher").GetAttribute("data-current-day"));
+        selectedDayNumber.Should().Be(expectedDate.DayNumber);
     }
 
     [Fact]
     public void OpenToDateString_UsesRecentIndexDateState_WhenInvalid()
     {
-        var originalState = App.IndexDateState;
         var expectedDate = new DateOnly(2024, 2, 20);
         App.IndexDateState = (DateTimeOffset.Now.AddMinutes(-10), expectedDate);
 
-        try
-        {
-            var layout = Render(
-                @<MainLayout>
-                    <Body>
-                        <Index OpenToDateString="invalid" />
-                    </Body>
-                </MainLayout>
-            );
+        var layout = Render(
+            @<MainLayout>
+                <Body>
+                    <Index OpenToDateString="invalid" />
+                </Body>
+            </MainLayout>
+        );
 
-            var selectedDayNumber = int.Parse(layout.Find(".switcher").GetAttribute("data-current-day"));
-            selectedDayNumber.Should().Be(expectedDate.DayNumber);
-        }
-        finally
-        {
-            App.IndexDateState = originalState;
-        }
+        var selectedDayNumber = int.Parse(layout.Find(".switcher").GetAttribute("data-current-day"));
+        selectedDayNumber.Should().Be(expectedDate.DayNumber);
     }
 
     [Fact]
     public void OpenToDateString_IgnoresExpiredIndexDateState_WhenInvalid()
     {
-        var originalState = App.IndexDateState;
         App.IndexDateState = (DateTimeOffset.Now.AddHours(-2), new DateOnly(2024, 2, 20));
 
-        try
-        {
-            var layout = Render(
-                @<MainLayout>
-                    <Body>
-                        <Index OpenToDateString="invalid" />
-                    </Body>
-                </MainLayout>
-            );
+        var layout = Render(
+            @<MainLayout>
+                <Body>
+                    <Index OpenToDateString="invalid" />
+                </Body>
+            </MainLayout>
+        );
 
-            var selectedDayNumber = int.Parse(layout.Find(".switcher").GetAttribute("data-current-day"));
-            selectedDayNumber.Should().Be(DateOnly.FromDateTime(DateTime.Now).DayNumber);
-        }
-        finally
-        {
-            App.IndexDateState = originalState;
-        }
+        var selectedDayNumber = int.Parse(layout.Find(".switcher").GetAttribute("data-current-day"));
+        selectedDayNumber.Should().Be(DateOnly.FromDateTime(DateTime.Now).DayNumber);
     }
 }

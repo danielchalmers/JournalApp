@@ -4,11 +4,33 @@ namespace JournalApp.Tests;
 
 public class ImportExportTests : JaTestContext
 {
+    private readonly List<string> _tempFiles = [];
+
     public override async Task InitializeAsync()
     {
         await base.InitializeAsync();
 
         AddDbContext();
+    }
+
+    public override async Task DisposeAsync()
+    {
+        foreach (var filePath in _tempFiles)
+        {
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+        }
+
+        await base.DisposeAsync();
+    }
+
+    private string CreateTempFilePath(string prefix)
+    {
+        var filePath = Path.Combine(Path.GetTempPath(), $"{prefix}-{Guid.NewGuid()}.journalapp");
+        _tempFiles.Add(filePath);
+        return filePath;
     }
 
     [Fact]
@@ -94,111 +116,67 @@ public class ImportExportTests : JaTestContext
     [Fact]
     public async Task ReadArchive_ThrowsOnInvalidZip()
     {
-        // Arrange
-        var invalidZipPath = Path.Combine(Path.GetTempPath(), $"invalid-{Guid.NewGuid()}.journalapp");
-        await File.WriteAllTextAsync(invalidZipPath, "This is not a valid zip file");
+        var zipPath = CreateTempFilePath("invalid");
+        await File.WriteAllTextAsync(zipPath, "This is not a valid zip file");
 
-        try
-        {
-            // Act & Assert
-            var act = async () => await BackupFile.ReadArchive(invalidZipPath);
-            await act.Should().ThrowAsync<InvalidDataException>();
-        }
-        finally
-        {
-            if (File.Exists(invalidZipPath))
-                File.Delete(invalidZipPath);
-        }
+        var act = async () => await BackupFile.ReadArchive(zipPath);
+        await act.Should().ThrowAsync<InvalidDataException>();
     }
 
     [Fact]
     public async Task ReadArchive_ThrowsOnMissingInternalFile()
     {
-        // Arrange - Create a valid ZIP without the required internal file
-        var zipPath = Path.Combine(Path.GetTempPath(), $"empty-{Guid.NewGuid()}.journalapp");
-
-        try
+        var zipPath = CreateTempFilePath("empty");
+        using (var stream = File.Create(zipPath))
+        using (var archive = new System.IO.Compression.ZipArchive(stream, System.IO.Compression.ZipArchiveMode.Create))
         {
-            using (var stream = File.Create(zipPath))
-            using (var archive = new System.IO.Compression.ZipArchive(stream, System.IO.Compression.ZipArchiveMode.Create))
-            {
-                // Create an entry with wrong name
-                var entry = archive.CreateEntry("wrong-name.json");
-                using var entryStream = entry.Open();
-                await entryStream.WriteAsync(System.Text.Encoding.UTF8.GetBytes("{}"));
-            }
+            // Create an entry with wrong name.
+            var entry = archive.CreateEntry("wrong-name.json");
+            using var entryStream = entry.Open();
+            await entryStream.WriteAsync(System.Text.Encoding.UTF8.GetBytes("{}"));
+        }
 
-            // Act & Assert
-            var act = async () => await BackupFile.ReadArchive(zipPath);
-            await act.Should().ThrowAsync<InvalidOperationException>()
-                .WithMessage("No valid backup found!*");
-        }
-        finally
-        {
-            if (File.Exists(zipPath))
-                File.Delete(zipPath);
-        }
+        var act = async () => await BackupFile.ReadArchive(zipPath);
+        await act.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("No valid backup found!*");
     }
 
     [Fact]
     public async Task ReadArchive_ThrowsOnCorruptedJSON()
     {
-        // Arrange - Create a valid ZIP with corrupted JSON
-        var zipPath = Path.Combine(Path.GetTempPath(), $"corrupted-{Guid.NewGuid()}.journalapp");
-
-        try
+        var zipPath = CreateTempFilePath("corrupted");
+        using (var stream = File.Create(zipPath))
+        using (var archive = new System.IO.Compression.ZipArchive(stream, System.IO.Compression.ZipArchiveMode.Create))
         {
-            using (var stream = File.Create(zipPath))
-            using (var archive = new System.IO.Compression.ZipArchive(stream, System.IO.Compression.ZipArchiveMode.Create))
-            {
-                var entry = archive.CreateEntry("journalapp-data.json");
-                using var entryStream = entry.Open();
-                await entryStream.WriteAsync(System.Text.Encoding.UTF8.GetBytes("{invalid json content"));
-            }
+            var entry = archive.CreateEntry("journalapp-data.json");
+            using var entryStream = entry.Open();
+            await entryStream.WriteAsync(System.Text.Encoding.UTF8.GetBytes("{invalid json content"));
+        }
 
-            // Act & Assert
-            var act = async () => await BackupFile.ReadArchive(zipPath);
-            await act.Should().ThrowAsync<System.Text.Json.JsonException>();
-        }
-        finally
-        {
-            if (File.Exists(zipPath))
-                File.Delete(zipPath);
-        }
+        var act = async () => await BackupFile.ReadArchive(zipPath);
+        await act.Should().ThrowAsync<System.Text.Json.JsonException>();
     }
 
     [Fact]
     public async Task ReadArchive_HandlesEmptyBackupFile()
     {
-        // Arrange - Create a valid ZIP with valid but empty JSON
-        var zipPath = Path.Combine(Path.GetTempPath(), $"empty-backup-{Guid.NewGuid()}.journalapp");
-
-        try
+        var zipPath = CreateTempFilePath("empty-backup");
+        var emptyBackup = new BackupFile
         {
-            var emptyBackup = new BackupFile
-            {
-                Days = [],
-                Categories = [],
-                Points = [],
-                PreferenceBackups = []
-            };
+            Days = [],
+            Categories = [],
+            Points = [],
+            PreferenceBackups = []
+        };
 
-            await emptyBackup.WriteArchive(zipPath);
+        await emptyBackup.WriteArchive(zipPath);
 
-            // Act
-            var restoredBackup = await BackupFile.ReadArchive(zipPath);
+        var restoredBackup = await BackupFile.ReadArchive(zipPath);
 
-            // Assert
-            restoredBackup.Should().NotBeNull();
-            restoredBackup.Days.Should().BeEmpty();
-            restoredBackup.Categories.Should().BeEmpty();
-            restoredBackup.Points.Should().BeEmpty();
-        }
-        finally
-        {
-            if (File.Exists(zipPath))
-                File.Delete(zipPath);
-        }
+        restoredBackup.Should().NotBeNull();
+        restoredBackup.Days.Should().BeEmpty();
+        restoredBackup.Categories.Should().BeEmpty();
+        restoredBackup.Points.Should().BeEmpty();
     }
 
     [Fact]
@@ -213,27 +191,17 @@ public class ImportExportTests : JaTestContext
         appDbSeeder.SeedDays(dates);
 
         var backup = await appDataService.CreateBackup();
-        var zipPath = Path.Combine(Path.GetTempPath(), $"test-backup-{Guid.NewGuid()}.journalapp");
+        var zipPath = CreateTempFilePath("test-backup");
 
-        try
-        {
-            // Act
-            await backup.WriteArchive(zipPath);
+        await backup.WriteArchive(zipPath);
 
-            // Assert
-            File.Exists(zipPath).Should().BeTrue();
+        File.Exists(zipPath).Should().BeTrue();
 
-            // Verify it can be read back
-            var restoredBackup = await BackupFile.ReadArchive(zipPath);
-            restoredBackup.Days.Select(d => d.Guid).Should().BeEquivalentTo(backup.Days.Select(d => d.Guid));
-            restoredBackup.Categories.Select(c => c.Guid).Should().BeEquivalentTo(backup.Categories.Select(c => c.Guid));
-            restoredBackup.Points.Select(p => p.Guid).Should().BeEquivalentTo(backup.Points.Select(p => p.Guid));
-        }
-        finally
-        {
-            if (File.Exists(zipPath))
-                File.Delete(zipPath);
-        }
+        // Verify it can be read back.
+        var restoredBackup = await BackupFile.ReadArchive(zipPath);
+        restoredBackup.Days.Select(d => d.Guid).Should().BeEquivalentTo(backup.Days.Select(d => d.Guid));
+        restoredBackup.Categories.Select(c => c.Guid).Should().BeEquivalentTo(backup.Categories.Select(c => c.Guid));
+        restoredBackup.Points.Select(p => p.Guid).Should().BeEquivalentTo(backup.Points.Select(p => p.Guid));
     }
 
     [Fact]
@@ -275,40 +243,32 @@ public class ImportExportTests : JaTestContext
             await db.SaveChangesAsync();
         }
 
-        var zipPath = Path.Combine(Path.GetTempPath(), $"roundtrip-{Guid.NewGuid()}.journalapp");
+        var zipPath = CreateTempFilePath("roundtrip");
 
-        try
+        // Act - Export to file.
+        var originalBackup = await appDataService.CreateBackup();
+        await originalBackup.WriteArchive(zipPath);
+
+        // Clear database.
+        await appDataService.DeleteDbSets();
+
+        // Import from file.
+        var restoredBackup = await BackupFile.ReadArchive(zipPath);
+        await appDataService.RestoreDbSets(restoredBackup);
+
+        // Assert - Verify all properties are preserved.
+        using (var db = await dbFactory.CreateDbContextAsync())
         {
-            // Act - Export to file
-            var originalBackup = await appDataService.CreateBackup();
-            await originalBackup.WriteArchive(zipPath);
+            var moodPoint = db.Points.Include(p => p.Category).First(p => p.Category.Type == PointType.Mood);
+            moodPoint.Mood.Should().Be("😀");
+            moodPoint.Text.Should().Be("Test note with special chars: é, ñ, 中文");
 
-            // Clear database
-            await appDataService.DeleteDbSets();
+            var medPoint = db.Points.Include(p => p.Category).First(p => p.Category.Type == PointType.Medication);
+            medPoint.Bool.Should().BeTrue();
+            medPoint.MedicationDose.Should().Be(150.5m);
 
-            // Import from file
-            var restoredBackup = await BackupFile.ReadArchive(zipPath);
-            await appDataService.RestoreDbSets(restoredBackup);
-
-            // Assert - Verify all properties are preserved
-            using (var db = await dbFactory.CreateDbContextAsync())
-            {
-                var moodPoint = db.Points.Include(p => p.Category).First(p => p.Category.Type == PointType.Mood);
-                moodPoint.Mood.Should().Be("😀");
-                moodPoint.Text.Should().Be("Test note with special chars: é, ñ, 中文");
-
-                var medPoint = db.Points.Include(p => p.Category).First(p => p.Category.Type == PointType.Medication);
-                medPoint.Bool.Should().BeTrue();
-                medPoint.MedicationDose.Should().Be(150.5m);
-
-                var scalePoint = db.Points.Include(p => p.Category).First(p => p.Category.Type == PointType.LowToHigh);
-                scalePoint.ScaleIndex.Should().Be(3);
-            }
-        }
-        finally
-        {
-            if (File.Exists(zipPath))
-                File.Delete(zipPath);
+            var scalePoint = db.Points.Include(p => p.Category).First(p => p.Category.Type == PointType.LowToHigh);
+            scalePoint.ScaleIndex.Should().Be(3);
         }
     }
 
