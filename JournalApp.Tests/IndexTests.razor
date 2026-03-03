@@ -11,7 +11,7 @@
     }
 
     [Fact]
-    public void CanSwitchDays()
+    public async Task CanSwitchDays()
     {
         var layout = Render(
     @<MainLayout>
@@ -26,15 +26,15 @@
 
         selectedDayNumber().Should().Be(nowDayNumber);
 
-        layout.Find(".day-switcher-back").Click();
+        await layout.Find(".day-switcher-back").ClickAsync();
         selectedDayNumber().Should().Be(nowDayNumber - 1);
 
-        layout.Find(".day-switcher-forward").Click();
+        await layout.Find(".day-switcher-forward").ClickAsync();
         selectedDayNumber().Should().Be(nowDayNumber);
     }
 
     [Fact]
-    public void CannotGoPastTomorrow()
+    public async Task CannotGoPastTomorrow()
     {
         var layout = Render(
     @<MainLayout>
@@ -49,17 +49,17 @@
 
         // We can go to tomorrow.
         layout.Find(".day-switcher-forward").HasAttribute("disabled").Should().BeFalse();
-        layout.Find(".day-switcher-forward").Click();
+        await layout.Find(".day-switcher-forward").ClickAsync();
         selectedDayNumber().Should().Be(nowDayNumber + 1);
 
         // We cannot go past tomorrow
         layout.Find(".day-switcher-forward").HasAttribute("disabled").Should().BeTrue();
-        layout.Find(".day-switcher-forward").Click();
+        await layout.Find(".day-switcher-forward").ClickAsync();
         selectedDayNumber().Should().Be(nowDayNumber + 1);
     }
 
     [Fact]
-    public void DataIsSavedWhileSwitchingDays()
+    public async Task DataIsSavedWhileSwitchingDays()
     {
         var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
         const string weightCategoryGuid = "480dc07d-1330-486f-9b30-ec83a3d4e6f0";
@@ -82,7 +82,7 @@
         weightInput().GetAttribute("value").Should().Be("-1");
 
         // Go back to trigger save of current day state.
-        layout.Find(".day-switcher-back").Click();
+        await layout.Find(".day-switcher-back").ClickAsync();
         layout.WaitForAssertion(() => selectedDayNumber().Should().Be(originalDayNumber - 1));
         layout.WaitForAssertion(() => weightInput().GetAttribute("value").Should().NotBe("-1"));
 
@@ -95,7 +95,7 @@
         }
 
         // Return to original day and ensure UI reflects saved value.
-        layout.Find(".day-switcher-forward").Click();
+        await layout.Find(".day-switcher-forward").ClickAsync();
         layout.WaitForAssertion(() => selectedDayNumber().Should().Be(originalDayNumber));
 
         // Assert that the weight is back to it's changed value from the original day.

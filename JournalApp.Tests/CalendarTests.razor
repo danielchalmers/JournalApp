@@ -18,7 +18,7 @@
     }
 
     [Fact]
-    public void SwitchYear()
+    public async Task SwitchYear()
     {
         var cut = RenderComponent<CalendarPage>(p =>
         p.Add(x => x.OpenToDateString, "20000101")
@@ -28,23 +28,23 @@
 
         // Back.
         var year = cut.Instance.SelectedYear;
-        cut.Find(".switcher .previous-button").Click();
+        await cut.Find(".switcher .previous-button").ClickAsync();
         cut.Instance.SelectedYear.Should().Be(year - 1);
 
         // Next.
         year = cut.Instance.SelectedYear;
-        cut.Find(".switcher .next-button").Click();
+        await cut.Find(".switcher .next-button").ClickAsync();
         cut.Instance.SelectedYear.Should().Be(year + 1);
 
         // Current.
         cut.Instance.SelectedYear.Should().NotBe(DateTime.Now.Year);
-        cut.Find(".year-button").Click();
+        await cut.Find(".year-button").ClickAsync();
         cut.Instance.SelectedYear.Should().Be(DateTime.Now.Year);
 
         // Can't go further.
         year = cut.Instance.SelectedYear;
         cut.Find(".switcher .next-button").HasAttribute("disabled").Should().BeTrue();
-        cut.Find(".switcher .next-button").Click();
+        await cut.Find(".switcher .next-button").ClickAsync();
         cut.Instance.SelectedYear.Should().Be(year);
     }
 
@@ -67,7 +67,7 @@
         // 2023, fully filled out leap year.
         cut.FindAll(".calendar-view .calendar-day-cell > .calendar-day-with-mood").Count.Should().Be(filledDays);
 
-        cut.Find(".switcher .previous-button").Click();
+        await cut.Find(".switcher .previous-button").ClickAsync();
         cut.Instance.SelectedYear.Should().Be(2022);
 
         // 2022, none filled.

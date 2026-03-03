@@ -3,7 +3,7 @@
 
 @code {
     [Fact]
-    public void Mood()
+    public async Task Mood()
     {
         var category = new DataPointCategory
         {
@@ -25,19 +25,19 @@
         var cut = layout.FindComponent<DataPointView>();
 
         // Click the emoji button to open the popover
-        cut.Find(".emoji-button").Click();
+        await cut.Find(".emoji-button").ClickAsync();
 
         layout.FindAll("div.mud-popover-open").Count.Should().Be(1);
         
         // Click the first emoji button in the popover
         var emojiButtons = layout.FindAll(".emoji-popover-content .emoji-button");
-        emojiButtons[0].Click();
+        await emojiButtons[0].ClickAsync();
         
         point.Mood.Should().Be("🤔");
     }
 
     [Fact]
-    public void Mood_SobEmoji_ShowsMotivationalQuote()
+    public async Task Mood_SobEmoji_ShowsMotivationalQuote()
     {
         var category = new DataPointCategory
         {
@@ -58,14 +58,14 @@
         var cut = layout.FindComponent<DataPointView>();
 
         // Open the mood popover
-        cut.Find(".emoji-button").Click();
+        await cut.Find(".emoji-button").ClickAsync();
 
         // Find and click the sob emoji (😭 is the last item in DataPoint.Moods)
         var sobEmoji = DataPoint.Moods[^1];  // Get the last mood (sob emoji)
         sobEmoji.Should().Be("😭");  // Verify it's the sob emoji
         
         var emojiButtons = layout.FindAll(".emoji-popover-content .emoji-button");
-        emojiButtons[^1].Click();  // Click the last emoji button (sob emoji)
+        await emojiButtons[^1].ClickAsync();  // Click the last emoji button (sob emoji)
 
         // Verify mood was set
         point.Mood.Should().Be(sobEmoji);
@@ -75,7 +75,7 @@
     }
 
     [Fact]
-    public void Sleep()
+    public async Task Sleep()
     {
         var category = new DataPointCategory
         {
@@ -94,7 +94,7 @@
         cut.Find(".sleep-hours").TextContent.Should().Be("08.5");
 
         for (var i = 0; i < 50; i++)
-            cut.Find(".less-sleep").Click();
+            await cut.Find(".less-sleep").ClickAsync();
 
         point.SleepHours.Should().Be(0);
         cut.Find(".sleep-hours").TextContent.Should().Be("00.0");
@@ -102,7 +102,7 @@
         cut.Find(".more-sleep").HasAttribute("disabled").Should().BeFalse();
 
         for (var i = 0; i < 50; i++)
-            cut.Find(".more-sleep").Click();
+            await cut.Find(".more-sleep").ClickAsync();
 
         point.SleepHours.Should().Be(24);
         cut.Find(".sleep-hours").TextContent.Should().Be("24.0");
@@ -111,7 +111,7 @@
     }
 
     [Fact]
-    public void Scale()
+    public async Task Scale()
     {
         var category = new DataPointCategory
         {
@@ -129,17 +129,17 @@
         point.ScaleIndex.Should().Be(null);
         cut.FindAll(".mud-rating-item").Count.Should().Be(5);
 
-        cut.FindAll(".mud-rating-item")[2].Click();
+        await cut.FindAll(".mud-rating-item")[2].ClickAsync();
         point.ScaleIndex.Should().Be(3);
 
-        cut.FindAll(".mud-rating-item")[2].Click();
+        await cut.FindAll(".mud-rating-item")[2].ClickAsync();
         point.ScaleIndex.Should().Be(null);
     }
 
     [Theory]
     [InlineData(PointType.LowToHigh)]
     [InlineData(PointType.MildToSevere)]
-    public void ScaleEnums(PointType type)
+    public async Task ScaleEnums(PointType type)
     {
         var category = new DataPointCategory
         {
@@ -158,19 +158,19 @@
         cut.FindAll(".mud-toggle-item").Count.Should().Be(4);
         cut.FindAll(".mud-toggle-item-selected").Count.Should().Be(0);
 
-        cut.FindAll(".mud-toggle-item")[1].Click();
+        await cut.FindAll(".mud-toggle-item")[1].ClickAsync();
         cut.FindAll(".mud-toggle-item")[1].ClassList.Should().Contain("mud-toggle-item-selected");
         point.ScaleIndex.Should().Be(1);
 
-        cut.FindAll(".mud-toggle-item")[2].Click();
+        await cut.FindAll(".mud-toggle-item")[2].ClickAsync();
         cut.FindAll(".mud-toggle-item")[2].ClassList.Should().Contain("mud-toggle-item-selected");
         point.ScaleIndex.Should().Be(3);
 
-        cut.FindAll(".mud-toggle-item")[3].Click();
+        await cut.FindAll(".mud-toggle-item")[3].ClickAsync();
         cut.FindAll(".mud-toggle-item")[3].ClassList.Should().Contain("mud-toggle-item-selected");
         point.ScaleIndex.Should().Be(5);
 
-        cut.FindAll(".mud-toggle-item")[3].Click();
+        await cut.FindAll(".mud-toggle-item")[3].ClickAsync();
         cut.FindAll(".mud-toggle-item")[3].ClassList.Should().NotContain("mud-toggle-item-selected");
         point.ScaleIndex.Should().Be(null);
     }
@@ -218,7 +218,7 @@
     }
 
     [Fact]
-    public void Note()
+    public async Task Note()
     {
         var category = new DataPointCategory
         {
@@ -239,25 +239,25 @@
 
         var cut = layout.FindComponent<DataPointView>();
 
-        cut.Find("button[aria-label='Edit note']").Click();
+        await cut.Find("button[aria-label='Edit note']").ClickAsync();
 
         var noteEditor = layout.FindComponent<EditNoteDialog>();
         noteEditor.Find("textarea").Input("123");
-        layout.Find(".submit-button").Click();
+        await layout.Find(".submit-button").ClickAsync();
 
         point.Text.Should().Be("123");
 
-        cut.Find("button[aria-label='Edit note']").Click();
+        await cut.Find("button[aria-label='Edit note']").ClickAsync();
 
         noteEditor = layout.FindComponent<EditNoteDialog>();
         noteEditor.Find("textarea").Input("EXTRA TEXT THAT WILL BE DISCARDED");
-        layout.Find(".cancel-button").Click();
+        await layout.Find(".cancel-button").ClickAsync();
 
         point.Text.Should().Be("123");
     }
 
     [Fact]
-    public void Medication()
+    public async Task Medication()
     {
         var category = new DataPointCategory
         {
@@ -287,20 +287,20 @@
         // A changed dose should get reset to default when clicking No.
         point.MedicationDose--;
 
-        cut.FindAll(".mud-toggle-item")[0].Click();
+        await cut.FindAll(".mud-toggle-item")[0].ClickAsync();
         cut.FindAll(".mud-toggle-item")[0].ClassList.Should().Contain("mud-toggle-item-selected");
         point.Bool.Should().Be(false);
 
         point.MedicationDose.Should().Be(point.Category.MedicationDose);
 
-        cut.FindAll(".mud-toggle-item")[1].Click();
+        await cut.FindAll(".mud-toggle-item")[1].ClickAsync();
         cut.FindAll(".mud-toggle-item")[1].ClassList.Should().Contain("mud-toggle-item-selected");
         point.Bool.Should().Be(true);
 
         // A changed dose should get reset to default when unselecting.
         point.MedicationDose--;
 
-        cut.FindAll(".mud-toggle-item")[1].Click();
+        await cut.FindAll(".mud-toggle-item")[1].ClickAsync();
         cut.FindAll(".mud-toggle-item")[1].ClassList.Should().NotContain("mud-toggle-item-selected");
         point.Bool.Should().Be(null);
 
@@ -308,7 +308,7 @@
     }
 
     [Fact]
-    public void MedicationEditDose()
+    public async Task MedicationEditDose()
     {
         var category = new DataPointCategory
         {
@@ -337,30 +337,30 @@
         cut.FindAll(".mud-toggle-item-selected").Count.Should().Be(0);
 
         // Change dose to empty via dialog.
-        cut.Find(".mud-link").Click();
+        await cut.Find(".mud-link").ClickAsync();
         var doseEditor = layout.FindComponent<EditDoseDialog>();
         doseEditor.Find("input").Input("");
-        layout.Find(".submit-button").Click();
+        await layout.Find(".submit-button").ClickAsync();
 
         // Empty dose resets to default and selects No.
         point.MedicationDose.Should().Be(point.Category.MedicationDose);
         cut.FindAll(".mud-toggle-item")[0].ClassList.Should().Contain("mud-toggle-item-selected");
 
         // Change dose via dialog.
-        cut.Find(".mud-link").Click();
+        await cut.Find(".mud-link").ClickAsync();
         doseEditor = layout.FindComponent<EditDoseDialog>();
         doseEditor.Find("input").Input("99");
-        layout.Find(".submit-button").Click();
+        await layout.Find(".submit-button").ClickAsync();
 
         // Submitting dose is the same as Yes.
         point.MedicationDose.Should().Be(99);
         cut.FindAll(".mud-toggle-item")[1].ClassList.Should().Contain("mud-toggle-item-selected");
 
         // Cancel dialog.
-        cut.Find(".mud-link").Click();
+        await cut.Find(".mud-link").ClickAsync();
         doseEditor = layout.FindComponent<EditDoseDialog>();
         doseEditor.Find("input").Input("88");
-        layout.Find(".cancel-button").Click();
+        await layout.Find(".cancel-button").ClickAsync();
 
         // Same as before
         point.MedicationDose.Should().Be(99);
@@ -393,7 +393,7 @@
     }
 
     [Fact]
-    public void MedicationEditDoseDialogCloses()
+    public async Task MedicationEditDoseDialogCloses()
     {
         var category = new DataPointCategory
         {
@@ -420,15 +420,15 @@
         layout.FindAll(".mud-dialog").Count.Should().Be(0);
 
         // Submit.
-        cut.Find(".mud-link").Click();
+        await cut.Find(".mud-link").ClickAsync();
         layout.FindAll(".mud-dialog").Count.Should().Be(1);
-        layout.Find(".submit-button").Click();
+        await layout.Find(".submit-button").ClickAsync();
         layout.FindAll(".mud-dialog").Count.Should().Be(0);
 
         // Cancel.
-        cut.Find(".mud-link").Click();
+        await cut.Find(".mud-link").ClickAsync();
         layout.FindAll(".mud-dialog").Count.Should().Be(1);
-        layout.Find(".cancel-button").Click();
+        await layout.Find(".cancel-button").ClickAsync();
         layout.FindAll(".mud-dialog").Count.Should().Be(0);
     }
 
