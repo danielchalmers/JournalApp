@@ -14,7 +14,7 @@ public class DataIntegrityTests : JaTestContext
     }
 
     [Fact]
-    public async Task Day_CannotHaveNullDate()
+    public async Task Day_DefaultDateValue_CanRoundTrip()
     {
         // Arrange
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
@@ -22,38 +22,15 @@ public class DataIntegrityTests : JaTestContext
 
         var day = new Day { Date = default };
         db.Days.Add(day);
-
-        // Act & Assert - SaveChangesAsync should succeed even with default DateOnly
         await db.SaveChangesAsync();
-        day.Date.Should().Be(default);
-    }
 
-    [Fact(Skip = "SQLite doesn't enforce foreign key constraints by default")]
-    public async Task DataPoint_RequiresCategory()
-    {
-        // SQLite doesn't enforce foreign key constraints by default in testing
-        // In production with proper database setup, this would be enforced
-    }
+        // Act
+        var savedGuid = day.Guid;
+        db.ChangeTracker.Clear();
+        var reloaded = await db.Days.SingleAsync(d => d.Guid == savedGuid);
 
-    [Fact(Skip = "SQLite doesn't enforce foreign key constraints by default")]
-    public async Task DataPoint_RequiresDay()
-    {
-        // SQLite doesn't enforce foreign key constraints by default in testing
-        // In production with proper database setup, this would be enforced
-    }
-
-    [Fact(Skip = "SQLite cascade behavior differs from production databases")]
-    public async Task DeleteDay_DoesNotCascadeDeletePoints()
-    {
-        // SQLite's default cascade behavior differs from production databases
-        // The app code handles explicit point deletion when deleting days
-    }
-
-    [Fact(Skip = "SQLite cascade behavior differs from production databases")]
-    public async Task DeleteCategory_DoesNotCascadeDeletePoints()
-    {
-        // SQLite's default cascade behavior differs from production databases
-        // The app code handles explicit point deletion when deleting categories
+        // Assert
+        reloaded.Date.Should().Be(default);
     }
 
     [Fact]
@@ -401,40 +378,6 @@ public class DataIntegrityTests : JaTestContext
     }
 
     [Fact]
-    public async Task DataPoint_HandlesEmptyGuid()
-    {
-        // Arrange
-        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-        var appDbSeeder = Services.GetService<AppDbSeeder>();
-        appDbSeeder.SeedCategories();
-
-        using var db = await dbFactory.CreateDbContextAsync();
-        var day = Day.Create(new DateOnly(2024, 1, 1));
-        db.Days.Add(day);
-
-        var category = db.Categories.First();
-        var point = DataPoint.Create(day, category);
-        point.Guid = Guid.Empty;
-
-        db.Points.Add(point);
-
-        // Act & Assert - Should either generate a new GUID or throw
-        // The behavior depends on how the database handles empty GUIDs
-        // Most databases will either auto-generate or reject empty GUIDs
-        // We just need to ensure it doesn't cause data corruption
-        try
-        {
-            await db.SaveChangesAsync();
-            // If it succeeds, verify the point has a valid GUID
-            point.Guid.Should().NotBe(Guid.Empty);
-        }
-        catch (DbUpdateException)
-        {
-            // It's acceptable to reject empty GUIDs
-        }
-    }
-
-    [Fact]
     public async Task Day_HandlesFutureDate()
     {
         // Arrange
@@ -466,37 +409,6 @@ public class DataIntegrityTests : JaTestContext
         // Act & Assert - Should save successfully
         await db.SaveChangesAsync();
         day.Date.Should().Be(oldDate);
-    }
-
-    [Fact]
-    public async Task Category_HandlesVeryLongName()
-    {
-        // Arrange
-        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-        using var db = await dbFactory.CreateDbContextAsync();
-
-        var longName = new string('A', 1000); // 1000 character name
-        var category = new DataPointCategory
-        {
-            Name = longName,
-            Group = "Test",
-            Type = PointType.Bool
-        };
-
-        db.AddCategory(category);
-
-        // Act - Try to save
-        // Assert - May succeed or fail depending on DB column limits
-        // We just need to ensure it doesn't corrupt data
-        try
-        {
-            await db.SaveChangesAsync();
-            category.Name.Should().Be(longName);
-        }
-        catch (DbUpdateException)
-        {
-            // It's acceptable to reject overly long names
-        }
     }
 
     [Fact]

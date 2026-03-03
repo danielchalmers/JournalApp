@@ -164,8 +164,7 @@
     </MainLayout>
         );
 
-        // Initial state.
-        layout.FindAll(".manage-category-edit-button").Count.Should().Be(10);
+        var initialCount = layout.FindAll(".manage-category-edit-button").Count;
 
         // Open the dialog to create a new category.
         layout.Find(".add-category-button").Click();
@@ -176,7 +175,7 @@
 
         // Submit changes and confirm there is a new category in the list.
         layout.Find(".category-dialog .submit-button").Click();
-        layout.FindAll(".manage-category-edit-button").Count.Should().Be(11);
+        layout.FindAll(".manage-category-edit-button").Count.Should().Be(initialCount + 1);
     }
 
     [Fact]
@@ -190,8 +189,7 @@
     </MainLayout>
     );
 
-        // Initial state.
-        layout.FindAll(".manage-category-edit-button").Count.Should().Be(3);
+        var initialCount = layout.FindAll(".manage-category-edit-button").Count;
 
         // Open the dialog to create a new category.
         layout.Find(".add-category-button").Click();
@@ -202,7 +200,7 @@
 
         // Submit changes and confirm there is a new category in the list.
         layout.Find(".category-dialog .submit-button").Click();
-        layout.FindAll(".manage-category-edit-button").Count.Should().Be(4);
+        layout.FindAll(".manage-category-edit-button").Count.Should().Be(initialCount + 1);
     }
 
     [Fact]

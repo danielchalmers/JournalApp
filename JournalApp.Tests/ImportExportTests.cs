@@ -315,48 +315,42 @@ public class ImportExportTests : JaTestContext
     [Fact]
     public async Task RestoreDbSets_HandlesOrphanedDataPoints()
     {
-        // Test that data points without valid day/category references can be handled gracefully
+        // Points with null day/category references should still round-trip in backup restore
+        // because these FKs are nullable in the current schema.
         var appDataService = Services.GetService<AppDataService>();
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-
-        // Create a backup with orphaned points (points referencing non-existent days/categories)
-        var category = new DataPointCategory
-        {
-            Guid = Guid.NewGuid(),
-            Name = "Test Category",
-            Group = "Test",
-            Type = PointType.Bool,
-            Enabled = true
-        };
-
-        var day = Day.Create(new DateOnly(2024, 1, 1));
 
         var orphanedPoint = new DataPoint
         {
             Guid = Guid.NewGuid(),
-            Day = day,
-            Category = category,
+            Day = null!,
+            Category = null!,
             Type = PointType.Bool,
             CreatedAt = DateTimeOffset.Now
         };
 
         var backup = new BackupFile
         {
-            Days = [day],
-            Categories = [category],
+            Days = [],
+            Categories = [],
             Points = [orphanedPoint],
             PreferenceBackups = []
         };
 
-        // Act - This should restore without throwing
+        // Act
         await appDataService.RestoreDbSets(backup);
 
-        // Assert - Data should be in database
+        // Assert
         using (var db = await dbFactory.CreateDbContextAsync())
         {
-            db.Days.Should().HaveCount(1);
-            db.Categories.Should().HaveCount(1);
+            db.Days.Should().BeEmpty();
+            db.Categories.Should().BeEmpty();
             db.Points.Should().HaveCount(1);
+
+            var restoredPoint = db.Points.Include(p => p.Day).Include(p => p.Category).Single();
+            restoredPoint.Guid.Should().Be(orphanedPoint.Guid);
+            restoredPoint.Day.Should().BeNull();
+            restoredPoint.Category.Should().BeNull();
         }
     }
 
