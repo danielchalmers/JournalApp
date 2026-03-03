@@ -1,4 +1,4 @@
-﻿@namespace JournalApp.Tests
+@namespace JournalApp.Tests
 @inherits JaTestContext
 
 @code {
@@ -14,12 +14,12 @@
     public void CanSwitchDays()
     {
         var layout = Render(
-    @<MainLayout>
-        <Body>
-            <Index />
-        </Body>
-    </MainLayout>
-    );
+            @<MainLayout>
+                <Body>
+                    <Index />
+                </Body>
+            </MainLayout>
+        );
 
         var nowDayNumber = DateOnly.FromDateTime(DateTime.Now).DayNumber;
         var selectedDayNumber = () => int.Parse(layout.Find(".switcher").GetAttribute("data-current-day"));
@@ -37,11 +37,11 @@
     public void CannotGoPastTomorrow()
     {
         var layout = Render(
-    @<MainLayout>
-        <Body>
-            <Index />
-        </Body>
-    </MainLayout>
+            @<MainLayout>
+                <Body>
+                    <Index />
+                </Body>
+            </MainLayout>
         );
 
         var nowDayNumber = DateOnly.FromDateTime(DateTime.Now).DayNumber;
@@ -52,35 +52,24 @@
         layout.Find(".day-switcher-forward").Click();
         selectedDayNumber().Should().Be(nowDayNumber + 1);
 
-        // We cannot go past tomorrow
+        // We cannot go past tomorrow.
         layout.Find(".day-switcher-forward").HasAttribute("disabled").Should().BeTrue();
         layout.Find(".day-switcher-forward").Click();
         selectedDayNumber().Should().Be(nowDayNumber + 1);
     }
 
-    [Fact(Skip = "Not yet implemented")]
+    [Fact(Skip = "ISSUE-TEST-001: pending deterministic persistence harness for cross-day save; provider=sqlite-inmemory; revisit=2026-06-01")]
     public void DataIsSavedWhileSwitchingDays()
     {
         var layout = Render(
-    @<MainLayout>
-        <Body>
-            <Index />
-        </Body>
-    </MainLayout>
-    );
+            @<MainLayout>
+                <Body>
+                    <Index />
+                </Body>
+            </MainLayout>
+        );
 
-        // Set up the exact day, category, and point we will be asserting.
-        // var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
-        // using var db = dbf.CreateDbContext();
-        // var day = db.Days.Single(d => d.Date == new DateOnly(2023, 01, 01));
-        // var weightCategoryGuid = "480dc07d-1330-486f-9b30-ec83a3d4e6f0";
-        // var weightPoint = db.Points.Single(p => p.Day == day && p.Category.Guid == new Guid(weightCategoryGuid));
-        // var weightInput = () => layout.Find($".data-point-container[data-category-guid=\"{weightCategoryGuid}\"] .data-point-view input");
-        // var initialWeight = weightInput().GetAttribute("value");
-
-        var weightInput = () => layout.Find($".data-point-container[data-category-guid=\"480dc07d-1330-486f-9b30-ec83a3d4e6f0\"] .data-point-view input");
-
-        var initialWeight = weightInput().GetAttribute("value");
+        var weightInput = () => layout.Find(".data-point-container[data-category-guid=\"480dc07d-1330-486f-9b30-ec83a3d4e6f0\"] .data-point-view input");
 
         // Change the value so we can test if it is saved. -1 will never be chosen randomly.
         weightInput().Input("-1");
@@ -91,7 +80,7 @@
         weightInput().GetAttribute("value").Should().NotBe("-1");
         layout.Find(".day-switcher-forward").Click();
 
-        // Assert that the weight is back to it's changed value from the original day.
+        // Assert that the weight is back to its changed value from the original day.
         weightInput().GetAttribute("value").Should().Be("-1");
     }
 
@@ -102,16 +91,97 @@
     public void HideTodaysNotes(bool hideNotes)
     {
         var preferences = Services.GetService<PreferenceService>();
+        var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
         preferences.HideNotes = hideNotes;
 
         var layout = Render(
-    @<MainLayout>
-        <Body>
-            <Index />
-        </Body>
-    </MainLayout>
+            @<MainLayout>
+                <Body>
+                    <Index />
+                </Body>
+            </MainLayout>
         );
 
-        layout.FindAll(".data-point-group").Count.Should().Be(hideNotes ? 2 : 3);
+        using var db = dbf.CreateDbContext();
+        var expectedGroupCount = JournalApp.Tests.Data.TestDataHelper.ExpectedVisibleGroupCount(db, hideNotes);
+
+        layout.FindAll(".data-point-group").Count.Should().Be(expectedGroupCount);
+    }
+
+    [Fact]
+    public void OpenToDateString_UsesProvidedDate_WhenValid()
+    {
+        var originalState = App.IndexDateState;
+        App.IndexDateState = (DateTimeOffset.Now.AddMinutes(-10), new DateOnly(2001, 1, 1));
+
+        try
+        {
+            var expectedDate = new DateOnly(2024, 2, 15);
+            var layout = Render(
+                @<MainLayout>
+                    <Body>
+                        <Index OpenToDateString="20240215" />
+                    </Body>
+                </MainLayout>
+            );
+
+            var selectedDayNumber = int.Parse(layout.Find(".switcher").GetAttribute("data-current-day"));
+            selectedDayNumber.Should().Be(expectedDate.DayNumber);
+        }
+        finally
+        {
+            App.IndexDateState = originalState;
+        }
+    }
+
+    [Fact]
+    public void OpenToDateString_UsesRecentIndexDateState_WhenInvalid()
+    {
+        var originalState = App.IndexDateState;
+        var expectedDate = new DateOnly(2024, 2, 20);
+        App.IndexDateState = (DateTimeOffset.Now.AddMinutes(-10), expectedDate);
+
+        try
+        {
+            var layout = Render(
+                @<MainLayout>
+                    <Body>
+                        <Index OpenToDateString="invalid" />
+                    </Body>
+                </MainLayout>
+            );
+
+            var selectedDayNumber = int.Parse(layout.Find(".switcher").GetAttribute("data-current-day"));
+            selectedDayNumber.Should().Be(expectedDate.DayNumber);
+        }
+        finally
+        {
+            App.IndexDateState = originalState;
+        }
+    }
+
+    [Fact]
+    public void OpenToDateString_IgnoresExpiredIndexDateState_WhenInvalid()
+    {
+        var originalState = App.IndexDateState;
+        App.IndexDateState = (DateTimeOffset.Now.AddHours(-2), new DateOnly(2024, 2, 20));
+
+        try
+        {
+            var layout = Render(
+                @<MainLayout>
+                    <Body>
+                        <Index OpenToDateString="invalid" />
+                    </Body>
+                </MainLayout>
+            );
+
+            var selectedDayNumber = int.Parse(layout.Find(".switcher").GetAttribute("data-current-day"));
+            selectedDayNumber.Should().Be(DateOnly.FromDateTime(DateTime.Now).DayNumber);
+        }
+        finally
+        {
+            App.IndexDateState = originalState;
+        }
     }
 }

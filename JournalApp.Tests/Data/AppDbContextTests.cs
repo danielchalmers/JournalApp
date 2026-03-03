@@ -57,6 +57,39 @@ public class AppDbContextTests : JaTestContext
     }
 
     [Fact]
+    public async Task GetOrCreateDayAndAddPoints_DoesNotDuplicatePointsAcrossCalls()
+    {
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        appDbSeeder.SeedCategories();
+
+        var date = new DateOnly(2024, 1, 1);
+
+        await using (var db = await dbFactory.CreateDbContextAsync())
+        {
+            await db.GetOrCreateDayAndAddPoints(date);
+            await db.SaveChangesAsync();
+        }
+
+        await using (var db = await dbFactory.CreateDbContextAsync())
+        {
+            await db.GetOrCreateDayAndAddPoints(date);
+            await db.SaveChangesAsync();
+        }
+
+        await using var assertionDb = await dbFactory.CreateDbContextAsync();
+        var day = assertionDb.Days.Include(d => d.Points).First(d => d.Date == date);
+        var enabledCategories = assertionDb.Categories
+            .Where(c => c.Enabled && !c.Deleted && c.Group != "Notes")
+            .ToList();
+
+        foreach (var category in enabledCategories)
+        {
+            day.Points.Count(p => p.Category.Guid == category.Guid).Should().Be(1);
+        }
+    }
+
+    [Fact]
     public async Task GetOrCreateDayAndAddPoints_AddsPointsForEnabledCategories()
     {
         // Arrange
@@ -217,6 +250,58 @@ public class AppDbContextTests : JaTestContext
     }
 
     [Fact]
+    public async Task GetMissingPoints_AddsWelcomeNote_ForNotesCategoryInNonRandomMode()
+    {
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        appDbSeeder.SeedCategories();
+
+        await using var db = await dbFactory.CreateDbContextAsync();
+        var day = Day.Create(new DateOnly(2024, 1, 1));
+        var notesCategory = db.Categories.Single(c => c.Group == "Notes");
+
+        var missingPoints = db.GetMissingPoints(day, notesCategory, null);
+
+        missingPoints.Should().HaveCount(1);
+        var note = missingPoints.Single();
+        note.Type.Should().Be(PointType.Note);
+        note.Text.Should().Contain("I just started using Good Diary!");
+    }
+
+    [Fact]
+    public async Task GetMissingPoints_DoesNotDuplicateWelcomeNote_WhenNotesAlreadyExist()
+    {
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        appDbSeeder.SeedCategories();
+
+        await using var db = await dbFactory.CreateDbContextAsync();
+        var day = Day.Create(new DateOnly(2024, 1, 1));
+        var notesCategory = db.Categories.Single(c => c.Group == "Notes");
+        notesCategory.Points.Add(DataPoint.Create(day, notesCategory));
+
+        var missingPoints = db.GetMissingPoints(day, notesCategory, null);
+
+        missingPoints.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetMissingPoints_DoesNotAddWelcomeNote_InRandomMode()
+    {
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        appDbSeeder.SeedCategories();
+
+        await using var db = await dbFactory.CreateDbContextAsync();
+        var day = Day.Create(new DateOnly(2024, 1, 1));
+        var notesCategory = db.Categories.Single(c => c.Group == "Notes");
+
+        var missingPoints = db.GetMissingPoints(day, notesCategory, new Random(42));
+
+        missingPoints.Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task GetMissingPoints_SetsMedicationTaken_WhenEveryDaySinceIsBeforeDate()
     {
         // Arrange
@@ -225,11 +310,10 @@ public class AppDbContextTests : JaTestContext
         appDbSeeder.SeedCategories();
 
         using var db = await dbFactory.CreateDbContextAsync();
-        var today = DateOnly.FromDateTime(DateTime.Now);
-        var day = Day.Create(today);
+        var day = Day.Create(new DateOnly(2024, 1, 10));
 
         var medicationCategory = db.Categories.First(c => c.Type == PointType.Medication);
-        medicationCategory.MedicationEveryDaySince = DateTime.Now.AddDays(-5);
+        medicationCategory.MedicationEveryDaySince = new DateTimeOffset(2024, 1, 5, 0, 0, 0, TimeSpan.Zero);
 
         // Act
         var missingPoints = db.GetMissingPoints(day, medicationCategory, null);
@@ -248,11 +332,10 @@ public class AppDbContextTests : JaTestContext
         appDbSeeder.SeedCategories();
 
         using var db = await dbFactory.CreateDbContextAsync();
-        var yesterday = DateOnly.FromDateTime(DateTime.Now.AddDays(-1));
-        var day = Day.Create(yesterday);
+        var day = Day.Create(new DateOnly(2024, 1, 9));
 
         var medicationCategory = db.Categories.First(c => c.Type == PointType.Medication);
-        medicationCategory.MedicationEveryDaySince = DateTime.Now; // Today, so yesterday shouldn't be marked
+        medicationCategory.MedicationEveryDaySince = new DateTimeOffset(2024, 1, 10, 0, 0, 0, TimeSpan.Zero);
 
         // Act
         var missingPoints = db.GetMissingPoints(day, medicationCategory, null);

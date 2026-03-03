@@ -18,7 +18,7 @@ public class ImportExportTests : JaTestContext
 
         var appDataService = Services.GetService<AppDataService>();
         await appDataService.RestoreDbSets(backup);
-        AssertBackupIsRoughlyEqualToDatabase(backup);
+        AssertBackupMatchesDatabase(backup);
     }
 
     [Fact]
@@ -36,7 +36,7 @@ public class ImportExportTests : JaTestContext
 
         var backup = await appDataService.CreateBackup();
 
-        AssertBackupIsRoughlyEqualToDatabase(backup);
+        AssertBackupMatchesDatabase(backup);
 
         // Assert that database clears.
 
@@ -53,7 +53,7 @@ public class ImportExportTests : JaTestContext
 
         await appDataService.RestoreDbSets(backup);
 
-        AssertBackupIsRoughlyEqualToDatabase(backup);
+        AssertBackupMatchesDatabase(backup);
     }
 
     [Fact]
@@ -82,7 +82,7 @@ public class ImportExportTests : JaTestContext
         await appDataService.ReplaceDbSets(newBackup);
 
         // Verify the new data is present
-        AssertBackupIsRoughlyEqualToDatabase(newBackup);
+        AssertBackupMatchesDatabase(newBackup);
 
         // Verify the old data is gone
         using (var db = dbf.CreateDbContext())
@@ -313,13 +313,12 @@ public class ImportExportTests : JaTestContext
     }
 
     [Fact]
-    public async Task RestoreDbSets_HandlesOrphanedDataPoints()
+    public async Task RestoreDbSets_PreservesPointRelationships()
     {
-        // Test that data points without valid day/category references can be handled gracefully
         var appDataService = Services.GetService<AppDataService>();
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
 
-        // Create a backup with orphaned points (points referencing non-existent days/categories)
+        var day = Day.Create(new DateOnly(2024, 1, 1));
         var category = new DataPointCategory
         {
             Guid = Guid.NewGuid(),
@@ -328,10 +327,7 @@ public class ImportExportTests : JaTestContext
             Type = PointType.Bool,
             Enabled = true
         };
-
-        var day = Day.Create(new DateOnly(2024, 1, 1));
-
-        var orphanedPoint = new DataPoint
+        var point = new DataPoint
         {
             Guid = Guid.NewGuid(),
             Day = day,
@@ -339,37 +335,55 @@ public class ImportExportTests : JaTestContext
             Type = PointType.Bool,
             CreatedAt = DateTimeOffset.Now
         };
+        day.Points.Add(point);
+        category.Points.Add(point);
 
         var backup = new BackupFile
         {
             Days = [day],
             Categories = [category],
-            Points = [orphanedPoint],
+            Points = [point],
             PreferenceBackups = []
         };
 
-        // Act - This should restore without throwing
         await appDataService.RestoreDbSets(backup);
 
-        // Assert - Data should be in database
-        using (var db = await dbFactory.CreateDbContextAsync())
+        await using (var db = await dbFactory.CreateDbContextAsync())
         {
             db.Days.Should().HaveCount(1);
             db.Categories.Should().HaveCount(1);
             db.Points.Should().HaveCount(1);
+
+            var restoredPoint = db.Points
+                .Include(p => p.Day)
+                .Include(p => p.Category)
+                .Single();
+
+            restoredPoint.Day.Guid.Should().Be(day.Guid);
+            restoredPoint.Category.Guid.Should().Be(category.Guid);
         }
     }
 
-    private void AssertBackupIsRoughlyEqualToDatabase(BackupFile backup)
+    private void AssertBackupMatchesDatabase(BackupFile backup)
     {
         var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
 
         using var db = dbf.CreateDbContext();
+        var dbDays = db.Days.Include(d => d.Points).ToDictionary(d => d.Guid);
+        var dbCategories = db.Categories.Include(c => c.Points).ToDictionary(c => c.Guid);
 
         backup.Days.Select(x => x.Guid).Should().NotBeEmpty().And.BeEquivalentTo(db.Days.Select(x => x.Guid));
         backup.Categories.Select(x => x.Guid).Should().NotBeEmpty().And.BeEquivalentTo(db.Categories.Select(x => x.Guid));
         backup.Points.Select(x => x.Guid).Should().NotBeEmpty().And.BeEquivalentTo(db.Points.Select(x => x.Guid));
 
-        // TODO: Test some actual data and linked relationships, not just GUIDs.
+        foreach (var day in backup.Days)
+        {
+            dbDays[day.Guid].Points.Select(p => p.Guid).Should().BeEquivalentTo(day.Points.Select(p => p.Guid));
+        }
+
+        foreach (var category in backup.Categories)
+        {
+            dbCategories[category.Guid].Points.Select(p => p.Guid).Should().BeEquivalentTo(category.Points.Select(p => p.Guid));
+        }
     }
 }

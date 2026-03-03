@@ -13,14 +13,8 @@ public class AppDataServiceTests : JaTestContext
     [Fact]
     public async Task DeleteDbSets_RemovesAllData()
     {
-        // Arrange
-        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-        var appDbSeeder = Services.GetService<AppDbSeeder>();
-        var appDataService = Services.GetService<AppDataService>();
-
-        appDbSeeder.SeedCategories();
-        var dates = new DateOnly(2024, 1, 1).DatesTo(new(2024, 1, 5));
-        appDbSeeder.SeedDays(dates);
+        var (dbFactory, appDbSeeder, appDataService) = TestDataHelper.ResolveDataServices(Services);
+        TestDataHelper.SeedCategoriesAndDays(appDbSeeder, new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 5));
 
         // Verify data exists
         using (var db = await dbFactory.CreateDbContextAsync())
@@ -45,14 +39,8 @@ public class AppDataServiceTests : JaTestContext
     [Fact]
     public async Task RestoreDbSets_RestoresDataFromBackup()
     {
-        // Arrange
-        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-        var appDbSeeder = Services.GetService<AppDbSeeder>();
-        var appDataService = Services.GetService<AppDataService>();
-
-        appDbSeeder.SeedCategories();
-        var dates = new DateOnly(2024, 1, 1).DatesTo(new(2024, 1, 5));
-        appDbSeeder.SeedDays(dates);
+        var (dbFactory, appDbSeeder, appDataService) = TestDataHelper.ResolveDataServices(Services);
+        TestDataHelper.SeedCategoriesAndDays(appDbSeeder, new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 5));
 
         // Create backup
         var backup = await appDataService.CreateBackup();
@@ -75,10 +63,7 @@ public class AppDataServiceTests : JaTestContext
     [Fact]
     public async Task ReplaceDbSets_DeletesOldDataAndRestoresNewData()
     {
-        // Arrange
-        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-        var appDbSeeder = Services.GetService<AppDbSeeder>();
-        var appDataService = Services.GetService<AppDataService>();
+        var (dbFactory, appDbSeeder, appDataService) = TestDataHelper.ResolveDataServices(Services);
 
         // Create initial data
         appDbSeeder.SeedCategories();
@@ -113,7 +98,7 @@ public class AppDataServiceTests : JaTestContext
         }
     }
 
-    [Fact(Skip = "SQLite doesn't enforce all constraints that would trigger rollback in production")]
+    [Fact(Skip = "ISSUE-TEST-003: transactional rollback path cannot be faithfully verified on sqlite in-memory; provider=sqlite-inmemory; revisit=2026-06-01")]
     public async Task ReplaceDbSets_IsAtomic_RollsBackOnError()
     {
         // This test is skipped because SQLite's constraint enforcement differs from production databases.
@@ -124,20 +109,13 @@ public class AppDataServiceTests : JaTestContext
     [Fact]
     public async Task CreateBackup_CapturesAllData()
     {
-        // Arrange
-        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-        var appDbSeeder = Services.GetService<AppDbSeeder>();
-        var appDataService = Services.GetService<AppDataService>();
-
-        appDbSeeder.SeedCategories();
-        var dates = new DateOnly(2024, 1, 1).DatesTo(new(2024, 1, 5));
-        appDbSeeder.SeedDays(dates);
+        var (dbFactory, appDbSeeder, appDataService) = TestDataHelper.ResolveDataServices(Services);
+        TestDataHelper.SeedCategoriesAndDays(appDbSeeder, new DateOnly(2024, 1, 1), new DateOnly(2024, 1, 5));
 
         // Act
         var backup = await appDataService.CreateBackup();
 
         // Assert
-        backup.Should().NotBeNull();
         backup.Days.Should().NotBeEmpty();
         backup.Categories.Should().NotBeEmpty();
         backup.Points.Should().NotBeEmpty();
@@ -165,16 +143,14 @@ public class AppDataServiceTests : JaTestContext
         // Act
         var backup = await appDataService.CreateBackup();
 
-        // Assert
-        // Days should have their points loaded
-        backup.Days.Should().AllSatisfy(day =>
-            day.Points.Should().NotBeNull()
-        );
+        var dayPointGuids = backup.Days.SelectMany(day => day.Points).Select(p => p.Guid).ToHashSet();
+        var categoryPointGuids = backup.Categories.SelectMany(category => category.Points).Select(p => p.Guid).ToHashSet();
+        var backupPointGuids = backup.Points.Select(p => p.Guid).ToHashSet();
 
-        // Categories should have their points loaded
-        backup.Categories.Should().AllSatisfy(category =>
-            category.Points.Should().NotBeNull()
-        );
+        dayPointGuids.Should().NotBeEmpty();
+        categoryPointGuids.Should().NotBeEmpty();
+        dayPointGuids.Should().BeSubsetOf(backupPointGuids);
+        categoryPointGuids.Should().BeSubsetOf(backupPointGuids);
     }
 
     [Fact]
@@ -279,7 +255,6 @@ public class AppDataServiceTests : JaTestContext
         var backup = await appDataService.CreateBackup();
 
         // Assert
-        backup.Should().NotBeNull();
         backup.Days.Should().BeEmpty();
         backup.Categories.Should().BeEmpty();
         backup.Points.Should().BeEmpty();
@@ -393,19 +368,16 @@ public class AppDataServiceTests : JaTestContext
         var backup = await appDataService.CreateBackup();
 
         // Assert
-        backup.Should().NotBeNull();
         backup.Days.Should().HaveCount(366); // 2024 is a leap year
         backup.Points.Should().NotBeEmpty();
         backup.Categories.Should().NotBeEmpty();
     }
 
     [Fact]
-    public async Task RestoreDbSets_WithDuplicateGuids_HandlesGracefully()
+    public async Task RestoreDbSets_WithDuplicateGuids_ThrowsDbUpdateException()
     {
         // Test that backup with duplicate GUIDs is handled appropriately
         var appDataService = Services.GetService<AppDataService>();
-        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-
         var duplicateGuid = Guid.NewGuid();
 
         var category1 = new DataPointCategory
@@ -434,9 +406,9 @@ public class AppDataServiceTests : JaTestContext
             PreferenceBackups = []
         };
 
-        // Act & Assert - Should throw on duplicate primary keys
+        // Act & Assert - Should throw on duplicate primary keys.
         var act = async () => await appDataService.RestoreDbSets(backup);
-        await act.Should().ThrowAsync<Exception>();
+        await act.Should().ThrowAsync<DbUpdateException>();
     }
 
     [Fact]
@@ -471,7 +443,7 @@ public class AppDataServiceTests : JaTestContext
 
         // Act - Try to replace with invalid backup
         var act = async () => await appDataService.ReplaceDbSets(invalidBackup);
-        await act.Should().ThrowAsync<Exception>();
+        await act.Should().ThrowAsync<DbUpdateException>();
 
         // Assert - Original data should still be present (rollback worked)
         using (var db = await dbFactory.CreateDbContextAsync())
@@ -550,10 +522,9 @@ public class AppDataServiceTests : JaTestContext
     }
 
     [Fact]
-    public async Task SetPreferences_WithEmptyBackup_DoesNotCrash()
+    public void SetPreferences_WithEmptyBackup_DoesNotCrash()
     {
         // Arrange
-        var preferences = Services.GetService<IPreferences>();
         var appDataService = Services.GetService<AppDataService>();
 
         var backup = new BackupFile
@@ -569,7 +540,7 @@ public class AppDataServiceTests : JaTestContext
     }
 
     [Fact]
-    public async Task SetPreferences_WithNullPreferenceBackups_HandlesGracefully()
+    public void SetPreferences_WithNullPreferenceBackups_ThrowsArgumentNullException()
     {
         // Arrange
         var appDataService = Services.GetService<AppDataService>();
@@ -580,13 +551,14 @@ public class AppDataServiceTests : JaTestContext
             PreferenceBackups = null!
         };
 
-        // Act & Assert - Should handle null gracefully
+        // Act & Assert
         var act = () => appDataService.SetPreferences(backup);
-        act.Should().Throw<Exception>(); // Expected to fail on null
+        act.Should().Throw<ArgumentNullException>()
+            .WithParameterName("source");
     }
 
     [Fact]
-    public async Task GetPreferenceBackups_WithNoPreferencesSet_ReturnsEmpty()
+    public void GetPreferenceBackups_WithNoPreferencesSet_ReturnsConfiguredKeysWithEmptyValues()
     {
         // Arrange
         var preferences = Services.GetService<IPreferences>();
@@ -598,8 +570,14 @@ public class AppDataServiceTests : JaTestContext
         // Act
         var preferenceBackups = appDataService.GetPreferenceBackups().ToList();
 
-        // Assert - Should return empty list, not throw
-        preferenceBackups.Should().NotBeNull();
+        // Assert - The service always emits the known preference keys.
+        preferenceBackups.Should().HaveCount(4);
+        preferenceBackups.Select(x => x.Name).Should().BeEquivalentTo(
+            "safety_plan",
+            "mood_palette",
+            "tip_click_mood_grid_day",
+            "tip_add_new_category");
+        preferenceBackups.Select(x => x.Value).Should().OnlyContain(v => v == string.Empty);
     }
 
     [Fact]

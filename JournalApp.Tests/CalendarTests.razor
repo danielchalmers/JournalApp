@@ -78,26 +78,35 @@
     [Fact]
     public void CalendarViewRespectsFirstDay()
     {
-        var _culture = (CultureInfo)CultureInfo.CurrentCulture.Clone();
-        _culture.DateTimeFormat.FirstDayOfWeek = DayOfWeek.Wednesday;
-        Thread.CurrentThread.CurrentCulture = _culture;
+        var originalCulture = Thread.CurrentThread.CurrentCulture;
 
-        var cut = RenderComponent<CalendarPage>(p =>
-        p.Add(x => x.OpenToDateString, "20230101")
-    );
-        cut.Instance.SelectedYear.Should().Be(2023);
+        try
+        {
+            var culture = (CultureInfo)CultureInfo.CurrentCulture.Clone();
+            culture.DateTimeFormat.FirstDayOfWeek = DayOfWeek.Wednesday;
+            Thread.CurrentThread.CurrentCulture = culture;
 
-        // Wait for calendar to load.
-        cut.WaitForAssertion(() => cut.Find(".calendar-view"));
+            var cut = RenderComponent<CalendarPage>(p =>
+                p.Add(x => x.OpenToDateString, "20230101")
+            );
+            cut.Instance.SelectedYear.Should().Be(2023);
 
-        var weekHeaders = cut.FindAll(".calendar-week-row > .calendar-day-cell");
-        weekHeaders[0].TextContent.Should().Be("We");
-        weekHeaders[1].TextContent.Should().Be("Th");
-        weekHeaders[2].TextContent.Should().Be("Fr");
-        weekHeaders[3].TextContent.Should().Be("Sa");
-        weekHeaders[4].TextContent.Should().Be("Su");
-        weekHeaders[5].TextContent.Should().Be("Mo");
-        weekHeaders[6].TextContent.Should().Be("Tu");
+            // Wait for calendar to load.
+            cut.WaitForAssertion(() => cut.Find(".calendar-view"));
+
+            var weekHeaders = cut.FindAll(".calendar-week-row > .calendar-day-cell");
+            weekHeaders[0].TextContent.Should().Be("We");
+            weekHeaders[1].TextContent.Should().Be("Th");
+            weekHeaders[2].TextContent.Should().Be("Fr");
+            weekHeaders[3].TextContent.Should().Be("Sa");
+            weekHeaders[4].TextContent.Should().Be("Su");
+            weekHeaders[5].TextContent.Should().Be("Mo");
+            weekHeaders[6].TextContent.Should().Be("Tu");
+        }
+        finally
+        {
+            Thread.CurrentThread.CurrentCulture = originalCulture;
+        }
     }
 
     [Fact]

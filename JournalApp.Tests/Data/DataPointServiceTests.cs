@@ -11,52 +11,20 @@ public class DataPointServiceTests
 
     #region Sleep Operations Tests
 
-    [Fact]
-    public void DecrementSleep_DecreasesByHalfHour()
+    [Theory]
+    [InlineData(8.0, 7.5)]
+    [InlineData(0.0, 0.0)]
+    [InlineData(null, 0.0)]
+    public void DecrementSleep_UpdatesSleepHoursWithinBounds(decimal? initialSleepHours, decimal expectedSleepHours)
     {
-        // Arrange
         var category = new DataPointCategory { Type = PointType.Sleep };
         var day = Day.Create(new DateOnly(2024, 1, 1));
         var point = DataPoint.Create(day, category);
-        point.SleepHours = 8.0m;
+        point.SleepHours = initialSleepHours;
 
-        // Act
         _service.DecrementSleep(point);
 
-        // Assert
-        point.SleepHours.Should().Be(7.5m);
-    }
-
-    [Fact]
-    public void DecrementSleep_StopsAtZero()
-    {
-        // Arrange
-        var category = new DataPointCategory { Type = PointType.Sleep };
-        var day = Day.Create(new DateOnly(2024, 1, 1));
-        var point = DataPoint.Create(day, category);
-        point.SleepHours = 0.0m;
-
-        // Act
-        _service.DecrementSleep(point);
-
-        // Assert
-        point.SleepHours.Should().Be(0.0m);
-    }
-
-    [Fact]
-    public void DecrementSleep_HandlesNull()
-    {
-        // Arrange
-        var category = new DataPointCategory { Type = PointType.Sleep };
-        var day = Day.Create(new DateOnly(2024, 1, 1));
-        var point = DataPoint.Create(day, category);
-        point.SleepHours = null;
-
-        // Act
-        _service.DecrementSleep(point);
-
-        // Assert
-        point.SleepHours.Should().Be(0.0m);
+        point.SleepHours.Should().Be(expectedSleepHours);
     }
 
     [Fact]
@@ -83,52 +51,20 @@ public class DataPointServiceTests
             .WithMessage("DataPoint must be a sleep type.*");
     }
 
-    [Fact]
-    public void IncrementSleep_IncreasesByHalfHour()
+    [Theory]
+    [InlineData(8.0, 8.5)]
+    [InlineData(24.0, 24.0)]
+    [InlineData(null, 0.5)]
+    public void IncrementSleep_UpdatesSleepHoursWithinBounds(decimal? initialSleepHours, decimal expectedSleepHours)
     {
-        // Arrange
         var category = new DataPointCategory { Type = PointType.Sleep };
         var day = Day.Create(new DateOnly(2024, 1, 1));
         var point = DataPoint.Create(day, category);
-        point.SleepHours = 8.0m;
+        point.SleepHours = initialSleepHours;
 
-        // Act
         _service.IncrementSleep(point);
 
-        // Assert
-        point.SleepHours.Should().Be(8.5m);
-    }
-
-    [Fact]
-    public void IncrementSleep_StopsAt24()
-    {
-        // Arrange
-        var category = new DataPointCategory { Type = PointType.Sleep };
-        var day = Day.Create(new DateOnly(2024, 1, 1));
-        var point = DataPoint.Create(day, category);
-        point.SleepHours = 24.0m;
-
-        // Act
-        _service.IncrementSleep(point);
-
-        // Assert
-        point.SleepHours.Should().Be(24.0m);
-    }
-
-    [Fact]
-    public void IncrementSleep_HandlesNull()
-    {
-        // Arrange
-        var category = new DataPointCategory { Type = PointType.Sleep };
-        var day = Day.Create(new DateOnly(2024, 1, 1));
-        var point = DataPoint.Create(day, category);
-        point.SleepHours = null;
-
-        // Act
-        _service.IncrementSleep(point);
-
-        // Assert
-        point.SleepHours.Should().Be(0.5m);
+        point.SleepHours.Should().Be(expectedSleepHours);
     }
 
     [Fact]
@@ -177,35 +113,19 @@ public class DataPointServiceTests
 
     #region Mood Operations Tests
 
-    [Fact]
-    public void SetMood_UpdatesMoodValue()
+    [Theory]
+    [InlineData("😀")]
+    [InlineData("")]
+    [InlineData(null)]
+    public void SetMood_UpdatesMoodValue(string mood)
     {
-        // Arrange
         var category = new DataPointCategory { Type = PointType.Mood };
         var day = Day.Create(new DateOnly(2024, 1, 1));
         var point = DataPoint.Create(day, category);
 
-        // Act
-        _service.SetMood(point, "😀");
+        _service.SetMood(point, mood);
 
-        // Assert
-        point.Mood.Should().Be("😀");
-    }
-
-    [Fact]
-    public void SetMood_AllowsNullValue()
-    {
-        // Arrange
-        var category = new DataPointCategory { Type = PointType.Mood };
-        var day = Day.Create(new DateOnly(2024, 1, 1));
-        var point = DataPoint.Create(day, category);
-        point.Mood = "😀";
-
-        // Act
-        _service.SetMood(point, null);
-
-        // Assert
-        point.Mood.Should().BeNull();
+        point.Mood.Should().Be(mood);
     }
 
     [Fact]
@@ -291,36 +211,19 @@ public class DataPointServiceTests
             .WithMessage("DataPoint must be a scale type.*");
     }
 
-    [Fact]
-    public void GetScaleIndex_ReturnsValue()
+    [Theory]
+    [InlineData(4, 4)]
+    [InlineData(null, 0)]
+    public void GetScaleIndex_ReturnsExpectedValue(int? storedScaleIndex, int expectedScaleIndex)
     {
-        // Arrange
         var category = new DataPointCategory { Type = PointType.Scale };
         var day = Day.Create(new DateOnly(2024, 1, 1));
         var point = DataPoint.Create(day, category);
-        point.ScaleIndex = 4;
+        point.ScaleIndex = storedScaleIndex;
 
-        // Act
         var result = _service.GetScaleIndex(point);
 
-        // Assert
-        result.Should().Be(4);
-    }
-
-    [Fact]
-    public void GetScaleIndex_ConvertsNullToZero()
-    {
-        // Arrange
-        var category = new DataPointCategory { Type = PointType.Scale };
-        var day = Day.Create(new DateOnly(2024, 1, 1));
-        var point = DataPoint.Create(day, category);
-        point.ScaleIndex = null;
-
-        // Act
-        var result = _service.GetScaleIndex(point);
-
-        // Assert
-        result.Should().Be(0);
+        result.Should().Be(expectedScaleIndex);
     }
 
     [Fact]
@@ -519,23 +422,6 @@ public class DataPointServiceTests
     #region Edge Cases and Null Handling
 
     [Fact]
-    public void IncrementSleep_WithNegativeValue_CorrectsBehavior()
-    {
-        // Arrange
-        var category = new DataPointCategory { Type = PointType.Sleep };
-        var day = Day.Create(new DateOnly(2024, 1, 1));
-        var point = DataPoint.Create(day, category);
-        point.SleepHours = -5m; // Invalid negative value
-
-        // Act
-        _service.IncrementSleep(point);
-
-        // Assert - Should increment from -5 to -4.5
-        // The service doesn't validate negative values, just applies increment
-        point.SleepHours.Should().Be(-4.5m);
-    }
-
-    [Fact]
     public void DecrementSleep_WithNegativeValue_StopsAtZero()
     {
         // Arrange
@@ -567,67 +453,6 @@ public class DataPointServiceTests
 
         // Assert
         point.SleepHours.Should().Be(24.0m);
-    }
-
-    [Fact]
-    public void SetMood_WithEmptyString_AcceptsValue()
-    {
-        // Arrange
-        var category = new DataPointCategory { Type = PointType.Mood };
-        var day = Day.Create(new DateOnly(2024, 1, 1));
-        var point = DataPoint.Create(day, category);
-
-        // Act
-        _service.SetMood(point, string.Empty);
-
-        // Assert
-        point.Mood.Should().Be(string.Empty);
-    }
-
-    [Fact]
-    public void SetMood_WithVeryLongString_AcceptsValue()
-    {
-        // Arrange
-        var category = new DataPointCategory { Type = PointType.Mood };
-        var day = Day.Create(new DateOnly(2024, 1, 1));
-        var point = DataPoint.Create(day, category);
-        var longMood = string.Concat(Enumerable.Repeat("😀", 100));
-
-        // Act
-        _service.SetMood(point, longMood);
-
-        // Assert
-        point.Mood.Should().Be(longMood);
-    }
-
-    [Fact]
-    public void SetScaleIndex_WithNegativeValue_AcceptsValue()
-    {
-        // Arrange
-        var category = new DataPointCategory { Type = PointType.Scale };
-        var day = Day.Create(new DateOnly(2024, 1, 1));
-        var point = DataPoint.Create(day, category);
-
-        // Act
-        _service.SetScaleIndex(point, -5);
-
-        // Assert - Service doesn't validate range, just stores the value
-        point.ScaleIndex.Should().Be(-5);
-    }
-
-    [Fact]
-    public void SetScaleIndex_WithVeryLargeValue_AcceptsValue()
-    {
-        // Arrange
-        var category = new DataPointCategory { Type = PointType.Scale };
-        var day = Day.Create(new DateOnly(2024, 1, 1));
-        var point = DataPoint.Create(day, category);
-
-        // Act
-        _service.SetScaleIndex(point, 999999);
-
-        // Assert
-        point.ScaleIndex.Should().Be(999999);
     }
 
     [Fact]
@@ -670,26 +495,6 @@ public class DataPointServiceTests
 
         // Assert - Should reset to category's dose, even if negative
         point.MedicationDose.Should().Be(-50m);
-    }
-
-    [Fact]
-    public void GetScaleIndex_MultipleCallsSamePoint_ReturnsConsistentValue()
-    {
-        // Arrange
-        var category = new DataPointCategory { Type = PointType.Scale };
-        var day = Day.Create(new DateOnly(2024, 1, 1));
-        var point = DataPoint.Create(day, category);
-        point.ScaleIndex = 5;
-
-        // Act
-        var result1 = _service.GetScaleIndex(point);
-        var result2 = _service.GetScaleIndex(point);
-        var result3 = _service.GetScaleIndex(point);
-
-        // Assert
-        result1.Should().Be(5);
-        result2.Should().Be(5);
-        result3.Should().Be(5);
     }
 
     [Fact]

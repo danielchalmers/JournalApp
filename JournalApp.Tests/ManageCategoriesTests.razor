@@ -44,7 +44,6 @@
     [Fact]
     public void EditDialog_ShouldNotOpenWhenCategoryIsDisabled()
     {
-        var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
         var guid = "0fb54aff-9ecc-4c17-bab5-b908b794cea9"; // Anxiety.
 
         var layout = Render(
@@ -63,7 +62,6 @@
     [Fact]
     public void EditDialog_ShouldNotOpenWhenCategoryIsReadOnly()
     {
-        var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
         var guid = "d90d89fb-f5b9-47cf-ae4e-3ec0d635e783"; // Overall mood.
 
         var layout = Render(
@@ -109,12 +107,13 @@
         layout.Find($"#manage-category-{guid} > .manage-category-edit-button").TextContent.Should().Be("New name");
     }
 
-    [Fact(Skip = "Not yet implemented")]
+    [Fact(Skip = "ISSUE-TEST-002: pending delete-dialog behavior spec and assertions; provider=sqlite-inmemory; revisit=2026-06-01")]
     public void EditDialog_Delete() { }
 
     [Fact]
     public void AddNewCategory()
     {
+        var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
         var layout = Render(
     @<MainLayout>
         <Body>
@@ -124,7 +123,9 @@
         );
 
         // Initial state.
-        layout.FindAll(".manage-category-edit-button").Count.Should().Be(10);
+        using var db = dbf.CreateDbContext();
+        var expectedInitialCount = db.Categories.Count(c => c.Group == null && !c.Deleted);
+        layout.FindAll(".manage-category-edit-button").Count.Should().Be(expectedInitialCount);
 
         // Open the dialog to create a new category.
         layout.Find(".add-category-button").Click();
@@ -135,12 +136,13 @@
 
         // Submit changes and confirm there is a new category in the list.
         layout.Find(".category-dialog .submit-button").Click();
-        layout.FindAll(".manage-category-edit-button").Count.Should().Be(11);
+        layout.FindAll(".manage-category-edit-button").Count.Should().Be(expectedInitialCount + 1);
     }
 
     [Fact]
     public void AddNewMedication()
     {
+        var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
         var layout = Render(
     @<MainLayout>
         <Body>
@@ -150,7 +152,9 @@
     );
 
         // Initial state.
-        layout.FindAll(".manage-category-edit-button").Count.Should().Be(3);
+        using var db = dbf.CreateDbContext();
+        var expectedInitialCount = db.Categories.Count(c => c.Group == "Medications" && !c.Deleted);
+        layout.FindAll(".manage-category-edit-button").Count.Should().Be(expectedInitialCount);
 
         // Open the dialog to create a new category.
         layout.Find(".add-category-button").Click();
@@ -161,7 +165,7 @@
 
         // Submit changes and confirm there is a new category in the list.
         layout.Find(".category-dialog .submit-button").Click();
-        layout.FindAll(".manage-category-edit-button").Count.Should().Be(4);
+        layout.FindAll(".manage-category-edit-button").Count.Should().Be(expectedInitialCount + 1);
     }
 
     [Fact]

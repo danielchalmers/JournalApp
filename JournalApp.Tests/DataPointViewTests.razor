@@ -218,6 +218,35 @@
     }
 
     [Fact]
+    public void Bool_TogglesSelectionAndValue()
+    {
+        var category = new DataPointCategory
+        {
+            Guid = Guid.NewGuid(),
+            Type = PointType.Bool,
+        };
+
+        var day = Day.Create(new(2024, 01, 01));
+        var point = DataPoint.Create(day, category);
+
+        var cut = RenderComponent<DataPointView>(p =>
+            p.Add(x => x.Point, point)
+        );
+
+        point.Bool.Should().BeNull();
+        cut.FindAll(".mud-toggle-item").Count.Should().Be(2);
+
+        cut.FindAll(".mud-toggle-item")[1].Click();
+        point.Bool.Should().BeTrue();
+
+        cut.FindAll(".mud-toggle-item")[1].Click();
+        point.Bool.Should().BeNull();
+
+        cut.FindAll(".mud-toggle-item")[0].Click();
+        point.Bool.Should().BeFalse();
+    }
+
+    [Fact]
     public void Note()
     {
         var category = new DataPointCategory
@@ -254,6 +283,43 @@
         layout.Find(".cancel-button").Click();
 
         point.Text.Should().Be("123");
+    }
+
+    [Fact]
+    public void Note_StateChangedCallback_InvokedWhenDialogCloses()
+    {
+        var category = new DataPointCategory
+        {
+            Guid = Guid.NewGuid(),
+            Type = PointType.Note,
+        };
+
+        var day = Day.Create(new(2024, 01, 01));
+        var point = DataPoint.Create(day, category);
+        point.Text = "Hello world";
+
+        var stateChangedCallCount = 0;
+        Task OnStateChanged()
+        {
+            stateChangedCallCount++;
+            return Task.CompletedTask;
+        }
+
+        var layout = Render(
+            @<MainLayout>
+                <Body>
+                    <DataPointView Point="point" StateChanged="OnStateChanged" />
+                </Body>
+            </MainLayout>);
+
+        var cut = layout.FindComponent<DataPointView>();
+        cut.Find("button[aria-label='Edit note']").Click();
+        layout.Find(".submit-button").Click();
+
+        cut.Find("button[aria-label='Edit note']").Click();
+        layout.Find(".cancel-button").Click();
+
+        stateChangedCallCount.Should().Be(2);
     }
 
     [Fact]
@@ -430,6 +496,79 @@
         layout.FindAll(".mud-dialog").Count.Should().Be(1);
         layout.Find(".cancel-button").Click();
         layout.FindAll(".mud-dialog").Count.Should().Be(0);
+    }
+
+    [Fact]
+    public void Medication_StateChangedCallback_InvokedOnTakenToggle()
+    {
+        var category = new DataPointCategory
+        {
+            Guid = Guid.NewGuid(),
+            Type = PointType.Medication,
+            MedicationDose = 10,
+        };
+
+        var day = Day.Create(new(2024, 01, 01));
+        var point = DataPoint.Create(day, category);
+        var stateChangedCallCount = 0;
+
+        Task OnStateChanged()
+        {
+            stateChangedCallCount++;
+            return Task.CompletedTask;
+        }
+
+        var layout = Render(
+            @<MainLayout>
+                <Body>
+                    <DataPointView Point="point" StateChanged="OnStateChanged" />
+                </Body>
+            </MainLayout>);
+
+        var cut = layout.FindComponent<DataPointView>();
+        cut.FindAll(".mud-toggle-item")[1].Click();
+
+        point.Bool.Should().BeTrue();
+        stateChangedCallCount.Should().Be(1);
+    }
+
+    [Fact]
+    public void MedicationEditDose_StateChangedCallback_InvokedWhenDialogCloses()
+    {
+        var category = new DataPointCategory
+        {
+            Guid = Guid.NewGuid(),
+            Type = PointType.Medication,
+            MedicationUnit = "mg",
+            MedicationDose = 10,
+        };
+
+        var day = Day.Create(new(2024, 01, 01));
+        var point = DataPoint.Create(day, category);
+        var stateChangedCallCount = 0;
+
+        Task OnStateChanged()
+        {
+            stateChangedCallCount++;
+            return Task.CompletedTask;
+        }
+
+        var layout = Render(
+            @<MainLayout>
+                <Body>
+                    <DataPointView Point="point" StateChanged="OnStateChanged" />
+                </Body>
+            </MainLayout>);
+
+        var cut = layout.FindComponent<DataPointView>();
+
+        cut.Find(".mud-link").Click();
+        layout.Find(".submit-button").Click();
+
+        cut.Find(".mud-link").Click();
+        layout.Find(".cancel-button").Click();
+
+        stateChangedCallCount.Should().Be(2);
     }
 
     [Fact]
