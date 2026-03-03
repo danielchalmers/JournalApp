@@ -13,7 +13,7 @@
             Purpose = "My purpose is to finish these tests",
         };
 
-        var cut = RenderComponent<SafetyPlanPage>();
+        var cut = Render<SafetyPlanPage>();
 
         // Assert state.
         cut.Instance.Plan.Purpose.Should().Be("My purpose is to finish these tests");
@@ -31,7 +31,7 @@
             Purpose = "My purpose is to finish these tests",
         };
 
-        var cut = RenderComponent<SafetyPlanPage>();
+        var cut = Render<SafetyPlanPage>();
 
         // Assert initial state.
         cut.Instance.Plan.Purpose.Should().Be("My purpose is to finish these tests");
@@ -42,8 +42,8 @@
         cut.Instance.Plan.ProfessionalContacts = "988 (USA)";
 
         // Leave and come back.
-        DisposeComponents();
-        cut = RenderComponent<SafetyPlanPage>();
+        cut.Dispose();
+        cut = Render<SafetyPlanPage>();
 
         // Assert that all changes persisted.
         preferenceService.SafetyPlan.Purpose.Should().Be("Actually it's puppies");
