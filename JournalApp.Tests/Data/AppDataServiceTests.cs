@@ -553,7 +553,6 @@ public class AppDataServiceTests : JaTestContext
     public async Task SetPreferences_WithEmptyBackup_DoesNotCrash()
     {
         // Arrange
-        var preferences = Services.GetService<IPreferences>();
         var appDataService = Services.GetService<AppDataService>();
 
         var backup = new BackupFile
