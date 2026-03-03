@@ -436,7 +436,7 @@ public class AppDataServiceTests : JaTestContext
 
         // Act & Assert - Should throw on duplicate primary keys
         var act = async () => await appDataService.RestoreDbSets(backup);
-        await act.Should().ThrowAsync<Exception>();
+        await act.Should().ThrowAsync<InvalidOperationException>();
     }
 
     [Fact]
@@ -471,7 +471,7 @@ public class AppDataServiceTests : JaTestContext
 
         // Act - Try to replace with invalid backup
         var act = async () => await appDataService.ReplaceDbSets(invalidBackup);
-        await act.Should().ThrowAsync<Exception>();
+        await act.Should().ThrowAsync<InvalidOperationException>();
 
         // Assert - Original data should still be present (rollback worked)
         using (var db = await dbFactory.CreateDbContextAsync())
@@ -581,7 +581,7 @@ public class AppDataServiceTests : JaTestContext
 
         // Act & Assert - Should handle null gracefully
         var act = () => appDataService.SetPreferences(backup);
-        act.Should().Throw<Exception>(); // Expected to fail on null
+        act.Should().Throw<NullReferenceException>(); // Expected to fail on null
     }
 
     [Fact]
