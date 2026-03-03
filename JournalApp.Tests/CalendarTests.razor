@@ -60,7 +60,6 @@
         cut.WaitForAssertion(() => cut.Find(".calendar-view"));
         cut.FindAll(".calendar-month").Count.Should().Be(12);
 
-        var db = Services.GetService<AppDbContext>();
         var calendarService = Services.GetService<CalendarService>();
         var gridYear = await calendarService.CreateGridYear(cut.Instance.SelectedYear);
         var filledDays = gridYear.GridMonths.Sum(m => m.GridDays.Count(d => d.Emoji != null)); // Random seeding skips some days and grid days include offsets.

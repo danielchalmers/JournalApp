@@ -109,8 +109,49 @@
         layout.Find($"#manage-category-{guid} > .manage-category-edit-button").TextContent.Should().Be("New name");
     }
 
-    [Fact(Skip = "Not yet implemented")]
-    public void EditDialog_Delete() { }
+    [Fact]
+    public void EditDialog_Delete()
+    {
+        var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var guid = "de394b38-9007-4349-ae31-429541aab947"; // Physical activity.
+        var categoryGuid = new Guid(guid);
+
+        // Ensure this category has an existing point so deletion validates point cleanup too.
+        using (var db = dbf.CreateDbContext())
+        {
+            var category = db.Categories.Single(c => c.Guid == categoryGuid);
+            var day = Day.Create(new DateOnly(2024, 1, 1));
+            db.Days.Add(day);
+            db.Points.Add(DataPoint.Create(day, category));
+            db.SaveChanges();
+        }
+
+        var layout = Render(
+    @<MainLayout>
+        <Body>
+            <ManageCategoriesPage />
+        </Body>
+    </MainLayout>
+        );
+
+        var initialCount = layout.FindAll(".manage-category-edit-button").Count;
+
+        layout.Find($"#manage-category-{guid} > .manage-category-edit-button").Click();
+        layout.WaitForAssertion(() => layout.HasComponent<EditCategoryDialog>().Should().BeTrue());
+
+        layout.Find(".category-dialog .delete-button").Click();
+        layout.WaitForAssertion(() => layout.Find(".mud-message-box__yes-button"));
+        layout.Find(".mud-message-box__yes-button").Click();
+
+        layout.WaitForAssertion(() => layout.HasComponent<EditCategoryDialog>().Should().BeFalse());
+        layout.WaitForAssertion(() => layout.FindAll(".manage-category-edit-button").Count.Should().Be(initialCount - 1));
+
+        using (var db = dbf.CreateDbContext())
+        {
+            db.Categories.Single(c => c.Guid == categoryGuid).Deleted.Should().BeTrue();
+            db.Points.Any(p => p.Category.Guid == categoryGuid).Should().BeFalse();
+        }
+    }
 
     [Fact]
     public void AddNewCategory()
@@ -123,8 +164,7 @@
     </MainLayout>
         );
 
-        // Initial state.
-        layout.FindAll(".manage-category-edit-button").Count.Should().Be(10);
+        var initialCount = layout.FindAll(".manage-category-edit-button").Count;
 
         // Open the dialog to create a new category.
         layout.Find(".add-category-button").Click();
@@ -135,7 +175,7 @@
 
         // Submit changes and confirm there is a new category in the list.
         layout.Find(".category-dialog .submit-button").Click();
-        layout.FindAll(".manage-category-edit-button").Count.Should().Be(11);
+        layout.FindAll(".manage-category-edit-button").Count.Should().Be(initialCount + 1);
     }
 
     [Fact]
@@ -149,8 +189,7 @@
     </MainLayout>
     );
 
-        // Initial state.
-        layout.FindAll(".manage-category-edit-button").Count.Should().Be(3);
+        var initialCount = layout.FindAll(".manage-category-edit-button").Count;
 
         // Open the dialog to create a new category.
         layout.Find(".add-category-button").Click();
@@ -161,7 +200,7 @@
 
         // Submit changes and confirm there is a new category in the list.
         layout.Find(".category-dialog .submit-button").Click();
-        layout.FindAll(".manage-category-edit-button").Count.Should().Be(4);
+        layout.FindAll(".manage-category-edit-button").Count.Should().Be(initialCount + 1);
     }
 
     [Fact]

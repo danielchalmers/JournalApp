@@ -9,7 +9,6 @@ public class DataPointServiceTests
 {
     private readonly DataPointService _service = new();
 
-    #region Sleep Operations Tests
 
     [Fact]
     public void DecrementSleep_DecreasesByHalfHour()
@@ -173,9 +172,7 @@ public class DataPointServiceTests
         point.SleepHours.Should().Be(8.5m);
     }
 
-    #endregion
 
-    #region Mood Operations Tests
 
     [Fact]
     public void SetMood_UpdatesMoodValue()
@@ -232,9 +229,7 @@ public class DataPointServiceTests
             .WithMessage("DataPoint must be a mood type.*");
     }
 
-    #endregion
 
-    #region Scale Operations Tests
 
     [Fact]
     public void SetScaleIndex_SetsValue()
@@ -368,9 +363,7 @@ public class DataPointServiceTests
         point.ScaleIndex.Should().BeNull();
     }
 
-    #endregion
 
-    #region Medication Operations Tests
 
     [Fact]
     public void HandleMedicationTakenChanged_ResetsDose_WhenNotTaken()
@@ -514,9 +507,7 @@ public class DataPointServiceTests
         point.MedicationDose.Should().Be(100m); // Now has default dose again
     }
 
-    #endregion
 
-    #region Edge Cases and Null Handling
 
     [Fact]
     public void IncrementSleep_WithNegativeValue_CorrectsBehavior()
@@ -709,5 +700,4 @@ public class DataPointServiceTests
         point.SleepHours.Should().Be(7.75m);
     }
 
-    #endregion
 }

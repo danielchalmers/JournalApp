@@ -58,9 +58,13 @@
         selectedDayNumber().Should().Be(nowDayNumber + 1);
     }
 
-    [Fact(Skip = "Not yet implemented")]
+    [Fact]
     public void DataIsSavedWhileSwitchingDays()
     {
+        var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
+        const string weightCategoryGuid = "480dc07d-1330-486f-9b30-ec83a3d4e6f0";
+        var weightGuid = new Guid(weightCategoryGuid);
+
         var layout = Render(
     @<MainLayout>
         <Body>
@@ -69,30 +73,33 @@
     </MainLayout>
     );
 
-        // Set up the exact day, category, and point we will be asserting.
-        // var dbf = Services.GetService<IDbContextFactory<AppDbContext>>();
-        // using var db = dbf.CreateDbContext();
-        // var day = db.Days.Single(d => d.Date == new DateOnly(2023, 01, 01));
-        // var weightCategoryGuid = "480dc07d-1330-486f-9b30-ec83a3d4e6f0";
-        // var weightPoint = db.Points.Single(p => p.Day == day && p.Category.Guid == new Guid(weightCategoryGuid));
-        // var weightInput = () => layout.Find($".data-point-container[data-category-guid=\"{weightCategoryGuid}\"] .data-point-view input");
-        // var initialWeight = weightInput().GetAttribute("value");
-
-        var weightInput = () => layout.Find($".data-point-container[data-category-guid=\"480dc07d-1330-486f-9b30-ec83a3d4e6f0\"] .data-point-view input");
-
-        var initialWeight = weightInput().GetAttribute("value");
+        var selectedDayNumber = () => int.Parse(layout.Find(".switcher").GetAttribute("data-current-day"));
+        var originalDayNumber = selectedDayNumber();
+        var weightInput = () => layout.Find($".data-point-container[data-category-guid=\"{weightCategoryGuid}\"] .data-point-view input");
 
         // Change the value so we can test if it is saved. -1 will never be chosen randomly.
         weightInput().Input("-1");
         weightInput().GetAttribute("value").Should().Be("-1");
 
-        // Go back then forward to make sure the data is saved.
+        // Go back to trigger save of current day state.
         layout.Find(".day-switcher-back").Click();
-        weightInput().GetAttribute("value").Should().NotBe("-1");
+        layout.WaitForAssertion(() => selectedDayNumber().Should().Be(originalDayNumber - 1));
+        layout.WaitForAssertion(() => weightInput().GetAttribute("value").Should().NotBe("-1"));
+
+        // Validate persistence in a fresh db context, not just the currently tracked entity.
+        using (var db = dbf.CreateDbContext())
+        {
+            var originalDay = db.Days.Single(d => d.Date.DayNumber == originalDayNumber);
+            var weightPoint = db.Points.Single(p => p.Day.Guid == originalDay.Guid && p.Category.Guid == weightGuid);
+            weightPoint.Number.Should().Be(-1);
+        }
+
+        // Return to original day and ensure UI reflects saved value.
         layout.Find(".day-switcher-forward").Click();
+        layout.WaitForAssertion(() => selectedDayNumber().Should().Be(originalDayNumber));
 
         // Assert that the weight is back to it's changed value from the original day.
-        weightInput().GetAttribute("value").Should().Be("-1");
+        layout.WaitForAssertion(() => weightInput().GetAttribute("value").Should().Be("-1"));
     }
 
     [Theory]
