@@ -14,10 +14,12 @@ public static class MauiProgram
     {
         var stopwatch = Stopwatch.StartNew();
 
+#pragma warning disable CA1416 // MAUI startup is only used from platform entry points.
         var builder = MauiApp.CreateBuilder()
             .UseMauiApp<App>()
             .UseMauiCommunityToolkit()
             .ConfigureFonts(fonts => fonts.AddFont("Roboto-Regular.ttf", "RobotoRegular"));
+#pragma warning restore CA1416
 
         // Enable Blazor WebView.
         builder.Services.AddMauiBlazorWebView();
