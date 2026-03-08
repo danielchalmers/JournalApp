@@ -122,20 +122,6 @@ else
         KeyEventService.Entered(Close);
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await base.OnAfterRenderAsync(firstRender);
-
-        if (firstRender)
-        {
-            if (App.ActivatedFilePath != null)
-            {
-                await StartImport();
-                StateHasChanged();
-            }
-        }
-    }
-
     void SelectedAppThemeChanged(AppTheme newTheme)
     {
         PreferenceService.SelectedAppTheme = newTheme;
@@ -156,25 +142,20 @@ else
         if (pickResult == null)
             return;
 
-        App.ActivatedFilePath = pickResult.FullPath;
-
-        await StartImport();
+        await StartImport(pickResult.FullPath);
     }
 
-    async Task StartImport()
+    async Task StartImport(string path)
     {
         try
         {
             _busy = true;
             StateHasChanged();
 
-            var path = App.ActivatedFilePath;
-
-            await AppDataUIService.StartImportWizard(DialogService, App.ActivatedFilePath);
+            await AppDataUIService.StartImportWizard(DialogService, path);
         }
         finally
         {
-            App.ActivatedFilePath = null;
             _busy = false;
         }
     }

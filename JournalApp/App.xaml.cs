@@ -7,11 +7,7 @@ public partial class App : Application
         InitializeComponent();
     }
 
-    public static event EventHandler NewIntent;
-
     public static Window Window { get; private set; }
-
-    public static string ActivatedFilePath { get; set; }
 
     public static (DateTimeOffset LeftAt, DateOnly LastDate)? IndexDateState { get; set; }
 
@@ -29,10 +25,5 @@ public partial class App : Application
         LaunchCount++;
 
         return window;
-    }
-
-    public static void OnNewIntent(object sender)
-    {
-        NewIntent?.Invoke(sender, EventArgs.Empty);
     }
 }

@@ -1,9 +1,7 @@
 ﻿@namespace JournalApp
 @inherits LayoutComponentBase
 @implements IDisposable
-@inject ILogger<MainLayout> logger
 @inject KeyEventService KeyEventService
-@inject NavigationManager NavigationManager
 @inject PreferenceService PreferenceService
 
 <MudThemeProvider Theme="_theme" IsDarkMode="PreferenceService.IsDarkMode" DefaultScrollbar />
@@ -80,11 +78,9 @@
 
     protected override void OnInitialized()
     {
-        logger.LogDebug("Initializing");
         base.OnInitialized();
 
         PreferenceService.ThemeChanged += OnThemeChanged;
-        App.NewIntent += OnNewIntent;
 
         if (App.Window is not null) // Not available in tests.
         {
@@ -93,13 +89,6 @@
 
         // All pages have been reloaded so we should clear any leftover subscriptions.
         KeyEventService.ResetStack();
-
-        // Start import.
-        if (App.ActivatedFilePath != null)
-        {
-            logger.LogDebug($"Activated by file <{App.ActivatedFilePath}>");
-            NavigationManager.NavigateTo($"/settings", false, true);
-        }
     }
 
     protected override void OnAfterRender(bool firstRender)
@@ -116,15 +105,8 @@
             StateHasChanged();
     }
 
-    void OnNewIntent(object sender, EventArgs e)
-    {
-        logger.LogDebug("New intent");
-        NavigationManager.NavigateTo($"/settings", true, true);
-    }
-
     public void Dispose()
     {
         PreferenceService.ThemeChanged -= OnThemeChanged;
-        App.NewIntent -= OnNewIntent;
     }
 }
