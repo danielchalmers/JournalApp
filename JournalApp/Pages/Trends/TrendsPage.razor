@@ -50,7 +50,7 @@
 
     public IReadOnlyList<DateOnly> SelectedDates { get; set; }
 
-    Dictionary<DataPointCategory, IReadOnlyDictionary<int, IReadOnlyCollection<DataPoint>>> AllPoints = new();
+    Dictionary<DataPointCategory, IReadOnlyDictionary<DateOnly, IReadOnlyCollection<DataPoint>>> AllPoints = new();
 
     protected override void OnInitialized()
     {
@@ -83,18 +83,18 @@
                 p => p
             );
 
-        // Group points by category then day number.
+        // Group points by category then date.
         AllPoints.Clear();
         foreach (var group in query)
         {
-            var pointsByDayNumber = new Dictionary<int, IReadOnlyCollection<DataPoint>>();
+            var pointsByDate = new Dictionary<DateOnly, IReadOnlyCollection<DataPoint>>();
 
             foreach (var date in SelectedDates)
             {
-                pointsByDayNumber.Add(date.Day, group.Where(p => p.Day.Date == date).ToHashSet());
+                pointsByDate.Add(date, group.Where(p => p.Day.Date == date).ToHashSet());
             }
 
-            AllPoints.Add(group.Key, pointsByDayNumber);
+            AllPoints.Add(group.Key, pointsByDate);
         }
 
         sw.Stop();

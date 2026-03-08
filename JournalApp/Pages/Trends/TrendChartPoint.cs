@@ -1,8 +1,10 @@
 ﻿namespace JournalApp;
 
-internal record TrendChartPoint(string Day, DataPoint Point)
+internal record TrendChartPoint(DateOnly Date, DataPoint Point)
 {
     private static readonly List<string> ChartEmojis = ["😭", "😢", "😕", "😐", "🙂", "😀", "🤩"];
+
+    public string DayLabel => Date.ToString("M/d");
 
     public decimal? Mood
     {

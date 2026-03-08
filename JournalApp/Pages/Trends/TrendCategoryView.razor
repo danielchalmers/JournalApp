@@ -26,7 +26,7 @@ else
                     <ApexPointSeries Name="Mood (1=low, 7=high)"
                                      Items="_chartItems"
                                      SeriesType="SeriesType.Line"
-                                     XValue="e => e.Day"
+                                     XValue="e => e.DayLabel"
                                      YValue="e => e.Mood" />
                     break;
 
@@ -34,7 +34,7 @@ else
                     <ApexPointSeries Name="Hours"
                                      Items="_chartItems"
                                      SeriesType="SeriesType.Line"
-                                     XValue="e => e.Day"
+                                     XValue="e => e.DayLabel"
                                      YValue="e => e.SleepHours" />
                     break;
 
@@ -44,7 +44,7 @@ else
                     <ApexPointSeries Name="Scale (0=low, 5=high)"
                                      Items="_chartItems"
                                      SeriesType="SeriesType.Line"
-                                     XValue="e => e.Day"
+                                     XValue="e => e.DayLabel"
                                      YValue="e => e.Scale" />
                     break;
 
@@ -52,7 +52,7 @@ else
                     <ApexPointSeries Name="Bool (0=no, 1=yes)"
                                      Items="_chartItems"
                                      SeriesType="SeriesType.Line"
-                                     XValue="e => e.Day"
+                                     XValue="e => e.DayLabel"
                                      YValue="e => e.Bool" />
                     break;
 
@@ -60,7 +60,7 @@ else
                     <ApexPointSeries Name="Dose"
                                      Items="_chartItems"
                                      SeriesType="SeriesType.Line"
-                                     XValue="e => e.Day"
+                                     XValue="e => e.DayLabel"
                                      YValue="e => e.MedDose" />
                     break;
 
@@ -68,7 +68,7 @@ else
                     <ApexPointSeries Name="Number"
                                      Items="_chartItems"
                                      SeriesType="SeriesType.Line"
-                                     XValue="e => e.Day"
+                                     XValue="e => e.DayLabel"
                                      YValue="e => e.Number" />
                     break;
             }
@@ -89,7 +89,7 @@ else
     public IReadOnlyList<DateOnly> Dates { get; set; }
 
     [Parameter]
-    public IReadOnlyDictionary<int, IReadOnlyCollection<DataPoint>> PointsByDay { get; set; }
+    public IReadOnlyDictionary<DateOnly, IReadOnlyCollection<DataPoint>> PointsByDay { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -98,7 +98,7 @@ else
         _chartItems = new();
         foreach (var (day, points) in PointsByDay)
         {
-            _chartItems.Add(new(day.ToString(), points.LastOrDefault()));
+            _chartItems.Add(new(day, points.LastOrDefault()));
         }
 
         if (_chart != null)
@@ -213,13 +213,13 @@ else
         return sb.ToString();
     }
 
-    string GetNoteLabel(DataPoint point, int day)
+    string GetNoteLabel(DataPoint point, DateOnly day)
     {
         var sb = new StringBuilder();
 
         // The date the note was created if it's timestamped, otherwise the actual day assigned to the point.
         // If you just use the creation date you'll get the date the point was first created which could be anything depending on what the user does.
-        sb.Append($"{(point.IsTimestampedNote ? point.CreatedAt : point.Day.Date):M/d/yy}");
+        sb.Append(point.IsTimestampedNote ? $"{point.CreatedAt:M/d/yy}" : $"{day:M/d/yy}");
 
         if (point.IsTimestampedNote)
         {

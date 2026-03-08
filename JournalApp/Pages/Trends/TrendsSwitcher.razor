@@ -41,9 +41,7 @@
             if (SelectedMonth == MonthAfterCurrent)
             {
                 var nowDate = DateOnly.FromDateTime(DateTime.Now);
-
-                // All the days between a month ago and now, excluding the first day as two days can't have the same number.
-                dates.AddRange(nowDate.AddMonths(-1).Next().DatesTo(nowDate));
+                dates.AddRange(nowDate.AddMonths(-1).DatesTo(nowDate));
             }
             else
             {
