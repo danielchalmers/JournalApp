@@ -237,6 +237,49 @@ public class ImportExportTests : JaTestContext
     }
 
     [Fact]
+    public async Task WriteArchive_ThenReadArchive_PreservesRelationshipMembership()
+    {
+        // Arrange
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        var appDataService = Services.GetService<AppDataService>();
+
+        appDbSeeder.SeedCategories();
+        appDbSeeder.SeedDays(new DateOnly(2024, 1, 1).DatesTo(new(2024, 1, 3)));
+
+        var originalBackup = await appDataService.CreateBackup();
+
+        await using var stream = new MemoryStream();
+
+        // Act
+        await originalBackup.WriteArchive(stream);
+        stream.Position = 0;
+        var restoredBackup = await BackupFile.ReadArchive(stream);
+
+        // Assert
+        restoredBackup.Points.Should().NotBeEmpty();
+
+        var restoredPointsByGuid = restoredBackup.Points.ToDictionary(point => point.Guid);
+
+        restoredBackup.Days.Should().AllSatisfy(day =>
+        {
+            day.Points.Should().NotBeNull();
+            foreach (var point in day.Points)
+            {
+                restoredPointsByGuid[point.Guid].Should().BeSameAs(point);
+            }
+        });
+
+        restoredBackup.Categories.Should().AllSatisfy(category =>
+        {
+            category.Points.Should().NotBeNull();
+            foreach (var point in category.Points)
+            {
+                restoredPointsByGuid[point.Guid].Should().BeSameAs(point);
+            }
+        });
+    }
+
+    [Fact]
     public async Task RoundTrip_PreservesAllDataProperties()
     {
         // Arrange
@@ -309,48 +352,6 @@ public class ImportExportTests : JaTestContext
         {
             if (File.Exists(zipPath))
                 File.Delete(zipPath);
-        }
-    }
-
-    [Fact]
-    public async Task RestoreDbSets_HandlesOrphanedDataPoints()
-    {
-        // Points with null day/category references should still round-trip in backup restore
-        // because these FKs are nullable in the current schema.
-        var appDataService = Services.GetService<AppDataService>();
-        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-
-        var orphanedPoint = new DataPoint
-        {
-            Guid = Guid.NewGuid(),
-            Day = null!,
-            Category = null!,
-            Type = PointType.Bool,
-            CreatedAt = DateTimeOffset.Now
-        };
-
-        var backup = new BackupFile
-        {
-            Days = [],
-            Categories = [],
-            Points = [orphanedPoint],
-            PreferenceBackups = []
-        };
-
-        // Act
-        await appDataService.RestoreDbSets(backup);
-
-        // Assert
-        using (var db = await dbFactory.CreateDbContextAsync())
-        {
-            db.Days.Should().BeEmpty();
-            db.Categories.Should().BeEmpty();
-            db.Points.Should().HaveCount(1);
-
-            var restoredPoint = db.Points.Include(p => p.Day).Include(p => p.Category).Single();
-            restoredPoint.Guid.Should().Be(orphanedPoint.Guid);
-            restoredPoint.Day.Should().BeNull();
-            restoredPoint.Category.Should().BeNull();
         }
     }
 
