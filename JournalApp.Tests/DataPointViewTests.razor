@@ -433,6 +433,62 @@
     }
 
     [Fact]
+    public void Medication_InvokesStateChanged_WhenTakenChanges()
+    {
+        var category = new DataPointCategory
+        {
+            Guid = Guid.NewGuid(),
+            Type = PointType.Medication,
+            MedicationDose = 10,
+        };
+
+        var day = Day.Create(new(2024, 01, 01));
+        var point = DataPoint.Create(day, category);
+        var stateChangedCalls = 0;
+
+        var cut = RenderComponent<DataPointView>(p => p
+            .Add(x => x.Point, point)
+            .Add(x => x.StateChanged, () => stateChangedCalls++));
+
+        cut.FindAll(".mud-toggle-item")[0].Click();
+
+        point.Bool.Should().Be(false);
+        stateChangedCalls.Should().Be(1);
+    }
+
+    [Fact]
+    public void Note_EditInvokesStateChanged_WhenDialogSubmits()
+    {
+        var category = new DataPointCategory
+        {
+            Guid = Guid.NewGuid(),
+            Group = "Notes",
+            Type = PointType.Note,
+        };
+
+        var day = Day.Create(new(2024, 01, 01));
+        var point = DataPoint.Create(day, category);
+        point.Text = "Original";
+        var stateChangedCalls = 0;
+
+        var layout = Render(
+            @<MainLayout>
+                <Body>
+                    <DataPointView Point="point" StateChanged="@(() => stateChangedCalls++)" />
+                </Body>
+            </MainLayout>);
+
+        var cut = layout.FindComponent<DataPointView>();
+
+        cut.Find("button[aria-label='Edit note']").Click();
+        layout.FindComponent<EditNoteDialog>().Find("textarea").Input("Updated");
+        layout.Find(".submit-button").Click();
+
+        point.Text.Should().Be("Updated");
+        stateChangedCalls.Should().Be(1);
+    }
+
+    [Fact]
     public void HeaderCategory()
     {
         var category = new DataPointCategory

@@ -94,6 +94,9 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
 
     public void SetPreferences(BackupFile backup)
     {
+        ArgumentNullException.ThrowIfNull(backup);
+        ArgumentNullException.ThrowIfNull(backup.PreferenceBackups);
+
         logger.LogDebug("Restoring {PreferenceCount} preferences from backup", backup.PreferenceBackups.Count);
         preferences.Set(backup.PreferenceBackups.ToDictionary(b => b.Name, b => b.Value));
     }

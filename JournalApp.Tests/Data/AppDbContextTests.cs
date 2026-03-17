@@ -263,6 +263,92 @@ public class AppDbContextTests : JaTestContext
     }
 
     [Fact]
+    public async Task GetMissingPoints_SetsMedicationTaken_WhenEveryDaySinceMatchesDate()
+    {
+        // Arrange
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        appDbSeeder.SeedCategories();
+
+        using var db = await dbFactory.CreateDbContextAsync();
+        var date = new DateOnly(2024, 1, 15);
+        var day = Day.Create(date);
+
+        var medicationCategory = db.Categories.First(c => c.Type == PointType.Medication);
+        medicationCategory.MedicationEveryDaySince = new DateTimeOffset(date.ToDateTime(TimeOnly.MinValue));
+
+        // Act
+        var missingPoints = db.GetMissingPoints(day, medicationCategory, null);
+
+        // Assert
+        missingPoints.Should().HaveCount(1);
+        missingPoints.First().Bool.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task GetMissingPoints_CreatesWelcomeNote_ForFirstNotesCategoryPoint()
+    {
+        // Arrange
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        appDbSeeder.SeedCategories();
+
+        using var db = await dbFactory.CreateDbContextAsync();
+        var day = Day.Create(new DateOnly(2024, 1, 1));
+        var notesCategory = db.Categories.Single(c => c.Group == "Notes");
+
+        // Act
+        var missingPoints = db.GetMissingPoints(day, notesCategory, null);
+
+        // Assert
+        missingPoints.Should().ContainSingle();
+        var note = missingPoints.Single();
+        note.Type.Should().Be(PointType.Note);
+        note.Text.Should().Contain("I just started using Good Diary!");
+    }
+
+    [Fact]
+    public async Task GetMissingPoints_DoesNotCreateWelcomeNote_WhenNotesAlreadyExist()
+    {
+        // Arrange
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        appDbSeeder.SeedCategories();
+
+        using var db = await dbFactory.CreateDbContextAsync();
+        var previousDay = Day.Create(new DateOnly(2024, 1, 1));
+        var currentDay = Day.Create(new DateOnly(2024, 1, 2));
+        var notesCategory = db.Categories.Single(c => c.Group == "Notes");
+
+        notesCategory.Points.Add(DataPoint.Create(previousDay, notesCategory));
+
+        // Act
+        var missingPoints = db.GetMissingPoints(currentDay, notesCategory, null);
+
+        // Assert
+        missingPoints.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetMissingPoints_DoesNotCreateWelcomeNote_InRandomMode()
+    {
+        // Arrange
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        appDbSeeder.SeedCategories();
+
+        using var db = await dbFactory.CreateDbContextAsync();
+        var day = Day.Create(new DateOnly(2024, 1, 1));
+        var notesCategory = db.Categories.Single(c => c.Group == "Notes");
+
+        // Act
+        var missingPoints = db.GetMissingPoints(day, notesCategory, new Random(42));
+
+        // Assert
+        missingPoints.Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task AddCategory_AssignsIndexAutomatically_WhenNotSet()
     {
         // Arrange

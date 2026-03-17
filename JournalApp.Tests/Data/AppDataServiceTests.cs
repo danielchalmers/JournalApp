@@ -166,15 +166,13 @@ public class AppDataServiceTests : JaTestContext
         var backup = await appDataService.CreateBackup();
 
         // Assert
-        // Days should have their points loaded
-        backup.Days.Should().AllSatisfy(day =>
-            day.Points.Should().NotBeNull()
-        );
+        backup.Points.Should().NotBeEmpty();
 
-        // Categories should have their points loaded
-        backup.Categories.Should().AllSatisfy(category =>
-            category.Points.Should().NotBeNull()
-        );
+        var pointGuids = backup.Points.Select(point => point.Guid).ToHashSet();
+        backup.Days.SelectMany(day => day.Points).Select(point => point.Guid)
+            .Should().BeEquivalentTo(pointGuids);
+        backup.Categories.SelectMany(category => category.Points).Select(point => point.Guid)
+            .Should().BeEquivalentTo(pointGuids);
     }
 
     [Fact]
@@ -218,6 +216,35 @@ public class AppDataServiceTests : JaTestContext
         // Assert
         preferences.Get<string>("safety_plan", null).Should().Be("Restored plan");
         preferences.Get<string>("mood_palette", null).Should().Be("Restored palette");
+    }
+
+    [Fact]
+    public void SetPreferences_ClearsUnrelatedUserPreferences()
+    {
+        // Arrange
+        var preferences = Services.GetService<IPreferences>();
+        var appDataService = Services.GetService<AppDataService>();
+
+        preferences.Set("theme", AppTheme.Dark.ToString());
+        preferences.Set("hide_notes", true);
+
+        var backup = new BackupFile
+        {
+            PreferenceBackups =
+            [
+                new("safety_plan", "Restored plan"),
+                new("mood_palette", "Restored palette")
+            ]
+        };
+
+        // Act
+        appDataService.SetPreferences(backup);
+
+        // Assert
+        preferences.Get<string>("safety_plan", null).Should().Be("Restored plan");
+        preferences.Get<string>("mood_palette", null).Should().Be("Restored palette");
+        preferences.Get<string>("theme", null).Should().BeNull();
+        preferences.Get("hide_notes", false).Should().BeFalse();
     }
 
     [Fact]
@@ -550,10 +577,14 @@ public class AppDataServiceTests : JaTestContext
     }
 
     [Fact]
-    public async Task SetPreferences_WithEmptyBackup_DoesNotCrash()
+    public void SetPreferences_WithEmptyBackup_ClearsExistingPreferences()
     {
         // Arrange
+        var preferences = Services.GetService<IPreferences>();
         var appDataService = Services.GetService<AppDataService>();
+
+        preferences.Set("theme", AppTheme.Dark.ToString());
+        preferences.Set("hide_notes", true);
 
         var backup = new BackupFile
         {
@@ -563,12 +594,13 @@ public class AppDataServiceTests : JaTestContext
         // Act
         appDataService.SetPreferences(backup);
 
-        // Assert - Should not throw
-        // Preferences should remain unchanged
+        // Assert
+        preferences.Get<string>("theme", null).Should().BeNull();
+        preferences.Get("hide_notes", false).Should().BeFalse();
     }
 
     [Fact]
-    public async Task SetPreferences_WithNullPreferenceBackups_HandlesGracefully()
+    public void SetPreferences_WithNullPreferenceBackups_ThrowsArgumentNullException()
     {
         // Arrange
         var appDataService = Services.GetService<AppDataService>();
@@ -579,13 +611,14 @@ public class AppDataServiceTests : JaTestContext
             PreferenceBackups = null!
         };
 
-        // Act & Assert - Should handle null gracefully
+        // Act & Assert
         var act = () => appDataService.SetPreferences(backup);
-        act.Should().Throw<NullReferenceException>(); // Expected to fail on null
+        act.Should().Throw<ArgumentNullException>()
+            .WithParameterName("backup.PreferenceBackups");
     }
 
     [Fact]
-    public async Task GetPreferenceBackups_WithNoPreferencesSet_ReturnsEmpty()
+    public void GetPreferenceBackups_WithNoPreferencesSet_ReturnsKnownKeysWithEmptyValues()
     {
         // Arrange
         var preferences = Services.GetService<IPreferences>();
@@ -597,8 +630,14 @@ public class AppDataServiceTests : JaTestContext
         // Act
         var preferenceBackups = appDataService.GetPreferenceBackups().ToList();
 
-        // Assert - Should return empty list, not throw
-        preferenceBackups.Should().NotBeNull();
+        // Assert
+        preferenceBackups.Should().BeEquivalentTo(
+        [
+            new PreferenceBackup("safety_plan", string.Empty),
+            new PreferenceBackup("mood_palette", string.Empty),
+            new PreferenceBackup("tip_click_mood_grid_day", string.Empty),
+            new PreferenceBackup("tip_add_new_category", string.Empty)
+        ]);
     }
 
     [Fact]
