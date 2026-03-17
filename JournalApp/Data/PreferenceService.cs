@@ -161,6 +161,7 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
 
     public void Set(IReadOnlyDictionary<string, string> preferences)
     {
+        Clear();
         foreach (var (key, value) in preferences)
         {
             Set(key, value);

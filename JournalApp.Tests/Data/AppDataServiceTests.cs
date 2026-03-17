@@ -219,7 +219,7 @@ public class AppDataServiceTests : JaTestContext
     }
 
     [Fact]
-    public void SetPreferences_PreservesUnrelatedUserPreferences()
+    public void SetPreferences_ClearsUnrelatedUserPreferences()
     {
         // Arrange
         var preferences = Services.GetService<IPreferences>();
@@ -243,8 +243,8 @@ public class AppDataServiceTests : JaTestContext
         // Assert
         preferences.Get<string>("safety_plan", null).Should().Be("Restored plan");
         preferences.Get<string>("mood_palette", null).Should().Be("Restored palette");
-        preferences.Get<string>("theme", null).Should().Be(AppTheme.Dark.ToString());
-        preferences.Get("hide_notes", false).Should().BeTrue();
+        preferences.Get<string>("theme", null).Should().BeNull();
+        preferences.Get("hide_notes", false).Should().BeFalse();
     }
 
     [Fact]
@@ -577,7 +577,7 @@ public class AppDataServiceTests : JaTestContext
     }
 
     [Fact]
-    public void SetPreferences_WithEmptyBackup_LeavesExistingPreferencesUnchanged()
+    public void SetPreferences_WithEmptyBackup_ClearsExistingPreferences()
     {
         // Arrange
         var preferences = Services.GetService<IPreferences>();
@@ -595,8 +595,8 @@ public class AppDataServiceTests : JaTestContext
         appDataService.SetPreferences(backup);
 
         // Assert
-        preferences.Get<string>("theme", null).Should().Be(AppTheme.Dark.ToString());
-        preferences.Get("hide_notes", false).Should().BeTrue();
+        preferences.Get<string>("theme", null).Should().BeNull();
+        preferences.Get("hide_notes", false).Should().BeFalse();
     }
 
     [Fact]
