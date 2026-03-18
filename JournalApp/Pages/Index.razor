@@ -59,17 +59,32 @@
             }
 
             <div>
-                @if (!string.IsNullOrEmpty(group.Key))
+                @if (string.IsNullOrEmpty(group.Key))
+                {
+                    <MudLink Class="list-group-title"
+                                Href="/manage"
+                                Underline="Underline.None"
+                                Color="Color.Inherit"
+                                EndIcon="@Icons.Material.Rounded.Edit"
+                                aria-label="Manage elements">
+                        My elements
+                    </MudLink>
+                }
+                else if (group.Key == "Medications")
+                {
+                    <MudLink Class="list-group-title"
+                                Href="/manage/Medications"
+                                Underline="Underline.None"
+                                Color="Color.Inherit"
+                                EndIcon="@Icons.Material.Rounded.Edit"
+                                aria-label="Manage medications">
+                        Medications taken
+                    </MudLink>
+                }
+                else if (group.Key == "Notes")
                 {
                     <MudText Class="list-group-title">
-                        @if (group.Key == "Medications")
-                        {
-                            @("Medications taken")
-                        }
-                        else if (group.Key == "Notes")
-                        {
-                            @("Today's notes")
-                        }
+                        @("Today's notes")
                     </MudText>
                 }
 
@@ -80,7 +95,7 @@
                             {
                                 @foreach (var point in _day.Points.Where(x => !x.Deleted && x.Category.Guid == category.Guid && x.Type == category.Type).OrderBy(x => x.CreatedAt))
                                 {
-                                    <li class="data-point-container" data-category-guid="@category.Guid">
+                                        <li class="data-point-container data-point-container-@point.Type.ToString().ToLowerInvariant()" data-category-guid="@category.Guid">
                                         @if (!string.IsNullOrEmpty(category.Name))
                                         {
                                             <div class="data-point-header">
