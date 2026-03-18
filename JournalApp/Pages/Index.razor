@@ -277,7 +277,7 @@
     async Task OpenFeedback()
     {
         logger.LogInformation("Opening feedback link");
-        await Browser.OpenAsync(Feedback.NewGitHubIssue);
+        await Browser.OpenAsync("https://github.com/danielchalmers/JournalApp/issues");
     }
 
     async Task OpenShare()
