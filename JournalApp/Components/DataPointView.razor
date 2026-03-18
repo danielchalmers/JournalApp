@@ -58,14 +58,11 @@ else if (Point.Type == PointType.Text)
 else if (Point.Type == PointType.Note)
 {
     <div class="note-container">
-        @if (!string.IsNullOrWhiteSpace(Point.Text))
-        {
-            <MudTextField @bind-Value="Point.Text"
-                          Placeholder="@(Point.IsTimestampedNote ? "What's on your mind?" : null)"
-                          Label="@(NoteLabel)" Typo="Typo.body2"
-                          Immediate ReadOnly Underline="false"
-                          Sizing="InputSizing.Auto" Lines="1" MaxLines="10" />
-        }
+        <MudTextField @bind-Value="Point.Text"
+                      Placeholder="@(Point.IsTimestampedNote ? "What's on your mind?" : null)"
+                      Label="@(NoteLabel)" Typo="Typo.body2"
+                      Immediate ReadOnly Underline="false"
+                      Sizing="InputSizing.Auto" Lines="1" MaxLines="10" />
 
         <MudIconButton Class="note-edit-button"
                        Icon="@Icons.Material.Rounded.Edit"
