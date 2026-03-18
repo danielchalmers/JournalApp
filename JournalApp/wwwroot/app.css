@@ -191,6 +191,8 @@ body {
   letter-spacing: var(--mud-typography-subtitle2-letterspacing);
   text-transform: var(--mud-typography-subtitle2-text-transform);
   margin-bottom: 8px;
+  display: flex;
+  align-items: center;
 }
 
 #blazor-error-ui {
