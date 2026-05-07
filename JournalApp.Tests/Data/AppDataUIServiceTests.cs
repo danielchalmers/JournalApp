@@ -21,7 +21,7 @@ public class AppDataUIServiceTests : JaTestContext
         var appDataService = Services.GetService<AppDataService>();
         var preferenceService = Services.GetService<PreferenceService>();
 
-        var originalExportDate = DateTimeOffset.Now.AddDays(-1);
+        var originalExportDate = new DateTimeOffset(2099, 1, 1, 0, 0, 0, TimeSpan.Zero);
         preferenceService.LastExportDate = originalExportDate;
         preferenceService.HideNotes = true;
         preferenceService.SelectedAppTheme = AppTheme.Dark;
@@ -88,7 +88,7 @@ public class AppDataUIServiceTests : JaTestContext
         var appDataService = Services.GetService<AppDataService>();
         var preferenceService = Services.GetService<PreferenceService>();
 
-        var originalExportDate = DateTimeOffset.Now.AddDays(-1);
+        var originalExportDate = new DateTimeOffset(2099, 1, 1, 0, 0, 0, TimeSpan.Zero);
         preferenceService.LastExportDate = originalExportDate;
         preferenceService.SafetyPlan = new SafetyPlan { WarningSigns = "original warning" };
 
