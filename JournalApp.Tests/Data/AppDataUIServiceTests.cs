@@ -21,7 +21,7 @@ public class AppDataUIServiceTests : JaTestContext
         var appDataService = Services.GetService<AppDataService>();
         var preferenceService = Services.GetService<PreferenceService>();
 
-        var originalExportDate = new DateTimeOffset(2099, 1, 1, 0, 0, 0, TimeSpan.Zero);
+        var originalExportDate = new DateTimeOffset(2099, 1, 1, 0, 0, 0, TimeSpan.Zero); // Skips the backup warning so this test exercises the confirmation dialog path.
         preferenceService.LastExportDate = originalExportDate;
         preferenceService.HideNotes = true;
         preferenceService.SelectedAppTheme = AppTheme.Dark;
@@ -88,7 +88,7 @@ public class AppDataUIServiceTests : JaTestContext
         var appDataService = Services.GetService<AppDataService>();
         var preferenceService = Services.GetService<PreferenceService>();
 
-        var originalExportDate = new DateTimeOffset(2099, 1, 1, 0, 0, 0, TimeSpan.Zero);
+        var originalExportDate = new DateTimeOffset(2099, 1, 1, 0, 0, 0, TimeSpan.Zero); // Skips the backup warning so this test reaches the replace failure path.
         preferenceService.LastExportDate = originalExportDate;
         preferenceService.SafetyPlan = new SafetyPlan { WarningSigns = "original warning" };
 
