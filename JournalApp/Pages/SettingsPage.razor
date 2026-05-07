@@ -50,7 +50,7 @@ else
                         </MudAlert>
                     }
 
-                    <MudText>Last backup: @(PreferenceService.LastExportDate.ToString("d"))</MudText>
+                    <MudText Typo="Typo.body2">Last backup: @(PreferenceService.LastExportDate.ToString("d"))</MudText>
 
                     <MudButtonGroup Variant="Variant.Outlined" FullWidth>
                         <MudButton StartIcon="@Icons.Material.Rounded.Upload" OnClick="StartExport">Export data</MudButton>
@@ -64,7 +64,7 @@ else
                 <MudText Class="list-group-title">Safety</MudText>
 
                 <MudPaper Class="settings-group">
-                    <MudText>
+                    <MudText Typo="Typo.body2">
                         Your coping strategies and sources of support that can be used in a crisis.
                     </MudText>
 
