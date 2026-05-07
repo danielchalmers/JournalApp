@@ -14,7 +14,7 @@
   </Target>
 
   <ItemGroup>
-    <PackageReference Include="bunit" Version="1.40.0" />
+    <PackageReference Include="bunit" Version="2.7.2" />
     <PackageReference Include="FluentAssertions" Version="8.9.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.5" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
