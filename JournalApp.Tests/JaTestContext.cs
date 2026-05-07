@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace JournalApp.Tests;
 
-public abstract class JaTestContext : TestContext, IAsyncLifetime
+public abstract class JaTestContext : BunitContext, IAsyncLifetime
 {
     private SqliteConnection _dbConnection;
 
@@ -21,13 +21,18 @@ public abstract class JaTestContext : TestContext, IAsyncLifetime
         return Task.CompletedTask;
     }
 
-    public virtual async Task DisposeAsync()
+    Task IAsyncLifetime.DisposeAsync() => DisposeTestContextAsync();
+
+    protected virtual async Task DisposeTestContextAsync()
     {
         if (_dbConnection != null)
         {
             await _dbConnection.CloseAsync();
             await _dbConnection.DisposeAsync();
+            _dbConnection = null;
         }
+
+        await base.DisposeAsync();
     }
 
     public void AddDbContext()

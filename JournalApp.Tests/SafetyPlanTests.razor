@@ -13,7 +13,7 @@
             Purpose = "My purpose is to finish these tests",
         };
 
-        var cut = RenderComponent<SafetyPlanPage>();
+        var cut = Render<SafetyPlanPage>();
 
         // Assert state.
         cut.Instance.Plan.Purpose.Should().Be("My purpose is to finish these tests");
@@ -22,7 +22,7 @@
 
     [Fact]
     [Description("The safety plan must save changes and load them back next time")]
-    public void PlanPersists()
+    public async Task PlanPersists()
     {
         var preferenceService = Services.GetService<PreferenceService>();
 
@@ -31,7 +31,7 @@
             Purpose = "My purpose is to finish these tests",
         };
 
-        var cut = RenderComponent<SafetyPlanPage>();
+        var cut = Render<SafetyPlanPage>();
 
         // Assert initial state.
         cut.Instance.Plan.Purpose.Should().Be("My purpose is to finish these tests");
@@ -42,8 +42,8 @@
         cut.Instance.Plan.ProfessionalContacts = "988 (USA)";
 
         // Leave and come back.
-        DisposeComponents();
-        cut = RenderComponent<SafetyPlanPage>();
+        await DisposeComponentsAsync();
+        cut = Render<SafetyPlanPage>();
 
         // Assert that all changes persisted.
         preferenceService.SafetyPlan.Purpose.Should().Be("Actually it's puppies");
