@@ -31,6 +31,7 @@
         }
 
         layout.Find($"#manage-category-{guid} > .manage-category-edit-button").HasAttribute("disabled").Should().BeFalse();
+        // Keep sync: the click handler awaits the dialog result; ClickAsync would block until the dialog closes.
         layout.Find($"#manage-category-{guid} > .manage-category-edit-button").Click();
         await layout.WaitForAssertionAsync(() => layout.HasComponent<EditCategoryDialog>().Should().BeTrue());
         var editDialog = layout.FindComponent<EditCategoryDialog>();
@@ -57,7 +58,7 @@
         );
 
         layout.Find($"#manage-category-{guid} > .manage-category-edit-button").HasAttribute("disabled").Should().BeTrue();
-        layout.Find($"#manage-category-{guid} > .manage-category-edit-button").Click();
+        await layout.Find($"#manage-category-{guid} > .manage-category-edit-button").ClickAsync();
         layout.HasComponent<EditCategoryDialog>().Should().BeFalse();
     }
 
@@ -76,7 +77,7 @@
         );
 
         layout.Find($"#manage-category-{guid} > .manage-category-edit-button").HasAttribute("disabled").Should().BeTrue();
-        layout.Find($"#manage-category-{guid} > .manage-category-edit-button").Click();
+        await layout.Find($"#manage-category-{guid} > .manage-category-edit-button").ClickAsync();
         layout.HasComponent<EditCategoryDialog>().Should().BeFalse();
     }
 
@@ -100,6 +101,7 @@
             return db.Categories.Single(c => c.Guid == new Guid(guid));
         }
 
+        // Keep sync: the click handler awaits the dialog result; ClickAsync would block until the dialog closes.
         layout.Find($"#manage-category-{guid} > .manage-category-edit-button").Click();
         await layout.WaitForAssertionAsync(() => layout.HasComponent<EditCategoryDialog>().Should().BeTrue());
 
@@ -138,9 +140,11 @@
 
         var initialCount = layout.FindAll(".manage-category-edit-button").Count;
 
+        // Keep sync: the click handler awaits the dialog result; ClickAsync would block until the dialog closes.
         layout.Find($"#manage-category-{guid} > .manage-category-edit-button").Click();
         await layout.WaitForAssertionAsync(() => layout.HasComponent<EditCategoryDialog>().Should().BeTrue());
 
+        // Keep sync: the click handler awaits the message box result; ClickAsync would block until it closes.
         layout.Find(".category-dialog .delete-button").Click();
         await layout.WaitForAssertionAsync(() => layout.Find(".mud-message-box__yes-button"));
         await layout.Find(".mud-message-box__yes-button").ClickAsync();
@@ -169,6 +173,7 @@
         var initialCount = layout.FindAll(".manage-category-edit-button").Count;
 
         // Open the dialog to create a new category.
+        // Keep sync: the click handler awaits the dialog result; ClickAsync would block until the dialog closes.
         layout.Find(".add-category-button").Click();
         await layout.WaitForAssertionAsync(() => layout.Markup.Should().Contain("New element"));
 
@@ -194,6 +199,7 @@
         var initialCount = layout.FindAll(".manage-category-edit-button").Count;
 
         // Open the dialog to create a new category.
+        // Keep sync: the click handler awaits the dialog result; ClickAsync would block until the dialog closes.
         layout.Find(".add-category-button").Click();
         await layout.WaitForAssertionAsync(() => layout.Markup.Should().Contain("New medication"));
 

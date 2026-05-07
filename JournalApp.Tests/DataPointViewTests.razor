@@ -241,6 +241,7 @@
 
         var cut = layout.FindComponent<DataPointView>();
 
+        // Keep sync: the click handler awaits the dialog result; ClickAsync would block until the dialog closes.
         cut.Find("button[aria-label='Edit note']").Click();
 
         await layout.WaitForAssertionAsync(() => layout.HasComponent<EditNoteDialog>().Should().BeTrue());
@@ -250,6 +251,7 @@
 
         point.Text.Should().Be("123");
 
+        // Keep sync: the click handler awaits the dialog result; ClickAsync would block until the dialog closes.
         cut.Find("button[aria-label='Edit note']").Click();
 
         await layout.WaitForAssertionAsync(() => layout.HasComponent<EditNoteDialog>().Should().BeTrue());
@@ -341,6 +343,7 @@
         cut.FindAll(".mud-toggle-item-selected").Count.Should().Be(0);
 
         // Change dose to empty via dialog.
+        // Keep sync: the click handler awaits the dialog result; ClickAsync would block until the dialog closes.
         cut.Find(".mud-link").Click();
         await layout.WaitForAssertionAsync(() => layout.HasComponent<EditDoseDialog>().Should().BeTrue());
         var doseEditor = layout.FindComponent<EditDoseDialog>();
@@ -352,6 +355,7 @@
         cut.FindAll(".mud-toggle-item")[0].ClassList.Should().Contain("mud-toggle-item-selected");
 
         // Change dose via dialog.
+        // Keep sync: the click handler awaits the dialog result; ClickAsync would block until the dialog closes.
         cut.Find(".mud-link").Click();
         await layout.WaitForAssertionAsync(() => layout.HasComponent<EditDoseDialog>().Should().BeTrue());
         doseEditor = layout.FindComponent<EditDoseDialog>();
@@ -363,6 +367,7 @@
         cut.FindAll(".mud-toggle-item")[1].ClassList.Should().Contain("mud-toggle-item-selected");
 
         // Cancel dialog.
+        // Keep sync: the click handler awaits the dialog result; ClickAsync would block until the dialog closes.
         cut.Find(".mud-link").Click();
         await layout.WaitForAssertionAsync(() => layout.HasComponent<EditDoseDialog>().Should().BeTrue());
         doseEditor = layout.FindComponent<EditDoseDialog>();
@@ -427,12 +432,14 @@
         layout.FindAll(".mud-dialog").Count.Should().Be(0);
 
         // Submit.
+        // Keep sync: the click handler awaits the dialog result; ClickAsync would block until the dialog closes.
         cut.Find(".mud-link").Click();
         await layout.WaitForAssertionAsync(() => layout.FindAll(".mud-dialog").Count.Should().Be(1));
         await layout.Find(".submit-button").ClickAsync();
         await layout.WaitForAssertionAsync(() => layout.FindAll(".mud-dialog").Count.Should().Be(0));
 
         // Cancel.
+        // Keep sync: the click handler awaits the dialog result; ClickAsync would block until the dialog closes.
         cut.Find(".mud-link").Click();
         await layout.WaitForAssertionAsync(() => layout.FindAll(".mud-dialog").Count.Should().Be(1));
         await layout.Find(".cancel-button").ClickAsync();
@@ -487,6 +494,7 @@
 
         var cut = layout.FindComponent<DataPointView>();
 
+        // Keep sync: the click handler awaits the dialog result; ClickAsync would block until the dialog closes.
         cut.Find("button[aria-label='Edit note']").Click();
         await layout.WaitForAssertionAsync(() => layout.HasComponent<EditNoteDialog>().Should().BeTrue());
         await layout.FindComponent<EditNoteDialog>().Find("textarea").InputAsync("Updated");
