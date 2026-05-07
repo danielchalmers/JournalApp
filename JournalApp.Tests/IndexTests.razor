@@ -83,8 +83,8 @@
 
         // Go back to trigger save of current day state.
         layout.Find(".day-switcher-back").Click();
-        layout.WaitForAssertion(() => selectedDayNumber().Should().Be(originalDayNumber - 1), DefaultUiWaitTimeout);
-        layout.WaitForAssertion(() => weightInput().GetAttribute("value").Should().NotBe("-1"), DefaultUiWaitTimeout);
+        layout.WaitForAssertion(() => selectedDayNumber().Should().Be(originalDayNumber - 1));
+        layout.WaitForAssertion(() => weightInput().GetAttribute("value").Should().NotBe("-1"));
 
         // Validate persistence in a fresh db context, not just the currently tracked entity.
         using (var db = dbf.CreateDbContext())
@@ -96,10 +96,10 @@
 
         // Return to original day and ensure UI reflects saved value.
         layout.Find(".day-switcher-forward").Click();
-        layout.WaitForAssertion(() => selectedDayNumber().Should().Be(originalDayNumber), DefaultUiWaitTimeout);
+        layout.WaitForAssertion(() => selectedDayNumber().Should().Be(originalDayNumber));
 
         // Assert that the weight is back to it's changed value from the original day.
-        layout.WaitForAssertion(() => weightInput().GetAttribute("value").Should().Be("-1"), DefaultUiWaitTimeout);
+        layout.WaitForAssertion(() => weightInput().GetAttribute("value").Should().Be("-1"));
     }
 
     [Theory]
