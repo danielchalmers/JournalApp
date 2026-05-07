@@ -22,7 +22,7 @@
 
     [Fact]
     [Description("The safety plan must save changes and load them back next time")]
-    public void PlanPersists()
+    public async Task PlanPersists()
     {
         var preferenceService = Services.GetService<PreferenceService>();
 
@@ -42,7 +42,7 @@
         cut.Instance.Plan.ProfessionalContacts = "988 (USA)";
 
         // Leave and come back.
-        cut.Dispose();
+        await DisposeComponentsAsync();
         cut = Render<SafetyPlanPage>();
 
         // Assert that all changes persisted.
