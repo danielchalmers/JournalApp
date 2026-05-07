@@ -175,7 +175,7 @@
 
         // Submit changes and confirm there is a new category in the list.
         layout.Find(".category-dialog .submit-button").Click();
-        layout.FindAll(".manage-category-edit-button").Count.Should().Be(initialCount + 1);
+        layout.WaitForAssertion(() => layout.FindAll(".manage-category-edit-button").Count.Should().Be(initialCount + 1));
     }
 
     [Fact]
@@ -200,7 +200,7 @@
 
         // Submit changes and confirm there is a new category in the list.
         layout.Find(".category-dialog .submit-button").Click();
-        layout.FindAll(".manage-category-edit-button").Count.Should().Be(initialCount + 1);
+        layout.WaitForAssertion(() => layout.FindAll(".manage-category-edit-button").Count.Should().Be(initialCount + 1));
     }
 
     [Fact]

@@ -44,7 +44,7 @@ public class AppDataUIServiceTests : JaTestContext
             "imported-palette");
         await importBackup.WriteArchive(importPath);
 
-        var dialogService = new TestDialogService([null]);
+        var dialogService = new TestDialogService([true, null]);
         var service = new AppDataUIService(
             NullLogger<AppDataUIService>.Instance,
             appDataService,
@@ -70,8 +70,9 @@ public class AppDataUIServiceTests : JaTestContext
             preferenceService.SelectedAppTheme.Should().Be(AppTheme.Dark);
             preferenceService.SafetyPlan.WarningSigns.Should().Be("stay safe");
 
-            dialogService.Messages.Should().HaveCount(1);
-            dialogService.Messages.Single().Should().Contain("This will replace ALL current data");
+            dialogService.Messages.Should().HaveCount(2);
+            dialogService.Messages[0].Should().Contain("Back up your current data first");
+            dialogService.Messages[1].Should().Contain("This will replace ALL current data");
         }
         finally
         {
@@ -121,7 +122,7 @@ public class AppDataUIServiceTests : JaTestContext
         var importPath = Path.Combine(Path.GetTempPath(), $"failed-import-{Guid.NewGuid()}.journalapp");
         await invalidBackup.WriteArchive(importPath);
 
-        var dialogService = new TestDialogService([true]);
+        var dialogService = new TestDialogService([true, true]);
         var service = new AppDataUIService(
             NullLogger<AppDataUIService>.Instance,
             appDataService,
@@ -145,6 +146,8 @@ public class AppDataUIServiceTests : JaTestContext
 
             preferenceService.LastExportDate.Should().Be(originalExportDate);
             preferenceService.SafetyPlan.WarningSigns.Should().Be("original warning");
+            dialogService.Messages.Should().Contain(message => message.Contains("Back up your current data first"));
+            dialogService.Messages.Should().Contain(message => message.Contains("This will replace ALL current data"));
             dialogService.Messages.Should().Contain(message => message.StartsWith("Import failed:"));
         }
         finally
