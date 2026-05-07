@@ -21,12 +21,15 @@ public abstract class JaTestContext : BunitContext, IAsyncLifetime
         return Task.CompletedTask;
     }
 
-    public new virtual async Task DisposeAsync()
+    Task IAsyncLifetime.DisposeAsync() => DisposeTestContextAsync();
+
+    protected virtual async Task DisposeTestContextAsync()
     {
         if (_dbConnection != null)
         {
             await _dbConnection.CloseAsync();
             await _dbConnection.DisposeAsync();
+            _dbConnection = null;
         }
 
         await base.DisposeAsync();
