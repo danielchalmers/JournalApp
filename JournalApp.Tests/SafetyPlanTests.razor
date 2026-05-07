@@ -38,7 +38,7 @@
         cut.Find(".safety-plan-item-purpose textarea").TextContent.Should().Be("My purpose is to finish these tests");
 
         // Change via textarea and property to test both.
-        cut.Find(".safety-plan-item-purpose textarea").Input("Actually it's puppies");
+        await cut.Find(".safety-plan-item-purpose textarea").InputAsync("Actually it's puppies");
         cut.Instance.Plan.ProfessionalContacts = "988 (USA)";
 
         // Leave and come back.
