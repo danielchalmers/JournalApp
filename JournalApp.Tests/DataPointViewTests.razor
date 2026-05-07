@@ -27,9 +27,10 @@
         // Click the emoji button to open the popover
         cut.Find(".emoji-button").Click();
 
-        layout.FindAll("div.mud-popover-open").Count.Should().Be(1);
+        layout.WaitForAssertion(() => layout.FindAll("div.mud-popover-open").Count.Should().Be(1));
         
         // Click the first emoji button in the popover
+        layout.WaitForAssertion(() => layout.FindAll(".emoji-popover-content .emoji-button").Count.Should().BeGreaterThan(0));
         var emojiButtons = layout.FindAll(".emoji-popover-content .emoji-button");
         emojiButtons[0].Click();
         
@@ -64,6 +65,7 @@
         var sobEmoji = DataPoint.Moods[^1];  // Get the last mood (sob emoji)
         sobEmoji.Should().Be("😭");  // Verify it's the sob emoji
         
+        layout.WaitForAssertion(() => layout.FindAll(".emoji-popover-content .emoji-button").Count.Should().Be(DataPoint.Moods.Count));
         var emojiButtons = layout.FindAll(".emoji-popover-content .emoji-button");
         emojiButtons[^1].Click();  // Click the last emoji button (sob emoji)
 
@@ -241,6 +243,7 @@
 
         cut.Find("button[aria-label='Edit note']").Click();
 
+        layout.WaitForAssertion(() => layout.HasComponent<EditNoteDialog>().Should().BeTrue());
         var noteEditor = layout.FindComponent<EditNoteDialog>();
         noteEditor.Find("textarea").Input("123");
         layout.Find(".submit-button").Click();
@@ -249,6 +252,7 @@
 
         cut.Find("button[aria-label='Edit note']").Click();
 
+        layout.WaitForAssertion(() => layout.HasComponent<EditNoteDialog>().Should().BeTrue());
         noteEditor = layout.FindComponent<EditNoteDialog>();
         noteEditor.Find("textarea").Input("EXTRA TEXT THAT WILL BE DISCARDED");
         layout.Find(".cancel-button").Click();
@@ -338,6 +342,7 @@
 
         // Change dose to empty via dialog.
         cut.Find(".mud-link").Click();
+        layout.WaitForAssertion(() => layout.HasComponent<EditDoseDialog>().Should().BeTrue());
         var doseEditor = layout.FindComponent<EditDoseDialog>();
         doseEditor.Find("input").Input("");
         layout.Find(".submit-button").Click();
@@ -348,6 +353,7 @@
 
         // Change dose via dialog.
         cut.Find(".mud-link").Click();
+        layout.WaitForAssertion(() => layout.HasComponent<EditDoseDialog>().Should().BeTrue());
         doseEditor = layout.FindComponent<EditDoseDialog>();
         doseEditor.Find("input").Input("99");
         layout.Find(".submit-button").Click();
@@ -358,6 +364,7 @@
 
         // Cancel dialog.
         cut.Find(".mud-link").Click();
+        layout.WaitForAssertion(() => layout.HasComponent<EditDoseDialog>().Should().BeTrue());
         doseEditor = layout.FindComponent<EditDoseDialog>();
         doseEditor.Find("input").Input("88");
         layout.Find(".cancel-button").Click();
@@ -421,15 +428,15 @@
 
         // Submit.
         cut.Find(".mud-link").Click();
-        layout.FindAll(".mud-dialog").Count.Should().Be(1);
+        layout.WaitForAssertion(() => layout.FindAll(".mud-dialog").Count.Should().Be(1));
         layout.Find(".submit-button").Click();
-        layout.FindAll(".mud-dialog").Count.Should().Be(0);
+        layout.WaitForAssertion(() => layout.FindAll(".mud-dialog").Count.Should().Be(0));
 
         // Cancel.
         cut.Find(".mud-link").Click();
-        layout.FindAll(".mud-dialog").Count.Should().Be(1);
+        layout.WaitForAssertion(() => layout.FindAll(".mud-dialog").Count.Should().Be(1));
         layout.Find(".cancel-button").Click();
-        layout.FindAll(".mud-dialog").Count.Should().Be(0);
+        layout.WaitForAssertion(() => layout.FindAll(".mud-dialog").Count.Should().Be(0));
     }
 
     [Fact]
@@ -481,6 +488,7 @@
         var cut = layout.FindComponent<DataPointView>();
 
         cut.Find("button[aria-label='Edit note']").Click();
+        layout.WaitForAssertion(() => layout.HasComponent<EditNoteDialog>().Should().BeTrue());
         layout.FindComponent<EditNoteDialog>().Find("textarea").Input("Updated");
         layout.Find(".submit-button").Click();
 
