@@ -6,10 +6,12 @@ namespace JournalApp.Tests;
 
 public abstract class JaTestContext : BunitContext, IAsyncLifetime
 {
+    protected static readonly TimeSpan DefaultUiWaitTimeout = TimeSpan.FromSeconds(10);
     private SqliteConnection _dbConnection;
 
     public virtual Task InitializeAsync()
     {
+        DefaultWaitTimeout = DefaultUiWaitTimeout;
         Services.AddLogging();
         Services.AddCommonJournalAppServices();
         Services.AddSingleton<AppDataUIService>();

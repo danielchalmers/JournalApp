@@ -106,7 +106,8 @@
 
         // Submit changes and confirm they have changed on the main list.
         layout.Find(".category-dialog .submit-button").Click();
-        layout.Find($"#manage-category-{guid} > .manage-category-edit-button").TextContent.Should().Be("New name");
+        layout.WaitForAssertion(() =>
+            layout.Find($"#manage-category-{guid} > .manage-category-edit-button").TextContent.Should().Be("New name"));
     }
 
     [Fact]
@@ -175,7 +176,8 @@
 
         // Submit changes and confirm there is a new category in the list.
         layout.Find(".category-dialog .submit-button").Click();
-        layout.FindAll(".manage-category-edit-button").Count.Should().Be(initialCount + 1);
+        layout.WaitForAssertion(() => layout.HasComponent<EditCategoryDialog>().Should().BeFalse());
+        layout.WaitForAssertion(() => layout.FindAll(".manage-category-edit-button").Count.Should().Be(initialCount + 1));
     }
 
     [Fact]
@@ -200,7 +202,8 @@
 
         // Submit changes and confirm there is a new category in the list.
         layout.Find(".category-dialog .submit-button").Click();
-        layout.FindAll(".manage-category-edit-button").Count.Should().Be(initialCount + 1);
+        layout.WaitForAssertion(() => layout.HasComponent<EditCategoryDialog>().Should().BeFalse());
+        layout.WaitForAssertion(() => layout.FindAll(".manage-category-edit-button").Count.Should().Be(initialCount + 1));
     }
 
     [Fact]
@@ -251,7 +254,7 @@
         for (int i = 6; i > 1; i--)
         {
             cut.Find($"#manage-category-{guid} > .manage-category-up-button").Click();
-            Category().Index.Should().Be(i - 1);
+            cut.WaitForAssertion(() => Category().Index.Should().Be(i - 1));
         }
 
         cut.Find($"#manage-category-{guid} > .manage-category-up-button").HasAttribute("disabled").Should().BeTrue();
