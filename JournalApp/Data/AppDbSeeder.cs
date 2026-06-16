@@ -11,8 +11,13 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
     public void PrepareDatabase()
     {
         logger.LogInformation("Preparing database");
-        using var db = dbFactory.CreateDbContext();
         var sw = Stopwatch.StartNew();
+        var phaseStopwatch = Stopwatch.StartNew();
+        using var db = dbFactory.CreateDbContext();
+        logger.LogInformation(
+            "Database prepare phase {PhaseName} completed in {ElapsedMilliseconds}ms",
+            "CreateDbContext",
+            phaseStopwatch.ElapsedMilliseconds);
 
 #if DEBUG && false
             // ⚠️ Dangerous: This block deletes the database and all preferences.
@@ -24,8 +29,13 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
 #endif
         try
         {
+            phaseStopwatch.Restart();
             var anyPendingMigrations = db.Database.GetPendingMigrations().Any();
-            logger.LogInformation("Pending migrations detected: {HasPendingMigrations}", anyPendingMigrations);
+            logger.LogInformation(
+                "Database prepare phase {PhaseName} completed in {ElapsedMilliseconds}ms (pending migrations: {HasPendingMigrations})",
+                "CheckPendingMigrations",
+                phaseStopwatch.ElapsedMilliseconds,
+                anyPendingMigrations);
 
             if (anyPendingMigrations)
             {
@@ -48,7 +58,13 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             throw;
         }
 
+        phaseStopwatch.Restart();
         db.SaveChanges();
+        logger.LogInformation(
+            "Database prepare phase {PhaseName} completed in {ElapsedMilliseconds}ms",
+            "SaveChanges",
+            phaseStopwatch.ElapsedMilliseconds);
+
         sw.Stop();
         logger.LogInformation("Finished preparing database in {ElapsedMilliseconds}ms", sw.ElapsedMilliseconds);
     }
@@ -61,6 +77,9 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
         logger.LogInformation("Seeding categories");
         using var db = dbFactory.CreateDbContext();
         var sw = Stopwatch.StartNew();
+        var addedCount = 0;
+        var existingCount = 0;
+        var saveCount = 0;
 
         void AddOrUpdate(
             string guidString,
@@ -105,15 +124,18 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
 
             if (doesExist)
             {
+                existingCount++;
                 logger.LogDebug("Updating category {CategoryGuid}", guidString);
             }
             else
             {
+                addedCount++;
                 logger.LogDebug("Adding category {CategoryGuid}", guidString);
                 db.AddCategory(category);
             }
 
             db.SaveChanges();
+            saveCount++;
         }
 
         AddOrUpdate(
@@ -222,7 +244,12 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
             medEveryDaySince: DateTimeOffset.Now);
 
         sw.Stop();
-        logger.LogInformation("Seeded categories in {ElapsedMilliseconds}ms", sw.ElapsedMilliseconds);
+        logger.LogInformation(
+            "Seeded categories in {ElapsedMilliseconds}ms (added: {AddedCount}, existing: {ExistingCount}, save changes calls: {SaveCount})",
+            sw.ElapsedMilliseconds,
+            addedCount,
+            existingCount,
+            saveCount);
     }
 
     /// <summary>
@@ -233,15 +260,19 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
     {
         using var db = dbFactory.CreateDbContext();
         var sw = Stopwatch.StartNew();
+        var requestedDates = dates as IReadOnlyCollection<DateOnly> ?? dates.ToList();
 
         // Only seed new days - skip dates that already exist.
-        var existingDates = db.Days.Where(d => dates.Contains(d.Date)).Select(d => d.Date).ToHashSet();
-        var newDays = dates.Except(existingDates).Order().Select(Day.Create).ToList();
+        var existingDates = db.Days.Where(d => requestedDates.Contains(d.Date)).Select(d => d.Date).ToHashSet();
+        var newDays = requestedDates.Except(existingDates).Order().Select(Day.Create).ToList();
 
         if (newDays.Count == 0)
         {
             sw.Stop();
-            logger.LogDebug("SeedDays skipped; no new dates detected");
+            logger.LogInformation(
+                "SeedDays skipped in {ElapsedMilliseconds}ms; all {RequestedDayCount} requested dates already exist",
+                sw.ElapsedMilliseconds,
+                requestedDates.Count);
             return;
         }
 
@@ -280,7 +311,13 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
         db.Days.AddRange(newDays);
         db.SaveChanges();
         sw.Stop();
-        logger.LogInformation("Seeded {DayCount} new days with {PointCount} points in {ElapsedMilliseconds}ms", newDays.Count, newPoints.Count, sw.ElapsedMilliseconds);
+        logger.LogInformation(
+            "Seeded {DayCount} new days with {PointCount} points in {ElapsedMilliseconds}ms (requested: {RequestedDayCount}, existing: {ExistingDayCount})",
+            newDays.Count,
+            newPoints.Count,
+            sw.ElapsedMilliseconds,
+            requestedDates.Count,
+            existingDates.Count);
     }
 
     /// <summary>

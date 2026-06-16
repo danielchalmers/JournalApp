@@ -143,15 +143,23 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var sw = Stopwatch.StartNew();
         logger.LogDebug("Initializing asynchronously");
+
+        var dbContextStopwatch = Stopwatch.StartNew();
         db = await DbFactory.CreateDbContextAsync();
+        dbContextStopwatch.Stop();
+        logger.LogInformation("Home init phase {PhaseName} completed in {ElapsedMilliseconds}ms", "CreateDbContext", dbContextStopwatch.ElapsedMilliseconds);
+
         await base.OnInitializedAsync();
 
         DateOnly date = DateOnly.FromDateTime(DateTime.Now);
+        var dateSource = "today";
         if (DateOnly.TryParseExact(OpenToDateString, "yyyyMMdd", out var parsed))
         {
             // Use the parameter date (from when you click a day in the calendar, etc).
             date = parsed;
+            dateSource = "route";
         }
         else if (App.IndexDateState.HasValue)
         {
@@ -159,11 +167,23 @@
             if (DateTimeOffset.Now - App.IndexDateState.Value.LeftAt < TimeSpan.FromHours(1))
             {
                 date = App.IndexDateState.Value.LastDate;
+                dateSource = "restored";
             }
         }
 
         logger.LogInformation($"Opening to {date}");
-        await GoToDay(date);
+        var dayLoadStopwatch = Stopwatch.StartNew();
+        await GoToDay(date, "initial-load");
+        dayLoadStopwatch.Stop();
+
+        sw.Stop();
+        logger.LogInformation(
+            "Home initialized in {ElapsedMilliseconds}ms (route date: {RouteDate}, open date: {OpenDate}, date source: {DateSource}, day load: {DayLoadMilliseconds}ms)",
+            sw.ElapsedMilliseconds,
+            OpenToDateString,
+            date,
+            dateSource,
+            dayLoadStopwatch.ElapsedMilliseconds);
     }
 
     protected override void OnWindowDeactivatedOrDestroying(object sender, EventArgs e)
@@ -185,7 +205,7 @@
             if (KeyEventService.CurrentDepth == 0)
             {
                 logger.LogInformation($"Switching from {_day} to current day after user was gone since {_stoppedDate}");
-                await GoToDay(DateOnly.FromDateTime(DateTime.Now));
+                await GoToDay(DateOnly.FromDateTime(DateTime.Now), "resume");
                 await ScrollToTop();
             }
             else
@@ -198,7 +218,7 @@
     async Task GoHome()
     {
         logger.LogDebug("Home button was clicked");
-        await GoToDay(DateOnly.FromDateTime(DateTime.Now));
+        await GoToDay(DateOnly.FromDateTime(DateTime.Now), "home-button");
         await ScrollToTop();
     }
 
@@ -208,20 +228,37 @@
         await JSRuntime.InvokeVoidAsync("scrollToAbsoluteTop", "instant");
     }
 
-    async Task GoToDay(DateOnly date)
+    async Task GoToDay(DateOnly date, string reason)
     {
         var sw = Stopwatch.StartNew();
+        var pendingChangesBeforeSave = db.ChangeTracker.Entries().Count(e => e.State != EntityState.Unchanged);
 
+        var phaseStopwatch = Stopwatch.StartNew();
         await db.SaveChangesAsync(); // Save any changes that could have been made from the DataPointViews.
+        var preSaveMilliseconds = phaseStopwatch.ElapsedMilliseconds;
+
+        phaseStopwatch.Restart();
         _day = await db.GetOrCreateDayAndAddPoints(date);
+        var loadOrCreateMilliseconds = phaseStopwatch.ElapsedMilliseconds;
+        var pendingChangesAfterLoad = db.ChangeTracker.Entries().Count(e => e.State != EntityState.Unchanged);
+
+        phaseStopwatch.Restart();
         await db.SaveChangesAsync(); // Save potentially new day and points.
+        var finalSaveMilliseconds = phaseStopwatch.ElapsedMilliseconds;
+        var trackedEntryCount = db.ChangeTracker.Entries().Count();
 
         sw.Stop();
-        logger.LogDebug(
-            "Loaded day {Day} in {ElapsedMilliseconds}ms ({ElapsedTicks} ticks)",
+        logger.LogInformation(
+            "Loaded day {Day} in {ElapsedMilliseconds}ms (reason: {Reason}, pre-save: {PreSaveMilliseconds}ms, load/create: {LoadOrCreateMilliseconds}ms, final-save: {FinalSaveMilliseconds}ms, pending before save: {PendingChangesBeforeSave}, pending after load: {PendingChangesAfterLoad}, tracked entries: {TrackedEntryCount})",
             _day,
             sw.ElapsedMilliseconds,
-            sw.ElapsedTicks);
+            reason,
+            preSaveMilliseconds,
+            loadOrCreateMilliseconds,
+            finalSaveMilliseconds,
+            pendingChangesBeforeSave,
+            pendingChangesAfterLoad,
+            trackedEntryCount);
 
         StateHasChanged();
     }
@@ -229,13 +266,13 @@
     async Task PreviousDay()
     {
         logger.LogInformation("Going to the previous day from {CurrentDay}", _day);
-        await GoToDay(_day.Date.Previous());
+        await GoToDay(_day.Date.Previous(), "previous-day");
     }
 
     async Task NextDay()
     {
         logger.LogInformation("Going to the next day from {CurrentDay}", _day);
-        await GoToDay(_day.Date.Next());
+        await GoToDay(_day.Date.Next(), "next-day");
     }
 
     void OpenCalendar()
@@ -314,7 +351,14 @@
 
         App.IndexDateState = (DateTimeOffset.Now, _day.Date);
 
+        var sw = Stopwatch.StartNew();
+        var pendingChanges = db.ChangeTracker.Entries().Count(e => e.State != EntityState.Unchanged);
         db.SaveChanges();
+        sw.Stop();
+        logger.LogInformation(
+            "Saved home page state in {ElapsedMilliseconds}ms (pending changes: {PendingChanges})",
+            sw.ElapsedMilliseconds,
+            pendingChanges);
     }
 
     protected override void Dispose(bool disposing)

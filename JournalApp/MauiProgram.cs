@@ -12,7 +12,7 @@ public static class MauiProgram
 
     public static MauiApp CreateMauiApp()
     {
-        var stopwatch = Stopwatch.StartNew();
+        var startupStopwatch = Stopwatch.StartNew();
 
 #pragma warning disable CA1416 // MAUI startup is only used from platform entry points.
         var builder = MauiApp.CreateBuilder()
@@ -60,21 +60,55 @@ public static class MauiProgram
         builder.Services.AddSingleton(CommunityToolkit.Maui.Storage.FileSaver.Default);
 
         // Seed the database with required data.
+        var phaseStopwatch = Stopwatch.StartNew();
         using var provider = builder.Services.BuildServiceProvider();
-        var dbSeeder = provider.GetService<AppDbSeeder>();
+        var logger = provider.GetRequiredService<ILoggerFactory>().CreateLogger("JournalApp.Startup");
+        logger.LogInformation(
+            "Startup phase {PhaseName} completed in {ElapsedMilliseconds}ms (total: {TotalElapsedMilliseconds}ms)",
+            "BuildServiceProvider",
+            phaseStopwatch.ElapsedMilliseconds,
+            startupStopwatch.ElapsedMilliseconds);
 
+        var dbSeeder = provider.GetRequiredService<AppDbSeeder>();
+
+        phaseStopwatch.Restart();
         dbSeeder.PrepareDatabase();
+        logger.LogInformation(
+            "Startup phase {PhaseName} completed in {ElapsedMilliseconds}ms (total: {TotalElapsedMilliseconds}ms)",
+            nameof(AppDbSeeder.PrepareDatabase),
+            phaseStopwatch.ElapsedMilliseconds,
+            startupStopwatch.ElapsedMilliseconds);
+
+        phaseStopwatch.Restart();
         dbSeeder.SeedCategories();
+        logger.LogInformation(
+            "Startup phase {PhaseName} completed in {ElapsedMilliseconds}ms (total: {TotalElapsedMilliseconds}ms)",
+            nameof(AppDbSeeder.SeedCategories),
+            phaseStopwatch.ElapsedMilliseconds,
+            startupStopwatch.ElapsedMilliseconds);
 
 #if DEBUG
         // Only seed sample days in debug mode.
+        phaseStopwatch.Restart();
         dbSeeder.SeedDays();
+        logger.LogInformation(
+            "Startup phase {PhaseName} completed in {ElapsedMilliseconds}ms (total: {TotalElapsedMilliseconds}ms)",
+            "SeedDebugDays",
+            phaseStopwatch.ElapsedMilliseconds,
+            startupStopwatch.ElapsedMilliseconds);
 #endif
 
-        stopwatch.Stop();
-        var logger = provider.GetRequiredService<ILoggerFactory>().CreateLogger("JournalApp.MauiProgram");
-        logger.LogInformation("Created MAUI app in {ElapsedMilliseconds}ms", stopwatch.ElapsedMilliseconds);
+        phaseStopwatch.Restart();
+        var app = builder.Build();
+        logger.LogInformation(
+            "Startup phase {PhaseName} completed in {ElapsedMilliseconds}ms (total: {TotalElapsedMilliseconds}ms)",
+            "BuildMauiApp",
+            phaseStopwatch.ElapsedMilliseconds,
+            startupStopwatch.ElapsedMilliseconds);
 
-        return builder.Build();
+        startupStopwatch.Stop();
+        logger.LogInformation("Created MAUI app in {ElapsedMilliseconds}ms", startupStopwatch.ElapsedMilliseconds);
+
+        return app;
     }
 }
