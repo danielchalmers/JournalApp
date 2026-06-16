@@ -24,7 +24,7 @@ body {
 }
 
 #loading-text {
-  font-family: "Roboto", system-ui, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 6vw;
 }
 

@@ -22,6 +22,15 @@
 </div>
 
 @code {
+    static readonly string[] SystemFontFamily =
+    [
+        "system-ui",
+        "-apple-system",
+        "BlinkMacSystemFont",
+        "Segoe UI",
+        "sans-serif",
+    ];
+
     bool _hasInitiallyRendered;
 
     MudTheme _theme = new()
@@ -64,6 +73,11 @@
 
         Typography = new()
         {
+            Default = new DefaultTypography()
+            {
+                FontFamily = SystemFontFamily,
+            },
+
             Button = new ButtonTypography()
             {
                 TextTransform = "none",
