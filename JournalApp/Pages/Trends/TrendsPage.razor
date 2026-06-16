@@ -18,8 +18,10 @@
 
 <main class="page-body">
     <div id="trends-category-list">
-        @foreach (var (category, points) in AllPoints.OrderBy(x => x.Key.Group).ThenBy(x => x.Key.Index))
+        @foreach (var item in CategoryItems)
         {
+            var category = item.Category;
+
             @if (category.Group == "Notes" && Preferences.Get("hide_notes", false))
             {
                 continue;
@@ -30,7 +32,7 @@
 
                 <ErrorBoundary>
                     <ChildContent>
-                        <TrendCategoryView Category="category" Dates="SelectedDates" PointsByDay="points" />
+                        <TrendCategoryView Category="category" Dates="SelectedDates" PointsByDay="item.PointsByDay" />
                     </ChildContent>
 
                     <ErrorContent>
@@ -39,10 +41,17 @@
                 </ErrorBoundary>
             </section>
         }
+
+        @if (_isLoading)
+        {
+            <MudText Typo="Typo.caption">Loading more trends...</MudText>
+        }
     </div>
 </main>
 
 @code {
+    const int CategoryBatchSize = 4;
+
     [Parameter]
     public string OpenToDateString { get; set; }
 
@@ -50,7 +59,9 @@
 
     public IReadOnlyList<DateOnly> SelectedDates { get; set; }
 
-    Dictionary<DataPointCategory, IReadOnlyDictionary<DateOnly, IReadOnlyCollection<DataPoint>>> AllPoints = new();
+    List<TrendCategoryItem> CategoryItems = [];
+    CancellationTokenSource _loadCts;
+    bool _isLoading;
 
     protected override void OnInitialized()
     {
@@ -65,40 +76,100 @@
 
     async Task LoadDates()
     {
+        if (SelectedDates == null || SelectedDates.Count == 0)
+            return;
+
+        _loadCts?.Cancel();
+        _loadCts?.Dispose();
+        _loadCts = new();
+
+        var currentLoad = _loadCts;
+        var cancellationToken = currentLoad.Token;
         logger.LogInformation("Loading trends for {StartDate}..{EndDate}", SelectedDates[0], SelectedDates[^1]);
         var sw = Stopwatch.StartNew();
+        var startDate = SelectedDates[0];
+        var endDate = SelectedDates[^1];
+        var selectedDates = SelectedDates.ToArray();
 
-        await using var db = await DbFactory.CreateDbContextAsync();
+        CategoryItems.Clear();
+        _isLoading = true;
+        await InvokeAsync(StateHasChanged);
 
-        // All the points we want to show.
-        var query = db.Points
-            .Where(p => !p.Deleted && !p.Category.Deleted && p.Category.Enabled && SelectedDates.Contains(p.Day.Date))
-            .Include(p => p.Category)
-            .Include(p => p.Day)
-            .AsEnumerable()
-            .OrderBy(p => p.Day.Date)
-            .ThenBy(p => p.CreatedAt)
-            .GroupBy(
-                p => p.Category,
-                p => p
-            );
-
-        // Group points by category then date.
-        AllPoints.Clear();
-        foreach (var group in query)
+        try
         {
-            var pointsByDate = new Dictionary<DateOnly, IReadOnlyCollection<DataPoint>>();
+            await using var db = await DbFactory.CreateDbContextAsync(cancellationToken);
 
-            foreach (var date in SelectedDates)
+            var categoryGuids = await db.Points
+                .Where(p => !p.Deleted && !p.Category.Deleted && p.Category.Enabled && p.Day.Date >= startDate && p.Day.Date <= endDate)
+                .Select(p => p.Category.Guid)
+                .Distinct()
+                .ToListAsync(cancellationToken);
+
+            var categories = await db.Categories
+                .Where(c => categoryGuids.Contains(c.Guid))
+                .OrderBy(c => c.Group)
+                .ThenBy(c => c.Index)
+                .ToListAsync(cancellationToken);
+
+            for (var i = 0; i < categories.Count; i += CategoryBatchSize)
             {
-                pointsByDate.Add(date, group.Where(p => p.Day.Date == date).ToHashSet());
-            }
+                cancellationToken.ThrowIfCancellationRequested();
 
-            AllPoints.Add(group.Key, pointsByDate);
+                var batchCategories = categories.Skip(i).Take(CategoryBatchSize).ToList();
+                var batchCategoryGuids = batchCategories.Select(x => x.Guid).ToList();
+
+                var points = await db.Points
+                    .Where(
+                        p => !p.Deleted
+                             && !p.Category.Deleted
+                             && p.Category.Enabled
+                             && p.Day.Date >= startDate
+                             && p.Day.Date <= endDate
+                             && batchCategoryGuids.Contains(p.Category.Guid)
+                    )
+                    .Include(p => p.Category)
+                    .Include(p => p.Day)
+                    .OrderBy(p => p.Day.Date)
+                    .ThenBy(p => p.CreatedAt)
+                    .ToListAsync(cancellationToken);
+
+                var pointsLookup = points
+                    .GroupBy(p => p.Category.Guid)
+                    .ToDictionary(g => g.Key, g => g.ToLookup(p => p.Day.Date));
+
+                foreach (var category in batchCategories)
+                {
+                    var categoryLookup = pointsLookup.GetValueOrDefault(category.Guid);
+                    var pointsByDate = selectedDates.ToDictionary(
+                        date => date,
+                        date => (IReadOnlyCollection<DataPoint>)(categoryLookup?[date].ToArray() ?? Array.Empty<DataPoint>())
+                    );
+
+                    CategoryItems.Add(new(category, pointsByDate));
+                }
+
+                await InvokeAsync(StateHasChanged);
+
+                if (i + CategoryBatchSize < categories.Count)
+                    await Task.Yield();
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            logger.LogDebug("Cancelled trends load");
+            return;
+        }
+        finally
+        {
+            if (ReferenceEquals(_loadCts, currentLoad))
+            {
+                _isLoading = false;
+                await InvokeAsync(StateHasChanged);
+            }
         }
 
         sw.Stop();
-        logger.LogInformation("Loaded trends data in {ElapsedMilliseconds}ms (categories: {CategoryCount})", sw.ElapsedMilliseconds, AllPoints.Count);
+        logger.LogInformation("Loaded trends data in {ElapsedMilliseconds}ms (categories: {CategoryCount})", sw.ElapsedMilliseconds, CategoryItems.Count);
     }
 
     void Close()
@@ -112,6 +183,13 @@
         logger.LogDebug("Disposing");
         base.Dispose(disposing);
 
+        _loadCts?.Cancel();
+        _loadCts?.Dispose();
         KeyEventService.Exited();
     }
+
+    public readonly record struct TrendCategoryItem(
+        DataPointCategory Category,
+        IReadOnlyDictionary<DateOnly, IReadOnlyCollection<DataPoint>> PointsByDay
+    );
 }

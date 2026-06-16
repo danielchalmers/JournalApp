@@ -58,7 +58,7 @@
 
         // Wait for calendar to load.
         await cut.WaitForAssertionAsync(() => cut.Find(".calendar-view"));
-        cut.FindAll(".calendar-month").Count.Should().Be(12);
+        await cut.WaitForAssertionAsync(() => cut.FindAll(".calendar-month").Count.Should().Be(12));
 
         var calendarService = Services.GetService<CalendarService>();
         var gridYear = await calendarService.CreateGridYear(cut.Instance.SelectedYear);

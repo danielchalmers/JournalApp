@@ -3,13 +3,18 @@
 @inject PreferenceService PreferenceService
 
 <div class="calendar-view">
-    @foreach (var month in GridYear.GridMonths)
+    @foreach (var month in GridYear.GridMonths.Take(_visibleMonthCount))
     {
         <CalendarMonth Month="month" OpenToDate="OpenToDate" DayClicked="DayClicked" />
     }
 </div>
 
 @code {
+    const int MonthRenderBatchSize = 2;
+    int _visibleMonthCount;
+    int _visibleYear;
+    bool _shouldNotifyCalendarRendered;
+
     [Parameter]
     public EventCallback<DateOnly?> DayClicked { get; set; }
 
@@ -28,14 +33,35 @@
     [Parameter]
     public EventCallback CalendarRendered { get; set; }
 
+    protected override Task OnParametersSetAsync()
+    {
+        var initialMonthCount = Math.Clamp(OpenToDate.Month, 1, GridYear.GridMonths.Count);
+
+        if (_visibleYear != GridYear.Year || _visibleMonthCount != initialMonthCount)
+        {
+            _visibleYear = GridYear.Year;
+            _visibleMonthCount = initialMonthCount;
+            _shouldNotifyCalendarRendered = true;
+        }
+
+        return base.OnParametersSetAsync();
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await base.OnAfterRenderAsync(firstRender);
 
-        if (firstRender)
+        if (_shouldNotifyCalendarRendered)
         {
+            _shouldNotifyCalendarRendered = false;
             logger.LogDebug("Calendar rendered for the first time");
             await CalendarRendered.InvokeAsync();
+        }
+
+        if (_visibleMonthCount < GridYear.GridMonths.Count)
+        {
+            _visibleMonthCount = Math.Min(_visibleMonthCount + MonthRenderBatchSize, GridYear.GridMonths.Count);
+            await InvokeAsync(StateHasChanged);
         }
     }
 }
