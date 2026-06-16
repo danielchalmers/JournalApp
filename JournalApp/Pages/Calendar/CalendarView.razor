@@ -56,7 +56,7 @@
         if (_shouldNotifyCalendarRendered)
         {
             _shouldNotifyCalendarRendered = false;
-            logger.LogDebug("Calendar rendered for the first time");
+            logger.LogDebug("Calendar rendered for year {Year}", GridYear.Year);
             await CalendarRendered.InvokeAsync();
         }
 

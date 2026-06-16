@@ -139,7 +139,7 @@
 
                 foreach (var category in batchCategories)
                 {
-                    var categoryLookup = pointsLookup.GetValueOrDefault(category.Guid);
+                    pointsLookup.TryGetValue(category.Guid, out var categoryLookup);
                     var pointsByDate = selectedDates.ToDictionary(
                         date => date,
                         date => (IReadOnlyCollection<DataPoint>)(categoryLookup?[date].ToArray() ?? Array.Empty<DataPoint>())
