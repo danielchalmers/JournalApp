@@ -13,6 +13,7 @@
     const int MonthRenderBatchSize = 2;
     int _visibleMonthCount;
     int _visibleYear;
+    int _visibleOpenMonth;
     bool _shouldNotifyCalendarRendered;
 
     [Parameter]
@@ -37,9 +38,10 @@
     {
         var initialMonthCount = Math.Clamp(OpenToDate.Month, 1, GridYear.GridMonths.Count);
 
-        if (_visibleYear != GridYear.Year || _visibleMonthCount != initialMonthCount)
+        if (_visibleYear != GridYear.Year || _visibleOpenMonth != OpenToDate.Month)
         {
             _visibleYear = GridYear.Year;
+            _visibleOpenMonth = OpenToDate.Month;
             _visibleMonthCount = initialMonthCount;
             _shouldNotifyCalendarRendered = true;
         }
