@@ -3,6 +3,7 @@
 @implements IDisposable
 @inject KeyEventService KeyEventService
 @inject PreferenceService PreferenceService
+@inject ILogger<MainLayout> logger
 
 <MudThemeProvider Theme="_theme" IsDarkMode="PreferenceService.IsDarkMode" DefaultScrollbar />
 
@@ -96,6 +97,7 @@
         if (firstRender)
         {
             _hasInitiallyRendered = true;
+            logger.LogInformation("Blazor layout first render completed");
         }
     }
 
