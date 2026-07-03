@@ -3,8 +3,8 @@ using System.Globalization;
 namespace JournalApp.Tests;
 
 /// <summary>
-/// GridMonth lays out a month as up-to-six week rows. The leading-blank offset formula
-/// (GridMonth.cs) is the app's real calendar math and is only touched indirectly today.
+/// GridMonth lays out a month as up-to-six week rows.
+/// The leading-blank offset formula (GridMonth.cs) is the app's real calendar math and is only touched indirectly today.
 /// Cultures are cloned with an explicit FirstDayOfWeek so the tests don't depend on host ICU data.
 /// </summary>
 public class GridMonthTests

@@ -2,9 +2,7 @@ namespace JournalApp.Tests;
 
 /// <summary>
 /// TrendChartPoint maps a DataPoint onto the numeric values plotted on the trends charts.
-/// The mood mapping is the highest-risk piece: ChartEmojis is a hand-maintained list whose order
-/// is intentionally reversed relative to <see cref="DataPoint.Moods"/> and drops the "🤔" entry,
-/// with nothing linking the two at compile time.
+/// The mood mapping is the highest-risk piece: ChartEmojis is a hand-maintained list whose order is intentionally reversed relative to <see cref="DataPoint.Moods"/> and drops the "🤔" entry, with nothing linking the two at compile time.
 /// </summary>
 public class TrendChartPointTests
 {

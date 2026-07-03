@@ -4,8 +4,7 @@ namespace JournalApp.Tests;
 
 /// <summary>
 /// ColorUtil supplies the channel-wise gradient math that builds the mood palette.
-/// A naive refactor of either method (dropping the hue wraparound, or lerping the wrong channels)
-/// would silently shift every mood colour.
+/// A naive refactor of either method (dropping the hue wraparound, or lerping the wrong channels) would silently shift every mood colour.
 /// </summary>
 public class ColorUtilTests
 {

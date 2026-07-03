@@ -4,8 +4,7 @@ namespace JournalApp.Tests.Data;
 
 /// <summary>
 /// Tests for DataPointService — the centralized layer for data point value manipulations.
-/// Each operation has at most one real branch (a 0/24 clamp, a 0-&gt;null conversion, a taken/not-taken
-/// reset) plus type/null guards, so the value cases are exercised as [Theory] rows.
+/// Each operation has at most one real branch (a 0/24 clamp, a 0->null conversion, a taken/not-taken reset) plus type/null guards, so the value cases are exercised as [Theory] rows.
 /// </summary>
 public class DataPointServiceTests
 {

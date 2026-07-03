@@ -3,9 +3,8 @@ using Microsoft.EntityFrameworkCore;
 namespace JournalApp.Tests.Data;
 
 /// <summary>
-/// CalendarService.CreateGridYear loads the year's mood points into a grid. Its compound filter
-/// (not deleted, right year, not in the future, mood category only) and its deliberate tolerance of
-/// duplicate dates are defensive logic that nothing else exercises.
+/// CalendarService.CreateGridYear loads the year's mood points into a grid.
+/// Its compound filter (not deleted, right year, not in the future, mood category only) and its deliberate tolerance of duplicate dates are defensive logic that nothing else exercises.
 /// </summary>
 public class CalendarServiceTests : JaTestContext
 {

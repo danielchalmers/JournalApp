@@ -3,9 +3,8 @@ using Microsoft.Extensions.Logging.Abstractions;
 namespace JournalApp.Tests;
 
 /// <summary>
-/// KeyEventService is the Android back-button action stack. Its peek-not-pop behaviour and the
-/// empty-stack guard are the only things preventing the user from being trapped in a dialog or
-/// unable to background the app, yet nothing else exercises them.
+/// KeyEventService is the Android back-button action stack.
+/// Its peek-not-pop behaviour and the empty-stack guard are the only things preventing the user from being trapped in a dialog or unable to background the app, yet nothing else exercises them.
 /// </summary>
 public class KeyEventServiceTests
 {

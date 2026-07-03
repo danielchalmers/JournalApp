@@ -3,9 +3,8 @@ using Microsoft.EntityFrameworkCore;
 namespace JournalApp.Tests.Data;
 
 /// <summary>
-/// Tests for data integrity and edge cases in database operations that carry real app logic
-/// (index management, point generation, key/relationship invariants). Plain "does EF persist a
-/// nullable column" round-trips live in the backup round-trip tests instead.
+/// Tests for data integrity and edge cases in database operations that carry real app logic (index management, point generation, key/relationship invariants).
+/// Plain "does EF persist a nullable column" round-trips live in the backup round-trip tests instead.
 /// </summary>
 public class DataIntegrityTests : JaTestContext
 {
@@ -86,8 +85,7 @@ public class DataIntegrityTests : JaTestContext
     [Fact]
     public async Task Day_DuplicateDatesAllowed()
     {
-        // Note: In practice, the app logic prevents duplicate dates,
-        // but the database schema doesn't enforce it (CalendarService relies on tolerating them).
+        // Note: In practice, the app logic prevents duplicate dates, but the database schema doesn't enforce it (CalendarService relies on tolerating them).
 
         // Arrange
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
