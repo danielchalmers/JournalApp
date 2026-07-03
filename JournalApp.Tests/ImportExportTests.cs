@@ -92,79 +92,41 @@ public class ImportExportTests : JaTestContext
     }
 
     [Fact]
-    public async Task ReadArchive_ThrowsOnInvalidZip()
-    {
-        // Arrange
-        var invalidZipPath = Path.Combine(Path.GetTempPath(), $"invalid-{Guid.NewGuid()}.journalapp");
-        await File.WriteAllTextAsync(invalidZipPath, "This is not a valid zip file");
-
-        try
-        {
-            // Act & Assert
-            var act = async () => await BackupFile.ReadArchive(invalidZipPath);
-            await act.Should().ThrowAsync<InvalidDataException>();
-        }
-        finally
-        {
-            if (File.Exists(invalidZipPath))
-                File.Delete(invalidZipPath);
-        }
-    }
+    public Task ReadArchive_ThrowsOnInvalidZip() =>
+        AssertReadArchiveThrows<InvalidDataException>(
+            stream => stream.WriteAsync(System.Text.Encoding.UTF8.GetBytes("This is not a valid zip file")).AsTask());
 
     [Fact]
-    public async Task ReadArchive_ThrowsOnMissingInternalFile()
-    {
-        // Arrange - Create a valid ZIP without the required internal file
-        var zipPath = Path.Combine(Path.GetTempPath(), $"empty-{Guid.NewGuid()}.journalapp");
-
-        try
-        {
-            using (var stream = File.Create(zipPath))
-            using (var archive = new System.IO.Compression.ZipArchive(stream, System.IO.Compression.ZipArchiveMode.Create))
-            {
-                // Create an entry with wrong name
-                var entry = archive.CreateEntry("wrong-name.json");
-                using var entryStream = entry.Open();
-                await entryStream.WriteAsync(System.Text.Encoding.UTF8.GetBytes("{}"));
-            }
-
-            // Act & Assert
-            var act = async () => await BackupFile.ReadArchive(zipPath);
-            await act.Should().ThrowAsync<InvalidOperationException>()
-                .WithMessage("No valid backup found!*");
-        }
-        finally
-        {
-            if (File.Exists(zipPath))
-                File.Delete(zipPath);
-        }
-    }
+    public Task ReadArchive_ThrowsOnMissingInternalFile() =>
+        AssertReadArchiveThrows<InvalidOperationException>(
+            stream => WriteZipEntry(stream, "wrong-name.json", "{}"),
+            expectedMessage: "No valid backup found!*");
 
     [Fact]
-    public async Task ReadArchive_ThrowsOnCorruptedJSON()
+    public Task ReadArchive_ThrowsOnCorruptedJSON() =>
+        AssertReadArchiveThrows<System.Text.Json.JsonException>(
+            stream => WriteZipEntry(stream, "journalapp-data.json", "{invalid json content"));
+
+    private static async Task AssertReadArchiveThrows<TException>(Func<Stream, Task> writeContents, string expectedMessage = null)
+        where TException : Exception
     {
-        // Arrange - Create a valid ZIP with corrupted JSON
-        var zipPath = Path.Combine(Path.GetTempPath(), $"corrupted-{Guid.NewGuid()}.journalapp");
+        using var stream = new MemoryStream();
+        await writeContents(stream);
+        stream.Position = 0;
 
-        try
-        {
-            using (var stream = File.Create(zipPath))
-            using (var archive = new System.IO.Compression.ZipArchive(stream, System.IO.Compression.ZipArchiveMode.Create))
-            {
-                var entry = archive.CreateEntry("journalapp-data.json");
-                using var entryStream = entry.Open();
-                await entryStream.WriteAsync(System.Text.Encoding.UTF8.GetBytes("{invalid json content"));
-            }
+        var act = async () => await BackupFile.ReadArchive(stream);
+        var assertion = await act.Should().ThrowAsync<TException>();
 
-            // Act & Assert
-            var act = async () => await BackupFile.ReadArchive(zipPath);
-            await act.Should().ThrowAsync<System.Text.Json.JsonException>();
-        }
-        finally
-        {
-            if (File.Exists(zipPath))
-                File.Delete(zipPath);
-        }
+        if (expectedMessage != null)
+            assertion.WithMessage(expectedMessage);
+    }
+
+    private static async Task WriteZipEntry(Stream stream, string entryName, string content)
+    {
+        using var archive = new System.IO.Compression.ZipArchive(stream, System.IO.Compression.ZipArchiveMode.Create, leaveOpen: true);
+        var entry = archive.CreateEntry(entryName);
+        using var entryStream = entry.Open();
+        await entryStream.WriteAsync(System.Text.Encoding.UTF8.GetBytes(content));
     }
 
     [Fact]

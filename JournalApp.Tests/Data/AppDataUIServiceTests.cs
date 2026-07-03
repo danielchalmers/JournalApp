@@ -220,6 +220,137 @@ public class AppDataUIServiceTests : JaTestContext
             .Which.Should().Contain("Export failed: disk full");
     }
 
+    [Fact]
+    public async Task StartImportWizard_AbortsAtBackupWarning_WhenExportStaleAndUserGoesBack()
+    {
+        // Arrange
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        var appDataService = Services.GetService<AppDataService>();
+        var preferenceService = Services.GetService<PreferenceService>();
+
+        // A stale export (well over a week ago) triggers the "back up first" recommendation.
+        preferenceService.LastExportDate = new DateTimeOffset(2020, 1, 1, 0, 0, 0, TimeSpan.Zero);
+
+        appDbSeeder.SeedCategories();
+        var originalDates = new DateOnly(2024, 1, 1).DatesTo(new(2024, 1, 3));
+        appDbSeeder.SeedDays(originalDates);
+
+        var importPath = Path.Combine(Path.GetTempPath(), $"stale-goback-{Guid.NewGuid()}.journalapp");
+        await CreateBackup(new DateOnly(2024, 2, 1), "Imported plan", "imported-palette").WriteArchive(importPath);
+
+        var dialogService = new TestDialogService([null]); // user picks "Go back" at the warning
+        var service = new AppDataUIService(
+            NullLogger<AppDataUIService>.Instance,
+            appDataService,
+            new TestFileSaver(),
+            preferenceService);
+
+        try
+        {
+            // Act
+            var imported = await service.StartImportWizard(dialogService, importPath);
+
+            // Assert - aborts before reading the archive or showing the replace-all confirmation.
+            imported.Should().BeFalse();
+            dialogService.Messages.Should().ContainSingle().Which.Should().Contain("Recommended: Back up");
+            dialogService.Messages.Should().NotContain(message => message.Contains("replace ALL current data"));
+
+            using var db = await dbFactory.CreateDbContextAsync();
+            db.Days.Should().HaveCount(originalDates.Count());
+        }
+        finally
+        {
+            File.Delete(importPath);
+        }
+    }
+
+    [Fact]
+    public async Task StartImportWizard_CompletesImport_WhenExportStaleAndUserContinues()
+    {
+        // Arrange
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        var appDataService = Services.GetService<AppDataService>();
+        var preferenceService = Services.GetService<PreferenceService>();
+        var preferences = Services.GetService<IPreferences>();
+
+        var staleExportDate = new DateTimeOffset(2020, 1, 1, 0, 0, 0, TimeSpan.Zero);
+        preferenceService.LastExportDate = staleExportDate;
+
+        appDbSeeder.SeedCategories();
+        appDbSeeder.SeedDays(new DateOnly(2024, 1, 1).DatesTo(new(2024, 1, 3)));
+
+        var importPath = Path.Combine(Path.GetTempPath(), $"stale-continue-{Guid.NewGuid()}.journalapp");
+        await CreateBackup(new DateOnly(2024, 2, 1), "Imported plan", "imported-palette").WriteArchive(importPath);
+
+        // Continue past the backup warning, then confirm the replace. This is the only end-to-end success path.
+        var dialogService = new TestDialogService([true, true]);
+        var service = new AppDataUIService(
+            NullLogger<AppDataUIService>.Instance,
+            appDataService,
+            new TestFileSaver(),
+            preferenceService);
+
+        try
+        {
+            // Act
+            var imported = await service.StartImportWizard(dialogService, importPath);
+
+            // Assert
+            imported.Should().BeTrue();
+
+            using (var db = await dbFactory.CreateDbContextAsync())
+            {
+                db.Days.Should().ContainSingle(day => day.Date == new DateOnly(2024, 2, 1));
+                db.Days.Should().NotContain(day => day.Date == new DateOnly(2024, 1, 1));
+            }
+
+            preferences.Get<string>("safety_plan", null).Should().Be("Imported plan");
+            preferenceService.LastExportDate.Should().BeAfter(staleExportDate);
+        }
+        finally
+        {
+            File.Delete(importPath);
+        }
+    }
+
+    [Fact]
+    public async Task StartImportWizard_ShowsImportFailed_WhenArchiveInvalid_WithoutShowingConfirmation()
+    {
+        // Arrange
+        var appDataService = Services.GetService<AppDataService>();
+        var preferenceService = Services.GetService<PreferenceService>();
+
+        // Future export date skips the backup warning so this test isolates the read-archive failure branch.
+        preferenceService.LastExportDate = new DateTimeOffset(2099, 1, 1, 0, 0, 0, TimeSpan.Zero);
+
+        var invalidPath = Path.Combine(Path.GetTempPath(), $"invalid-import-{Guid.NewGuid()}.journalapp");
+        await File.WriteAllTextAsync(invalidPath, "this is not a zip");
+
+        var dialogService = new TestDialogService();
+        var service = new AppDataUIService(
+            NullLogger<AppDataUIService>.Instance,
+            appDataService,
+            new TestFileSaver(),
+            preferenceService);
+
+        try
+        {
+            // Act
+            var imported = await service.StartImportWizard(dialogService, invalidPath);
+
+            // Assert - fails on read, before the replace-all confirmation is ever shown.
+            imported.Should().BeFalse();
+            dialogService.Messages.Should().Contain(message => message.StartsWith("Import failed:"));
+            dialogService.Messages.Should().NotContain(message => message.Contains("replace ALL current data"));
+        }
+        finally
+        {
+            File.Delete(invalidPath);
+        }
+    }
+
     private static BackupFile CreateBackup(DateOnly date, string safetyPlan, string moodPalette)
     {
         var day = Day.Create(date);

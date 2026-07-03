@@ -82,8 +82,10 @@ public class AppDbContextTests : JaTestContext
         }
     }
 
-    [Fact]
-    public async Task GetOrCreateDayAndAddPoints_DoesNotAddPointsForDisabledCategories()
+    [Theory]
+    [InlineData(true, false)]  // disabled
+    [InlineData(false, true)]  // deleted
+    public async Task GetOrCreateDayAndAddPoints_DoesNotAddPointsForInactiveCategories(bool disabled, bool deleted)
     {
         // Arrange
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
@@ -92,9 +94,9 @@ public class AppDbContextTests : JaTestContext
 
         using var db = await dbFactory.CreateDbContextAsync();
 
-        // Disable a category
-        var categoryToDisable = db.Categories.First(c => c.Enabled && !c.Deleted);
-        categoryToDisable.Enabled = false;
+        var target = db.Categories.First(c => c.Enabled && !c.Deleted && c.Group != "Notes");
+        target.Enabled = !disabled;
+        target.Deleted = deleted;
         await db.SaveChangesAsync();
 
         var date = new DateOnly(2024, 1, 1);
@@ -104,36 +106,13 @@ public class AppDbContextTests : JaTestContext
         await db.SaveChangesAsync();
 
         // Assert
-        day.Points.Should().NotContain(p => p.Category.Guid == categoryToDisable.Guid);
+        day.Points.Should().NotContain(p => p.Category.Guid == target.Guid);
     }
 
-    [Fact]
-    public async Task GetOrCreateDayAndAddPoints_DoesNotAddPointsForDeletedCategories()
-    {
-        // Arrange
-        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-        var appDbSeeder = Services.GetService<AppDbSeeder>();
-        appDbSeeder.SeedCategories();
-
-        using var db = await dbFactory.CreateDbContextAsync();
-
-        // Delete a category
-        var categoryToDelete = db.Categories.First(c => c.Enabled && !c.Deleted);
-        categoryToDelete.Deleted = true;
-        await db.SaveChangesAsync();
-
-        var date = new DateOnly(2024, 1, 1);
-
-        // Act
-        var day = await db.GetOrCreateDayAndAddPoints(date);
-        await db.SaveChangesAsync();
-
-        // Assert
-        day.Points.Should().NotContain(p => p.Category.Guid == categoryToDelete.Guid);
-    }
-
-    [Fact]
-    public async Task GetMissingPoints_ReturnsEmptySet_WhenCategoryDisabled()
+    [Theory]
+    [InlineData(true, false)]  // disabled
+    [InlineData(false, true)]  // deleted
+    public async Task GetMissingPoints_ReturnsEmptySet_WhenCategoryInactive(bool disabled, bool deleted)
     {
         // Arrange
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
@@ -143,33 +122,11 @@ public class AppDbContextTests : JaTestContext
         using var db = await dbFactory.CreateDbContextAsync();
         var day = Day.Create(new DateOnly(2024, 1, 1));
         var category = db.Categories.First();
-        category.Enabled = false;
+        category.Enabled = !disabled;
+        category.Deleted = deleted;
 
-        // Act
-        var missingPoints = db.GetMissingPoints(day, category, null);
-
-        // Assert
-        missingPoints.Should().BeEmpty();
-    }
-
-    [Fact]
-    public async Task GetMissingPoints_ReturnsEmptySet_WhenCategoryDeleted()
-    {
-        // Arrange
-        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-        var appDbSeeder = Services.GetService<AppDbSeeder>();
-        appDbSeeder.SeedCategories();
-
-        using var db = await dbFactory.CreateDbContextAsync();
-        var day = Day.Create(new DateOnly(2024, 1, 1));
-        var category = db.Categories.First();
-        category.Deleted = true;
-
-        // Act
-        var missingPoints = db.GetMissingPoints(day, category, null);
-
-        // Assert
-        missingPoints.Should().BeEmpty();
+        // Act & Assert
+        db.GetMissingPoints(day, category, null).Should().BeEmpty();
     }
 
     [Fact]
@@ -216,54 +173,11 @@ public class AppDbContextTests : JaTestContext
         missingPoints.Should().BeEmpty();
     }
 
-    [Fact]
-    public async Task GetMissingPoints_SetsMedicationTaken_WhenEveryDaySinceIsBeforeDate()
-    {
-        // Arrange
-        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-        var appDbSeeder = Services.GetService<AppDbSeeder>();
-        appDbSeeder.SeedCategories();
-
-        using var db = await dbFactory.CreateDbContextAsync();
-        var today = DateOnly.FromDateTime(DateTime.Now);
-        var day = Day.Create(today);
-
-        var medicationCategory = db.Categories.First(c => c.Type == PointType.Medication);
-        medicationCategory.MedicationEveryDaySince = DateTime.Now.AddDays(-5);
-
-        // Act
-        var missingPoints = db.GetMissingPoints(day, medicationCategory, null);
-
-        // Assert
-        missingPoints.Should().HaveCount(1);
-        missingPoints.First().Bool.Should().BeTrue();
-    }
-
-    [Fact]
-    public async Task GetMissingPoints_DoesNotSetMedicationTaken_WhenEveryDaySinceIsAfterDate()
-    {
-        // Arrange
-        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-        var appDbSeeder = Services.GetService<AppDbSeeder>();
-        appDbSeeder.SeedCategories();
-
-        using var db = await dbFactory.CreateDbContextAsync();
-        var yesterday = DateOnly.FromDateTime(DateTime.Now.AddDays(-1));
-        var day = Day.Create(yesterday);
-
-        var medicationCategory = db.Categories.First(c => c.Type == PointType.Medication);
-        medicationCategory.MedicationEveryDaySince = DateTime.Now; // Today, so yesterday shouldn't be marked
-
-        // Act
-        var missingPoints = db.GetMissingPoints(day, medicationCategory, null);
-
-        // Assert
-        missingPoints.Should().HaveCount(1);
-        missingPoints.First().Bool.Should().NotBe(true);
-    }
-
-    [Fact]
-    public async Task GetMissingPoints_SetsMedicationTaken_WhenEveryDaySinceMatchesDate()
+    [Theory]
+    [InlineData(-5, true)]  // started before this day -> taken
+    [InlineData(0, true)]   // started exactly on this day (inclusive) -> taken
+    [InlineData(1, false)]  // starts after this day -> not taken
+    public async Task GetMissingPoints_MarksMedicationTaken_WhenEveryDaySinceIsOnOrBeforeDate(int sinceOffsetDays, bool expectedTaken)
     {
         // Arrange
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
@@ -275,14 +189,17 @@ public class AppDbContextTests : JaTestContext
         var day = Day.Create(date);
 
         var medicationCategory = db.Categories.First(c => c.Type == PointType.Medication);
-        medicationCategory.MedicationEveryDaySince = new DateTimeOffset(date.ToDateTime(TimeOnly.MinValue));
+        medicationCategory.MedicationEveryDaySince = new DateTimeOffset(date.AddDays(sinceOffsetDays).ToDateTime(TimeOnly.MinValue));
 
         // Act
         var missingPoints = db.GetMissingPoints(day, medicationCategory, null);
 
         // Assert
         missingPoints.Should().HaveCount(1);
-        missingPoints.First().Bool.Should().BeTrue();
+        if (expectedTaken)
+            missingPoints.First().Bool.Should().BeTrue();
+        else
+            missingPoints.First().Bool.Should().NotBe(true);
     }
 
     [Fact]
@@ -368,8 +285,8 @@ public class AppDbContextTests : JaTestContext
         db.AddCategory(newCategory);
         await db.SaveChangesAsync();
 
-        // Assert
-        newCategory.Index.Should().BeGreaterThan(0);
+        // Assert - first category in a fresh group gets index 1
+        newCategory.Index.Should().Be(1);
     }
 
     [Fact]
