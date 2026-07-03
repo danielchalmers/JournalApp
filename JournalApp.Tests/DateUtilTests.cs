@@ -13,6 +13,23 @@ public class DateUtilTests
     }
 
     [Fact]
+    public void DatesTo_ReturnsSingleDate_WhenStartEqualsEnd()
+    {
+        var date = new DateOnly(2023, 09, 1);
+
+        date.DatesTo(date).Should().ContainSingle().Which.Should().Be(date);
+    }
+
+    [Fact]
+    public void DatesTo_ReturnsEmpty_WhenStartAfterEnd()
+    {
+        var start = new DateOnly(2023, 09, 4);
+        var end = new DateOnly(2023, 09, 1);
+
+        start.DatesTo(end).Should().BeEmpty();
+    }
+
+    [Fact]
     public void NextTest()
     {
         var originalDate = new DateOnly(2023, 01, 01);

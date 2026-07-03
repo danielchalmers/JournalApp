@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace JournalApp.Tests.Data;
 
 /// <summary>
-/// Tests for data integrity, edge cases, and error handling in database operations.
+/// Tests for data integrity and edge cases in database operations that carry real app logic (index management, point generation, key/relationship invariants).
+/// Plain "does EF persist a nullable column" round-trips live in the backup round-trip tests instead.
 /// </summary>
 public class DataIntegrityTests : JaTestContext
 {
@@ -11,26 +12,6 @@ public class DataIntegrityTests : JaTestContext
     {
         await base.InitializeAsync();
         AddDbContext();
-    }
-
-    [Fact]
-    public async Task Day_DefaultDateValue_CanRoundTrip()
-    {
-        // Arrange
-        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-        using var db = await dbFactory.CreateDbContextAsync();
-
-        var day = new Day { Date = default };
-        db.Days.Add(day);
-        await db.SaveChangesAsync();
-
-        // Act
-        var savedGuid = day.Guid;
-        db.ChangeTracker.Clear();
-        var reloaded = await db.Days.SingleAsync(d => d.Guid == savedGuid);
-
-        // Assert
-        reloaded.Date.Should().Be(default);
     }
 
     [Fact]
@@ -104,8 +85,7 @@ public class DataIntegrityTests : JaTestContext
     [Fact]
     public async Task Day_DuplicateDatesAllowed()
     {
-        // Note: In practice, the app logic prevents duplicate dates,
-        // but the database schema doesn't enforce it
+        // Note: In practice, the app logic prevents duplicate dates, but the database schema doesn't enforce it (CalendarService relies on tolerating them).
 
         // Arrange
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
@@ -121,6 +101,34 @@ public class DataIntegrityTests : JaTestContext
         // Act & Assert - Should not throw (no unique constraint on date)
         await db.SaveChangesAsync();
         db.Days.Count(d => d.Date == date).Should().Be(2);
+    }
+
+    [Fact]
+    public async Task DataPoint_PreservesExplicitGuidOnSave()
+    {
+        // Arrange
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        appDbSeeder.SeedCategories();
+
+        using var db = await dbFactory.CreateDbContextAsync();
+        var day = Day.Create(new DateOnly(2024, 1, 1));
+        db.Days.Add(day);
+
+        var category = db.Categories.First();
+        var point = DataPoint.Create(day, category);
+        var explicitGuid = Guid.NewGuid();
+        point.Guid = explicitGuid;
+
+        db.Points.Add(point);
+        await db.SaveChangesAsync();
+
+        // Act - reload from a cleared change tracker
+        db.ChangeTracker.Clear();
+        var reloaded = await db.Points.SingleAsync(p => p.Guid == explicitGuid);
+
+        // Assert - an explicitly assigned key is not regenerated
+        reloaded.Guid.Should().Be(explicitGuid);
     }
 
     [Fact]
@@ -240,81 +248,6 @@ public class DataIntegrityTests : JaTestContext
     }
 
     [Fact]
-    public async Task DataPoint_PreservesGuidOnSave()
-    {
-        // Arrange
-        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-        var appDbSeeder = Services.GetService<AppDbSeeder>();
-        appDbSeeder.SeedCategories();
-
-        using var db = await dbFactory.CreateDbContextAsync();
-        var day = Day.Create(new DateOnly(2024, 1, 1));
-        db.Days.Add(day);
-
-        var category = db.Categories.First();
-        var point = DataPoint.Create(day, category);
-        var originalGuid = point.Guid;
-
-        db.Points.Add(point);
-
-        // Act
-        await db.SaveChangesAsync();
-
-        // Assert - GUID should be preserved (may be auto-generated if not set)
-        point.Guid.Should().NotBe(Guid.Empty);
-        // If a GUID was set, it should be preserved, but DataPoint.Create may generate a new one
-        if (originalGuid != Guid.Empty)
-        {
-            point.Guid.Should().Be(originalGuid);
-        }
-    }
-
-    [Fact]
-    public async Task MedicationDose_CanBeNull()
-    {
-        // Arrange
-        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-        var appDbSeeder = Services.GetService<AppDbSeeder>();
-        appDbSeeder.SeedCategories();
-
-        using var db = await dbFactory.CreateDbContextAsync();
-        var day = Day.Create(new DateOnly(2024, 1, 1));
-        db.Days.Add(day);
-
-        var category = db.Categories.First(c => c.Type == PointType.Medication);
-        var point = DataPoint.Create(day, category);
-        point.MedicationDose = null;
-
-        db.Points.Add(point);
-
-        // Act & Assert - Should save successfully with null dose
-        await db.SaveChangesAsync();
-        point.MedicationDose.Should().BeNull();
-    }
-
-    [Fact]
-    public async Task Category_CanHaveNullMedicationEveryDaySince()
-    {
-        // Arrange
-        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-        using var db = await dbFactory.CreateDbContextAsync();
-
-        var category = new DataPointCategory
-        {
-            Name = "Test Med",
-            Group = "Medications",
-            Type = PointType.Medication,
-            MedicationEveryDaySince = null
-        };
-
-        db.AddCategory(category);
-
-        // Act & Assert - Should save successfully with null
-        await db.SaveChangesAsync();
-        category.MedicationEveryDaySince.Should().BeNull();
-    }
-
-    [Fact]
     public async Task GetOrCreateDayAndAddPoints_DoesNotDuplicatePoints()
     {
         // Test that calling GetOrCreateDayAndAddPoints multiple times
@@ -355,217 +288,6 @@ public class DataIntegrityTests : JaTestContext
     }
 
     [Fact]
-    public async Task DataPoint_HandlesNullText()
-    {
-        // Arrange
-        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-        var appDbSeeder = Services.GetService<AppDbSeeder>();
-        appDbSeeder.SeedCategories();
-
-        using var db = await dbFactory.CreateDbContextAsync();
-        var day = Day.Create(new DateOnly(2024, 1, 1));
-        db.Days.Add(day);
-
-        var category = db.Categories.First();
-        var point = DataPoint.Create(day, category);
-        point.Text = null;
-
-        db.Points.Add(point);
-
-        // Act & Assert - Should save successfully with null text
-        await db.SaveChangesAsync();
-        point.Text.Should().BeNull();
-    }
-
-    [Fact]
-    public async Task Day_HandlesFutureDate()
-    {
-        // Arrange
-        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-        using var db = await dbFactory.CreateDbContextAsync();
-
-        var futureDate = DateOnly.FromDateTime(DateTime.Now.AddYears(10));
-        var day = Day.Create(futureDate);
-
-        db.Days.Add(day);
-
-        // Act & Assert - Should save successfully
-        await db.SaveChangesAsync();
-        day.Date.Should().Be(futureDate);
-    }
-
-    [Fact]
-    public async Task Day_HandlesVeryOldDate()
-    {
-        // Arrange
-        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-        using var db = await dbFactory.CreateDbContextAsync();
-
-        var oldDate = new DateOnly(1900, 1, 1);
-        var day = Day.Create(oldDate);
-
-        db.Days.Add(day);
-
-        // Act & Assert - Should save successfully
-        await db.SaveChangesAsync();
-        day.Date.Should().Be(oldDate);
-    }
-
-    [Fact]
-    public async Task DataPoint_HandlesNullMood()
-    {
-        // Arrange
-        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-        var appDbSeeder = Services.GetService<AppDbSeeder>();
-        appDbSeeder.SeedCategories();
-
-        using var db = await dbFactory.CreateDbContextAsync();
-        var day = Day.Create(new DateOnly(2024, 1, 1));
-        db.Days.Add(day);
-
-        var category = db.Categories.First(c => c.Type == PointType.Mood);
-        var point = DataPoint.Create(day, category);
-        point.Mood = null;
-
-        db.Points.Add(point);
-
-        // Act & Assert
-        await db.SaveChangesAsync();
-        point.Mood.Should().BeNull();
-    }
-
-    [Fact]
-    public async Task DataPoint_HandlesBoundaryNumberValues()
-    {
-        // Arrange
-        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-        var appDbSeeder = Services.GetService<AppDbSeeder>();
-        appDbSeeder.SeedCategories();
-
-        using var db = await dbFactory.CreateDbContextAsync();
-        var day = Day.Create(new DateOnly(2024, 1, 1));
-        db.Days.Add(day);
-
-        var category = db.Categories.First(c => c.Type == PointType.Number);
-
-        // Test very large number
-        var point1 = DataPoint.Create(day, category);
-        point1.Number = double.MaxValue;
-        db.Points.Add(point1);
-
-        // Test very small number
-        var point2 = DataPoint.Create(day, category);
-        point2.Number = double.MinValue;
-        db.Points.Add(point2);
-
-        // Test zero
-        var point3 = DataPoint.Create(day, category);
-        point3.Number = 0;
-        db.Points.Add(point3);
-
-        // Test negative
-        var point4 = DataPoint.Create(day, category);
-        point4.Number = -999999.999;
-        db.Points.Add(point4);
-
-        // Act & Assert
-        await db.SaveChangesAsync();
-
-        point1.Number.Should().Be(double.MaxValue);
-        point2.Number.Should().Be(double.MinValue);
-        point3.Number.Should().Be(0);
-        point4.Number.Should().Be(-999999.999);
-    }
-
-    [Fact]
-    public async Task DataPoint_HandlesBoundaryDecimalValues()
-    {
-        // Arrange
-        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-        var appDbSeeder = Services.GetService<AppDbSeeder>();
-        appDbSeeder.SeedCategories();
-
-        using var db = await dbFactory.CreateDbContextAsync();
-        var day = Day.Create(new DateOnly(2024, 1, 1));
-        db.Days.Add(day);
-
-        var category = db.Categories.First(c => c.Type == PointType.Sleep);
-
-        // Test boundary values for sleep hours
-        var point1 = DataPoint.Create(day, category);
-        point1.SleepHours = 24m; // Max
-        db.Points.Add(point1);
-
-        var point2 = DataPoint.Create(day, category);
-        point2.SleepHours = 0m; // Min
-        db.Points.Add(point2);
-
-        var point3 = DataPoint.Create(day, category);
-        point3.SleepHours = 12.5m; // Typical
-        db.Points.Add(point3);
-
-        // Act & Assert
-        await db.SaveChangesAsync();
-
-        point1.SleepHours.Should().Be(24m);
-        point2.SleepHours.Should().Be(0m);
-        point3.SleepHours.Should().Be(12.5m);
-    }
-
-    [Fact]
-    public async Task Category_HandlesNullMedicationUnit()
-    {
-        // Arrange
-        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-        using var db = await dbFactory.CreateDbContextAsync();
-
-        var category = new DataPointCategory
-        {
-            Name = "Test Med",
-            Group = "Medications",
-            Type = PointType.Medication,
-            MedicationDose = 100m,
-            MedicationUnit = null
-        };
-
-        db.AddCategory(category);
-
-        // Act & Assert
-        await db.SaveChangesAsync();
-        category.MedicationUnit.Should().BeNull();
-    }
-
-    [Fact]
-    public async Task DataPoint_PreservesCreatedAtTimestamp()
-    {
-        // Arrange
-        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-        var appDbSeeder = Services.GetService<AppDbSeeder>();
-        appDbSeeder.SeedCategories();
-
-        using var db = await dbFactory.CreateDbContextAsync();
-        var day = Day.Create(new DateOnly(2024, 1, 1));
-        db.Days.Add(day);
-
-        var category = db.Categories.First();
-        var point = DataPoint.Create(day, category);
-        var originalTimestamp = point.CreatedAt;
-
-        db.Points.Add(point);
-        await db.SaveChangesAsync();
-
-        // Detach and reload
-        var pointGuid = point.Guid;
-        db.Entry(point).State = EntityState.Detached;
-
-        // Act
-        var reloadedPoint = await db.Points.FirstAsync(p => p.Guid == pointGuid);
-
-        // Assert - Timestamp should be preserved
-        reloadedPoint.CreatedAt.Should().BeCloseTo(originalTimestamp, TimeSpan.FromSeconds(1));
-    }
-
-    [Fact]
     public async Task GetOrCreateDayAndAddPoints_WithDisabledCategories_DoesNotCreatePoints()
     {
         // Arrange
@@ -596,32 +318,5 @@ public class DataIntegrityTests : JaTestContext
             day.Should().NotBeNull();
             day.Points.Should().BeEmpty();
         }
-    }
-
-    [Fact]
-    public async Task DataPoint_WithDeletedFlag_CanBeQueried()
-    {
-        // Arrange
-        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-        var appDbSeeder = Services.GetService<AppDbSeeder>();
-        appDbSeeder.SeedCategories();
-
-        using var db = await dbFactory.CreateDbContextAsync();
-        var day = Day.Create(new DateOnly(2024, 1, 1));
-        db.Days.Add(day);
-
-        var category = db.Categories.First();
-        var point = DataPoint.Create(day, category);
-        point.Deleted = true;
-
-        db.Points.Add(point);
-        await db.SaveChangesAsync();
-
-        // Act - Query deleted points
-        var deletedPoints = db.Points.Where(p => p.Deleted).ToList();
-
-        // Assert
-        deletedPoints.Should().HaveCount(1);
-        deletedPoints.First().Guid.Should().Be(point.Guid);
     }
 }

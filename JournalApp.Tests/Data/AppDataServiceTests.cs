@@ -113,14 +113,6 @@ public class AppDataServiceTests : JaTestContext
         }
     }
 
-    [Fact(Skip = "SQLite doesn't enforce all constraints that would trigger rollback in production")]
-    public async Task ReplaceDbSets_IsAtomic_RollsBackOnError()
-    {
-        // This test is skipped because SQLite's constraint enforcement differs from production databases.
-        // The atomicity of ReplaceDbSets is already validated by ReplaceDbSets_DeletesOldDataAndRestoresNewData
-        // which ensures both delete and restore happen in a single transaction.
-    }
-
     [Fact]
     public async Task CreateBackup_CapturesAllData()
     {
@@ -194,57 +186,38 @@ public class AppDataServiceTests : JaTestContext
         preferenceBackups.Should().Contain(pb => pb.Name == "mood_palette" && pb.Value == "Test palette");
     }
 
-    [Fact]
-    public void SetPreferences_RestoresPreferencesFromBackup()
+    public static TheoryData<PreferenceBackup[]> SetPreferencesCases()
     {
-        // Arrange
-        var preferences = Services.GetService<IPreferences>();
-        var appDataService = Services.GetService<AppDataService>();
-
-        var backup = new BackupFile
-        {
-            PreferenceBackups =
-            [
-                new("safety_plan", "Restored plan"),
-                new("mood_palette", "Restored palette")
-            ]
-        };
-
-        // Act
-        appDataService.SetPreferences(backup);
-
-        // Assert
-        preferences.Get<string>("safety_plan", null).Should().Be("Restored plan");
-        preferences.Get<string>("mood_palette", null).Should().Be("Restored palette");
+        var cases = new TheoryData<PreferenceBackup[]>();
+        cases.Add([new("safety_plan", "Restored plan"), new("mood_palette", "Restored palette")]);
+        cases.Add([]); // empty backup
+        return cases;
     }
 
-    [Fact]
-    public void SetPreferences_ClearsUnrelatedUserPreferences()
+    [Theory]
+    [MemberData(nameof(SetPreferencesCases))]
+    public void SetPreferences_RestoresBackupKeysAndClearsUnrelatedPreferences(PreferenceBackup[] backups)
     {
         // Arrange
         var preferences = Services.GetService<IPreferences>();
         var appDataService = Services.GetService<AppDataService>();
 
+        // Pre-existing user preferences that are not part of the backup.
         preferences.Set("theme", AppTheme.Dark.ToString());
         preferences.Set("hide_notes", true);
 
-        var backup = new BackupFile
-        {
-            PreferenceBackups =
-            [
-                new("safety_plan", "Restored plan"),
-                new("mood_palette", "Restored palette")
-            ]
-        };
+        var backup = new BackupFile { PreferenceBackups = backups };
 
         // Act
         appDataService.SetPreferences(backup);
 
-        // Assert
-        preferences.Get<string>("safety_plan", null).Should().Be("Restored plan");
-        preferences.Get<string>("mood_palette", null).Should().Be("Restored palette");
+        // Assert - restore is a full overwrite: unrelated preferences are always cleared...
         preferences.Get<string>("theme", null).Should().BeNull();
         preferences.Get("hide_notes", false).Should().BeFalse();
+
+        // ...and the backup's keys are restored verbatim.
+        foreach (var expected in backups)
+            preferences.Get<string>(expected.Name, null).Should().Be(expected.Value);
     }
 
     [Fact]
@@ -333,6 +306,7 @@ public class AppDataServiceTests : JaTestContext
             point.Text = "Test note";
             point.Number = 42;
             point.Bool = true;
+            point.Deleted = true; // the soft-delete flag must survive the round-trip too
 
             db.Points.Add(point);
             await db.SaveChangesAsync();
@@ -352,6 +326,7 @@ public class AppDataServiceTests : JaTestContext
             restoredPoint.Text.Should().Be("Test note");
             restoredPoint.Number.Should().Be(42);
             restoredPoint.Bool.Should().BeTrue();
+            restoredPoint.Deleted.Should().BeTrue();
         }
     }
 
@@ -398,32 +373,6 @@ public class AppDataServiceTests : JaTestContext
             restoredCategory.MedicationEveryDaySince.Should().NotBeNull();
             restoredCategory.Details.Should().Be("Test details");
         }
-    }
-
-    [Fact]
-    public async Task CreateBackup_WithLargeDataset_CompletesSuccessfully()
-    {
-        // Arrange
-        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-        var appDbSeeder = Services.GetService<AppDbSeeder>();
-        var appDataService = Services.GetService<AppDataService>();
-
-        appDbSeeder.SeedCategories();
-
-        // Create a large dataset - full year of data (2024 is a leap year with 366 days)
-        var startDate = new DateOnly(2024, 1, 1);
-        var endDate = new DateOnly(2024, 12, 31);
-        var dates = startDate.DatesTo(endDate);
-        appDbSeeder.SeedDays(dates);
-
-        // Act
-        var backup = await appDataService.CreateBackup();
-
-        // Assert
-        backup.Should().NotBeNull();
-        backup.Days.Should().HaveCount(366); // 2024 is a leap year
-        backup.Points.Should().NotBeEmpty();
-        backup.Categories.Should().NotBeEmpty();
     }
 
     [Fact]
@@ -537,66 +486,6 @@ public class AppDataServiceTests : JaTestContext
 
         // Assert - Deleted items should be included in backup
         backup.Points.Should().Contain(p => p.Deleted);
-    }
-
-    [Fact]
-    public async Task RestoreDbSets_PreservesDeletedFlag()
-    {
-        // Arrange
-        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
-        var appDbSeeder = Services.GetService<AppDbSeeder>();
-        var appDataService = Services.GetService<AppDataService>();
-
-        appDbSeeder.SeedCategories();
-
-        using (var db = await dbFactory.CreateDbContextAsync())
-        {
-            var day = Day.Create(new DateOnly(2024, 1, 1));
-            db.Days.Add(day);
-
-            var category = db.Categories.First();
-            var point = DataPoint.Create(day, category);
-            point.Deleted = true;
-
-            db.Points.Add(point);
-            await db.SaveChangesAsync();
-        }
-
-        var backup = await appDataService.CreateBackup();
-        await appDataService.DeleteDbSets();
-
-        // Act
-        await appDataService.RestoreDbSets(backup);
-
-        // Assert
-        using (var db = await dbFactory.CreateDbContextAsync())
-        {
-            var restoredPoint = db.Points.First();
-            restoredPoint.Deleted.Should().BeTrue();
-        }
-    }
-
-    [Fact]
-    public void SetPreferences_WithEmptyBackup_ClearsExistingPreferences()
-    {
-        // Arrange
-        var preferences = Services.GetService<IPreferences>();
-        var appDataService = Services.GetService<AppDataService>();
-
-        preferences.Set("theme", AppTheme.Dark.ToString());
-        preferences.Set("hide_notes", true);
-
-        var backup = new BackupFile
-        {
-            PreferenceBackups = []
-        };
-
-        // Act
-        appDataService.SetPreferences(backup);
-
-        // Assert
-        preferences.Get<string>("theme", null).Should().BeNull();
-        preferences.Get("hide_notes", false).Should().BeFalse();
     }
 
     [Fact]
