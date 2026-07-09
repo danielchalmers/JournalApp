@@ -1,4 +1,4 @@
-﻿# 🙂 Good Diary: Mood Tracker
+﻿# 🙂 Journal App: Mood Tracker
 
 ✨ **Track your daily activities and moods.**  
 🔒 Your data is private and [never shared](https://github.com/danielchalmers/JournalApp/blob/main/PRIVACY_POLICY.md).  
