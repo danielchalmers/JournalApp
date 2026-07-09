@@ -8,9 +8,6 @@ internal static class ComponentUtil
     public static Task<IDialogReference> ShowAsync<TComponent>(this IDialogService dialogService, DialogOptions options) where TComponent : ComponentBase =>
         dialogService.ShowAsync<TComponent>(string.Empty, options);
 
-    public static Task<IDialogReference> ShowAsync<TComponent>(this IDialogService dialogService, DialogParameters parameters) where TComponent : ComponentBase =>
-        dialogService.ShowAsync<TComponent>(string.Empty, parameters);
-
     public static Task<IDialogReference> ShowAsync<TComponent>(this IDialogService dialogService, DialogParameters parameters, DialogOptions options) where TComponent : ComponentBase =>
         dialogService.ShowAsync<TComponent>(string.Empty, parameters, options);
 
