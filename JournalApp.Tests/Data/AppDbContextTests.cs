@@ -221,7 +221,7 @@ public class AppDbContextTests : JaTestContext
         missingPoints.Should().ContainSingle();
         var note = missingPoints.Single();
         note.Type.Should().Be(PointType.Note);
-        note.Text.Should().Contain("I just started using Good Diary!");
+        note.Text.Should().Contain("I just started using Journal App!");
     }
 
     [Fact]
