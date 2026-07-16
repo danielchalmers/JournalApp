@@ -58,6 +58,18 @@ body {
   --mud-palette-action-default: var(--mud-palette-text-secondary);
 }
 
+/* M3 top app bar title is title-large: 22px regular, not a bold h6. */
+.page-toolbar .mud-typography-h6 {
+  font-size: 22px;
+  font-weight: 400;
+}
+
+/* Match the date button to title-large as well. */
+.switcher-header .mud-typography-h5 {
+  font-size: 22px;
+  font-weight: 400;
+}
+
 .page-header {
   z-index: var(--mud-zindex-appbar);
   display: flex;
@@ -134,9 +146,15 @@ body {
 }
 
 .mud-toggle-group .mud-toggle-item.mud-toggle-item-selected .mud-toggle-item-content::before {
-  content: "✓";
-  margin-right: 6px;
-  font-weight: 600;
+  content: "";
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  vertical-align: -4px;
+  background-color: currentColor;
+  -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>') center / contain no-repeat;
+  mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>') center / contain no-repeat;
 }
 
 .mud-button {
@@ -242,6 +260,10 @@ body {
 
 .emoji-button {
   padding: 0;
+  min-width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--mud-palette-gray-lighter);
 }
 
 .emoji-popover-content {
@@ -262,6 +284,56 @@ body {
   display: flex;
   align-items: center;
   width: fit-content;
+  color: var(--mud-palette-text-secondary);
+}
+
+/* M3E grouped list: the card becomes an invisible wrapper and every row is its
+   own tonal container. First and last rows carry the large group radius, like
+   Pixel Settings / 2025 Google apps. */
+.main-timeline .mud-card.data-point-group {
+  background-color: transparent;
+  padding: 0 !important;
+  gap: 3px !important;
+}
+
+.main-timeline .data-point-group .data-point-list {
+  gap: 3px;
+}
+
+.main-timeline .data-point-container {
+  background-color: var(--mud-palette-surface);
+  border-radius: 6px;
+  padding: 14px 16px;
+}
+
+.main-timeline .data-point-container:first-child {
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+}
+
+.main-timeline .data-point-container:last-child {
+  border-bottom-left-radius: 18px;
+  border-bottom-right-radius: 18px;
+}
+
+/* When the group ends with an action row (New note), that row becomes the
+   closing container instead of the last list item. */
+.main-timeline .data-point-group:has(.mud-card-actions .mud-button) .data-point-container:last-child {
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+.main-timeline .mud-card-actions:has(.mud-button) {
+  background-color: var(--mud-palette-surface);
+  border-radius: 6px 6px 18px 18px;
+  padding: 12px 16px !important;
+}
+
+/* Row headers read as M3 title-medium rather than shouty near-h6 text. */
+.data-point-header .mud-typography {
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.15px;
 }
 
 #blazor-error-ui {
