@@ -33,6 +33,9 @@ body {
   justify-content: center;
   align-items: center;
   box-shadow: var(--mud-elevation-1);
+  border-radius: 999px;
+  margin: 0 8px 8px;
+  background-color: var(--mud-palette-surface);
 }
 
 .switcher-header {
@@ -51,9 +54,9 @@ body {
   gap: 8px;
   padding: 0;
   box-shadow: none;
-  background-color: var(--mud-palette-primary);
-  color: var(--mud-palette-primary-text);
-  --mud-palette-action-default: var(--mud-palette-primary-text);
+  background-color: var(--mud-palette-background);
+  color: var(--mud-palette-text-primary);
+  --mud-palette-action-default: var(--mud-palette-text-secondary);
 }
 
 .page-header {
@@ -64,8 +67,8 @@ body {
   margin: 0 !important;
   top: 0 !important;
   position: sticky !important;
-  background-color: var(--mud-palette-surface);
-  color: var(--mud-palette-primary-text);
+  background-color: var(--mud-palette-background);
+  color: var(--mud-palette-text-primary);
 }
 
 .page-body {
@@ -113,15 +116,15 @@ body {
 
 .mud-toggle-group {
   flex-grow: 1;
-  border-radius: 20px;
+  border-radius: 999px;
 }
 
 .mud-button {
-  border-radius: 20px;
+  border-radius: 999px;
 }
 
 .mud-button-group-root {
-  border-radius: 20px;
+  border-radius: 999px;
 }
 
 .mud-button-filled.mud-button-filled-primary {
@@ -137,7 +140,7 @@ body {
 .mud-card {
   padding: 12px !important;
   gap: 12px !important;
-  border-radius: 12px;
+  border-radius: 16px;
 }
 
 .mud-link .mud-icon-root {
@@ -228,7 +231,7 @@ body {
 
 @media (prefers-color-scheme: dark) {
   .status-bar-safe-area {
-    background-color: #120D10;
+    background-color: #181114;
   }
 }
 

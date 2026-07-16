@@ -27,40 +27,68 @@
 
     MudTheme _theme = new()
     {
+        // "Orchid" Material 3 tonal palette, seed #854C73.
+        // Background = M3 surface, Surface = M3 surfaceContainer (cards),
+        // Darken = onContainer, Lighten = container.
         PaletteLight = new PaletteLight()
         {
-            // https://materialkolor.com Seed FFFE73D8, Spec 2025.
             Primary = "#854C73",
-            TextPrimary = "#3A2F36",
-            PrimaryContrastText = "#FFF7F8",
+            PrimaryContrastText = "#FFFFFF",
+            PrimaryDarken = "#6B355A",
+            PrimaryLighten = "#FFD8EA",
             Secondary = "#715867",
-            TextSecondary = "#FFF7F8",
-            SecondaryContrastText = "#FFF7F8",
+            SecondaryContrastText = "#FFFFFF",
+            SecondaryDarken = "#58414F",
+            SecondaryLighten = "#FBDAEA",
+            Tertiary = "#7F5539",
+            TertiaryContrastText = "#FFFFFF",
+            TertiaryDarken = "#64392A",
+            TertiaryLighten = "#FFDBCA",
             Error = "#A8364B",
-            Background = "#FEF0F6",
-            Surface = "#FAEAF0",
+            Background = "#FFF8F9",
+            Surface = "#FCEAF0",
+            AppbarBackground = "#FFF8F9",
+            AppbarText = "#211A1E",
+            TextPrimary = "#211A1E",
+            TextSecondary = "#504349",
+            LinesDefault = "#D4C2C9",
+            Divider = "#D4C2C9",
+            TableLines = "#D4C2C9",
 
             HoverOpacity = 0.1,
         },
 
         PaletteDark = new PaletteDark()
         {
-            // https://materialkolor.com Seed FFFE73D8, Spec 2025.
-            Primary = "#EAB8D6",
-            TextPrimary = "#DECCD4",
-            PrimaryContrastText = "#59344D",
-            Secondary = "#DDBECF",
-            TextSecondary = "#503A47",
+            Primary = "#F8B2D9",
+            PrimaryContrastText = "#4F2242",
+            PrimaryDarken = "#6B355A",
+            PrimaryLighten = "#FFD8EA",
+            Secondary = "#DEBED0",
+            SecondaryContrastText = "#41303C",
+            SecondaryDarken = "#58414F",
+            SecondaryLighten = "#FBDAEA",
+            Tertiary = "#F5BB98",
+            TertiaryContrastText = "#4A2511",
+            TertiaryDarken = "#64392A",
+            TertiaryLighten = "#FFDBCA",
             Error = "#F97386",
-            Background = "#1F171C",
-            Surface = "#120D10",
+            Background = "#181114",
+            Surface = "#251D21",
+            AppbarBackground = "#181114",
+            AppbarText = "#EEDFE4",
+            TextPrimary = "#EEDFE4",
+            TextSecondary = "#D4C2C9",
+            LinesDefault = "#504349",
+            Divider = "#504349",
+            TableLines = "#504349",
 
             HoverOpacity = 0.1,
         },
 
         LayoutProperties = new()
         {
-            DefaultBorderRadius = "4px",
+            DefaultBorderRadius = "8px",
         },
 
         Typography = new()

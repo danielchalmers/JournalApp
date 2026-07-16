@@ -116,15 +116,16 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
         {
             logger.LogDebug("Updating status bar");
 #pragma warning disable CS0618 // Type or member is obsolete
+            // Match the M3 surface tone so the status bar blends into the page header.
             if (IsDarkMode)
             {
-                StatusBar.SetColor(Color.FromHex("#EAB8D6"));
-                StatusBar.SetStyle(StatusBarStyle.DarkContent);
+                StatusBar.SetColor(Color.FromHex("#181114"));
+                StatusBar.SetStyle(StatusBarStyle.LightContent);
             }
             else
             {
-                StatusBar.SetColor(Color.FromHex("#854C73"));
-                StatusBar.SetStyle(StatusBarStyle.LightContent);
+                StatusBar.SetColor(Color.FromHex("#FFF8F9"));
+                StatusBar.SetStyle(StatusBarStyle.DarkContent);
             }
 #pragma warning restore CS0618 // Type or member is obsolete
         }
@@ -134,7 +135,7 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
     {
         var emojis = DataPoint.Moods.Where(x => x != "🤔").ToList();
 #pragma warning disable CS0618 // Type or member is obsolete
-        var primary = Color.FromHex("#FF9FDF");
+        var primary = Color.FromHex("#F8B2D9"); // Light tone of the Orchid theme primary.
 #pragma warning restore CS0618 // Type or member is obsolete
         var complementary = primary.GetComplementary();
 
