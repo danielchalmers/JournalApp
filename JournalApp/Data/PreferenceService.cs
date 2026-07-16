@@ -119,7 +119,7 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
             // Match the M3 surface tone so the status bar blends into the page header.
             if (IsDarkMode)
             {
-                StatusBar.SetColor(Color.FromHex("#181114"));
+                StatusBar.SetColor(Color.FromHex("#181215"));
                 StatusBar.SetStyle(StatusBarStyle.LightContent);
             }
             else
@@ -135,7 +135,7 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
     {
         var emojis = DataPoint.Moods.Where(x => x != "🤔").ToList();
 #pragma warning disable CS0618 // Type or member is obsolete
-        var primary = Color.FromHex("#F8B2D9"); // Light tone of the Orchid theme primary.
+        var primary = Color.FromHex("#F7B1DE"); // Light tone of the Orchid theme primary.
 #pragma warning restore CS0618 // Type or member is obsolete
         var complementary = primary.GetComplementary();
 

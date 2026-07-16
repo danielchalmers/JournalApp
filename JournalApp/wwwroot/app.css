@@ -32,7 +32,6 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: var(--mud-elevation-1);
   border-radius: 999px;
   margin: 0 8px 8px;
   background-color: var(--mud-palette-surface);
@@ -114,13 +113,39 @@ body {
   gap: 8px;
 }
 
+/* M3 segmented buttons: outlined container, neutral unselected text,
+   selected segment fills secondaryContainer with a leading checkmark. */
 .mud-toggle-group {
   flex-grow: 1;
   border-radius: 999px;
+  border-color: var(--mud-palette-lines-inputs) !important;
+}
+
+.mud-toggle-group .mud-toggle-item {
+  color: var(--mud-palette-text-primary);
+  background-color: transparent;
+  border-color: var(--mud-palette-lines-inputs) !important;
+  min-height: 40px;
+}
+
+.mud-toggle-group .mud-toggle-item.mud-toggle-item-selected {
+  background-color: var(--mud-palette-secondary-lighten);
+  color: var(--mud-palette-secondary-darken);
+}
+
+.mud-toggle-group .mud-toggle-item.mud-toggle-item-selected .mud-toggle-item-content::before {
+  content: "✓";
+  margin-right: 6px;
+  font-weight: 600;
 }
 
 .mud-button {
   border-radius: 999px;
+}
+
+/* M3 outlined buttons use the neutral outline-variant, not a primary-tinted border. */
+.mud-button-outlined {
+  border-color: var(--mud-palette-lines-default);
 }
 
 .mud-button-group-root {
@@ -131,16 +156,55 @@ body {
   color: var(--mud-palette-primary-text);
 }
 
+/* M3 expressive slider: thick rounded track, primary fill, and a narrow bar
+   handle instead of a floating circle. Selectors include the size class because
+   MudBlazor's size rules (e.g. .mud-slider-small) otherwise win the cascade. */
+.mud-slider .mud-slider-input::-webkit-slider-runnable-track,
+.mud-slider.mud-slider-small .mud-slider-input::-webkit-slider-runnable-track {
+  height: 12px;
+  margin: 5px 0;
+  border-radius: 999px;
+}
+
+.mud-slider.mud-slider-primary .mud-slider-input::-webkit-slider-runnable-track {
+  background-color: var(--mud-palette-secondary-lighten);
+}
+
+.mud-slider .mud-slider-filled,
+.mud-slider.mud-slider-small .mud-slider-filled {
+  height: 12px;
+  border-radius: 6px 2px 2px 6px;
+}
+
+.mud-slider .mud-slider-input::-webkit-slider-thumb,
+.mud-slider.mud-slider-small .mud-slider-input::-webkit-slider-thumb {
+  width: 4px;
+  height: 24px;
+  transform: none;
+  border-radius: 2px;
+  margin-top: -6px;
+  box-shadow: none;
+}
+
+/* M3 menus and popovers sit on surfaceContainerHigh. */
+.mud-popover {
+  --mud-palette-surface: var(--mud-palette-gray-lighter);
+}
+
+/* M3 dialogs sit on surfaceContainerHigh. */
 .mud-dialog {
   padding: 12px !important;
   gap: 12px !important;
   border-radius: 28px;
+  --mud-palette-surface: var(--mud-palette-gray-lighter);
 }
 
+/* M3 filled cards: tonal, flat (depth comes from tone, not shadow). */
 .mud-card {
   padding: 12px !important;
   gap: 12px !important;
   border-radius: 16px;
+  box-shadow: none;
 }
 
 .mud-link .mud-icon-root {
@@ -170,9 +234,10 @@ body {
   display: none;
 }
 
+/* M3 snackbar: inverse surface. */
 .mud-snackbar {
-  background-color: var(--mud-palette-primary);
-  color: var(--mud-palette-primary-text);
+  background-color: var(--mud-palette-dark);
+  color: var(--mud-palette-dark-text);
 }
 
 .emoji-button {
@@ -231,7 +296,7 @@ body {
 
 @media (prefers-color-scheme: dark) {
   .status-bar-safe-area {
-    background-color: #181114;
+    background-color: #181215;
   }
 }
 
