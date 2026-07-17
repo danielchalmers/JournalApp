@@ -10,28 +10,28 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
     private readonly Application _application;
     private AppTheme? _theme;
 
-    // Mood colors are HCT values generated with material-color-utilities on a traffic-light hue sweep: green (150°, great) through yellow and amber to red (27°, awful), the mapping everyone already knows.
-    // Tone and chroma are hand-tuned per hue for vibrancy instead of held uniform, because yellows only look yellow when bright and reds carry more weight when deeper; the dark ramp drops each tone so cells glow on dark surfaces without searing. 🤔 (unset) intentionally has no color.
+    // Mood colors are HCT values generated with material-color-utilities on a "coral reef" hue sweep: turquoise water (210°, great) through sand to coral (20°, awful).
+    // The light ramp stays in bright tones (62-86) so the theme's dark text-primary reads on every cell, and the dark ramp uses deep jewel tones (42-50) so the light text-primary does the same. 🤔 (unset) intentionally has no color.
     private static readonly Dictionary<string, string> _lightMoodColors = new()
     {
-        ["🤩"] = "#7ADB88",
-        ["😀"] = "#B4DA51",
-        ["🙂"] = "#F3D400",
-        ["😐"] = "#FFC246",
-        ["😕"] = "#FFB069",
-        ["😢"] = "#FF9D72",
-        ["😭"] = "#FF8A79",
+        ["🤩"] = "#2ACADF",
+        ["😀"] = "#50DBD0",
+        ["🙂"] = "#8BE3C0",
+        ["😐"] = "#EED687",
+        ["😕"] = "#FFB783",
+        ["😢"] = "#FF9474",
+        ["😭"] = "#F26B6B",
     };
 
     private static readonly Dictionary<string, string> _darkMoodColors = new()
     {
-        ["🤩"] = "#5CAF69",
-        ["😀"] = "#91B13B",
-        ["🙂"] = "#C4AB00",
-        ["😐"] = "#D49900",
-        ["😕"] = "#DA842D",
-        ["😢"] = "#D57447",
-        ["😭"] = "#CE6456",
+        ["🤩"] = "#007E8C",
+        ["😀"] = "#00857E",
+        ["🙂"] = "#2A8668",
+        ["😐"] = "#916C24",
+        ["😕"] = "#A65911",
+        ["😢"] = "#A94C2F",
+        ["😭"] = "#A94041",
     };
 
     public PreferenceService(ILogger<PreferenceService> logger, IPreferences preferenceStore)

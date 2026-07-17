@@ -4,9 +4,9 @@
   aspect-ratio: 1 / 1;
 }
 
-/* Mood fills are vivid mid-tones in both themes, so the ink on them is a fixed near-black rather than the theme text color. */
+/* Mood fills are bright in light mode and deep in dark mode, so the theme's own text color reads on every cell. */
 .calendar-day-with-mood {
-  color: #201A1D;
+  color: var(--mud-palette-text-primary);
 }
 
 .calendar-day-number {
