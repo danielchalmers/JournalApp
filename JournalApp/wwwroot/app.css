@@ -196,13 +196,14 @@ body {
 }
 
 /* M3 switch: 52x32 pill track with an outline, solid colors instead of translucent overlays, and a thumb that grows when checked. */
-.mud-switch-span {
+/* Selectors match MudBlazor's compound size and descendant rules, which otherwise outrank single-class overrides and leave the M2 geometry in place. */
+.mud-switch-span-medium.mud-switch-span {
   width: 52px;
   height: 32px;
   padding: 0;
 }
 
-.mud-switch-track {
+.mud-switch-span .mud-switch-track {
   border-radius: 999px;
   opacity: 1;
   background-color: var(--mud-palette-gray-light);
