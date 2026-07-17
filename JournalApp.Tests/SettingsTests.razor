@@ -1,0 +1,22 @@
+@namespace JournalApp.Tests
+@inherits JaTestContext
+
+@code {
+    [Fact]
+    [Description("Platforms without a Material You palette show the device colors switch disabled and off instead of hiding it")]
+    public void DeviceColorsSwitchIsDisabledWhenUnsupported()
+    {
+        Services.AddSingleton(Microsoft.Maui.Storage.FilePicker.Default);
+        Services.AddSingleton(Microsoft.Maui.ApplicationModel.DataTransfer.Clipboard.Default);
+        AddDbContext();
+
+        var cut = Render<SettingsPage>();
+
+        var input = cut.Find("input[aria-label='Color the app from your device wallpaper']");
+        input.HasAttribute("disabled").Should().BeTrue();
+        input.HasAttribute("checked").Should().BeFalse();
+
+        // The dimming CSS targets the disabled class on the label, so the markup must keep providing it.
+        input.Closest("label").ClassList.Should().Contain("mud-disabled");
+    }
+}

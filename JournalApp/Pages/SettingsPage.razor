@@ -39,12 +39,10 @@ else
                         </MudToggleGroup>
                     </div>
 
-                    @if (PreferenceService.SupportsDeviceColors)
-                    {
-                        <div class="settings-item">
-                            <MudSwitch @bind-Value="PreferenceService.UseDeviceColors" Color="Color.Primary" aria-label="Color the app from your device wallpaper">Use device colors</MudSwitch>
-                        </div>
-                    }
+                    <div class="settings-item">
+                        <MudSwitch T="bool" Value="PreferenceService.SupportsDeviceColors && PreferenceService.UseDeviceColors" ValueChanged="v => PreferenceService.UseDeviceColors = v"
+                                   Disabled="!PreferenceService.SupportsDeviceColors" Color="Color.Primary" aria-label="Color the app from your device wallpaper">Use device colors</MudSwitch>
+                    </div>
 
                     <div class="settings-item">
                         <MudSwitch @bind-Value="PreferenceService.HideNotes" Color="Color.Primary" aria-label="Hide the notes section on the home page">Hide "Today's notes"</MudSwitch>
@@ -99,7 +97,7 @@ else
                         <MudCopyText Text="@($"Journal App {ThisAssembly.AssemblyInformationalVersion}")" />
                     </div>
                     <div class="settings-item">
-                        <MudCopyText Text="@($"{DeviceInfo.Current.Platform} {DeviceInfo.Current.VersionString}")" />
+                        <MudCopyText Text="@GetDeviceText()" />
                     </div>
                     <div class="settings-item">
                         <MudLink Href="https://github.com/danielchalmers/JournalApp/issues" StartIcon="@Icons.Material.Rounded.Feedback">Submit feedback</MudLink>
@@ -203,13 +201,35 @@ else
         }
     }
 
+    static string GetDeviceText()
+    {
+        try
+        {
+            return $"{DeviceInfo.Current.Platform} {DeviceInfo.Current.VersionString}";
+        }
+        catch (NotImplementedException)
+        {
+            // DeviceInfo only exists inside a real MAUI app, not in tests.
+            return "Unknown device";
+        }
+    }
+
     public async Task<string> GetCreditsText()
     {
         logger.LogDebug("Reading credits file");
 
-        using var stream = await FileSystem.OpenAppPackageFileAsync("Credits.txt");
-        using var reader = new StreamReader(stream);
-        return reader.ReadToEnd();
+        try
+        {
+            using var stream = await FileSystem.OpenAppPackageFileAsync("Credits.txt");
+            using var reader = new StreamReader(stream);
+            return reader.ReadToEnd();
+        }
+        catch (Exception e)
+        {
+            // Credits are nice to have; don't take the page down over a missing package file (also unavailable in tests).
+            logger.LogWarning(e, "Couldn't read credits file");
+            return string.Empty;
+        }
     }
 
     void Close()

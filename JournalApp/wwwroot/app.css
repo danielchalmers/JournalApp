@@ -251,6 +251,11 @@ body {
   transform: translateY(-50%) translateX(16px);
 }
 
+/* Disabled switches keep the M3 geometry but dim to the M3 disabled opacity, since the solid color rules above would otherwise hide MudBlazor's disabled state. */
+label.mud-switch.mud-disabled .mud-switch-span {
+  opacity: 0.38;
+}
+
 /* M3 settings rows lead with the label and keep the switch on the trailing edge. Scoped to the label element because MudSwitch reuses the mud-switch class on its inner text span. */
 .settings-group label.mud-switch {
   width: 100%;
