@@ -1,8 +1,28 @@
+/* M3E grouped list, like the home timeline: every category is its own tonal row, and the first and last rows carry the large group radius. */
+.manage-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
 .manage-category {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 4px;
+  background-color: var(--mud-palette-surface);
+  border-radius: 6px;
+  padding: 6px 14px 6px 6px;
+}
+
+.manage-category:first-child {
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+}
+
+.manage-category:last-child {
+  border-bottom-left-radius: 18px;
+  border-bottom-right-radius: 18px;
 }
 
 ::deep .manage-category-edit-button {
@@ -15,8 +35,4 @@
 
 ::deep .manage-category-enabled-switch {
   margin-right: -2px;
-}
-
-::deep .mud-paper {
-  padding: 12px;
 }
