@@ -33,3 +33,15 @@
   display: flex;
   flex-grow: 1;
 }
+
+/* M3 FAB: primaryContainer surface, floating above the navigation bar. */
+::deep .new-note-fab {
+  position: fixed;
+  right: 16px;
+  bottom: calc(88px + env(safe-area-inset-bottom));
+  background-color: var(--mud-palette-primary-lighten);
+  color: var(--mud-palette-primary-darken);
+  border-radius: 16px;
+  box-shadow: var(--mud-elevation-3);
+  z-index: var(--mud-zindex-appbar);
+}

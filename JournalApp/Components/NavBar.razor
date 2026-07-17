@@ -1,0 +1,81 @@
+@namespace JournalApp
+@implements IDisposable
+@inject NavigationManager NavigationManager
+
+@if (_visible)
+{
+    <nav class="nav-bar" aria-label="Main destinations">
+        <button class="nav-bar-item @(ActiveClass("home"))" @onclick="@(() => Go("/"))" aria-label="Home">
+            <span class="nav-bar-indicator"><MudIcon Icon="@Icons.Material.Rounded.Home" /></span>
+            <span class="nav-bar-label">Home</span>
+        </button>
+
+        <button class="nav-bar-item @(ActiveClass("calendar"))" @onclick="@(() => Go($"/calendar/{DateOnly.FromDateTime(DateTime.Now):yyyyMMdd}"))" aria-label="Calendar">
+            <span class="nav-bar-indicator"><MudIcon Icon="@Icons.Material.Rounded.CalendarMonth" /></span>
+            <span class="nav-bar-label">Calendar</span>
+        </button>
+
+        <button class="nav-bar-item @(ActiveClass("trends"))" @onclick="@(() => Go($"/trends/{DateOnly.FromDateTime(DateTime.Now):yyyyMMdd}"))" aria-label="Trends">
+            <span class="nav-bar-indicator"><MudIcon Icon="@Icons.Material.Rounded.ShowChart" /></span>
+            <span class="nav-bar-label">Trends</span>
+        </button>
+    </nav>
+}
+
+@code {
+    string _active = "home";
+    bool _visible = true;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        NavigationManager.LocationChanged += OnLocationChanged;
+        UpdateFromUri();
+    }
+
+    void OnLocationChanged(object sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        UpdateFromUri();
+        StateHasChanged();
+    }
+
+    // The bar only shows on the three top-level destinations; subpages like Settings keep their full-height layouts.
+    void UpdateFromUri()
+    {
+        var path = new Uri(NavigationManager.Uri).AbsolutePath.Trim('/');
+
+        if (path.StartsWith("calendar", StringComparison.OrdinalIgnoreCase))
+        {
+            _active = "calendar";
+            _visible = true;
+        }
+        else if (path.StartsWith("trends", StringComparison.OrdinalIgnoreCase))
+        {
+            _active = "trends";
+            _visible = true;
+        }
+        else if (path.Length == 0 || path.All(char.IsDigit))
+        {
+            _active = "home";
+            _visible = true;
+        }
+        else
+        {
+            _visible = false;
+        }
+    }
+
+    string ActiveClass(string destination) => _active == destination ? "nav-bar-item-active" : null;
+
+    void Go(string url)
+    {
+        if (NavigationManager.Uri != NavigationManager.ToAbsoluteUri(url).ToString())
+            NavigationManager.NavigateTo(url, false, true);
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+}

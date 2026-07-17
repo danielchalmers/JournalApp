@@ -20,7 +20,6 @@
         <MudMenu Icon="@Icons.Material.Rounded.MoreVert" aria-label="More options" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
             <MudMenuItem Icon="@Icons.Material.Rounded.DashboardCustomize" OnClick="ManageCategories" AutoClose="false">Elements</MudMenuItem>
             <MudMenuItem Icon="@Icons.Material.Rounded.Medication" OnClick="ManageMedications" AutoClose="false">Medications</MudMenuItem>
-            <MudMenuItem Icon="@Icons.Material.Rounded.ShowChart" OnClick="OpenTrends" AutoClose="false">Trends</MudMenuItem>
             <MudMenuItem Icon="@Icons.Material.Rounded.LibraryBooks" OnClick="OpenWorksheets" AutoClose="false">Worksheets</MudMenuItem>
 
             @if (PreferenceService.SafetyPlan != null)
@@ -119,18 +118,13 @@
                         </ul>
                     </MudCardContent>
 
-                    <MudCardActions>
-                        @if (group.Key == "Notes")
-                        {
-                            <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Rounded.Chat" OnClick="NewNote">
-                                New note
-                            </MudButton>
-                        }
-                    </MudCardActions>
+                    <MudCardActions />
                 </MudCard>
             </div>
         }
     </div>
+
+    <MudFab Class="new-note-fab" StartIcon="@Icons.Material.Rounded.Chat" aria-label="New note" OnClick="NewNote" />
 </main>
 
 @code {
@@ -291,12 +285,6 @@
     {
         logger.LogInformation("Opening medication manager");
         NavigationManager.NavigateTo($"/manage/Medications", false, true);
-    }
-
-    void OpenTrends()
-    {
-        logger.LogInformation("Opening Trends");
-        NavigationManager.NavigateTo($"/trends/{_day.Date:yyyyMMdd}", false, true);
     }
 
     void OpenSafetyPlan()

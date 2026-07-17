@@ -365,3 +365,10 @@ body {
     background-color: #FFF8F9;
   }
 }
+
+/* Bottom snackbars float above the navigation bar instead of covering it. */
+.mud-snackbar-location-bottom-center,
+.mud-snackbar-location-bottom-left,
+.mud-snackbar-location-bottom-right {
+  bottom: calc(88px + env(safe-area-inset-bottom));
+}
