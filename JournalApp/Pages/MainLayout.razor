@@ -3,6 +3,7 @@
 @implements IDisposable
 @inject KeyEventService KeyEventService
 @inject PreferenceService PreferenceService
+@inject SafeAreaService SafeAreaService
 @inject ILogger<MainLayout> logger
 
 <MudThemeProvider Theme="PreferenceService.GetTheme()" IsDarkMode="PreferenceService.IsDarkMode" DefaultScrollbar />
@@ -49,6 +50,9 @@
         {
             _hasInitiallyRendered = true;
             logger.LogInformation("Blazor layout first render completed");
+
+            // The first inset dispatch can beat the page load so push the values again now that the DOM is live.
+            SafeAreaService.Reapply();
         }
     }
 

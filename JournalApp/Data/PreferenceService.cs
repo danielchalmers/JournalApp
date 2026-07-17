@@ -51,7 +51,7 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
             _application.RequestedThemeChanged += Application_RequestedThemeChanged;
         }
 
-        UpdateStatusBar();
+        UpdateSystemBars();
     }
 
     public AppTheme SelectedAppTheme
@@ -188,20 +188,35 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
 
     private void OnThemeChanged()
     {
-        UpdateStatusBar();
+        UpdateSystemBars();
         ThemeChanged?.Invoke(this, IsDarkMode);
     }
 
-    private void UpdateStatusBar()
+    private void UpdateSystemBars()
     {
-        if (OperatingSystem.IsAndroid())
+#if ANDROID
+        logger.LogDebug("Updating system bars");
+
+        // Edge-to-edge bars are transparent overlays so icon contrast is the only knob on Android 15+.
+        var window = Platform.CurrentActivity?.Window;
+        if (window is not null)
         {
-            logger.LogDebug("Updating status bar");
-            // Match the M3 surface tone so the status bar blends into the page header.
+            var controller = AndroidX.Core.View.WindowCompat.GetInsetsController(window, window.DecorView);
+            controller.AppearanceLightStatusBars = !IsDarkMode;
+            controller.AppearanceLightNavigationBars = !IsDarkMode;
+        }
+
+        // Older versions still draw opaque bars so tint them to the M3 surface tone to blend into the page.
+        if (!OperatingSystem.IsAndroidVersionAtLeast(35))
+        {
             var surface = IsDarkMode ? GetTheme().PaletteDark.Background : GetTheme().PaletteLight.Background;
             StatusBar.SetColor(Color.FromRgb(surface.R, surface.G, surface.B));
             StatusBar.SetStyle(IsDarkMode ? StatusBarStyle.LightContent : StatusBarStyle.DarkContent);
+#pragma warning disable CA1422 // Deprecated in API 35 which the surrounding check excludes.
+            window?.SetNavigationBarColor(Android.Graphics.Color.Rgb(surface.R, surface.G, surface.B));
+#pragma warning restore CA1422
         }
+#endif
     }
 
     public string GetMoodColor(string emoji)

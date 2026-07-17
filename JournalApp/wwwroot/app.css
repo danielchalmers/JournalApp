@@ -2,6 +2,14 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Native code injects --safe-area-inset-* on Android where env() needs a recent WebView; env() covers everything else. */
+:root {
+  --inset-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+  --inset-right: var(--safe-area-inset-right, env(safe-area-inset-right, 0px));
+  --inset-bottom: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+  --inset-left: var(--safe-area-inset-left, env(safe-area-inset-left, 0px));
+}
+
 body {
   user-select: none;
   --mud-palette-action-default: var(--mud-palette-text-primary);
@@ -71,11 +79,15 @@ body {
   font-weight: 400;
 }
 
+/* The sticky header absorbs the top inset so the transparent status bar always sits on the app bar surface. */
 .page-header {
   z-index: var(--mud-zindex-appbar);
   display: flex;
   flex-direction: column;
   padding: 0 !important;
+  padding-top: var(--inset-top) !important;
+  padding-left: var(--inset-left) !important;
+  padding-right: var(--inset-right) !important;
   margin: 0 !important;
   top: 0 !important;
   position: sticky !important;
@@ -83,12 +95,15 @@ body {
   color: var(--mud-palette-text-primary);
 }
 
+/* The bottom inset keeps the last rows reachable while content scrolls under the transparent gesture bar. */
 .page-body {
   width: 100%;
   max-width: 960px;
   margin: 0 auto !important;
   padding: 8px !important;
-  padding-bottom: 15vh !important;
+  padding-left: calc(8px + var(--inset-left)) !important;
+  padding-right: calc(8px + var(--inset-right)) !important;
+  padding-bottom: calc(15vh + var(--inset-bottom)) !important;
   animation: fadeInUp 0.15s ease-out;
 }
 
@@ -399,38 +414,13 @@ label.mud-switch.mud-disabled .mud-switch-span {
   display: none;
   left: 0;
   padding: 1.25rem;
+  padding-bottom: calc(1.25rem + var(--inset-bottom));
   position: fixed;
   width: 100%;
   z-index: 1000;
 }
 
-.status-bar-safe-area {
-  display: none;
-}
-
-@supports (-webkit-touch-callout: none) {
-  .status-bar-safe-area {
-    display: flex;
-    position: sticky;
-    top: 0;
-    height: env(safe-area-inset-top);
-    width: 100%;
-    z-index: 1;
-  }
-
-  .flex-column, .navbar-brand {
-    padding-left: env(safe-area-inset-left);
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  .status-bar-safe-area {
-    background-color: #181215;
-  }
-}
-
-@media (prefers-color-scheme: light) {
-  .status-bar-safe-area {
-    background-color: #FFF8F9;
-  }
+/* Snackbars float above the gesture bar instead of under it. */
+#mud-snackbar-container.mud-snackbar-location-bottom-center {
+  bottom: calc(24px + var(--inset-bottom));
 }
