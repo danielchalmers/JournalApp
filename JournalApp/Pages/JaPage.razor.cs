@@ -47,6 +47,9 @@ public partial class JaPage : ComponentBase, IDisposable
         // Register the handler for location changing event.
         _locationChangingRegistration = NavigationManager.RegisterLocationChangingHandler(OnLocationChanging);
 
+        // Re-render on theme changes so values computed in C# (like mood colors) pick up the new mode; CSS variables alone don't cover inline styles.
+        PreferenceService.ThemeChanged += OnThemeChanged;
+
         // Subscribe to window events if the window is available (not in tests).
         if (App.Window is not null)
         {
@@ -54,6 +57,12 @@ public partial class JaPage : ComponentBase, IDisposable
             App.Window.Destroying += OnWindowDeactivatedOrDestroying;
             App.Window.Resumed += OnWindowResumed;
         }
+    }
+
+    void OnThemeChanged(object sender, bool isDarkMode)
+    {
+        if (!IsDisposed)
+            InvokeAsync(StateHasChanged);
     }
 
     /// <summary>
@@ -145,6 +154,8 @@ public partial class JaPage : ComponentBase, IDisposable
         if (disposing)
         {
             // TODO: dispose managed state (managed objects)
+
+            PreferenceService.ThemeChanged -= OnThemeChanged;
 
             // Unsubscribe from window events if the window is available (not in tests).
             if (App.Window is not null)

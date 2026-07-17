@@ -14,5 +14,5 @@
   padding: 8px;
   gap: 16px;
   background-color: var(--mud-palette-surface);
-  border-radius: var(--mud-default-borderradius);
+  border-radius: 16px;
 }

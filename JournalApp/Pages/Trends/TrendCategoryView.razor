@@ -1,5 +1,6 @@
 ﻿@namespace JournalApp
 @using ApexCharts
+@implements IDisposable
 @inject PreferenceService PreferenceService
 
 @if (Category.Type is PointType.Text or PointType.Note)
@@ -109,17 +110,11 @@ else
     {
         base.OnInitialized();
 
+        PreferenceService.ThemeChanged += OnThemeChanged;
+
         ChartOptions = new()
         {
-            Theme = new Theme
-            {
-                Mode = PreferenceService.IsDarkMode ? Mode.Dark : Mode.Light,
-                Monochrome = new ThemeMonochrome
-                {
-                    Color = "#F7B1DE",
-                    Enabled = true,
-                },
-            },
+            Theme = BuildChartTheme(),
             Grid = new Grid
             {
                 Padding = new Padding
@@ -129,7 +124,7 @@ else
                     Right = 0,
                     Top = -15,
                 },
-                BorderColor = "var(--mud-palette-action-default)",
+                BorderColor = "var(--mud-palette-lines-default)",
             },
             Chart = new Chart
             {
@@ -190,6 +185,31 @@ else
                 LineCap = LineCap.Round,
             },
         };
+    }
+
+    Theme BuildChartTheme() => new()
+    {
+        Mode = PreferenceService.IsDarkMode ? Mode.Dark : Mode.Light,
+        // ApexCharts derives its shade ramp from this base color, so it needs a literal hex: the theme primary for the active mode.
+        Monochrome = new ThemeMonochrome
+        {
+            Color = PreferenceService.IsDarkMode ? "#F7B1DE" : "#844C72",
+            Enabled = true,
+        },
+    };
+
+    // Charts bake theme colors in at render time, so rebuild them when the theme changes (the System theme can flip mid-session).
+    async void OnThemeChanged(object sender, bool isDarkMode)
+    {
+        ChartOptions.Theme = BuildChartTheme();
+
+        if (_chart != null)
+            await InvokeAsync(() => _chart.UpdateOptionsAsync(true, false, false));
+    }
+
+    public void Dispose()
+    {
+        PreferenceService.ThemeChanged -= OnThemeChanged;
     }
 
     /// <summary>

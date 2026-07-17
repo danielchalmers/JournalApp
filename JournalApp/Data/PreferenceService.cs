@@ -8,8 +8,31 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
     private readonly ILogger<PreferenceService> logger;
     private readonly IPreferences _preferenceStore;
     private readonly Application _application;
-    private Dictionary<string, string> _moodColors;
     private AppTheme? _theme;
+
+    // Mood colors are HCT values generated with material-color-utilities on a "coral reef" hue sweep: turquoise water (210°, great) through sand to coral (20°, awful).
+    // The light ramp stays in bright tones (62-86) so the theme's dark text-primary reads on every cell, and the dark ramp uses deep jewel tones (42-50) so the light text-primary does the same. 🤔 (unset) intentionally has no color.
+    private static readonly Dictionary<string, string> _lightMoodColors = new()
+    {
+        ["🤩"] = "#2ACADF",
+        ["😀"] = "#50DBD0",
+        ["🙂"] = "#8BE3C0",
+        ["😐"] = "#EED687",
+        ["😕"] = "#FFB783",
+        ["😢"] = "#FF9474",
+        ["😭"] = "#F26B6B",
+    };
+
+    private static readonly Dictionary<string, string> _darkMoodColors = new()
+    {
+        ["🤩"] = "#007E8C",
+        ["😀"] = "#00857E",
+        ["🙂"] = "#2A8668",
+        ["😐"] = "#916C24",
+        ["😕"] = "#A65911",
+        ["😢"] = "#A94C2F",
+        ["😭"] = "#A94041",
+    };
 
     public PreferenceService(ILogger<PreferenceService> logger, IPreferences preferenceStore)
     {
@@ -24,7 +47,6 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
         }
 
         UpdateStatusBar();
-        GenerateMoodColors();
     }
 
     public AppTheme SelectedAppTheme
@@ -131,30 +153,11 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
         }
     }
 
-    private void GenerateMoodColors()
-    {
-        var emojis = DataPoint.Moods.Where(x => x != "🤔").ToList();
-#pragma warning disable CS0618 // Type or member is obsolete
-        var primary = Color.FromHex("#F7B1DE"); // Light tone of the Orchid theme primary.
-#pragma warning restore CS0618 // Type or member is obsolete
-        var complementary = primary.GetComplementary();
-
-        _moodColors = [];
-        for (var i = 0; i < emojis.Count; i++)
-        {
-            var p = i / (emojis.Count - 1f);
-            var c = ColorUtil.GetGradientColor(primary, complementary, p);
-
-            _moodColors.Add(emojis[i], c.ToHex());
-        }
-
-        logger.LogInformation($"Primary color: {primary.ToHex()}");
-        logger.LogInformation($"Palette: {string.Join(",", _moodColors)}");
-    }
-
     public string GetMoodColor(string emoji)
     {
-        if (string.IsNullOrEmpty(emoji) || !_moodColors.TryGetValue(emoji, out var color))
+        var moodColors = IsDarkMode ? _darkMoodColors : _lightMoodColors;
+
+        if (string.IsNullOrEmpty(emoji) || !moodColors.TryGetValue(emoji, out var color))
             return "transparent";
         else
             return color;
