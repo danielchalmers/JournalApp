@@ -2,6 +2,7 @@
 @inject ILogger<EditDoseDialog> logger
 @inject IDialogService DialogService
 @inject KeyEventService KeyEventService
+@inject HapticFeedbackService HapticFeedback
 
 <MudDialog DefaultFocus="DefaultFocus.FirstChild" OnBackdropClick="Submit">
     <TitleContent>
@@ -84,6 +85,7 @@
             logger.LogDebug("Updating with new dose and marking as taken");
         }
 
+        HapticFeedback.Confirm();
         KeyEventService.CloseDialog(MudDialog, true);
     }
 

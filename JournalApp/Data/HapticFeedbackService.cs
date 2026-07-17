@@ -7,16 +7,6 @@ namespace JournalApp;
 public sealed class HapticFeedbackService
 {
     /// <summary>
-    /// A light tap for opening a picker or similar minor interaction.
-    /// </summary>
-    public void Click()
-    {
-#if ANDROID
-        Perform(Android.Views.FeedbackConstants.VirtualKey);
-#endif
-    }
-
-    /// <summary>
     /// A heavy buzz for destructive actions like a permanent delete.
     /// </summary>
     public void LongPress()
@@ -75,6 +65,17 @@ public sealed class HapticFeedbackService
     {
 #if ANDROID
         Perform(OperatingSystem.IsAndroidVersionAtLeast(34) ? Android.Views.FeedbackConstants.SegmentTick : Android.Views.FeedbackConstants.ClockTick);
+#endif
+    }
+
+    /// <summary>
+    /// A very soft tick for continuously dragging through many values, like a slider.
+    /// </summary>
+    public void DragTick()
+    {
+#if ANDROID
+        // SegmentFrequentTick exists since API 34 and stays soft when fired rapidly during a drag.
+        Perform(OperatingSystem.IsAndroidVersionAtLeast(34) ? Android.Views.FeedbackConstants.SegmentFrequentTick : Android.Views.FeedbackConstants.ClockTick);
 #endif
     }
 

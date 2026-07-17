@@ -15,7 +15,7 @@ else if (Point.Type == PointType.Sleep)
     <div class="sleep-controls">
         <MudText Class="sleep-hours" Typo="Typo.caption">@((Point.SleepHours ?? 0).ToString("0.0"))</MudText>
         <MudIconButton Class="less-sleep" Icon="@Icons.Material.Rounded.Remove" aria-label="Less sleep" OnClick="DecrementSleep" Disabled="@(Point.SleepHours <= 0)" Size="Size.Small" />
-        <MudSlider T="decimal" @bind-NullableValue="Point.SleepHours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" />
+        <MudSlider T="decimal" NullableValue="Point.SleepHours" NullableValueChanged="SleepChanged" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" />
         <MudIconButton Class="more-sleep" Icon="@Icons.Material.Rounded.Add" aria-label="More sleep" OnClick="IncrementSleep" Disabled="@(Point.SleepHours >= 24)" Size="Size.Small" />
     </div>
 }
@@ -124,6 +124,13 @@ else if (Point.Type == PointType.Medication)
         logger.LogDebug("Incrementing sleep");
         DataPointService.IncrementSleep(Point);
         HapticFeedback.Tick();
+    }
+
+    void SleepChanged(decimal? value)
+    {
+        Point.SleepHours = value;
+        // Dragging crosses many half-hour steps in quick succession so use the soft frequent tick.
+        HapticFeedback.DragTick();
     }
 
     void ScaleValueChanged(int value)
