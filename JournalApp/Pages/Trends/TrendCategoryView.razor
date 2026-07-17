@@ -146,7 +146,8 @@ else
             },
             Xaxis = new XAxis
             {
-                TickAmount = 15,
+                // Few enough ticks that M/d labels never collide on a phone-width chart.
+                TickAmount = 6,
                 Labels = new XAxisLabels
                 {
                     HideOverlappingLabels = true,

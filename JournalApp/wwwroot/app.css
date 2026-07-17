@@ -142,23 +142,38 @@ body {
   gap: 8px;
 }
 
-/* M3 segmented buttons: outlined container, neutral unselected text, selected segment fills secondaryContainer. */
+/* M3E connected button group: tonal segments separated by 2px gaps instead of an outlined pill with dividers. */
+/* The row of segments keeps fully rounded outer corners, and the selected segment morphs to a full pill with a secondaryContainer fill. */
 .mud-toggle-group {
   flex-grow: 1;
-  border-radius: 999px;
-  border-color: var(--mud-palette-lines-inputs) !important;
+  gap: 2px;
+  border: none !important;
+  background-color: transparent;
 }
 
 .mud-toggle-group .mud-toggle-item {
   color: var(--mud-palette-text-primary);
-  background-color: transparent;
-  border-color: var(--mud-palette-lines-inputs) !important;
+  background-color: var(--mud-palette-gray-lighter);
+  border: none !important;
+  border-radius: 8px;
   min-height: 32px;
+  transition: border-radius 0.15s ease-out, background-color 0.15s ease-out;
+}
+
+.mud-toggle-group .mud-toggle-item:first-child {
+  border-top-left-radius: 999px;
+  border-bottom-left-radius: 999px;
+}
+
+.mud-toggle-group .mud-toggle-item:last-child {
+  border-top-right-radius: 999px;
+  border-bottom-right-radius: 999px;
 }
 
 .mud-toggle-group .mud-toggle-item.mud-toggle-item-selected {
   background-color: var(--mud-palette-secondary-lighten);
   color: var(--mud-palette-secondary-darken);
+  border-radius: 999px;
 }
 
 .mud-button {
@@ -191,8 +206,13 @@ body {
   border-radius: 999px;
 }
 
+/* The inactive track carries the M3E stop indicator dot near its trailing end. */
 .mud-slider.mud-slider-primary .mud-slider-input::-webkit-slider-runnable-track {
   background-color: var(--mud-palette-secondary-lighten);
+  background-image: radial-gradient(circle, var(--mud-palette-primary) 0 2px, transparent 2.5px);
+  background-repeat: no-repeat;
+  background-position: right 5px center;
+  background-size: 5px 5px;
 }
 
 .mud-slider .mud-slider-filled,
@@ -208,7 +228,8 @@ body {
   transform: none;
   border-radius: 2px;
   margin-top: -6px;
-  box-shadow: none;
+  /* M3E carves a gap between the handle and the track; surface-colored blocks either side of the bar fake it over the row container. */
+  box-shadow: 6px 0 0 var(--mud-palette-surface), -6px 0 0 var(--mud-palette-surface);
 }
 
 /* M3 switch: 52x32 pill track with an outline, solid colors instead of translucent overlays, and a thumb that grows when checked. */
