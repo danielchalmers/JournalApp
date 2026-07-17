@@ -195,6 +195,70 @@ body {
   box-shadow: none;
 }
 
+/* M3 switch: 52x32 pill track with an outline, solid colors instead of translucent overlays, and a thumb that grows when checked. */
+/* Selectors match MudBlazor's compound size and descendant rules, which otherwise outrank single-class overrides and leave the M2 geometry in place. */
+.mud-switch-span-medium.mud-switch-span {
+  width: 52px;
+  height: 32px;
+  padding: 0;
+}
+
+.mud-switch-span .mud-switch-track {
+  border-radius: 999px;
+  opacity: 1;
+  background-color: var(--mud-palette-gray-light);
+  border: 2px solid var(--mud-palette-lines-inputs);
+  box-sizing: border-box;
+}
+
+/* The thumb carrier resizes with the thumb (34px off, 42px on), so it centers via transform instead of a fixed offset. */
+.mud-switch-base {
+  top: 50%;
+  left: -1px;
+  transform: translateY(-50%);
+}
+
+.mud-switch-base:not(.mud-checked) {
+  color: var(--mud-palette-lines-inputs) !important;
+}
+
+.mud-switch-base.mud-checked {
+  color: var(--mud-palette-primary-text) !important;
+}
+
+.mud-switch-base.mud-checked + .mud-switch-track {
+  opacity: 1;
+  background-color: var(--mud-palette-primary);
+  border-color: var(--mud-palette-primary);
+}
+
+.mud-switch-thumb-medium {
+  box-shadow: none;
+}
+
+.mud-switch-base:not(.mud-checked) .mud-switch-thumb-medium {
+  width: 16px;
+  height: 16px;
+}
+
+.mud-switch-base.mud-checked .mud-switch-thumb-medium {
+  width: 24px;
+  height: 24px;
+}
+
+/* The slide distance puts the grown thumb at the M3 insets: 8px from the left edge when off, 4px from the right edge when on. */
+.mud-switch-base.mud-checked {
+  transform: translateY(-50%) translateX(16px);
+}
+
+/* M3 settings rows lead with the label and keep the switch on the trailing edge. Scoped to the label element because MudSwitch reuses the mud-switch class on its inner text span. */
+.settings-group label.mud-switch {
+  width: 100%;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  margin-inline-start: 0;
+}
+
 /* M3 menus and popovers sit on surfaceContainerHigh. */
 .mud-popover {
   --mud-palette-surface: var(--mud-palette-gray-lighter);

@@ -24,7 +24,7 @@
     }
     else
     {
-        <MudPaper>
+        <div class="manage-list">
             @foreach (var c in Categories.OrderBy(c => c.Index))
             {
                 <div id="@($"manage-category-{c.Guid}")" class="manage-category">
@@ -39,7 +39,7 @@
                                Color="Color.Primary" aria-label="Show in home" />
                 </div>
             }
-        </MudPaper>
+        </div>
     }
 </main>
 
