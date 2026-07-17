@@ -22,6 +22,7 @@ public static class CommonServices
 
         services.AddSingleton<AppDataService>();
         services.AddSingleton<AppDbSeeder>();
+        services.AddSingleton<HapticFeedbackService>();
         services.AddSingleton<KeyEventService>();
         services.AddSingleton<PreferenceService>();
         services.AddSingleton<CalendarService>();

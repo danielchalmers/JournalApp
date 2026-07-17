@@ -4,6 +4,7 @@
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 @inject DataPointService DataPointService
+@inject HapticFeedbackService HapticFeedback
 
 @if (Point.Type == PointType.Mood)
 {
@@ -14,17 +15,17 @@ else if (Point.Type == PointType.Sleep)
     <div class="sleep-controls">
         <MudText Class="sleep-hours" Typo="Typo.caption">@((Point.SleepHours ?? 0).ToString("0.0"))</MudText>
         <MudIconButton Class="less-sleep" Icon="@Icons.Material.Rounded.Remove" aria-label="Less sleep" OnClick="DecrementSleep" Disabled="@(Point.SleepHours <= 0)" Size="Size.Small" />
-        <MudSlider T="decimal" @bind-NullableValue="Point.SleepHours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" />
+        <MudSlider T="decimal" NullableValue="Point.SleepHours" NullableValueChanged="SleepChanged" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" />
         <MudIconButton Class="more-sleep" Icon="@Icons.Material.Rounded.Add" aria-label="More sleep" OnClick="IncrementSleep" Disabled="@(Point.SleepHours >= 24)" Size="Size.Small" />
     </div>
 }
 else if (Point.Type == PointType.Scale)
 {
-    <MudRating @bind-SelectedValue="ScaleIndexForMudRating" FullIcon="@Icons.Material.Rounded.Circle" EmptyIcon="@Icons.Material.Rounded.Circle" Color="Color.Primary" />
+    <MudRating SelectedValue="DataPointService.GetScaleIndex(Point)" SelectedValueChanged="ScaleValueChanged" FullIcon="@Icons.Material.Rounded.Circle" EmptyIcon="@Icons.Material.Rounded.Circle" Color="Color.Primary" />
 }
 else if (Point.Type == PointType.LowToHigh)
 {
-    <MudToggleGroup T="int?" @bind-Value="Point.ScaleIndex" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" CheckMark>
+    <MudToggleGroup T="int?" Value="Point.ScaleIndex" ValueChanged="ScaleIndexChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" CheckMark>
         <MudToggleItem T="int?" Value="0">None</MudToggleItem>
         <MudToggleItem T="int?" Value="1">Low</MudToggleItem>
         <MudToggleItem T="int?" Value="3">Medium</MudToggleItem>
@@ -33,7 +34,7 @@ else if (Point.Type == PointType.LowToHigh)
 }
 else if (Point.Type == PointType.MildToSevere)
 {
-    <MudToggleGroup T="int?" @bind-Value="Point.ScaleIndex" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" CheckMark>
+    <MudToggleGroup T="int?" Value="Point.ScaleIndex" ValueChanged="ScaleIndexChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" CheckMark>
         <MudToggleItem T="int?" Value="0">None</MudToggleItem>
         <MudToggleItem T="int?" Value="1">Mild</MudToggleItem>
         <MudToggleItem T="int?" Value="3">Moderate</MudToggleItem>
@@ -42,7 +43,7 @@ else if (Point.Type == PointType.MildToSevere)
 }
 else if (Point.Type == PointType.Bool)
 {
-    <MudToggleGroup T="bool?" @bind-Value="Point.Bool" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" CheckMark>
+    <MudToggleGroup T="bool?" Value="Point.Bool" ValueChanged="OnBoolChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" CheckMark>
         <MudToggleItem T="bool?" Value="false">No</MudToggleItem>
         <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
     </MudToggleGroup>
@@ -74,7 +75,7 @@ else if (Point.Type == PointType.Note)
 else if (Point.Type == PointType.Medication)
 {
     <div class="medication-controls">
-        <MudToggleGroup T="bool?" @bind-Value="Point.Bool" @bind-Value:after="OnMedicationTakenChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" CheckMark>
+        <MudToggleGroup T="bool?" Value="Point.Bool" ValueChanged="OnMedicationTakenChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" CheckMark>
             <MudToggleItem T="bool?" Value="false">No</MudToggleItem>
             <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
         </MudToggleGroup>
@@ -92,12 +93,6 @@ else if (Point.Type == PointType.Medication)
 
     [Parameter]
     public EventCallback StateChanged { get; set; }
-
-    public int ScaleIndexForMudRating
-    {
-        get => DataPointService.GetScaleIndex(Point);
-        set => DataPointService.SetScaleIndex(Point, value);
-    }
 
     string NoteLabel
     {
@@ -121,12 +116,43 @@ else if (Point.Type == PointType.Medication)
     {
         logger.LogDebug("Decrementing sleep");
         DataPointService.DecrementSleep(Point);
+        HapticFeedback.Tick();
     }
 
     void IncrementSleep()
     {
         logger.LogDebug("Incrementing sleep");
         DataPointService.IncrementSleep(Point);
+        HapticFeedback.Tick();
+    }
+
+    void SleepChanged(decimal? value)
+    {
+        Point.SleepHours = value;
+        // Dragging crosses many half-hour steps in quick succession so use the soft frequent tick.
+        HapticFeedback.DragTick();
+    }
+
+    void ScaleValueChanged(int value)
+    {
+        DataPointService.SetScaleIndex(Point, value);
+        HapticFeedback.Tick();
+    }
+
+    void ScaleIndexChanged(int? value)
+    {
+        Point.ScaleIndex = value;
+        HapticFeedback.Tick();
+    }
+
+    void OnBoolChanged(bool? value)
+    {
+        Point.Bool = value;
+
+        if (value == true)
+            HapticFeedback.ToggleOn();
+        else
+            HapticFeedback.ToggleOff();
     }
 
     async Task EditTextInDialog()
@@ -138,10 +164,17 @@ else if (Point.Type == PointType.Medication)
         await StateChanged.InvokeAsync();
     }
 
-    async Task OnMedicationTakenChanged()
+    async Task OnMedicationTakenChanged(bool? value)
     {
+        Point.Bool = value;
+
         // Use service to handle medication dose reset logic
         DataPointService.HandleMedicationTakenChanged(Point);
+
+        if (value == true)
+            HapticFeedback.ToggleOn();
+        else
+            HapticFeedback.ToggleOff();
 
         await StateChanged.InvokeAsync();
     }
@@ -159,6 +192,7 @@ else if (Point.Type == PointType.Medication)
     {
         logger.LogDebug("Mood selected: {mood}", mood);
         DataPointService.SetMood(Point, mood);
+        HapticFeedback.Tick();
 
         // Show a motivational quote when the sob emoji is selected
         if (mood == DataPoint.Moods[^1])  // Sob emoji (😭) is the last mood in the list

@@ -2,6 +2,7 @@
 @inject ILogger<EditNoteDialog> logger
 @inject IDialogService DialogService
 @inject KeyEventService KeyEventService
+@inject HapticFeedbackService HapticFeedback
 
 <MudDialog DefaultFocus="DefaultFocus.FirstChild" OnBackdropClick="Submit">
     <TitleContent>
@@ -80,6 +81,7 @@
         else
         {
             logger.LogInformation("Submitting note");
+            HapticFeedback.Confirm();
         }
 
         KeyEventService.CloseDialog(MudDialog, true);

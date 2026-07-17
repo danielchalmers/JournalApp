@@ -4,6 +4,7 @@
 @implements IDisposable
 @inject ILogger<ManageCategoriesPage> logger
 @inject IDbContextFactory<AppDbContext> DbFactory
+@inject HapticFeedbackService HapticFeedback
 
 <header class="page-header">
     <div class="page-toolbar">
@@ -74,6 +75,12 @@
     {
         logger.LogInformation($"Toggled category enabled <{c}, {newValue}>");
         c.Enabled = newValue;
+
+        if (newValue)
+            HapticFeedback.ToggleOn();
+        else
+            HapticFeedback.ToggleOff();
+
         await db.SaveChangesAsync();
     }
 

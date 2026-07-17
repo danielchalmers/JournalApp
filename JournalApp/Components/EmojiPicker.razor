@@ -1,6 +1,6 @@
 ﻿@namespace JournalApp
 
-<EmojiButton OnClick="@(() => _isOpen = !_isOpen)"
+<EmojiButton OnClick="TogglePicker"
              AriaLabel="Choose emoji for day's mood">
     @(SelectedMood ?? DataPoint.Moods[0])
 </EmojiButton>
@@ -32,6 +32,11 @@
 
     [Parameter]
     public EventCallback<string> OnMoodSelected { get; set; }
+
+    private void TogglePicker()
+    {
+        _isOpen = !_isOpen;
+    }
 
     private async Task OnMoodClicked(string mood)
     {
