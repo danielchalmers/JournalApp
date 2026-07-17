@@ -7,16 +7,6 @@ namespace JournalApp;
 public sealed class HapticFeedbackService
 {
     /// <summary>
-    /// A heavy buzz for destructive actions like a permanent delete.
-    /// </summary>
-    public void LongPress()
-    {
-#if ANDROID
-        Perform(Android.Views.FeedbackConstants.LongPress);
-#endif
-    }
-
-    /// <summary>
     /// Signals an action completed successfully, like submitting a dialog.
     /// </summary>
     public void Confirm()
