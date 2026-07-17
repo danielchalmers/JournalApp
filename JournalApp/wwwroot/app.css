@@ -12,11 +12,11 @@ body {
     display: none;
   }
 
+/* Background colors come from the theme-matched media queries at the bottom so the native splash, this loading screen, and the app all share one tone. */
 #splash-screen {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: Canvas;
   color: CanvasText;
   position: fixed;
   width: 100%;
@@ -81,6 +81,22 @@ body {
   position: sticky !important;
   background-color: var(--mud-palette-background);
   color: var(--mud-palette-text-primary);
+}
+
+/* On-scroll separation for the sticky header: a soft M3 level-1 shadow fades in once content passes underneath. */
+/* MD3 proper would retone the container instead, but that desyncs the natively colored status bar, so elevation stands in until edge-to-edge lands. */
+@supports (animation-timeline: scroll()) {
+  .page-header {
+    animation: header-on-scroll linear both;
+    animation-timeline: scroll();
+    animation-range: 0 56px;
+  }
+}
+
+@keyframes header-on-scroll {
+  to {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+  }
 }
 
 .page-body {
@@ -448,13 +464,13 @@ label.mud-switch.mud-disabled .mud-switch-span {
 }
 
 @media (prefers-color-scheme: dark) {
-  .status-bar-safe-area {
+  .status-bar-safe-area, #splash-screen {
     background-color: #181215;
   }
 }
 
 @media (prefers-color-scheme: light) {
-  .status-bar-safe-area {
+  .status-bar-safe-area, #splash-screen {
     background-color: #FFF8F9;
   }
 }

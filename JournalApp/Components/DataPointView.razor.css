@@ -5,6 +5,13 @@
   gap: 8px;
 }
 
+/* Fixed-width tabular readout so 9.5 -> 10.0 doesn't shift the slider. */
+::deep .sleep-hours {
+  min-width: 4ch;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
 .note-container {
   display: flex;
   flex-direction: column;

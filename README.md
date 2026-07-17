@@ -15,7 +15,9 @@
 - 📚 **Guided worksheets** for mental health check-ins
 - 🚨 **Safety Plan** with your coping strategies and support contacts
 - 💾 **Local backups** you can export and import as a single file
+- 🎨 **Material You colors** that match your wallpaper on Android 12+
 - 🌙 **Light and dark themes**
+- 📳 **Haptic feedback** that makes logging quick entries feel tactile
 
 ## Privacy
 
@@ -24,7 +26,7 @@ Your data never leaves your device. There is no account, no sign-up, and no clou
 ## Tech stack
 
 - [.NET MAUI](https://learn.microsoft.com/dotnet/maui/) with [Blazor Hybrid](https://learn.microsoft.com/aspnet/core/blazor/hybrid/) for the UI
-- [MudBlazor](https://mudblazor.com/) component library
+- [MudBlazor](https://mudblazor.com/) component library with custom theming that follows [Material 3 Expressive](https://m3.material.io/), including dynamic color generated from your device palette
 - [EF Core](https://learn.microsoft.com/ef/core/) with SQLite for local storage
 - [ApexCharts](https://apexcharts.github.io/Blazor-ApexCharts/) for trends
 
