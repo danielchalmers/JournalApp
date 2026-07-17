@@ -211,9 +211,11 @@ body {
   box-sizing: border-box;
 }
 
+/* The thumb carrier resizes with the thumb (34px off, 42px on), so it centers via transform instead of a fixed offset. */
 .mud-switch-base {
-  top: -3px;
-  left: -3px;
+  top: 50%;
+  left: -1px;
+  transform: translateY(-50%);
 }
 
 .mud-switch-base:not(.mud-checked) {
@@ -244,9 +246,9 @@ body {
   height: 24px;
 }
 
-/* The checked thumb grows to 24px, so the slide distance shrinks to keep it inset from the track edge. */
+/* The slide distance puts the grown thumb at the M3 insets: 8px from the left edge when off, 4px from the right edge when on. */
 .mud-switch-base.mud-checked {
-  transform: translateX(17px);
+  transform: translateY(-50%) translateX(16px);
 }
 
 /* M3 settings rows lead with the label and keep the switch on the trailing edge. Scoped to the label element because MudSwitch reuses the mud-switch class on its inner text span. */
