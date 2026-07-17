@@ -33,7 +33,7 @@ else
                     <div class="settings-item">
                         <MudText Class="settings-item-title">Theme</MudText>
 
-                        <MudToggleGroup T="AppTheme" Value="PreferenceService.SelectedAppTheme" ValueChanged="SelectedAppThemeChanged" SelectionMode="SelectionMode.SingleSelection" Size="Size.Small" CheckMark aria-label="Theme for entire app">
+                        <MudToggleGroup T="AppTheme" Value="PreferenceService.SelectedAppTheme" ValueChanged="SelectedAppThemeChanged" SelectionMode="SelectionMode.SingleSelection" Size="Size.Small" Delimiters="false" aria-label="Theme for entire app">
                             <MudToggleItem T="AppTheme" Value="@(AppTheme.Light)">Light</MudToggleItem>
                             <MudToggleItem T="AppTheme" Value="@(AppTheme.Dark)">Dark</MudToggleItem>
                             <MudToggleItem T="AppTheme" Value="@(AppTheme.Unspecified)">System</MudToggleItem>

@@ -25,7 +25,7 @@ else if (Point.Type == PointType.Scale)
 }
 else if (Point.Type == PointType.LowToHigh)
 {
-    <MudToggleGroup T="int?" Value="Point.ScaleIndex" ValueChanged="ScaleIndexChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" CheckMark>
+    <MudToggleGroup T="int?" Value="Point.ScaleIndex" ValueChanged="ScaleIndexChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" Delimiters="false">
         <MudToggleItem T="int?" Value="0">None</MudToggleItem>
         <MudToggleItem T="int?" Value="1">Low</MudToggleItem>
         <MudToggleItem T="int?" Value="3">Medium</MudToggleItem>
@@ -34,7 +34,7 @@ else if (Point.Type == PointType.LowToHigh)
 }
 else if (Point.Type == PointType.MildToSevere)
 {
-    <MudToggleGroup T="int?" Value="Point.ScaleIndex" ValueChanged="ScaleIndexChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" CheckMark>
+    <MudToggleGroup T="int?" Value="Point.ScaleIndex" ValueChanged="ScaleIndexChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" Delimiters="false">
         <MudToggleItem T="int?" Value="0">None</MudToggleItem>
         <MudToggleItem T="int?" Value="1">Mild</MudToggleItem>
         <MudToggleItem T="int?" Value="3">Moderate</MudToggleItem>
@@ -43,18 +43,18 @@ else if (Point.Type == PointType.MildToSevere)
 }
 else if (Point.Type == PointType.Bool)
 {
-    <MudToggleGroup T="bool?" Value="Point.Bool" ValueChanged="OnBoolChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" CheckMark>
+    <MudToggleGroup T="bool?" Value="Point.Bool" ValueChanged="OnBoolChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" Delimiters="false">
         <MudToggleItem T="bool?" Value="false">No</MudToggleItem>
         <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
     </MudToggleGroup>
 }
 else if (Point.Type == PointType.Number)
 {
-    <MudNumericField @bind-Value="Point.Number" Immediate MaxLength="9" />
+    <MudNumericField @bind-Value="Point.Number" Immediate MaxLength="9" HideSpinButtons Underline="false" />
 }
 else if (Point.Type == PointType.Text)
 {
-    <MudTextField @bind-Value="Point.Text" Immediate />
+    <MudTextField @bind-Value="Point.Text" Immediate Underline="false" />
 }
 else if (Point.Type == PointType.Note)
 {
@@ -75,7 +75,7 @@ else if (Point.Type == PointType.Note)
 else if (Point.Type == PointType.Medication)
 {
     <div class="medication-controls">
-        <MudToggleGroup T="bool?" Value="Point.Bool" ValueChanged="OnMedicationTakenChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" CheckMark>
+        <MudToggleGroup T="bool?" Value="Point.Bool" ValueChanged="OnMedicationTakenChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" Delimiters="false">
             <MudToggleItem T="bool?" Value="false">No</MudToggleItem>
             <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
         </MudToggleGroup>

@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@color/splash_background" />
+    <!-- Pre-12 gets the same icon-on-plate look that windowSplashScreenIconBackgroundColor provides on API 31+. -->
+    <item
+        android:gravity="center"
+        android:width="180dp"
+        android:height="180dp">
+        <shape android:shape="oval">
+            <solid android:color="@color/splash_icon_background" />
+        </shape>
+    </item>
     <item
         android:drawable="@drawable/maui_splash"
         android:gravity="center" />

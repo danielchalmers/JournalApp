@@ -2,5 +2,8 @@
 <resources>
     <color name="colorPrimary">#844C72</color>
     <color name="colorPrimaryDark">#844C72</color>
-    <color name="splash_background">#FFD8EE</color>
+    <!-- Matches the Orchid theme's light background (neutral 98) so the splash flows straight into the Blazor loading screen. -->
+    <color name="splash_background">#FFF8F9</color>
+    <!-- The launcher icon's pink plate, drawn behind the pre-Android-12 splash glyph so it reads as the app icon; 12+ shows the real launcher icon instead. -->
+    <color name="splash_icon_background">#FFD8EE</color>
 </resources>

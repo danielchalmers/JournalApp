@@ -15,14 +15,15 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
     private MudTheme _mudTheme;
     private uint _mudThemeSeed;
 
-    // Mood colors are HCT values generated with material-color-utilities on a "coral reef" hue sweep: turquoise water (210°, great) through sand to coral (20°, awful).
+    // Mood colors are HCT values generated with material-color-utilities on a "coral reef" hue sweep: turquoise water (210°, great) through coral (20°, awful).
     // The light ramp stays in bright tones (62-86) so the theme's dark text-primary reads on every cell, and the dark ramp uses deep jewel tones (42-50) so the light text-primary does the same. 🤔 (unset) intentionally has no color.
+    // 😐 sits at the middle of the ramp as a true neutral grey so it reads as no signal either way.
     private static readonly Dictionary<string, string> _lightMoodColors = new()
     {
         ["🤩"] = "#2ACADF",
         ["😀"] = "#50DBD0",
         ["🙂"] = "#8BE3C0",
-        ["😐"] = "#EED687",
+        ["😐"] = "#D9D9D9",
         ["😕"] = "#FFB783",
         ["😢"] = "#FF9474",
         ["😭"] = "#F26B6B",
@@ -33,7 +34,7 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
         ["🤩"] = "#007E8C",
         ["😀"] = "#00857E",
         ["🙂"] = "#2A8668",
-        ["😐"] = "#916C24",
+        ["😐"] = "#737373",
         ["😕"] = "#A65911",
         ["😢"] = "#A94C2F",
         ["😭"] = "#A94041",

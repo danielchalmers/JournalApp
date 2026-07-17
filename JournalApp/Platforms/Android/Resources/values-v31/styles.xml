@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- No windowSplashScreenAnimatedIcon: the system then shows the real launcher icon, plate and all, which is the standard Android 12+ splash look. -->
     <style name="Maui.SplashTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:windowSplashScreenBackground">@color/splash_background</item>
-        <item name="android:windowSplashScreenAnimatedIcon">@drawable/maui_splash</item>
     </style>
 </resources>

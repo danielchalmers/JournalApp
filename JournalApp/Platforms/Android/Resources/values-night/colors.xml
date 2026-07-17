@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="splash_background">#FFD8EE</color>
+    <!-- Matches the Orchid theme's dark background (neutral 6) so the splash flows straight into the Blazor loading screen. -->
+    <color name="splash_background">#181215</color>
 </resources>
