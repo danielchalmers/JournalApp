@@ -2,13 +2,13 @@
 @inject ILogger<WorksheetView> logger
 
 <li class="worksheet-view">
-    <MudLink OnClick="OnResourceClicked" Color="Color.Primary" aria-label="Open worksheet" StartIcon="@Icons.Material.Rounded.Link">
+    <MudLink Class="worksheet-view-title" OnClick="OnResourceClicked" Color="Color.Primary" aria-label="Open worksheet" StartIcon="@Icons.Material.Rounded.Link">
         @Worksheet.Title
     </MudLink>
 
     @if (!string.IsNullOrEmpty(Worksheet.Description))
     {
-        <MudText Typo="Typo.body1">@Worksheet.Description</MudText>
+        <MudText Class="worksheet-view-description" Typo="Typo.body2">@Worksheet.Description</MudText>
     }
 </li>
 

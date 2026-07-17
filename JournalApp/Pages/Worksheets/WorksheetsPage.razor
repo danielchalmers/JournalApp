@@ -22,8 +22,7 @@
                     {
                         <li class="worksheet-group-toc-item">
                             <MudLink OnClick="async () => await ScrollToGroup(MarkupUtil.ToClassName(group.Key))"
-                                     aria-label="Scroll to group"
-                                     StartIcon="@Icons.Material.Rounded.Label">
+                                     aria-label="Scroll to group">
                                 @group.Key
                             </MudLink>
                         </li>
@@ -40,19 +39,12 @@
                     <MudText Class="list-group-title">@group.Key</MudText>
                 }
 
-                <MudCard>
-                    <ul class="worksheet-group-items">
-                        @foreach (var ws in group)
-                        {
-                            <WorksheetView Worksheet="ws" />
-
-                            if (ws != group.Last())
-                            {
-                                <MudDivider />
-                            }
-                        }
-                    </ul>
-                </MudCard>
+                <ul class="worksheet-group-items">
+                    @foreach (var ws in group)
+                    {
+                        <WorksheetView Worksheet="ws" />
+                    }
+                </ul>
             </div>
         }
     </div>
