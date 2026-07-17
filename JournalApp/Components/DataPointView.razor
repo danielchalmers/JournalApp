@@ -12,7 +12,7 @@
 else if (Point.Type == PointType.Sleep)
 {
     <div class="sleep-controls">
-        <MudText Class="sleep-hours" Typo="Typo.caption">@((Point.SleepHours ?? 0).ToString("00.0"))</MudText>
+        <MudText Class="sleep-hours" Typo="Typo.caption">@((Point.SleepHours ?? 0).ToString("0.0"))</MudText>
         <MudIconButton Class="less-sleep" Icon="@Icons.Material.Rounded.Remove" aria-label="Less sleep" OnClick="DecrementSleep" Disabled="@(Point.SleepHours <= 0)" Size="Size.Small" />
         <MudSlider T="decimal" @bind-NullableValue="Point.SleepHours" Variant="Variant.Filled" Min="0" Max="24" Step="0.5m" />
         <MudIconButton Class="more-sleep" Icon="@Icons.Material.Rounded.Add" aria-label="More sleep" OnClick="IncrementSleep" Disabled="@(Point.SleepHours >= 24)" Size="Size.Small" />
@@ -24,7 +24,7 @@ else if (Point.Type == PointType.Scale)
 }
 else if (Point.Type == PointType.LowToHigh)
 {
-    <MudToggleGroup T="int?" @bind-Value="Point.ScaleIndex" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small">
+    <MudToggleGroup T="int?" @bind-Value="Point.ScaleIndex" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" CheckMark>
         <MudToggleItem T="int?" Value="0">None</MudToggleItem>
         <MudToggleItem T="int?" Value="1">Low</MudToggleItem>
         <MudToggleItem T="int?" Value="3">Medium</MudToggleItem>
@@ -33,7 +33,7 @@ else if (Point.Type == PointType.LowToHigh)
 }
 else if (Point.Type == PointType.MildToSevere)
 {
-    <MudToggleGroup T="int?" @bind-Value="Point.ScaleIndex" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small">
+    <MudToggleGroup T="int?" @bind-Value="Point.ScaleIndex" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" CheckMark>
         <MudToggleItem T="int?" Value="0">None</MudToggleItem>
         <MudToggleItem T="int?" Value="1">Mild</MudToggleItem>
         <MudToggleItem T="int?" Value="3">Moderate</MudToggleItem>
@@ -42,7 +42,7 @@ else if (Point.Type == PointType.MildToSevere)
 }
 else if (Point.Type == PointType.Bool)
 {
-    <MudToggleGroup T="bool?" @bind-Value="Point.Bool" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small">
+    <MudToggleGroup T="bool?" @bind-Value="Point.Bool" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" CheckMark>
         <MudToggleItem T="bool?" Value="false">No</MudToggleItem>
         <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
     </MudToggleGroup>
@@ -74,7 +74,7 @@ else if (Point.Type == PointType.Note)
 else if (Point.Type == PointType.Medication)
 {
     <div class="medication-controls">
-        <MudToggleGroup T="bool?" @bind-Value="Point.Bool" @bind-Value:after="OnMedicationTakenChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small">
+        <MudToggleGroup T="bool?" @bind-Value="Point.Bool" @bind-Value:after="OnMedicationTakenChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" CheckMark>
             <MudToggleItem T="bool?" Value="false">No</MudToggleItem>
             <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
         </MudToggleGroup>
@@ -190,7 +190,6 @@ else if (Point.Type == PointType.Medication)
             }
         }
 
-        sb.Append(':');
         return sb.ToString();
     }
 }

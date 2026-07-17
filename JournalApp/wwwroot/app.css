@@ -28,11 +28,14 @@ body {
   font-size: 6vw;
 }
 
+/* The sticky header ends flush at the pill so scrolling content passes under a clean edge instead of a same-color strip. */
 .switcher {
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: var(--mud-elevation-1);
+  border-radius: 999px;
+  margin: 0 8px;
+  background-color: var(--mud-palette-surface);
 }
 
 .switcher-header {
@@ -51,9 +54,21 @@ body {
   gap: 8px;
   padding: 0;
   box-shadow: none;
-  background-color: var(--mud-palette-primary);
-  color: var(--mud-palette-primary-text);
-  --mud-palette-action-default: var(--mud-palette-primary-text);
+  background-color: var(--mud-palette-background);
+  color: var(--mud-palette-text-primary);
+  --mud-palette-action-default: var(--mud-palette-text-secondary);
+}
+
+/* M3 top app bar title is title-large: 22px regular, not a bold h6. */
+.page-toolbar .mud-typography-h6 {
+  font-size: 22px;
+  font-weight: 400;
+}
+
+/* Match the date button to title-large as well. */
+.switcher-header .mud-typography-h5 {
+  font-size: 22px;
+  font-weight: 400;
 }
 
 .page-header {
@@ -64,8 +79,8 @@ body {
   margin: 0 !important;
   top: 0 !important;
   position: sticky !important;
-  background-color: var(--mud-palette-surface);
-  color: var(--mud-palette-primary-text);
+  background-color: var(--mud-palette-background);
+  color: var(--mud-palette-text-primary);
 }
 
 .page-body {
@@ -111,33 +126,94 @@ body {
   gap: 8px;
 }
 
+/* M3 segmented buttons: outlined container, neutral unselected text, selected segment fills secondaryContainer. */
 .mud-toggle-group {
   flex-grow: 1;
-  border-radius: 20px;
+  border-radius: 999px;
+  border-color: var(--mud-palette-lines-inputs) !important;
+}
+
+.mud-toggle-group .mud-toggle-item {
+  color: var(--mud-palette-text-primary);
+  background-color: transparent;
+  border-color: var(--mud-palette-lines-inputs) !important;
+  min-height: 32px;
+}
+
+.mud-toggle-group .mud-toggle-item.mud-toggle-item-selected {
+  background-color: var(--mud-palette-secondary-lighten);
+  color: var(--mud-palette-secondary-darken);
 }
 
 .mud-button {
-  border-radius: 20px;
+  border-radius: 999px;
+}
+
+/* M3 outlined buttons and button groups use the neutral outline-variant, not a text- or primary-tinted border. */
+.mud-button-outlined {
+  border-color: var(--mud-palette-lines-default);
+}
+
+.mud-button-group-outlined.mud-button-group-override-styles .mud-button-root {
+  border-color: var(--mud-palette-lines-default);
 }
 
 .mud-button-group-root {
-  border-radius: 20px;
+  border-radius: 999px;
 }
 
 .mud-button-filled.mud-button-filled-primary {
   color: var(--mud-palette-primary-text);
 }
 
+/* M3 expressive slider: thick rounded track, primary fill, and a narrow bar handle instead of a floating circle. */
+/* Selectors include the size class because MudBlazor's size rules (e.g. .mud-slider-small) otherwise win the cascade. */
+.mud-slider .mud-slider-input::-webkit-slider-runnable-track,
+.mud-slider.mud-slider-small .mud-slider-input::-webkit-slider-runnable-track {
+  height: 12px;
+  margin: 5px 0;
+  border-radius: 999px;
+}
+
+.mud-slider.mud-slider-primary .mud-slider-input::-webkit-slider-runnable-track {
+  background-color: var(--mud-palette-secondary-lighten);
+}
+
+.mud-slider .mud-slider-filled,
+.mud-slider.mud-slider-small .mud-slider-filled {
+  height: 12px;
+  border-radius: 6px 2px 2px 6px;
+}
+
+.mud-slider .mud-slider-input::-webkit-slider-thumb,
+.mud-slider.mud-slider-small .mud-slider-input::-webkit-slider-thumb {
+  width: 4px;
+  height: 24px;
+  transform: none;
+  border-radius: 2px;
+  margin-top: -6px;
+  box-shadow: none;
+}
+
+/* M3 menus and popovers sit on surfaceContainerHigh. */
+.mud-popover {
+  --mud-palette-surface: var(--mud-palette-gray-lighter);
+}
+
+/* M3 dialogs sit on surfaceContainerHigh. */
 .mud-dialog {
   padding: 12px !important;
   gap: 12px !important;
   border-radius: 28px;
+  --mud-palette-surface: var(--mud-palette-gray-lighter);
 }
 
+/* M3 filled cards: tonal, flat (depth comes from tone, not shadow). */
 .mud-card {
   padding: 12px !important;
   gap: 12px !important;
-  border-radius: 12px;
+  border-radius: 16px;
+  box-shadow: none;
 }
 
 .mud-link .mud-icon-root {
@@ -167,13 +243,18 @@ body {
   display: none;
 }
 
+/* M3 snackbar: inverse surface. */
 .mud-snackbar {
-  background-color: var(--mud-palette-primary);
-  color: var(--mud-palette-primary-text);
+  background-color: var(--mud-palette-dark);
+  color: var(--mud-palette-dark-text);
 }
 
 .emoji-button {
   padding: 0;
+  min-width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--mud-palette-gray-lighter);
 }
 
 .emoji-popover-content {
@@ -194,6 +275,53 @@ body {
   display: flex;
   align-items: center;
   width: fit-content;
+  color: var(--mud-palette-text-secondary);
+}
+
+/* M3E grouped list, like Pixel Settings: the card becomes an invisible wrapper, every row is its own tonal container, and the first and last rows carry the large group radius. */
+.main-timeline .mud-card.data-point-group {
+  background-color: transparent;
+  padding: 0 !important;
+  gap: 3px !important;
+}
+
+.main-timeline .data-point-group .data-point-list {
+  gap: 3px;
+}
+
+.main-timeline .data-point-container {
+  background-color: var(--mud-palette-surface);
+  border-radius: 6px;
+  padding: 14px 16px;
+}
+
+.main-timeline .data-point-container:first-child {
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+}
+
+.main-timeline .data-point-container:last-child {
+  border-bottom-left-radius: 18px;
+  border-bottom-right-radius: 18px;
+}
+
+/* When the group ends with an action row (New note), that row becomes the closing container instead of the last list item. */
+.main-timeline .data-point-group:has(.mud-card-actions .mud-button) .data-point-container:last-child {
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+.main-timeline .mud-card-actions:has(.mud-button) {
+  background-color: var(--mud-palette-surface);
+  border-radius: 6px 6px 18px 18px;
+  padding: 12px 16px !important;
+}
+
+/* Row headers read as M3 title-medium rather than shouty near-h6 text. */
+.data-point-header .mud-typography {
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.15px;
 }
 
 #blazor-error-ui {
@@ -228,7 +356,7 @@ body {
 
 @media (prefers-color-scheme: dark) {
   .status-bar-safe-area {
-    background-color: #120D10;
+    background-color: #181215;
   }
 }
 

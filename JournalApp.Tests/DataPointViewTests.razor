@@ -93,13 +93,13 @@
             p.Add(x => x.Point, point)
         );
 
-        cut.Find(".sleep-hours").TextContent.Should().Be("08.5");
+        cut.Find(".sleep-hours").TextContent.Should().Be("8.5");
 
         for (var i = 0; i < 50; i++)
             await cut.Find(".less-sleep").ClickAsync();
 
         point.SleepHours.Should().Be(0);
-        cut.Find(".sleep-hours").TextContent.Should().Be("00.0");
+        cut.Find(".sleep-hours").TextContent.Should().Be("0.0");
         cut.Find(".less-sleep").HasAttribute("disabled").Should().BeTrue();
         cut.Find(".more-sleep").HasAttribute("disabled").Should().BeFalse();
 
@@ -509,16 +509,16 @@
         var day = Day.Create(new(2024, 01, 01));
         var point = DataPoint.Create(day, category);
 
-        DataPointView.GetHeaderText(point).Should().Be("Hello World:");
+        DataPointView.GetHeaderText(point).Should().Be("Hello World");
     }
 
     [Theory]
-    [InlineData("oz", 10d, null, "Hi 10oz:")]
-    [InlineData("oz", 10d, 20d, "Hi 20oz*:")]
-    [InlineData("oz", null, null, "Hi:")]
-    [InlineData("oz", null, 20d, "Hi 20oz*:")]
-    [InlineData(null, 10d, null, "Hi:")]
-    [InlineData(null, 10d, 20d, "Hi:")]
+    [InlineData("oz", 10d, null, "Hi 10oz")]
+    [InlineData("oz", 10d, 20d, "Hi 20oz*")]
+    [InlineData("oz", null, null, "Hi")]
+    [InlineData("oz", null, 20d, "Hi 20oz*")]
+    [InlineData(null, 10d, null, "Hi")]
+    [InlineData(null, 10d, 20d, "Hi")]
     public void HeaderMedication_WithDoseAndUnitCombinations(string unit, double? categoryDose, double? pointDose, string expectedHeader)
     {
         var category = new DataPointCategory
