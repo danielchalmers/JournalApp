@@ -36,6 +36,17 @@ body {
   border-radius: 999px;
   margin: 0 8px;
   background-color: var(--mud-palette-surface);
+  transition: background-color 200ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* M3 scroll-under: the header lifts to surfaceContainer tones once content scrolls beneath it (body.ja-scrolled comes from index.html). */
+body.ja-scrolled .page-header,
+body.ja-scrolled .page-toolbar {
+  background-color: var(--mud-palette-surface);
+}
+
+body.ja-scrolled .switcher {
+  background-color: var(--mud-palette-gray-lighter);
 }
 
 .switcher-header {
@@ -57,6 +68,7 @@ body {
   background-color: var(--mud-palette-background);
   color: var(--mud-palette-text-primary);
   --mud-palette-action-default: var(--mud-palette-text-secondary);
+  transition: background-color 200ms cubic-bezier(0.2, 0, 0, 1);
 }
 
 /* M3 top app bar title is title-large: 22px regular, not a bold h6. */
@@ -81,6 +93,7 @@ body {
   position: sticky !important;
   background-color: var(--mud-palette-background);
   color: var(--mud-palette-text-primary);
+  transition: background-color 200ms cubic-bezier(0.2, 0, 0, 1);
 }
 
 .page-body {
@@ -89,17 +102,23 @@ body {
   margin: 0 auto !important;
   padding: 8px !important;
   padding-bottom: 15vh !important;
-  animation: fadeInUp 0.15s ease-out;
+  animation: fadeInUp 0.3s cubic-bezier(0.05, 0.7, 0.1, 1);
 }
 
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-body {
+    animation: none;
   }
 }
 
@@ -221,7 +240,16 @@ body {
   font-size: inherit;
 }
 
-.mud-dialog-title, .mud-card-header {
+/* M3 dialogs lead with a left-aligned headline; card headers stay centered. */
+.mud-dialog-title {
+  padding: 0 !important;
+  padding-top: 8px !important;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.mud-card-header {
   padding: 0 !important;
   padding-top: 8px !important;
   display: flex;
@@ -293,6 +321,12 @@ body {
   background-color: var(--mud-palette-surface);
   border-radius: 6px;
   padding: 14px 16px;
+  transition: transform 120ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* M3E press feedback: rows give a gentle squish, like the calendar cells already do. */
+.main-timeline .data-point-container:active {
+  transform: scale(0.98);
 }
 
 .main-timeline .data-point-container:first-child {

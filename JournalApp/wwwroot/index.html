@@ -41,6 +41,13 @@
             var elementTop = document.querySelector(descendantSelector).offsetTop - document.querySelector(ancestorSelector).offsetTop;
             document.scrollingElement.scrollTo({ top: elementTop, behavior: scrollBehavior });
         }
+
+        // Drives the M3 scroll-under app bar state: app.css tints the sticky header when content has scrolled beneath it.
+        (function () {
+            const update = () => document.body.classList.toggle('ja-scrolled', (document.scrollingElement.scrollTop || 0) > 4);
+            addEventListener('scroll', update, { passive: true });
+            update();
+        })();
     </script>
 
 </body>
