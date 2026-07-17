@@ -5,6 +5,7 @@
 @inject ILogger<SettingsPage> logger
 @inject AppDataUIService AppDataUIService
 @inject IFilePicker FilePicker
+@inject HapticFeedbackService HapticFeedback
 
 @if (_busy)
 {
@@ -32,7 +33,7 @@ else
                     <div class="settings-item">
                         <MudText Class="settings-item-title">Theme</MudText>
 
-                        <MudToggleGroup T="AppTheme" Value="PreferenceService.SelectedAppTheme" ValueChanged="v => PreferenceService.SelectedAppTheme = v" SelectionMode="SelectionMode.SingleSelection" Size="Size.Small" CheckMark aria-label="Theme for entire app">
+                        <MudToggleGroup T="AppTheme" Value="PreferenceService.SelectedAppTheme" ValueChanged="SelectedAppThemeChanged" SelectionMode="SelectionMode.SingleSelection" Size="Size.Small" CheckMark aria-label="Theme for entire app">
                             <MudToggleItem T="AppTheme" Value="@(AppTheme.Light)">Light</MudToggleItem>
                             <MudToggleItem T="AppTheme" Value="@(AppTheme.Dark)">Dark</MudToggleItem>
                             <MudToggleItem T="AppTheme" Value="@(AppTheme.Unspecified)">System</MudToggleItem>
@@ -40,12 +41,12 @@ else
                     </div>
 
                     <div class="settings-item">
-                        <MudSwitch T="bool" Value="PreferenceService.SupportsDeviceColors && PreferenceService.UseDeviceColors" ValueChanged="v => PreferenceService.UseDeviceColors = v"
+                        <MudSwitch T="bool" Value="PreferenceService.SupportsDeviceColors && PreferenceService.UseDeviceColors" ValueChanged="UseDeviceColorsChanged"
                                    Disabled="!PreferenceService.SupportsDeviceColors" Color="Color.Primary" aria-label="Color the app from your device wallpaper">Use device colors</MudSwitch>
                     </div>
 
                     <div class="settings-item">
-                        <MudSwitch @bind-Value="PreferenceService.HideNotes" Color="Color.Primary" aria-label="Hide the notes section on the home page">Hide "Today's notes"</MudSwitch>
+                        <MudSwitch @bind-Value="PreferenceService.HideNotes" @bind-Value:after="HideNotesChanged" Color="Color.Primary" aria-label="Hide the notes section on the home page">Hide "Today's notes"</MudSwitch>
                     </div>
                 </div>
             </section>
@@ -151,6 +152,25 @@ else
     void SelectedAppThemeChanged(AppTheme newTheme)
     {
         PreferenceService.SelectedAppTheme = newTheme;
+        HapticFeedback.Tick();
+    }
+
+    void UseDeviceColorsChanged(bool newValue)
+    {
+        PreferenceService.UseDeviceColors = newValue;
+
+        if (newValue)
+            HapticFeedback.ToggleOn();
+        else
+            HapticFeedback.ToggleOff();
+    }
+
+    void HideNotesChanged()
+    {
+        if (PreferenceService.HideNotes)
+            HapticFeedback.ToggleOn();
+        else
+            HapticFeedback.ToggleOff();
     }
 
     void SetUpSafetyPlan()

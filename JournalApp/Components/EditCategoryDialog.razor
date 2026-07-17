@@ -2,6 +2,7 @@
 @inject ILogger<EditCategoryDialog> logger
 @inject IDialogService DialogService
 @inject KeyEventService KeyEventService
+@inject HapticFeedbackService HapticFeedback
 
 <MudDialog Class="category-dialog" DefaultFocus="DefaultFocus.FirstChild" OnBackdropClick="Submit">
     <TitleContent>
@@ -121,6 +122,7 @@
 
         Category.Deleted = true;
         logger.LogDebug($"Deleted {Category}");
+        HapticFeedback.LongPress();
         KeyEventService.CloseDialog(MudDialog, Category);
     }
 
@@ -133,6 +135,7 @@
         if (!_form.IsValid)
         {
             logger.LogDebug("Form was not valid");
+            HapticFeedback.Reject();
 
             if (Category == null)
                 Cancel();
@@ -151,6 +154,7 @@
 
         logger.LogDebug($"Created new category <Name: {Category.Name}, Type: {Category.Type}>");
 
+        HapticFeedback.Confirm();
         KeyEventService.CloseDialog(MudDialog, Category);
         return true;
     }
