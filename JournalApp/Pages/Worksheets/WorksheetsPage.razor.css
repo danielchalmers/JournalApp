@@ -9,23 +9,14 @@
   flex-direction: column;
 }
 
+/* M3E grouped list, like Settings: every worksheet is its own tonal row, and the first and last rows carry the large group radius. */
 .worksheet-group-items {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-}
-
-.worksheet-group-toc {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 8px;
+  gap: 3px;
   list-style-type: none;
-}
-
-.worksheet-group-toc-item {
-  white-space: nowrap;
-  align-items: start;
+  padding: 0;
+  margin: 0;
 }
 
 ::deep .worksheet-view {
@@ -33,4 +24,50 @@
   flex-direction: column;
   align-items: start;
   gap: 4px;
+  background-color: var(--mud-palette-surface);
+  border-radius: 6px;
+  padding: 14px 16px;
+}
+
+::deep .worksheet-view:first-child {
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+}
+
+::deep .worksheet-view:last-child {
+  border-bottom-left-radius: 18px;
+  border-bottom-right-radius: 18px;
+}
+
+::deep .worksheet-view-title {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+::deep .worksheet-view-description {
+  color: var(--mud-palette-text-secondary);
+}
+
+/* The table of contents reads as a wrapped row of M3 suggestion chips. */
+.worksheet-group-toc {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.worksheet-group-toc-item {
+  white-space: nowrap;
+  border: 1px solid var(--mud-palette-lines-default);
+  border-radius: 8px;
+  padding: 6px 12px;
+}
+
+.worksheet-group-toc-item ::deep .mud-link {
+  color: var(--mud-palette-text-primary);
+  font-size: 14px;
+  font-weight: 500;
 }

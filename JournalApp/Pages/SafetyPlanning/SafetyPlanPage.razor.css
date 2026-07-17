@@ -1,8 +1,40 @@
+/* M3E grouped list, like Settings: every plan item is its own tonal row, and the first and last rows carry the large group radius. */
 .safety-plan-items-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 3px;
 }
 
-::deep safety-plan-item {
+::deep .safety-plan-item {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background-color: var(--mud-palette-surface);
+  border-radius: 6px;
+  padding: 14px 16px;
+}
+
+::deep .safety-plan-item:first-child {
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+}
+
+::deep .safety-plan-item:last-child {
+  border-bottom-left-radius: 18px;
+  border-bottom-right-radius: 18px;
+}
+
+::deep .safety-plan-item-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+::deep .safety-plan-item-title {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+::deep .safety-plan-item-subtitle {
+  color: var(--mud-palette-text-secondary);
 }

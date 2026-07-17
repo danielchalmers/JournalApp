@@ -1,7 +1,11 @@
 ﻿@namespace JournalApp
 
 <section class="@($"safety-plan-item safety-plan-item-{MarkupUtil.ToClassName(Title)}")">
-    <MudText>@Subtitle</MudText>
+    <div class="safety-plan-item-header">
+        <MudText Class="safety-plan-item-title">@Title</MudText>
+
+        <MudText Class="safety-plan-item-subtitle" Typo="Typo.body2">@Subtitle</MudText>
+    </div>
 
     <MudTextField T="string" @bind-Text="Text" Placeholder="@Placeholder"
                   Typo="Typo.body2" Variant="Variant.Outlined" Immediate Underline="false"
