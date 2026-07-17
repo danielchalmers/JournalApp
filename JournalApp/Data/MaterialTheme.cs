@@ -143,16 +143,122 @@ public static class MaterialTheme
                 DefaultBorderRadius = "8px",
             },
 
+            // The M3 type scale on self-hosted Roboto Flex, mapped H1-H3 = display, H4-H6 = headline, Subtitle = title, Body = body, Button/Caption/Overline = label.
             Typography = new()
             {
+                Default = new DefaultTypography()
+                {
+                    FontFamily = ["Roboto Flex", "Roboto", "system-ui", "sans-serif"],
+                    FontSize = "14px",
+                    FontWeight = "400",
+                    LineHeight = "1.43",
+                    LetterSpacing = "0.25px",
+                },
+
+                H1 = new H1Typography()
+                {
+                    FontSize = "57px",
+                    FontWeight = "400",
+                    LineHeight = "1.12",
+                    LetterSpacing = "-0.25px",
+                },
+
+                H2 = new H2Typography()
+                {
+                    FontSize = "45px",
+                    FontWeight = "400",
+                    LineHeight = "1.16",
+                    LetterSpacing = "0",
+                },
+
+                H3 = new H3Typography()
+                {
+                    FontSize = "36px",
+                    FontWeight = "400",
+                    LineHeight = "1.22",
+                    LetterSpacing = "0",
+                },
+
+                H4 = new H4Typography()
+                {
+                    FontSize = "32px",
+                    FontWeight = "400",
+                    LineHeight = "1.25",
+                    LetterSpacing = "0",
+                },
+
+                H5 = new H5Typography()
+                {
+                    FontSize = "28px",
+                    FontWeight = "400",
+                    LineHeight = "1.29",
+                    LetterSpacing = "0",
+                },
+
+                H6 = new H6Typography()
+                {
+                    FontSize = "24px",
+                    FontWeight = "400",
+                    LineHeight = "1.33",
+                    LetterSpacing = "0",
+                },
+
+                Subtitle1 = new Subtitle1Typography()
+                {
+                    FontSize = "16px",
+                    FontWeight = "500",
+                    LineHeight = "1.5",
+                    LetterSpacing = "0.15px",
+                },
+
+                Subtitle2 = new Subtitle2Typography()
+                {
+                    FontSize = "14px",
+                    FontWeight = "500",
+                    LineHeight = "1.43",
+                    LetterSpacing = "0.1px",
+                },
+
+                Body1 = new Body1Typography()
+                {
+                    FontSize = "16px",
+                    FontWeight = "400",
+                    LineHeight = "1.5",
+                    LetterSpacing = "0.5px",
+                },
+
+                Body2 = new Body2Typography()
+                {
+                    FontSize = "14px",
+                    FontWeight = "400",
+                    LineHeight = "1.43",
+                    LetterSpacing = "0.25px",
+                },
+
                 Button = new ButtonTypography()
                 {
+                    FontSize = "14px",
+                    FontWeight = "500",
+                    LineHeight = "1.43",
+                    LetterSpacing = "0.1px",
                     TextTransform = "none",
                 },
 
                 Caption = new CaptionTypography()
                 {
+                    FontSize = "12px",
+                    FontWeight = "500",
                     LineHeight = "1",
+                    LetterSpacing = "0.5px",
+                },
+
+                Overline = new OverlineTypography()
+                {
+                    FontSize = "11px",
+                    FontWeight = "500",
+                    LineHeight = "1.45",
+                    LetterSpacing = "0.5px",
+                    TextTransform = "none",
                 },
             },
         };
