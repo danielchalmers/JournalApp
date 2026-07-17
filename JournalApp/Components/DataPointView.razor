@@ -21,11 +21,11 @@ else if (Point.Type == PointType.Sleep)
 }
 else if (Point.Type == PointType.Scale)
 {
-    <MudRating @bind-SelectedValue="ScaleIndexForMudRating" FullIcon="@Icons.Material.Rounded.Circle" EmptyIcon="@Icons.Material.Rounded.Circle" Color="Color.Primary" />
+    <MudRating SelectedValue="DataPointService.GetScaleIndex(Point)" SelectedValueChanged="ScaleValueChanged" FullIcon="@Icons.Material.Rounded.Circle" EmptyIcon="@Icons.Material.Rounded.Circle" Color="Color.Primary" />
 }
 else if (Point.Type == PointType.LowToHigh)
 {
-    <MudToggleGroup T="int?" @bind-Value="Point.ScaleIndex" @bind-Value:after="HapticFeedback.Tick" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" CheckMark>
+    <MudToggleGroup T="int?" Value="Point.ScaleIndex" ValueChanged="ScaleIndexChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" CheckMark>
         <MudToggleItem T="int?" Value="0">None</MudToggleItem>
         <MudToggleItem T="int?" Value="1">Low</MudToggleItem>
         <MudToggleItem T="int?" Value="3">Medium</MudToggleItem>
@@ -34,7 +34,7 @@ else if (Point.Type == PointType.LowToHigh)
 }
 else if (Point.Type == PointType.MildToSevere)
 {
-    <MudToggleGroup T="int?" @bind-Value="Point.ScaleIndex" @bind-Value:after="HapticFeedback.Tick" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" CheckMark>
+    <MudToggleGroup T="int?" Value="Point.ScaleIndex" ValueChanged="ScaleIndexChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" CheckMark>
         <MudToggleItem T="int?" Value="0">None</MudToggleItem>
         <MudToggleItem T="int?" Value="1">Mild</MudToggleItem>
         <MudToggleItem T="int?" Value="3">Moderate</MudToggleItem>
@@ -43,7 +43,7 @@ else if (Point.Type == PointType.MildToSevere)
 }
 else if (Point.Type == PointType.Bool)
 {
-    <MudToggleGroup T="bool?" @bind-Value="Point.Bool" @bind-Value:after="OnBoolChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" CheckMark>
+    <MudToggleGroup T="bool?" Value="Point.Bool" ValueChanged="OnBoolChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" CheckMark>
         <MudToggleItem T="bool?" Value="false">No</MudToggleItem>
         <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
     </MudToggleGroup>
@@ -75,7 +75,7 @@ else if (Point.Type == PointType.Note)
 else if (Point.Type == PointType.Medication)
 {
     <div class="medication-controls">
-        <MudToggleGroup T="bool?" @bind-Value="Point.Bool" @bind-Value:after="OnMedicationTakenChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" CheckMark>
+        <MudToggleGroup T="bool?" Value="Point.Bool" ValueChanged="OnMedicationTakenChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" CheckMark>
             <MudToggleItem T="bool?" Value="false">No</MudToggleItem>
             <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
         </MudToggleGroup>
@@ -93,16 +93,6 @@ else if (Point.Type == PointType.Medication)
 
     [Parameter]
     public EventCallback StateChanged { get; set; }
-
-    public int ScaleIndexForMudRating
-    {
-        get => DataPointService.GetScaleIndex(Point);
-        set
-        {
-            DataPointService.SetScaleIndex(Point, value);
-            HapticFeedback.Tick();
-        }
-    }
 
     string NoteLabel
     {
@@ -136,9 +126,23 @@ else if (Point.Type == PointType.Medication)
         HapticFeedback.Tick();
     }
 
-    void OnBoolChanged()
+    void ScaleValueChanged(int value)
     {
-        if (Point.Bool == true)
+        DataPointService.SetScaleIndex(Point, value);
+        HapticFeedback.Tick();
+    }
+
+    void ScaleIndexChanged(int? value)
+    {
+        Point.ScaleIndex = value;
+        HapticFeedback.Tick();
+    }
+
+    void OnBoolChanged(bool? value)
+    {
+        Point.Bool = value;
+
+        if (value == true)
             HapticFeedback.ToggleOn();
         else
             HapticFeedback.ToggleOff();
@@ -153,12 +157,14 @@ else if (Point.Type == PointType.Medication)
         await StateChanged.InvokeAsync();
     }
 
-    async Task OnMedicationTakenChanged()
+    async Task OnMedicationTakenChanged(bool? value)
     {
+        Point.Bool = value;
+
         // Use service to handle medication dose reset logic
         DataPointService.HandleMedicationTakenChanged(Point);
 
-        if (Point.Bool == true)
+        if (value == true)
             HapticFeedback.ToggleOn();
         else
             HapticFeedback.ToggleOff();

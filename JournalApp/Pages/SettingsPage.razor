@@ -46,7 +46,7 @@ else
                     </div>
 
                     <div class="settings-item">
-                        <MudSwitch @bind-Value="PreferenceService.HideNotes" @bind-Value:after="HideNotesChanged" Color="Color.Primary" aria-label="Hide the notes section on the home page">Hide "Today's notes"</MudSwitch>
+                        <MudSwitch T="bool" Value="PreferenceService.HideNotes" ValueChanged="HideNotesChanged" Color="Color.Primary" aria-label="Hide the notes section on the home page">Hide "Today's notes"</MudSwitch>
                     </div>
                 </div>
             </section>
@@ -165,9 +165,11 @@ else
             HapticFeedback.ToggleOff();
     }
 
-    void HideNotesChanged()
+    void HideNotesChanged(bool newValue)
     {
-        if (PreferenceService.HideNotes)
+        PreferenceService.HideNotes = newValue;
+
+        if (newValue)
             HapticFeedback.ToggleOn();
         else
             HapticFeedback.ToggleOff();
