@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Themed-icon layer: the foreground smiley shrunk to sit in the plate like stock Google glyphs, since the full-bleed foreground renders oversized when the launcher tints it. -->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@mipmap/appicon_foreground"
+    android:insetLeft="18%"
+    android:insetTop="18%"
+    android:insetRight="18%"
+    android:insetBottom="18%" />

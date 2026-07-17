@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Replaces the Resizetizer-generated adaptive icon so the monochrome layer can use the inset drawable instead of the full-bleed foreground. -->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@mipmap/appicon_background" />
+    <foreground android:drawable="@mipmap/appicon_foreground" />
+    <monochrome android:drawable="@drawable/appicon_monochrome" />
+</adaptive-icon>
