@@ -5,7 +5,7 @@
 @inject PreferenceService PreferenceService
 @inject ILogger<MainLayout> logger
 
-<MudThemeProvider Theme="_theme" IsDarkMode="PreferenceService.IsDarkMode" DefaultScrollbar />
+<MudThemeProvider Theme="PreferenceService.GetTheme()" IsDarkMode="PreferenceService.IsDarkMode" DefaultScrollbar />
 
 <MudPopoverProvider />
 
@@ -25,132 +25,6 @@
 @code {
     bool _hasInitiallyRendered;
 
-    MudTheme _theme = new()
-    {
-        // "Orchid" Material 3 tonal palette, seed #854C73, generated with Google's material-color-utilities (SchemeTonalSpot) so surfaces come from the neutral palette rather than hand-tinted pinks.
-        // Slot conventions (same in both modes, so CSS can rely on them):
-        //   Background = M3 surface, Surface = surfaceContainer (cards), BackgroundGray = surfaceContainerLow, GrayLighter = surfaceContainerHigh, GrayLight = surfaceContainerHighest.
-        //   X.Lighten = xContainer, X.Darken = onXContainer, LinesDefault = outlineVariant, LinesInputs = outline, Dark = inverseSurface, DarkContrastText = inverseOnSurface.
-        // Info/Success/Warning are the stock Material hues harmonized toward the seed (Blend.harmonize) with the same slot conventions.
-        PaletteLight = new PaletteLight()
-        {
-            Primary = "#844C72",
-            PrimaryContrastText = "#FFFFFF",
-            PrimaryLighten = "#FFD8EE",
-            PrimaryDarken = "#69345A",
-            Secondary = "#705766",
-            SecondaryContrastText = "#FFFFFF",
-            SecondaryLighten = "#FADAEB",
-            SecondaryDarken = "#57404E",
-            Tertiary = "#81533F",
-            TertiaryContrastText = "#FFFFFF",
-            TertiaryLighten = "#FFDBCD",
-            TertiaryDarken = "#653C2A",
-            Error = "#BA1A1A",
-            ErrorContrastText = "#FFFFFF",
-            ErrorLighten = "#FFDAD6",
-            ErrorDarken = "#93000A",
-            Info = "#1A59C2",
-            InfoContrastText = "#FFFFFF",
-            InfoLighten = "#D9E2FF",
-            InfoDarken = "#001945",
-            Success = "#426900",
-            SuccessContrastText = "#FFFFFF",
-            SuccessLighten = "#BBF46F",
-            SuccessDarken = "#112000",
-            Warning = "#994704",
-            WarningContrastText = "#FFFFFF",
-            WarningLighten = "#FFDBC9",
-            WarningDarken = "#321200",
-            Background = "#FFF8F9",
-            BackgroundGray = "#FEF0F5",
-            Surface = "#F8EAF0",
-            GrayLighter = "#F2E5EA",
-            GrayLight = "#EDDFE4",
-            DrawerBackground = "#FEF0F5",
-            AppbarBackground = "#FFF8F9",
-            AppbarText = "#201A1D",
-            TextPrimary = "#201A1D",
-            TextSecondary = "#4F444A",
-            LinesDefault = "#D3C2CA",
-            LinesInputs = "#81737A",
-            Divider = "#D3C2CA",
-            TableLines = "#D3C2CA",
-            Dark = "#362E32",
-            DarkContrastText = "#FBEDF3",
-
-            HoverOpacity = 0.08,
-        },
-
-        PaletteDark = new PaletteDark()
-        {
-            Primary = "#F7B1DE",
-            PrimaryContrastText = "#4F1E42",
-            PrimaryLighten = "#69345A",
-            PrimaryDarken = "#FFD8EE",
-            Secondary = "#DDBECF",
-            SecondaryContrastText = "#3F2A37",
-            SecondaryLighten = "#57404E",
-            SecondaryDarken = "#FADAEB",
-            Tertiary = "#F4B9A0",
-            TertiaryContrastText = "#4B2716",
-            TertiaryLighten = "#653C2A",
-            TertiaryDarken = "#FFDBCD",
-            Error = "#FFB4AB",
-            ErrorContrastText = "#690005",
-            ErrorLighten = "#93000A",
-            ErrorDarken = "#FFDAD6",
-            Info = "#B0C6FF",
-            InfoContrastText = "#002D6F",
-            InfoLighten = "#00419C",
-            InfoDarken = "#D9E2FF",
-            Success = "#A0D756",
-            SuccessContrastText = "#203700",
-            SuccessLighten = "#304F00",
-            SuccessDarken = "#BBF46F",
-            Warning = "#FFB68C",
-            WarningContrastText = "#532200",
-            WarningLighten = "#753400",
-            WarningDarken = "#FFDBC9",
-            Background = "#181215",
-            BackgroundGray = "#201A1D",
-            Surface = "#251E22",
-            GrayLighter = "#2F282C",
-            GrayLight = "#3B3337",
-            DrawerBackground = "#201A1D",
-            AppbarBackground = "#181215",
-            AppbarText = "#EDDFE4",
-            TextPrimary = "#EDDFE4",
-            TextSecondary = "#D3C2CA",
-            LinesDefault = "#4F444A",
-            LinesInputs = "#9B8D94",
-            Divider = "#4F444A",
-            TableLines = "#4F444A",
-            Dark = "#EDDFE4",
-            DarkContrastText = "#362E32",
-
-            HoverOpacity = 0.08,
-        },
-
-        LayoutProperties = new()
-        {
-            DefaultBorderRadius = "8px",
-        },
-
-        Typography = new()
-        {
-            Button = new ButtonTypography()
-            {
-                TextTransform = "none",
-            },
-
-            Caption = new CaptionTypography()
-            {
-                LineHeight = "1",
-            },
-        },
-    };
-
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -160,6 +34,9 @@
         if (App.Window is not null) // Not available in tests.
         {
             App.Window.Destroying += (_, _) => Dispose();
+
+            // The Material You palette can change while we're backgrounded, like after the user picks a new wallpaper.
+            App.Window.Resumed += (_, _) => PreferenceService.RefreshDeviceColors();
         }
 
         // All pages have been reloaded so we should clear any leftover subscriptions.
