@@ -195,6 +195,67 @@ body {
   box-shadow: none;
 }
 
+/* M3 switch: 52x32 pill track with an outline, solid colors instead of translucent overlays, and a thumb that grows when checked. */
+.mud-switch-span {
+  width: 52px;
+  height: 32px;
+  padding: 0;
+}
+
+.mud-switch-track {
+  border-radius: 999px;
+  opacity: 1;
+  background-color: var(--mud-palette-gray-light);
+  border: 2px solid var(--mud-palette-lines-inputs);
+  box-sizing: border-box;
+}
+
+.mud-switch-base {
+  top: -3px;
+  left: -3px;
+}
+
+.mud-switch-base:not(.mud-checked) {
+  color: var(--mud-palette-lines-inputs) !important;
+}
+
+.mud-switch-base.mud-checked {
+  color: var(--mud-palette-primary-text) !important;
+}
+
+.mud-switch-base.mud-checked + .mud-switch-track {
+  opacity: 1;
+  background-color: var(--mud-palette-primary);
+  border-color: var(--mud-palette-primary);
+}
+
+.mud-switch-thumb-medium {
+  box-shadow: none;
+}
+
+.mud-switch-base:not(.mud-checked) .mud-switch-thumb-medium {
+  width: 16px;
+  height: 16px;
+}
+
+.mud-switch-base.mud-checked .mud-switch-thumb-medium {
+  width: 24px;
+  height: 24px;
+}
+
+/* The checked thumb grows to 24px, so the slide distance shrinks to keep it inset from the track edge. */
+.mud-switch-base.mud-checked {
+  transform: translateX(17px);
+}
+
+/* M3 settings rows lead with the label and keep the switch on the trailing edge. Scoped to the label element because MudSwitch reuses the mud-switch class on its inner text span. */
+.settings-group label.mud-switch {
+  width: 100%;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+  margin-inline-start: 0;
+}
+
 /* M3 menus and popovers sit on surfaceContainerHigh. */
 .mud-popover {
   --mud-palette-surface: var(--mud-palette-gray-lighter);

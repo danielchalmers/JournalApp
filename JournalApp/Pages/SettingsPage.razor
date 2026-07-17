@@ -29,13 +29,13 @@ else
                 <MudText Class="list-group-title">Personalization</MudText>
 
                 <MudPaper Class="settings-group">
-                    <MudRadioGroup T="AppTheme" Value="PreferenceService.SelectedAppTheme" ValueChanged="v => PreferenceService.SelectedAppTheme = v" aria-label="Theme for entire app">
-                        <MudRadio Value="@(AppTheme.Light)">Light</MudRadio>
-                        <MudRadio Value="@(AppTheme.Dark)">Dark</MudRadio>
-                        <MudRadio Value="@(AppTheme.Unspecified)">System</MudRadio>
-                    </MudRadioGroup>
+                    <MudToggleGroup T="AppTheme" Value="PreferenceService.SelectedAppTheme" ValueChanged="v => PreferenceService.SelectedAppTheme = v" SelectionMode="SelectionMode.SingleSelection" Size="Size.Small" CheckMark aria-label="Theme for entire app">
+                        <MudToggleItem T="AppTheme" Value="@(AppTheme.Light)">Light</MudToggleItem>
+                        <MudToggleItem T="AppTheme" Value="@(AppTheme.Dark)">Dark</MudToggleItem>
+                        <MudToggleItem T="AppTheme" Value="@(AppTheme.Unspecified)">System</MudToggleItem>
+                    </MudToggleGroup>
 
-                    <MudCheckBox @bind-Value="PreferenceService.HideNotes" aria-label="Hide the notes section on the home page">Hide "Today's notes"</MudCheckBox>
+                    <MudSwitch @bind-Value="PreferenceService.HideNotes" Color="Color.Primary" aria-label="Hide the notes section on the home page">Hide "Today's notes"</MudSwitch>
                 </MudPaper>
             </section>
 
