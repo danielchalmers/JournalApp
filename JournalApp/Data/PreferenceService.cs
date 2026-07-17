@@ -10,28 +10,28 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
     private readonly Application _application;
     private AppTheme? _theme;
 
-    // Mood colors are an HCT tonal ramp generated with material-color-utilities: the hue sweeps from the Orchid seed (343°) to its complement (163°) at uniform chroma and tone, so every mood carries the same visual weight and stays legible against the theme's surfaces.
-    // Light mode uses tone 90 / chroma 28 (container-strength pastels), dark mode tone 40 / chroma 30 (muted fills that text-primary reads on). 🤔 (unset) intentionally has no color.
+    // Mood colors are an HCT tonal ramp generated with material-color-utilities: a traffic-light hue sweep from green (145°, great) through amber to red (27°, awful) at uniform chroma and tone, so the scale reads intuitively and every mood carries the same visual weight.
+    // Light mode uses tone 90 / chroma 30 (container-strength pastels whose endpoints match the success/error containers), dark mode tone 40 / chroma 30 (muted fills that text-primary reads on). 🤔 (unset) intentionally has no color.
     private static readonly Dictionary<string, string> _lightMoodColors = new()
     {
-        ["🤩"] = "#FFD8ED",
-        ["😀"] = "#F2DAFF",
-        ["🙂"] = "#E0E0FF",
-        ["😐"] = "#D1E4FF",
-        ["😕"] = "#B7EAFF",
-        ["😢"] = "#B2EEEA",
-        ["😭"] = "#BBEECF",
+        ["🤩"] = "#C5EDBB",
+        ["😀"] = "#D8EAA9",
+        ["🙂"] = "#EDE59B",
+        ["😐"] = "#FFDF9E",
+        ["😕"] = "#FFDCBC",
+        ["😢"] = "#FFDBCA",
+        ["😭"] = "#FFDAD5",
     };
 
     private static readonly Dictionary<string, string> _darkMoodColors = new()
     {
-        ["🤩"] = "#7F4F6E",
-        ["😀"] = "#6E5480",
-        ["🙂"] = "#585B87",
-        ["😐"] = "#416184",
-        ["😕"] = "#2B6578",
-        ["😢"] = "#246865",
-        ["😭"] = "#35684E",
+        ["🤩"] = "#44673F",
+        ["😀"] = "#556430",
+        ["🙂"] = "#666024",
+        ["😐"] = "#745B1F",
+        ["😕"] = "#7F5625",
+        ["😢"] = "#875133",
+        ["😭"] = "#894E46",
     };
 
     public PreferenceService(ILogger<PreferenceService> logger, IPreferences preferenceStore)
