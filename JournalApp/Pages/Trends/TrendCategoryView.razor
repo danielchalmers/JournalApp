@@ -193,7 +193,7 @@ else
         // ApexCharts derives its shade ramp from this base color, so it needs a literal hex: the theme primary for the active mode.
         Monochrome = new ThemeMonochrome
         {
-            Color = PreferenceService.IsDarkMode ? "#F7B1DE" : "#844C72",
+            Color = PreferenceService.PrimaryColor,
             Enabled = true,
         },
     };

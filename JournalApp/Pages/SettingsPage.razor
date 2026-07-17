@@ -39,6 +39,13 @@ else
                         </MudToggleGroup>
                     </div>
 
+                    @if (PreferenceService.SupportsDeviceColors)
+                    {
+                        <div class="settings-item">
+                            <MudSwitch @bind-Value="PreferenceService.UseDeviceColors" Color="Color.Primary" aria-label="Color the app from your device wallpaper">Use device colors</MudSwitch>
+                        </div>
+                    }
+
                     <div class="settings-item">
                         <MudSwitch @bind-Value="PreferenceService.HideNotes" Color="Color.Primary" aria-label="Hide the notes section on the home page">Hide "Today's notes"</MudSwitch>
                     </div>

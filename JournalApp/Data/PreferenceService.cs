@@ -1,5 +1,8 @@
 ﻿using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Core.Platform;
+using MudBlazor;
+using MudBlazor.Utilities;
+using Color = Microsoft.Maui.Graphics.Color;
 
 namespace JournalApp;
 
@@ -9,6 +12,8 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
     private readonly IPreferences _preferenceStore;
     private readonly Application _application;
     private AppTheme? _theme;
+    private MudTheme _mudTheme;
+    private uint _mudThemeSeed;
 
     // Mood colors are HCT values generated with material-color-utilities on a "coral reef" hue sweep: turquoise water (210°, great) through sand to coral (20°, awful).
     // The light ramp stays in bright tones (62-86) so the theme's dark text-primary reads on every cell, and the dark ramp uses deep jewel tones (42-50) so the light text-primary does the same. 🤔 (unset) intentionally has no color.
@@ -85,6 +90,61 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
         set => _preferenceStore.Set("hide_notes", value);
     }
 
+    /// <summary>
+    /// Whether the device offers a Material You palette to derive the theme from (Android 12+).
+    /// </summary>
+    public bool SupportsDeviceColors => MaterialTheme.GetDeviceSeed() != null;
+
+    /// <summary>
+    /// Seeds the theme from the device's Material You palette instead of the stock Orchid seed.
+    /// </summary>
+    public bool UseDeviceColors
+    {
+        get => _preferenceStore.Get("device_colors", true);
+        set
+        {
+            logger.LogInformation($"Changing device colors to {value}");
+            _preferenceStore.Set("device_colors", value);
+            OnThemeChanged();
+        }
+    }
+
+    /// <summary>
+    /// The active MudTheme, regenerated whenever the effective seed color changes.
+    /// </summary>
+    public MudTheme GetTheme()
+    {
+        var seed = UseDeviceColors ? MaterialTheme.GetDeviceSeed() ?? MaterialTheme.DefaultSeed : MaterialTheme.DefaultSeed;
+
+        if (_mudTheme == null || seed != _mudThemeSeed)
+        {
+            logger.LogInformation($"Generating theme from seed #{seed:X8}");
+            _mudTheme = MaterialTheme.FromSeed(seed);
+            _mudThemeSeed = seed;
+        }
+
+        return _mudTheme;
+    }
+
+    /// <summary>
+    /// The literal hex of the mode's primary color for consumers that can't use CSS variables, like chart configs.
+    /// </summary>
+    public string PrimaryColor => (IsDarkMode ? GetTheme().PaletteDark.Primary : GetTheme().PaletteLight.Primary).ToString(MudColorOutputFormats.Hex);
+
+    /// <summary>
+    /// Re-reads the device palette, which can change when the wallpaper does, and rethemes if the seed moved.
+    /// </summary>
+    public void RefreshDeviceColors()
+    {
+        if (_mudTheme == null || !UseDeviceColors)
+            return;
+
+        var seed = MaterialTheme.GetDeviceSeed() ?? MaterialTheme.DefaultSeed;
+
+        if (seed != _mudThemeSeed)
+            OnThemeChanged();
+    }
+
     public SafetyPlan SafetyPlan
     {
         get => _preferenceStore.GetJson<SafetyPlan>("safety_plan");
@@ -137,19 +197,10 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
         if (OperatingSystem.IsAndroid())
         {
             logger.LogDebug("Updating status bar");
-#pragma warning disable CS0618 // Type or member is obsolete
             // Match the M3 surface tone so the status bar blends into the page header.
-            if (IsDarkMode)
-            {
-                StatusBar.SetColor(Color.FromHex("#181215"));
-                StatusBar.SetStyle(StatusBarStyle.LightContent);
-            }
-            else
-            {
-                StatusBar.SetColor(Color.FromHex("#FFF8F9"));
-                StatusBar.SetStyle(StatusBarStyle.DarkContent);
-            }
-#pragma warning restore CS0618 // Type or member is obsolete
+            var surface = IsDarkMode ? GetTheme().PaletteDark.Background : GetTheme().PaletteLight.Background;
+            StatusBar.SetColor(Color.FromRgb(surface.R, surface.G, surface.B));
+            StatusBar.SetStyle(IsDarkMode ? StatusBarStyle.LightContent : StatusBarStyle.DarkContent);
         }
     }
 
