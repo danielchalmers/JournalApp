@@ -269,12 +269,36 @@ label.mud-switch.mud-disabled .mud-switch-span {
   --mud-palette-surface: var(--mud-palette-gray-lighter);
 }
 
-/* M3 dialogs sit on surfaceContainerHigh. */
+/* M3 dialogs sit on surfaceContainerHigh with the 24px container inset. */
 .mud-dialog {
-  padding: 12px !important;
-  gap: 12px !important;
+  padding: 24px !important;
+  gap: 16px !important;
   border-radius: 28px;
   --mud-palette-surface: var(--mud-palette-gray-lighter);
+}
+
+/* M3 dialog headline is headline-small on the leading edge, not a centered bold h6. */
+.mud-dialog-title {
+  padding: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.mud-dialog-title .mud-typography-h6 {
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 32px;
+}
+
+/* M3 dialog supporting text reads on onSurfaceVariant; inputs keep their own stronger ink. */
+.mud-dialog-content {
+  color: var(--mud-palette-text-secondary);
+}
+
+.mud-dialog-actions {
+  gap: 8px;
+  justify-content: flex-end;
 }
 
 /* M3 filled cards: tonal, flat (depth comes from tone, not shadow). */
@@ -290,7 +314,7 @@ label.mud-switch.mud-disabled .mud-switch-span {
   font-size: inherit;
 }
 
-.mud-dialog-title, .mud-card-header {
+.mud-card-header {
   padding: 0 !important;
   padding-top: 8px !important;
   display: flex;

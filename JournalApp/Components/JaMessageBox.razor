@@ -41,7 +41,7 @@
                 }
                 else if (!string.IsNullOrWhiteSpace(CancelText))
                 {
-                    <MudButton Class="mud-message-box__cancel-button" OnClick="OnCancelClicked">@CancelText</MudButton>
+                    <MudButton Class="mud-message-box__cancel-button" OnClick="OnCancelClicked" Color="Color.Primary">@CancelText</MudButton>
                 }
                 @if (NoButton is not null)
                 {
@@ -51,7 +51,7 @@
                 }
                 else if (!string.IsNullOrWhiteSpace(NoText))
                 {
-                    <MudButton Class="mud-message-box__no-button" OnClick="OnNoClicked">@NoText</MudButton>
+                    <MudButton Class="mud-message-box__no-button" OnClick="OnNoClicked" Color="Color.Primary">@NoText</MudButton>
                 }
                 @if (YesButton is not null)
                 {
@@ -61,7 +61,7 @@
                 }
                 else if (!string.IsNullOrWhiteSpace(YesText))
                 {
-                    <MudButton Class="mud-message-box__yes-button" OnClick="OnYesClicked" Variant="Variant.Filled" Color="Color.Primary">@YesText</MudButton>
+                    <MudButton Class="mud-message-box__yes-button" OnClick="OnYesClicked" Color="Color.Primary">@YesText</MudButton>
                 }
             </MudFocusTrap>
         </div>
