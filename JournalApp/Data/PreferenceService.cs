@@ -194,6 +194,12 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
 
     private void UpdateSystemBars()
     {
+        var surface = IsDarkMode ? GetTheme().PaletteDark.Background : GetTheme().PaletteLight.Background;
+
+        // The page shows through the safe area padding around the web view, so match it to the M3 surface tone for seamless bars.
+        if (App.Window?.Page is not null)
+            App.Window.Page.BackgroundColor = Color.FromRgb(surface.R, surface.G, surface.B);
+
 #if ANDROID
         logger.LogDebug("Updating system bars");
 
@@ -209,7 +215,6 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
         // Older versions still draw opaque bars so tint them to the M3 surface tone to blend into the page.
         if (!OperatingSystem.IsAndroidVersionAtLeast(35))
         {
-            var surface = IsDarkMode ? GetTheme().PaletteDark.Background : GetTheme().PaletteLight.Background;
             StatusBar.SetColor(Color.FromRgb(surface.R, surface.G, surface.B));
             StatusBar.SetStyle(IsDarkMode ? StatusBarStyle.LightContent : StatusBarStyle.DarkContent);
 #pragma warning disable CA1422 // Deprecated in API 35 which the surrounding check excludes.

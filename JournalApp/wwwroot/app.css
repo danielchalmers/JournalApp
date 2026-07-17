@@ -2,12 +2,12 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Native code injects --safe-area-inset-* on Android where env() needs a recent WebView; env() covers everything else. */
+/* Safe area insets are zero while the native page letterboxes the web view, but flow in via env() on WebViews that support it if edge-to-edge is ever enabled. */
 :root {
-  --inset-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
-  --inset-right: var(--safe-area-inset-right, env(safe-area-inset-right, 0px));
-  --inset-bottom: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
-  --inset-left: var(--safe-area-inset-left, env(safe-area-inset-left, 0px));
+  --inset-top: env(safe-area-inset-top, 0px);
+  --inset-right: env(safe-area-inset-right, 0px);
+  --inset-bottom: env(safe-area-inset-bottom, 0px);
+  --inset-left: env(safe-area-inset-left, 0px);
 }
 
 body {
