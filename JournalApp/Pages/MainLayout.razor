@@ -27,15 +27,11 @@
 
     MudTheme _theme = new()
     {
-        // "Orchid" Material 3 tonal palette, seed #854C73, generated with Google's
-        // material-color-utilities (SchemeTonalSpot) so surfaces come from the neutral
-        // palette rather than hand-tinted pinks.
+        // "Orchid" Material 3 tonal palette, seed #854C73, generated with Google's material-color-utilities (SchemeTonalSpot) so surfaces come from the neutral palette rather than hand-tinted pinks.
         // Slot conventions (same in both modes, so CSS can rely on them):
-        //   Background = M3 surface, Surface = surfaceContainer (cards),
-        //   BackgroundGray = surfaceContainerLow, GrayLighter = surfaceContainerHigh,
-        //   GrayLight = surfaceContainerHighest, X.Lighten = xContainer,
-        //   X.Darken = onXContainer, LinesDefault = outlineVariant, LinesInputs = outline,
-        //   Dark = inverseSurface, DarkContrastText = inverseOnSurface.
+        //   Background = M3 surface, Surface = surfaceContainer (cards), BackgroundGray = surfaceContainerLow, GrayLighter = surfaceContainerHigh, GrayLight = surfaceContainerHighest.
+        //   X.Lighten = xContainer, X.Darken = onXContainer, LinesDefault = outlineVariant, LinesInputs = outline, Dark = inverseSurface, DarkContrastText = inverseOnSurface.
+        // Info/Success/Warning are the stock Material hues harmonized toward the seed (Blend.harmonize) with the same slot conventions.
         PaletteLight = new PaletteLight()
         {
             Primary = "#844C72",
@@ -54,6 +50,18 @@
             ErrorContrastText = "#FFFFFF",
             ErrorLighten = "#FFDAD6",
             ErrorDarken = "#93000A",
+            Info = "#1A59C2",
+            InfoContrastText = "#FFFFFF",
+            InfoLighten = "#D9E2FF",
+            InfoDarken = "#001945",
+            Success = "#426900",
+            SuccessContrastText = "#FFFFFF",
+            SuccessLighten = "#BBF46F",
+            SuccessDarken = "#112000",
+            Warning = "#994704",
+            WarningContrastText = "#FFFFFF",
+            WarningLighten = "#FFDBC9",
+            WarningDarken = "#321200",
             Background = "#FFF8F9",
             BackgroundGray = "#FEF0F5",
             Surface = "#F8EAF0",
@@ -92,6 +100,18 @@
             ErrorContrastText = "#690005",
             ErrorLighten = "#93000A",
             ErrorDarken = "#FFDAD6",
+            Info = "#B0C6FF",
+            InfoContrastText = "#002D6F",
+            InfoLighten = "#00419C",
+            InfoDarken = "#D9E2FF",
+            Success = "#A0D756",
+            SuccessContrastText = "#203700",
+            SuccessLighten = "#304F00",
+            SuccessDarken = "#BBF46F",
+            Warning = "#FFB68C",
+            WarningContrastText = "#532200",
+            WarningLighten = "#753400",
+            WarningDarken = "#FFDBC9",
             Background = "#181215",
             BackgroundGray = "#201A1D",
             Surface = "#251E22",

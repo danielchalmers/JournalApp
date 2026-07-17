@@ -28,12 +28,13 @@ body {
   font-size: 6vw;
 }
 
+/* The sticky header ends flush at the pill so scrolling content passes under a clean edge instead of a same-color strip. */
 .switcher {
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 999px;
-  margin: 0 8px 8px;
+  margin: 0 8px;
   background-color: var(--mud-palette-surface);
 }
 
@@ -125,8 +126,7 @@ body {
   gap: 8px;
 }
 
-/* M3 segmented buttons: outlined container, neutral unselected text,
-   selected segment fills secondaryContainer with a leading checkmark. */
+/* M3 segmented buttons: outlined container, neutral unselected text, selected segment fills secondaryContainer. */
 .mud-toggle-group {
   flex-grow: 1;
   border-radius: 999px;
@@ -137,7 +137,7 @@ body {
   color: var(--mud-palette-text-primary);
   background-color: transparent;
   border-color: var(--mud-palette-lines-inputs) !important;
-  min-height: 40px;
+  min-height: 32px;
 }
 
 .mud-toggle-group .mud-toggle-item.mud-toggle-item-selected {
@@ -145,24 +145,16 @@ body {
   color: var(--mud-palette-secondary-darken);
 }
 
-.mud-toggle-group .mud-toggle-item.mud-toggle-item-selected .mud-toggle-item-content::before {
-  content: "";
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  margin-right: 8px;
-  vertical-align: -4px;
-  background-color: currentColor;
-  -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>') center / contain no-repeat;
-  mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>') center / contain no-repeat;
-}
-
 .mud-button {
   border-radius: 999px;
 }
 
-/* M3 outlined buttons use the neutral outline-variant, not a primary-tinted border. */
+/* M3 outlined buttons and button groups use the neutral outline-variant, not a text- or primary-tinted border. */
 .mud-button-outlined {
+  border-color: var(--mud-palette-lines-default);
+}
+
+.mud-button-group-outlined.mud-button-group-override-styles .mud-button-root {
   border-color: var(--mud-palette-lines-default);
 }
 
@@ -174,9 +166,8 @@ body {
   color: var(--mud-palette-primary-text);
 }
 
-/* M3 expressive slider: thick rounded track, primary fill, and a narrow bar
-   handle instead of a floating circle. Selectors include the size class because
-   MudBlazor's size rules (e.g. .mud-slider-small) otherwise win the cascade. */
+/* M3 expressive slider: thick rounded track, primary fill, and a narrow bar handle instead of a floating circle. */
+/* Selectors include the size class because MudBlazor's size rules (e.g. .mud-slider-small) otherwise win the cascade. */
 .mud-slider .mud-slider-input::-webkit-slider-runnable-track,
 .mud-slider.mud-slider-small .mud-slider-input::-webkit-slider-runnable-track {
   height: 12px;
@@ -260,8 +251,8 @@ body {
 
 .emoji-button {
   padding: 0;
-  min-width: 56px;
-  height: 56px;
+  min-width: 48px;
+  height: 48px;
   border-radius: 50%;
   background-color: var(--mud-palette-gray-lighter);
 }
@@ -287,9 +278,7 @@ body {
   color: var(--mud-palette-text-secondary);
 }
 
-/* M3E grouped list: the card becomes an invisible wrapper and every row is its
-   own tonal container. First and last rows carry the large group radius, like
-   Pixel Settings / 2025 Google apps. */
+/* M3E grouped list, like Pixel Settings: the card becomes an invisible wrapper, every row is its own tonal container, and the first and last rows carry the large group radius. */
 .main-timeline .mud-card.data-point-group {
   background-color: transparent;
   padding: 0 !important;
@@ -316,8 +305,7 @@ body {
   border-bottom-right-radius: 18px;
 }
 
-/* When the group ends with an action row (New note), that row becomes the
-   closing container instead of the last list item. */
+/* When the group ends with an action row (New note), that row becomes the closing container instead of the last list item. */
 .main-timeline .data-point-group:has(.mud-card-actions .mud-button) .data-point-container:last-child {
   border-bottom-left-radius: 6px;
   border-bottom-right-radius: 6px;

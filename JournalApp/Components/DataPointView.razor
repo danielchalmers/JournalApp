@@ -24,7 +24,7 @@ else if (Point.Type == PointType.Scale)
 }
 else if (Point.Type == PointType.LowToHigh)
 {
-    <MudToggleGroup T="int?" @bind-Value="Point.ScaleIndex" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small">
+    <MudToggleGroup T="int?" @bind-Value="Point.ScaleIndex" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" CheckMark>
         <MudToggleItem T="int?" Value="0">None</MudToggleItem>
         <MudToggleItem T="int?" Value="1">Low</MudToggleItem>
         <MudToggleItem T="int?" Value="3">Medium</MudToggleItem>
@@ -33,7 +33,7 @@ else if (Point.Type == PointType.LowToHigh)
 }
 else if (Point.Type == PointType.MildToSevere)
 {
-    <MudToggleGroup T="int?" @bind-Value="Point.ScaleIndex" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small">
+    <MudToggleGroup T="int?" @bind-Value="Point.ScaleIndex" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" CheckMark>
         <MudToggleItem T="int?" Value="0">None</MudToggleItem>
         <MudToggleItem T="int?" Value="1">Mild</MudToggleItem>
         <MudToggleItem T="int?" Value="3">Moderate</MudToggleItem>
@@ -42,7 +42,7 @@ else if (Point.Type == PointType.MildToSevere)
 }
 else if (Point.Type == PointType.Bool)
 {
-    <MudToggleGroup T="bool?" @bind-Value="Point.Bool" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small">
+    <MudToggleGroup T="bool?" @bind-Value="Point.Bool" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" CheckMark>
         <MudToggleItem T="bool?" Value="false">No</MudToggleItem>
         <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
     </MudToggleGroup>
@@ -74,7 +74,7 @@ else if (Point.Type == PointType.Note)
 else if (Point.Type == PointType.Medication)
 {
     <div class="medication-controls">
-        <MudToggleGroup T="bool?" @bind-Value="Point.Bool" @bind-Value:after="OnMedicationTakenChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small">
+        <MudToggleGroup T="bool?" @bind-Value="Point.Bool" @bind-Value:after="OnMedicationTakenChanged" SelectionMode="SelectionMode.ToggleSelection" Size="Size.Small" CheckMark>
             <MudToggleItem T="bool?" Value="false">No</MudToggleItem>
             <MudToggleItem T="bool?" Value="true">Yes</MudToggleItem>
         </MudToggleGroup>
