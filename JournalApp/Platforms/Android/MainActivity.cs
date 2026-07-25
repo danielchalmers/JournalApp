@@ -12,6 +12,13 @@ public class MainActivity : MauiAppCompatActivity
     {
         base.OnCreate(savedInstanceState);
 
+        // The web layer dodges the keyboard itself by watching the visual viewport, so keep the window static and let CSS animate the dodge.
+        // Pre-11 WebViews don't track the ime in the visual viewport, so fall back to the legacy resize there.
+        if (OperatingSystem.IsAndroidVersionAtLeast(30))
+            Window.SetSoftInputMode(global::Android.Views.SoftInput.AdjustNothing);
+        else
+            Window.SetSoftInputMode(global::Android.Views.SoftInput.AdjustResize);
+
         var backCallback = new OnBackPressedCallbackProxy(() =>
         {
             var service = IPlatformApplication.Current.Services.GetService<KeyEventService>();
