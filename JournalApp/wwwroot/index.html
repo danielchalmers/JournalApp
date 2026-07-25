@@ -33,6 +33,15 @@
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
 
     <script>
+        // The keyboard overlays the page and shrinks the visual viewport; tracking it lets dialogs glide out of the keyboard's way.
+        const viewport = window.visualViewport;
+        const applyViewport = () => {
+            document.documentElement.style.setProperty('--visible-height', viewport.height + 'px');
+            document.documentElement.style.setProperty('--keyboard-inset', Math.max(0, window.innerHeight - viewport.height) + 'px');
+        };
+        viewport.addEventListener('resize', applyViewport);
+        applyViewport();
+
 		window.scrollToAbsoluteTop = (scrollBehavior = 'smooth') => {
             document.scrollingElement.scrollTo({ top: 0, behavior: scrollBehavior });
         }

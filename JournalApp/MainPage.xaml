@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:JournalApp"
              x:Class="JournalApp.MainPage"
-             SafeAreaEdges="All"
+             SafeAreaEdges="Container"
              BackgroundColor="{AppThemeBinding Light=#FFF8F9, Dark=#181215}">
 
     <BlazorWebView HostPage="wwwroot/index.html" BlazorWebViewInitialized="OnBlazorWebViewInitialized">

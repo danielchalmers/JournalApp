@@ -306,6 +306,22 @@ label.mud-switch.mud-disabled .mud-switch-span {
   --mud-palette-surface: var(--mud-palette-gray-lighter);
 }
 
+/* The keyboard overlays the WebView and shrinks the visual viewport; pinning the container to it glides dialogs out of the keyboard's way. */
+.mud-dialog-container {
+  height: var(--visible-height, 100%);
+  transition: height 250ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Cap dialogs to the shrunken container instead of MudBlazor's viewport-based max-height. */
+.mud-dialog:not(.mud-dialog-fullscreen) {
+  max-height: calc(100% - 32px);
+}
+
+/* Give the document scroll room so content can move up out from under the keyboard. */
+body {
+  padding-bottom: var(--keyboard-inset, 0px);
+}
+
 /* M3 dialogs sit on surfaceContainerHigh with the 24px container inset. */
 .mud-dialog {
   padding: 24px !important;
