@@ -91,7 +91,6 @@ textarea,
   flex-direction: row;
   align-items: center;
   gap: 8px;
-  min-height: 64px;
   /* Android insets the leading glyph 16dp; an icon button already carries 12dp of its own, so the row adds the last 4dp. */
   padding: 0 4px;
   box-shadow: none;
@@ -117,18 +116,22 @@ textarea,
   font-weight: 400;
 }
 
-/* The toolbar and switcher rows together make up a 120dp two-row app bar, with 8dp under the pill so scrolling content never touches it. */
 .page-header {
   z-index: var(--mud-zindex-appbar);
   display: flex;
   flex-direction: column;
   padding: 0 !important;
-  padding-bottom: 8px !important;
   margin: 0 !important;
   top: 0 !important;
   position: sticky !important;
   background-color: var(--mud-palette-background);
   color: var(--mud-palette-text-primary);
+}
+
+/* Only a header carrying the switcher needs room under it, so scrolling content passes below the pill instead of through it. */
+/* Pages without one stay as tight as they were. */
+.page-header:has(.switcher) {
+  padding-bottom: 8px !important;
 }
 
 /* On-scroll separation for the sticky header: a soft lift fades in once content passes underneath. */
@@ -248,10 +251,8 @@ textarea,
   background-image: linear-gradient(rgba(var(--mud-palette-text-primary-rgb), 0.10), rgba(var(--mud-palette-text-primary-rgb), 0.10));
 }
 
-/* M3E small buttons are 40dp tall; MudBlazor's own padding leaves them at ~36px. */
 .mud-button {
   border-radius: var(--ja-shape-full);
-  min-height: 40px;
 }
 
 /* M3 outlined buttons and button groups draw their boundary in the outline role, which is the only neutral that clears 3:1 against a light surface. */
@@ -423,25 +424,12 @@ label.mud-switch.mud-disabled .mud-switch-span {
   opacity: 0.38;
 }
 
-/* The label is the whole tap target, so it takes the 48dp minimum rather than the 32px height of the switch track itself. */
-label.mud-switch {
-  min-height: 48px;
-}
-
 /* M3 settings rows lead with the label and keep the switch on the trailing edge. Scoped to the label element because MudSwitch reuses the mud-switch class on its inner text span. */
 .settings-group label.mud-switch {
   width: 100%;
   flex-direction: row-reverse;
   justify-content: space-between;
   margin-inline-start: 0;
-}
-
-/* A link that acts as a whole row needs a row-sized target; MudLink is otherwise only as tall as its text. */
-.settings-item .mud-link,
-.worksheet-view .mud-link {
-  display: flex;
-  align-items: center;
-  min-height: 48px;
 }
 
 /* MudBlazor's text alerts are a low-alpha wash that all but disappears on a light surface, so they take a real tonal container instead. */
@@ -580,13 +568,12 @@ body {
   border-radius: var(--ja-shape-xs);
 }
 
-/* The mood button is a tonal container like the other controls, so it stays visible on a light card. */
 .emoji-button {
   padding: 0;
   min-width: 48px;
   height: 48px;
   border-radius: 50%;
-  background-color: var(--mud-palette-secondary-lighten);
+  background-color: var(--mud-palette-gray-lighter);
 }
 
 .emoji-popover-content {
@@ -659,34 +646,21 @@ a.list-group-title {
   letter-spacing: 0.15px;
 }
 
-/* M3 filled text field, so number and text rows read as editable instead of as plain labels. */
-/* Without a container these fields are borderless transparent text and an empty one is invisible. */
+/* Number and text rows are borderless transparent text, so an unedited one is invisible. */
+/* An active indicator alone says the value is editable, without a filled box turning a journal row into a form field. */
 .main-timeline .data-point-container-number .mud-input,
 .main-timeline .data-point-container-text .mud-input {
-  background-color: var(--mud-palette-gray-light);
-  border-radius: var(--ja-shape-xs) var(--ja-shape-xs) 0 0;
   border-bottom: 1px solid var(--mud-palette-lines-inputs);
-  padding: 4px 12px;
-  min-height: 40px;
 }
 
-/* A number never needs the whole row, and a full-width box for three digits reads as a form rather than a journal entry. */
+/* A number never needs the whole row, and an indicator far wider than the value it sits under reads as a stray rule. */
 .main-timeline .data-point-container-number .mud-input {
-  max-width: 200px;
+  max-width: 120px;
 }
 
-/* M3 filled fields thicken the active indicator to 2dp in primary while focused. */
 .main-timeline .data-point-container-number .mud-input:focus-within,
 .main-timeline .data-point-container-text .mud-input:focus-within {
-  border-bottom: 2px solid var(--mud-palette-primary);
-  padding-bottom: 3px;
-}
-
-/* The sleep stepper and the note edit pencil render at MudBlazor's small size, which is well under the 48dp target. */
-.sleep-controls .mud-icon-button,
-.note-container .note-edit-button {
-  min-width: 48px;
-  min-height: 48px;
+  border-bottom-color: var(--mud-palette-primary);
 }
 
 /* ApexCharts bakes its own greys into the SVG it draws, so the axis ink, gridlines and tooltip are re-pointed at the palette here. */
