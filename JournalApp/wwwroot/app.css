@@ -1,4 +1,4 @@
-﻿* {
+* {
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -6,11 +6,43 @@ body {
   user-select: none;
   --mud-palette-action-default: var(--mud-palette-text-primary);
   color-scheme: light dark;
+
+  /* The M3 shape scale, so every container picks its radius from one ladder instead of an ad-hoc number. */
+  --ja-shape-xs: 4px;
+  --ja-shape-sm: 8px;
+  --ja-shape-md: 12px;
+  --ja-shape-lg: 16px;
+  --ja-shape-lg-increased: 20px;
+  --ja-shape-xl: 28px;
+  --ja-shape-full: 999px;
+
+  /* M3 Expressive motion. Spatial springs are underdamped so size, position and shape overshoot slightly. */
+  --ja-motion-spatial: 300ms cubic-bezier(0.27, 1.06, 0.18, 1);
+  /* Effects springs are critically damped, so color and opacity must never overshoot. */
+  --ja-motion-effects: 200ms cubic-bezier(0.2, 0, 0, 1);
+
+  /* The two soft lifts the app uses: a container resting above the page, and the header once content passes under it. */
+  --ja-shadow-raised: 0 1px 2px rgba(0, 0, 0, 0.10), 0 2px 6px 1px rgba(0, 0, 0, 0.07);
+  --ja-shadow-scrolled: 0 6px 10px -6px rgba(0, 0, 0, 0.16), 0 10px 24px -10px rgba(0, 0, 0, 0.10);
+  /* M3 elevation level 3, which is what dialogs and menus sit at. */
+  --ja-shadow-level3: 0 1px 3px rgba(0, 0, 0, 0.30), 0 4px 8px 3px rgba(0, 0, 0, 0.15);
 }
 
   body::-webkit-scrollbar {
     display: none;
   }
+
+/* Text selection and the caret otherwise fall back to the platform accent, which is the stock blue rather than the app's primary. */
+::selection {
+  background-color: var(--mud-palette-primary-lighten);
+  color: var(--mud-palette-primary-darken);
+}
+
+input,
+textarea,
+[contenteditable] {
+  caret-color: var(--mud-palette-primary);
+}
 
 /* Background colors come from the theme-matched media queries at the bottom so the native splash, this loading screen, and the app all share one tone. */
 #splash-screen {
@@ -28,30 +60,36 @@ body {
   font-size: 6vw;
 }
 
-/* The sticky header ends flush at the pill so scrolling content passes under a clean edge instead of a same-color strip. */
+/* The day, month and year switcher is a full-corner container that rests above the page, like an M3 search bar. */
+/* It carries its own lift instead of relying on a full-width line under the header, which used to slice straight through the pill. */
 .switcher {
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 999px;
+  height: 48px;
+  border-radius: var(--ja-shape-full);
   margin: 0 8px;
-  background-color: var(--mud-palette-surface);
+  background-color: var(--mud-palette-gray-lighter);
+  box-shadow: var(--ja-shadow-raised);
 }
 
 .switcher-header {
   display: flex;
   justify-content: center;
-  width: 55vw;
+  flex: 1;
+  min-width: 0;
 }
 
 .page {
 }
 
+/* M3 small top app bar: 64dp tall, title-large title, trailing icons on the neutral action color. */
 .page-toolbar {
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 8px;
+  min-height: 64px;
   padding: 0;
   box-shadow: none;
   background-color: var(--mud-palette-background);
@@ -65,17 +103,24 @@ body {
   font-weight: 400;
 }
 
+/* The leading navigation icon is onSurface; only the trailing icons are onSurfaceVariant. */
+.page-toolbar > .mud-icon-button:first-child {
+  color: var(--mud-palette-text-primary);
+}
+
 /* Match the date button to title-large as well. */
 .switcher-header .mud-typography-h5 {
   font-size: 22px;
   font-weight: 400;
 }
 
+/* The toolbar and switcher rows together make up a 120dp two-row app bar, with 8dp under the pill so scrolling content never touches it. */
 .page-header {
   z-index: var(--mud-zindex-appbar);
   display: flex;
   flex-direction: column;
   padding: 0 !important;
+  padding-bottom: 8px !important;
   margin: 0 !important;
   top: 0 !important;
   position: sticky !important;
@@ -83,7 +128,7 @@ body {
   color: var(--mud-palette-text-primary);
 }
 
-/* On-scroll separation for the sticky header: a soft M3 level-1 shadow fades in once content passes underneath. */
+/* On-scroll separation for the sticky header: a soft lift fades in once content passes underneath. */
 /* MD3 proper would retone the container instead, but that desyncs the natively colored status bar, so elevation stands in until edge-to-edge lands. */
 @supports (animation-timeline: scroll()) {
   .page-header {
@@ -93,9 +138,11 @@ body {
   }
 }
 
+/* The lift carries an outlineVariant hairline as well, because a black shadow does nothing over a tone-6 dark surface. */
+/* The hairline has to come from the palette rather than a prefers-color-scheme branch: the WebView reports the OS theme, not the theme the user picked in the app. */
 @keyframes header-on-scroll {
   to {
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 1px 0 var(--mud-palette-lines-default), var(--ja-shadow-scrolled);
   }
 }
 
@@ -105,7 +152,7 @@ body {
   margin: 0 auto !important;
   padding: 8px !important;
   padding-bottom: 15vh !important;
-  animation: fadeInUp 0.15s ease-out;
+  animation: fadeInUp var(--ja-motion-spatial);
 }
 
 @keyframes fadeInUp {
@@ -143,93 +190,156 @@ body {
 }
 
 /* M3E connected button group: tonal segments separated by 2px gaps instead of an outlined pill with dividers. */
-/* The row of segments keeps fully rounded outer corners, and the selected segment morphs to a full pill with a secondaryContainer fill. */
+/* The row of segments keeps fully rounded outer corners, and the selected segment morphs to a full pill. */
 .mud-toggle-group {
   flex-grow: 1;
   gap: 2px;
   border: none !important;
+  border-radius: var(--ja-shape-full);
   background-color: transparent;
 }
 
+/* MudBlazor pulls each segment 1px left to collapse outlined borders, which eats half of the 2dp M3E gap. */
 .mud-toggle-group .mud-toggle-item {
-  color: var(--mud-palette-text-primary);
-  background-color: var(--mud-palette-gray-lighter);
+  margin-left: 0 !important;
+}
+
+/* Tone alone cannot separate a control from its card in light mode, where neighbouring neutral surfaces are only 1.05:1 apart. */
+/* Chroma can: an unselected segment takes the tonal-button pair (secondaryContainer on onSecondaryContainer, 7.25:1), and the selected one is a filled primary pill (5.5:1 against the card). */
+.mud-toggle-group .mud-toggle-item {
+  color: var(--mud-palette-secondary-darken);
+  background-color: var(--mud-palette-secondary-lighten);
   border: none !important;
-  border-radius: 8px;
-  min-height: 32px;
-  transition: border-radius 0.15s ease-out, background-color 0.15s ease-out;
+  min-height: 48px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: var(--ja-shape-sm);
+  transition: border-radius var(--ja-motion-spatial), background-color var(--ja-motion-effects), color var(--ja-motion-effects);
 }
 
 .mud-toggle-group .mud-toggle-item:first-child {
-  border-top-left-radius: 999px;
-  border-bottom-left-radius: 999px;
+  border-top-left-radius: var(--ja-shape-full);
+  border-bottom-left-radius: var(--ja-shape-full);
 }
 
 .mud-toggle-group .mud-toggle-item:last-child {
-  border-top-right-radius: 999px;
-  border-bottom-right-radius: 999px;
+  border-top-right-radius: var(--ja-shape-full);
+  border-bottom-right-radius: var(--ja-shape-full);
 }
 
 .mud-toggle-group .mud-toggle-item.mud-toggle-item-selected {
-  background-color: var(--mud-palette-secondary-lighten);
-  color: var(--mud-palette-secondary-darken);
-  border-radius: 999px;
+  background-color: var(--mud-palette-primary);
+  color: var(--mud-palette-primary-text);
+  border-radius: var(--ja-shape-full);
 }
 
+/* M3E small buttons are 40dp tall; MudBlazor's own padding leaves them at ~36px. */
 .mud-button {
-  border-radius: 999px;
+  border-radius: var(--ja-shape-full);
+  min-height: 40px;
 }
 
-/* M3 outlined buttons and button groups use the neutral outline-variant, not a text- or primary-tinted border. */
-.mud-button-outlined {
-  border-color: var(--mud-palette-lines-default);
+/* M3 outlined buttons and button groups draw their boundary in the outline role, which is the only neutral that clears 3:1 against a light surface. */
+/* The compound selectors are needed because MudBlazor's own per-color rules outrank a single class. */
+.mud-button-outlined,
+.mud-button-outlined.mud-button-outlined-primary,
+.mud-button-outlined.mud-button-outlined-default {
+  border-color: var(--mud-palette-lines-inputs);
 }
 
 .mud-button-group-outlined.mud-button-group-override-styles .mud-button-root {
-  border-color: var(--mud-palette-lines-default);
+  border-color: var(--mud-palette-lines-inputs);
 }
 
+/* M3E connected button group geometry, the same one the toggle groups use: 2dp gaps, small inner corners, full outer corners. */
+/* MudBlazor collapses the inner corners to 0 and overlaps the members by 1px, which reads as a table rather than a button group. */
 .mud-button-group-root {
-  border-radius: 999px;
+  border-radius: var(--ja-shape-full);
+  gap: 2px;
+}
+
+.mud-button-group-horizontal:not(.mud-button-group-rtl) > .mud-button-root:not(:last-child),
+.mud-button-group-horizontal:not(.mud-button-group-rtl) > :not(:last-child) .mud-button-root {
+  border-top-right-radius: var(--ja-shape-sm);
+  border-bottom-right-radius: var(--ja-shape-sm);
+}
+
+.mud-button-group-horizontal:not(.mud-button-group-rtl) > .mud-button-root:not(:first-child),
+.mud-button-group-horizontal:not(.mud-button-group-rtl) > :not(:first-child) .mud-button-root {
+  border-top-left-radius: var(--ja-shape-sm);
+  border-bottom-left-radius: var(--ja-shape-sm);
+  margin-left: 0;
+}
+
+.mud-button-group-root > .mud-button-root:first-child {
+  border-top-left-radius: var(--ja-shape-full);
+  border-bottom-left-radius: var(--ja-shape-full);
+}
+
+.mud-button-group-root > .mud-button-root:last-child {
+  border-top-right-radius: var(--ja-shape-full);
+  border-bottom-right-radius: var(--ja-shape-full);
 }
 
 .mud-button-filled.mud-button-filled-primary {
   color: var(--mud-palette-primary-text);
 }
 
-/* M3 expressive slider: thick rounded track, primary fill, and a narrow bar handle instead of a floating circle. */
+/* M3E slider: a 16dp rounded track, primary active fill, and a narrow bar handle instead of a floating circle. */
+/* MudBlazor paints the range input above the active bar, so the inactive track moves onto the container beneath it and the active bar gets its own layer. */
 /* Selectors include the size class because MudBlazor's size rules (e.g. .mud-slider-small) otherwise win the cascade. */
-.mud-slider .mud-slider-input::-webkit-slider-runnable-track,
-.mud-slider.mud-slider-small .mud-slider-input::-webkit-slider-runnable-track {
-  height: 12px;
-  margin: 5px 0;
-  border-radius: 999px;
+.mud-slider.mud-slider-primary .mud-slider-input::-webkit-slider-runnable-track,
+.mud-slider.mud-slider-small .mud-slider-input::-webkit-slider-runnable-track,
+.mud-slider.mud-slider-medium .mud-slider-input::-webkit-slider-runnable-track {
+  background-color: transparent;
+  background-image: none;
+  height: 16px;
+  margin: 3px 0;
 }
 
 /* The inactive track carries the M3E stop indicator dot near its trailing end. */
-.mud-slider.mud-slider-primary .mud-slider-input::-webkit-slider-runnable-track {
+.mud-slider .mud-slider-inner-container::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 16px;
+  transform: translateY(-50%);
+  border-radius: var(--ja-shape-full);
   background-color: var(--mud-palette-secondary-lighten);
   background-image: radial-gradient(circle, var(--mud-palette-primary) 0 2px, transparent 2.5px);
   background-repeat: no-repeat;
-  background-position: right 5px center;
+  background-position: right 6px center;
   background-size: 5px 5px;
 }
 
 .mud-slider .mud-slider-filled,
-.mud-slider.mud-slider-small .mud-slider-filled {
-  height: 12px;
-  border-radius: 6px 2px 2px 6px;
+.mud-slider.mud-slider-small .mud-slider-filled,
+.mud-slider.mud-slider-medium .mud-slider-filled {
+  position: relative;
+  z-index: 1;
+  height: 16px;
+  border-radius: var(--ja-shape-full);
 }
 
 .mud-slider .mud-slider-input::-webkit-slider-thumb,
-.mud-slider.mud-slider-small .mud-slider-input::-webkit-slider-thumb {
+.mud-slider.mud-slider-small .mud-slider-input::-webkit-slider-thumb,
+.mud-slider.mud-slider-medium .mud-slider-input::-webkit-slider-thumb {
   width: 4px;
-  height: 24px;
+  height: 32px;
   transform: none;
-  border-radius: 2px;
-  margin-top: -6px;
+  border-radius: var(--ja-shape-full);
+  margin-top: -8px;
+  background-color: var(--mud-palette-primary);
   /* M3E carves a gap between the handle and the track; surface-colored blocks either side of the bar fake it over the row container. */
   box-shadow: 6px 0 0 var(--mud-palette-surface), -6px 0 0 var(--mud-palette-surface);
+}
+
+/* MudBlazor swaps in an M2 focus ring on press, which would drop the gap exactly while the handle is being dragged. */
+.mud-slider .mud-slider-input:active::-webkit-slider-thumb,
+.mud-slider .mud-slider-input:focus::-webkit-slider-thumb {
+  box-shadow: 6px 0 0 var(--mud-palette-surface), -6px 0 0 var(--mud-palette-surface) !important;
 }
 
 /* M3 switch: 52x32 pill track with an outline, solid colors instead of translucent overlays, and a thumb that grows when checked. */
@@ -241,7 +351,7 @@ body {
 }
 
 .mud-switch-span .mud-switch-track {
-  border-radius: 999px;
+  border-radius: var(--ja-shape-full);
   opacity: 1;
   background-color: var(--mud-palette-gray-light);
   border: 2px solid var(--mud-palette-lines-inputs);
@@ -294,16 +404,43 @@ label.mud-switch.mud-disabled .mud-switch-span {
 }
 
 /* M3 settings rows lead with the label and keep the switch on the trailing edge. Scoped to the label element because MudSwitch reuses the mud-switch class on its inner text span. */
+/* The label is the whole tap target, so it takes the 48dp minimum rather than the 32px height of the switch itself. */
 .settings-group label.mud-switch {
   width: 100%;
+  min-height: 48px;
   flex-direction: row-reverse;
   justify-content: space-between;
   margin-inline-start: 0;
 }
 
-/* M3 menus and popovers sit on surfaceContainerHigh. */
+/* MudBlazor's text alerts are a low-alpha wash that all but disappears on a light surface, so they take a real tonal container instead. */
+.mud-alert-text-info {
+  background-color: var(--mud-palette-info-lighten);
+}
+
+.mud-alert-text-warning {
+  background-color: var(--mud-palette-warning-lighten);
+}
+
+.mud-alert-text-error {
+  background-color: var(--mud-palette-error-lighten);
+}
+
+.mud-alert-text-success {
+  background-color: var(--mud-palette-success-lighten);
+}
+
+/* Menus and popovers take surfaceContainerHighest, one step above the dialog container, so a dropdown opened inside a dialog still separates from it. */
 .mud-popover {
-  --mud-palette-surface: var(--mud-palette-gray-lighter);
+  --mud-palette-surface: var(--mud-palette-gray-light);
+  border-radius: var(--ja-shape-lg);
+  max-width: calc(100vw - 16px);
+  box-shadow: var(--ja-shadow-level3);
+}
+
+.mud-popover.mud-popover-top-right,
+.mud-popover.mud-popover-bottom-right {
+  margin-right: 8px;
 }
 
 /* The keyboard overlays the WebView and shrinks the visual viewport; pinning the container to it glides dialogs out of the keyboard's way. */
@@ -322,12 +459,13 @@ body {
   padding-bottom: var(--keyboard-inset, 0px);
 }
 
-/* M3 dialogs sit on surfaceContainerHigh with the 24px container inset. */
+/* M3 dialogs sit on surfaceContainerHigh with the 24px container inset, at elevation Level3 rather than MudBlazor's M2 elevation 24. */
 .mud-dialog {
   padding: 24px !important;
   gap: 16px !important;
-  border-radius: 28px;
+  border-radius: var(--ja-shape-xl);
   --mud-palette-surface: var(--mud-palette-gray-lighter);
+  box-shadow: var(--ja-shadow-level3);
 }
 
 /* M3 dialog headline is headline-small on the leading edge, not a centered bold h6. */
@@ -336,6 +474,11 @@ body {
   display: flex;
   align-items: center;
   justify-content: flex-start;
+}
+
+/* Message boxes ship an empty title, which would otherwise leave a headline-sized gap above the message. */
+.mud-dialog-title:not(:has(*)) {
+  display: none;
 }
 
 .mud-dialog-title .mud-typography-h6 {
@@ -349,6 +492,13 @@ body {
   color: var(--mud-palette-text-secondary);
 }
 
+/* The rule above is for supporting text, so anything the user actually reads back or edits stays on onSurface. */
+.mud-dialog-content .mud-input-slot,
+.mud-dialog-content .mud-input-root,
+.mud-dialog-content .mud-select-input {
+  color: var(--mud-palette-text-primary);
+}
+
 .mud-dialog-actions {
   gap: 8px;
   justify-content: flex-end;
@@ -358,7 +508,7 @@ body {
 .mud-card {
   padding: 12px !important;
   gap: 12px !important;
-  border-radius: 16px;
+  border-radius: var(--ja-shape-md);
   box-shadow: none;
 }
 
@@ -389,28 +539,34 @@ body {
   display: none;
 }
 
-/* M3 snackbar: inverse surface. */
-.mud-snackbar {
+/* M3 snackbar: inverse surface. The compound selector is needed because MudBlazor's own .mud-snackbar-surface rule outranks a single class. */
+.mud-snackbar,
+.mud-snackbar.mud-snackbar-surface {
   background-color: var(--mud-palette-dark);
   color: var(--mud-palette-dark-text);
+  border-radius: var(--ja-shape-xs);
 }
 
+/* The mood button is a tonal container like the other controls, so it stays visible on a light card. */
 .emoji-button {
   padding: 0;
   min-width: 48px;
   height: 48px;
   border-radius: 50%;
-  background-color: var(--mud-palette-gray-lighter);
+  background-color: var(--mud-palette-secondary-lighten);
 }
 
 .emoji-popover-content {
   display: flex;
   flex-direction: column;
-  border-radius: 12px;
+  border-radius: var(--ja-shape-lg);
   box-shadow: var(--mud-elevation-8);
 }
 
-.list-group-title {
+/* M3 list section headers are title-small on onSurfaceVariant. The link variants inherit onSurface, so they need naming here too. */
+.list-group-title,
+.list-group-title.mud-link,
+a.list-group-title {
   font-size: var(--mud-typography-subtitle2-size);
   font-family: var(--mud-typography-subtitle2-family);
   font-weight: var(--mud-typography-subtitle2-weight);
@@ -428,38 +584,38 @@ body {
 .main-timeline .mud-card.data-point-group {
   background-color: transparent;
   padding: 0 !important;
-  gap: 3px !important;
+  gap: 4px !important;
 }
 
 .main-timeline .data-point-group .data-point-list {
-  gap: 3px;
+  gap: 4px;
 }
 
 .main-timeline .data-point-container {
   background-color: var(--mud-palette-surface);
-  border-radius: 6px;
+  border-radius: var(--ja-shape-sm);
   padding: 14px 16px;
 }
 
 .main-timeline .data-point-container:first-child {
-  border-top-left-radius: 18px;
-  border-top-right-radius: 18px;
+  border-top-left-radius: var(--ja-shape-lg-increased);
+  border-top-right-radius: var(--ja-shape-lg-increased);
 }
 
 .main-timeline .data-point-container:last-child {
-  border-bottom-left-radius: 18px;
-  border-bottom-right-radius: 18px;
+  border-bottom-left-radius: var(--ja-shape-lg-increased);
+  border-bottom-right-radius: var(--ja-shape-lg-increased);
 }
 
 /* When the group ends with an action row (New note), that row becomes the closing container instead of the last list item. */
 .main-timeline .data-point-group:has(.mud-card-actions .mud-button) .data-point-container:last-child {
-  border-bottom-left-radius: 6px;
-  border-bottom-right-radius: 6px;
+  border-bottom-left-radius: var(--ja-shape-sm);
+  border-bottom-right-radius: var(--ja-shape-sm);
 }
 
 .main-timeline .mud-card-actions:has(.mud-button) {
   background-color: var(--mud-palette-surface);
-  border-radius: 6px 6px 18px 18px;
+  border-radius: var(--ja-shape-sm) var(--ja-shape-sm) var(--ja-shape-lg-increased) var(--ja-shape-lg-increased);
   padding: 12px 16px !important;
 }
 
@@ -468,6 +624,62 @@ body {
   font-size: 16px;
   font-weight: 500;
   letter-spacing: 0.15px;
+}
+
+/* M3 filled text field, so number and text rows read as editable instead of as plain labels. */
+/* Without a container these fields are borderless transparent text and an empty one is invisible. */
+.main-timeline .data-point-container-number .mud-input,
+.main-timeline .data-point-container-text .mud-input {
+  background-color: var(--mud-palette-gray-light);
+  border-radius: var(--ja-shape-xs) var(--ja-shape-xs) 0 0;
+  border-bottom: 1px solid var(--mud-palette-lines-inputs);
+  padding: 4px 12px;
+  min-height: 40px;
+}
+
+/* A number never needs the whole row, and a full-width box for three digits reads as a form rather than a journal entry. */
+.main-timeline .data-point-container-number .mud-input {
+  max-width: 200px;
+}
+
+/* M3 filled fields thicken the active indicator to 2dp in primary while focused. */
+.main-timeline .data-point-container-number .mud-input:focus-within,
+.main-timeline .data-point-container-text .mud-input:focus-within {
+  border-bottom: 2px solid var(--mud-palette-primary);
+  padding-bottom: 3px;
+}
+
+/* The sleep stepper and the note edit pencil render at MudBlazor's small size, which is well under the 48dp target. */
+.sleep-controls .mud-icon-button,
+.note-container .note-edit-button {
+  min-width: 48px;
+  min-height: 48px;
+}
+
+/* ApexCharts bakes its own greys into the SVG it draws, so the axis ink, gridlines and tooltip are re-pointed at the palette here. */
+/* These rules can't live in the scoped stylesheet because the chart's SVG is created outside Blazor and carries no scope attribute. */
+.apexcharts-xaxis-label,
+.apexcharts-yaxis-label {
+  fill: var(--mud-palette-text-secondary);
+}
+
+.apexcharts-gridline,
+.apexcharts-xaxis line,
+.apexcharts-xaxis-tick {
+  stroke: var(--mud-palette-lines-default);
+}
+
+.apexcharts-tooltip {
+  background-color: var(--mud-palette-dark) !important;
+  color: var(--mud-palette-dark-text) !important;
+  border: none !important;
+  border-radius: var(--ja-shape-xs) !important;
+  box-shadow: var(--ja-shadow-level3) !important;
+}
+
+.apexcharts-tooltip-title {
+  background-color: var(--mud-palette-dark) !important;
+  border-bottom-color: var(--mud-palette-lines-default) !important;
 }
 
 #blazor-error-ui {
@@ -497,6 +709,29 @@ body {
 
   .flex-column, .navbar-brand {
     padding-left: env(safe-area-inset-left);
+  }
+}
+
+/* Android honors Remove animations under accessibility settings, so drop every entrance, transition and transform the app adds. */
+/* The scroll-driven header lift stays: it is tied to scroll position rather than to time, and it is the only cue that content is passing underneath. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .page-body {
+    animation: none;
+  }
+
+  .mud-overlay .mud-overlay-scrim {
+    animation: none;
+  }
+
+  .calendar-day-cell:active {
+    transform: none;
   }
 }
 

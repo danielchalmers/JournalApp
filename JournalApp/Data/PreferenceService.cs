@@ -52,7 +52,7 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
             _application.RequestedThemeChanged += Application_RequestedThemeChanged;
         }
 
-        UpdateStatusBar();
+        ApplyPlatformTheme();
     }
 
     public AppTheme SelectedAppTheme
@@ -181,26 +181,44 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
 
     public event EventHandler<bool> ThemeChanged;
 
-    private void Application_RequestedThemeChanged(object sender, AppThemeChangedEventArgs e)
-    {
-        _theme = e.RequestedTheme;
-        OnThemeChanged();
-    }
+    private void Application_RequestedThemeChanged(object sender, AppThemeChangedEventArgs e) => HandleOsThemeChanged();
+
+    /// <summary>
+    /// Repaints for an OS theme change without touching the theme the user picked, which stays whatever they chose including System.
+    /// </summary>
+    internal void HandleOsThemeChanged() => OnThemeChanged();
 
     private void OnThemeChanged()
     {
-        UpdateStatusBar();
+        ApplyPlatformTheme();
         ThemeChanged?.Invoke(this, IsDarkMode);
     }
 
-    private void UpdateStatusBar()
+    /// <summary>
+    /// Pushes the active theme out to the native chrome that the web layer can't reach.
+    /// </summary>
+    public void ApplyPlatformTheme()
     {
+        if (_application == null)
+            return;
+
+        logger.LogDebug("Applying platform theme");
+
+        // The window's appearance drives the native resources the WebView sits inside, so it follows the in-app choice rather than only the OS.
+        if (_application.UserAppTheme != SelectedAppTheme)
+            _application.UserAppTheme = SelectedAppTheme;
+
+        var surface = IsDarkMode ? GetTheme().PaletteDark.Background : GetTheme().PaletteLight.Background;
+        var background = Color.FromRgb(surface.R, surface.G, surface.B);
+
+        // On Android 15 and up the system bars are transparent, so what shows behind them is this page background rather than any status bar color we set.
+        if (_application.Windows.Count > 0 && _application.Windows[0].Page is ContentPage page)
+            page.BackgroundColor = background;
+
         if (OperatingSystem.IsAndroid())
         {
-            logger.LogDebug("Updating status bar");
-            // Match the M3 surface tone so the status bar blends into the page header.
-            var surface = IsDarkMode ? GetTheme().PaletteDark.Background : GetTheme().PaletteLight.Background;
-            StatusBar.SetColor(Color.FromRgb(surface.R, surface.G, surface.B));
+            // Still needed below Android 15, where the status bar has its own color instead of showing the page through.
+            StatusBar.SetColor(background);
             StatusBar.SetStyle(IsDarkMode ? StatusBarStyle.LightContent : StatusBarStyle.DarkContent);
         }
     }

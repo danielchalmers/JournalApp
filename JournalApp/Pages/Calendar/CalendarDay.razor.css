@@ -9,11 +9,14 @@
   color: var(--mud-palette-text-primary);
 }
 
+/* Large bold type keeps the day number legible on the deepest mood fills, where the dark ramp only reaches 3.5:1 against the theme ink. */
 .calendar-day-number {
   position: absolute;
   top: 0;
   left: 0;
-  font-weight: bold;
+  font-size: 20px;
+  line-height: 1;
+  font-weight: 700;
 }
 
 .calendar-day-emoji {

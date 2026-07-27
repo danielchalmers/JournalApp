@@ -21,7 +21,8 @@ else if (Point.Type == PointType.Sleep)
 }
 else if (Point.Type == PointType.Scale)
 {
-    <MudRating SelectedValue="DataPointService.GetScaleIndex(Point)" SelectedValueChanged="ScaleValueChanged" FullIcon="@Icons.Material.Rounded.Circle" EmptyIcon="@Icons.Material.Rounded.Circle" Color="Color.Primary" />
+    @* A filled and an outlined dot, because MudRating paints both icons in the same color and two filled circles would look identical. *@
+    <MudRating SelectedValue="DataPointService.GetScaleIndex(Point)" SelectedValueChanged="ScaleValueChanged" FullIcon="@Icons.Material.Rounded.Circle" EmptyIcon="@Icons.Material.Rounded.RadioButtonUnchecked" Color="Color.Primary" />
 }
 else if (Point.Type == PointType.LowToHigh)
 {

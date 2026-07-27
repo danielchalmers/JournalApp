@@ -16,6 +16,8 @@ public class MaterialThemeTests
         Hex(theme.PaletteLight.PrimaryLighten).Should().Be("#FFD8EE");
         Hex(theme.PaletteLight.PrimaryDarken).Should().Be("#69345A");
         Hex(theme.PaletteLight.Secondary).Should().Be("#705766");
+        Hex(theme.PaletteLight.SecondaryLighten).Should().Be("#FADAEB");
+        Hex(theme.PaletteLight.SecondaryDarken).Should().Be("#57404E");
         Hex(theme.PaletteLight.Tertiary).Should().Be("#81533F");
         Hex(theme.PaletteLight.Error).Should().Be("#BA1A1A");
         Hex(theme.PaletteLight.Info).Should().Be("#1A59C2");
@@ -38,6 +40,8 @@ public class MaterialThemeTests
         Hex(theme.PaletteDark.PrimaryLighten).Should().Be("#69345A");
         Hex(theme.PaletteDark.PrimaryDarken).Should().Be("#FFD8EE");
         Hex(theme.PaletteDark.Secondary).Should().Be("#DDBECF");
+        Hex(theme.PaletteDark.SecondaryLighten).Should().Be("#57404E");
+        Hex(theme.PaletteDark.SecondaryDarken).Should().Be("#FADAEB");
         Hex(theme.PaletteDark.Tertiary).Should().Be("#F4B9A0");
         Hex(theme.PaletteDark.Error).Should().Be("#FFB4AB");
         Hex(theme.PaletteDark.Info).Should().Be("#B0C6FF");
@@ -63,5 +67,50 @@ public class MaterialThemeTests
 
         Hex(blue.PaletteLight.Primary).Should().NotBe("#844C72");
         Hex(blue.PaletteLight.Background).Should().NotBe(Hex(blue.PaletteLight.Surface), "the surface container ladder should keep distinct tones");
+    }
+
+    [Fact]
+    public void ToggleSegmentPairsStayLegibleForAnySeed()
+    {
+        // Light mode surfaces are only ~1.05:1 apart, so the toggle group leans on chroma and on a filled primary selection instead of tone.
+        // These are the pairs app.css actually draws, and every one of them has to clear the M3 4.5:1 text floor whatever seed the device supplies.
+        foreach (var seed in new uint[] { MaterialTheme.DefaultSeed, 0xFF4285F4, 0xFF4CAF50, 0xFFFF9800, 0xFF000000, 0xFFFFFFFF })
+        {
+            var theme = MaterialTheme.FromSeed(seed);
+
+            foreach (var palette in new Palette[] { theme.PaletteLight, theme.PaletteDark })
+            {
+                Contrast(palette.SecondaryDarken, palette.SecondaryLighten).Should()
+                    .BeGreaterThan(4.5, $"an unselected segment label must read on its tonal fill (seed {seed:X8})");
+
+                Contrast(palette.PrimaryContrastText, palette.Primary).Should()
+                    .BeGreaterThan(4.5, $"a selected segment label must read on the filled primary pill (seed {seed:X8})");
+
+                Contrast(palette.Primary, palette.SecondaryLighten).Should()
+                    .BeGreaterThan(3, $"the selected segment must separate from its unselected neighbours (seed {seed:X8})");
+
+                Contrast(palette.Primary, palette.Surface).Should()
+                    .BeGreaterThan(3, $"the selected segment must separate from the row it sits on (seed {seed:X8})");
+            }
+        }
+    }
+
+    private static double Contrast(MudColor a, MudColor b)
+    {
+        var la = RelativeLuminance(a);
+        var lb = RelativeLuminance(b);
+
+        return la > lb ? (la + 0.05) / (lb + 0.05) : (lb + 0.05) / (la + 0.05);
+    }
+
+    private static double RelativeLuminance(MudColor color)
+    {
+        static double Channel(byte value)
+        {
+            var srgb = value / 255.0;
+            return srgb <= 0.03928 ? srgb / 12.92 : Math.Pow((srgb + 0.055) / 1.055, 2.4);
+        }
+
+        return (0.2126 * Channel(color.R)) + (0.7152 * Channel(color.G)) + (0.0722 * Channel(color.B));
     }
 }

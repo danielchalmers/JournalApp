@@ -2,7 +2,7 @@
 .safety-plan-items-container {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
 }
 
 ::deep .safety-plan-item {
@@ -10,18 +10,18 @@
   flex-direction: column;
   gap: 12px;
   background-color: var(--mud-palette-surface);
-  border-radius: 6px;
+  border-radius: var(--ja-shape-sm);
   padding: 14px 16px;
 }
 
 ::deep .safety-plan-item:first-child {
-  border-top-left-radius: 18px;
-  border-top-right-radius: 18px;
+  border-top-left-radius: var(--ja-shape-lg-increased);
+  border-top-right-radius: var(--ja-shape-lg-increased);
 }
 
 ::deep .safety-plan-item:last-child {
-  border-bottom-left-radius: 18px;
-  border-bottom-right-radius: 18px;
+  border-bottom-left-radius: var(--ja-shape-lg-increased);
+  border-bottom-right-radius: var(--ja-shape-lg-increased);
 }
 
 ::deep .safety-plan-item-header {

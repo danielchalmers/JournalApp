@@ -13,7 +13,7 @@
 .worksheet-group-items {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
   list-style-type: none;
   padding: 0;
   margin: 0;
@@ -25,18 +25,18 @@
   align-items: start;
   gap: 4px;
   background-color: var(--mud-palette-surface);
-  border-radius: 6px;
+  border-radius: var(--ja-shape-sm);
   padding: 14px 16px;
 }
 
 ::deep .worksheet-view:first-child {
-  border-top-left-radius: 18px;
-  border-top-right-radius: 18px;
+  border-top-left-radius: var(--ja-shape-lg-increased);
+  border-top-right-radius: var(--ja-shape-lg-increased);
 }
 
 ::deep .worksheet-view:last-child {
-  border-bottom-left-radius: 18px;
-  border-bottom-right-radius: 18px;
+  border-bottom-left-radius: var(--ja-shape-lg-increased);
+  border-bottom-right-radius: var(--ja-shape-lg-increased);
 }
 
 ::deep .worksheet-view-title {
@@ -59,10 +59,11 @@
   margin: 0;
 }
 
+/* M3 assist chips: a medium-radius container with the outline role, the only neutral boundary that clears 3:1 on a light surface. */
 .worksheet-group-toc-item {
   white-space: nowrap;
-  border: 1px solid var(--mud-palette-lines-default);
-  border-radius: 8px;
+  border: 1px solid var(--mud-palette-lines-inputs);
+  border-radius: var(--ja-shape-md);
   padding: 6px 12px;
 }
 

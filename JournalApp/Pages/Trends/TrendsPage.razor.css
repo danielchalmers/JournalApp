@@ -10,9 +10,10 @@
   flex-direction: column;
 }
 
+/* Each chart sits in a group container, so it takes the same large radius as a grouped list. */
 ::deep .trend-view {
   padding: 8px;
   gap: 16px;
   background-color: var(--mud-palette-surface);
-  border-radius: 16px;
+  border-radius: var(--ja-shape-lg-increased);
 }

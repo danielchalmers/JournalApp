@@ -2,7 +2,7 @@
 .manage-list {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
 }
 
 .manage-category {
@@ -11,18 +11,18 @@
   align-items: center;
   gap: 4px;
   background-color: var(--mud-palette-surface);
-  border-radius: 6px;
+  border-radius: var(--ja-shape-sm);
   padding: 6px 14px 6px 6px;
 }
 
 .manage-category:first-child {
-  border-top-left-radius: 18px;
-  border-top-right-radius: 18px;
+  border-top-left-radius: var(--ja-shape-lg-increased);
+  border-top-right-radius: var(--ja-shape-lg-increased);
 }
 
 .manage-category:last-child {
-  border-bottom-left-radius: 18px;
-  border-bottom-right-radius: 18px;
+  border-bottom-left-radius: var(--ja-shape-lg-increased);
+  border-bottom-right-radius: var(--ja-shape-lg-increased);
 }
 
 ::deep .manage-category-edit-button {
