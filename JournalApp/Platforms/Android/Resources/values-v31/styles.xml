@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- No windowSplashScreenAnimatedIcon: the system then shows the real launcher icon, plate and all, which is the standard Android 12+ splash look. -->
-    <style name="Maui.SplashTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Maui.SplashTheme" parent="JournalApp.Theme">
         <item name="android:windowSplashScreenBackground">@color/splash_background</item>
+    </style>
+
+    <!-- Applied over the activity theme at startup only while the app is actually seeded from the wallpaper, so the native handles track the same palette the UI does. -->
+    <!-- Tone 600 is the system step closest to the primary the generator produces for a light scheme. -->
+    <style name="JournalApp.DeviceAccent" parent="">
+        <item name="colorAccent">@android:color/system_accent1_600</item>
+        <item name="colorSecondary">@android:color/system_accent1_600</item>
+        <item name="colorControlActivated">@android:color/system_accent1_600</item>
     </style>
 </resources>

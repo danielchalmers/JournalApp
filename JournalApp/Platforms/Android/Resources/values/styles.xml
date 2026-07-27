@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Maui.SplashTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <!-- The selection handles, the magnifier and the caret inside the WebView are native chrome tinted from the activity theme, which CSS cannot reach. -->
+    <!-- Without these the platform falls back to the Material Components default secondary, a teal that belongs to no palette this app generates. -->
+    <style name="JournalApp.Theme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorSecondary">@color/colorAccent</item>
+        <item name="colorControlActivated">@color/colorAccent</item>
+    </style>
+
+    <style name="Maui.SplashTheme" parent="JournalApp.Theme">
         <item name="android:windowBackground">@drawable/splash_screen</item>
+    </style>
+
+    <!-- Below Android 12 there is no wallpaper palette to follow, so the device-accent overlay is the stock Orchid the app falls back to anyway. -->
+    <style name="JournalApp.DeviceAccent" parent="">
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorSecondary">@color/colorAccent</item>
+        <item name="colorControlActivated">@color/colorAccent</item>
     </style>
 </resources>

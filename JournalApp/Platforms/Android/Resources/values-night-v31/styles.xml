@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tone 200 is the system step matching the dark scheme's tone 80 primary. -->
+    <style name="JournalApp.DeviceAccent" parent="">
+        <item name="colorAccent">@android:color/system_accent1_200</item>
+        <item name="colorSecondary">@android:color/system_accent1_200</item>
+        <item name="colorControlActivated">@android:color/system_accent1_200</item>
+    </style>
+</resources>
