@@ -237,6 +237,17 @@ textarea,
   border-radius: var(--ja-shape-full);
 }
 
+/* MudBlazor renders an unselected segment as an outlined button, whose own :active rule swaps the container to primary-hover, so the tonal fill vanished exactly while a finger was on it. */
+/* M3 press feedback is a state layer composited over the resting fill, never a container swap, so both states keep their fill and take a 10% onSurface layer. */
+.mud-toggle-group .mud-toggle-item:not(.mud-toggle-item-selected):active,
+.mud-toggle-group .mud-toggle-item:not(.mud-toggle-item-selected):focus-visible {
+  background-color: var(--mud-palette-secondary-lighten);
+}
+
+.mud-toggle-group .mud-toggle-item:active {
+  background-image: linear-gradient(rgba(var(--mud-palette-text-primary-rgb), 0.10), rgba(var(--mud-palette-text-primary-rgb), 0.10));
+}
+
 /* M3E small buttons are 40dp tall; MudBlazor's own padding leaves them at ~36px. */
 .mud-button {
   border-radius: var(--ja-shape-full);
@@ -336,14 +347,19 @@ textarea,
   border-radius: var(--ja-shape-full);
   margin-top: -8px;
   background-color: var(--mud-palette-primary);
-  /* M3E carves a gap between the handle and the track; surface-colored blocks either side of the bar fake it over the row container. */
-  box-shadow: 6px 0 0 var(--mud-palette-surface), -6px 0 0 var(--mud-palette-surface);
+  /* M3E carves a 6dp gap either side of the handle; a surface-colored spread ring cuts it out of both tracks at once. */
+  box-shadow: 0 0 0 6px var(--mud-palette-surface);
 }
 
 /* MudBlazor swaps in an M2 focus ring on press, which would drop the gap exactly while the handle is being dragged. */
 .mud-slider .mud-slider-input:active::-webkit-slider-thumb,
 .mud-slider .mud-slider-input:focus::-webkit-slider-thumb {
-  box-shadow: 6px 0 0 var(--mud-palette-surface), -6px 0 0 var(--mud-palette-surface) !important;
+  box-shadow: 0 0 0 6px var(--mud-palette-surface) !important;
+}
+
+/* The active bar needs its own layer to clear the inactive track, which puts it above the range input too, so the input is lifted higher again or the handle and its gap are painted over. */
+.mud-slider .mud-slider-input {
+  z-index: 2;
 }
 
 /* M3 switch: 52x32 pill track with an outline, solid colors instead of translucent overlays, and a thumb that grows when checked. */
