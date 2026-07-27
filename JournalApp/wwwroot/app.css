@@ -66,11 +66,13 @@ textarea,
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 48px;
+  min-height: 48px;
   border-radius: var(--ja-shape-full);
   margin: 0 8px;
   background-color: var(--mud-palette-gray-lighter);
   box-shadow: var(--ja-shadow-raised);
+  /* The steppers are supporting icons next to the date, so they read on onSurfaceVariant like every other trailing icon. */
+  --mud-palette-action-default: var(--mud-palette-text-secondary);
 }
 
 .switcher-header {
@@ -90,7 +92,8 @@ textarea,
   align-items: center;
   gap: 8px;
   min-height: 64px;
-  padding: 0;
+  /* Android insets the leading glyph 16dp; an icon button already carries 12dp of its own, so the row adds the last 4dp. */
+  padding: 0 4px;
   box-shadow: none;
   background-color: var(--mud-palette-background);
   color: var(--mud-palette-text-primary);
@@ -403,14 +406,25 @@ label.mud-switch.mud-disabled .mud-switch-span {
   opacity: 0.38;
 }
 
+/* The label is the whole tap target, so it takes the 48dp minimum rather than the 32px height of the switch track itself. */
+label.mud-switch {
+  min-height: 48px;
+}
+
 /* M3 settings rows lead with the label and keep the switch on the trailing edge. Scoped to the label element because MudSwitch reuses the mud-switch class on its inner text span. */
-/* The label is the whole tap target, so it takes the 48dp minimum rather than the 32px height of the switch itself. */
 .settings-group label.mud-switch {
   width: 100%;
-  min-height: 48px;
   flex-direction: row-reverse;
   justify-content: space-between;
   margin-inline-start: 0;
+}
+
+/* A link that acts as a whole row needs a row-sized target; MudLink is otherwise only as tall as its text. */
+.settings-item .mud-link,
+.worksheet-view .mud-link {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
 }
 
 /* MudBlazor's text alerts are a low-alpha wash that all but disappears on a light surface, so they take a real tonal container instead. */
@@ -492,10 +506,12 @@ body {
   color: var(--mud-palette-text-secondary);
 }
 
-/* The rule above is for supporting text, so anything the user actually reads back or edits stays on onSurface. */
+/* The rule above is for supporting text, so anything the user actually reads back, edits or operates stays on onSurface. */
 .mud-dialog-content .mud-input-slot,
 .mud-dialog-content .mud-input-root,
-.mud-dialog-content .mud-select-input {
+.mud-dialog-content .mud-select-input,
+.mud-dialog-content label.mud-switch,
+.mud-dialog-content .mud-expand-panel-text {
   color: var(--mud-palette-text-primary);
 }
 

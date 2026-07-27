@@ -10,6 +10,26 @@
   flex-direction: column;
 }
 
+/* A month with no entries used to render nothing at all, which reads as a broken page rather than an empty one. */
+.trends-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20vh;
+  color: var(--mud-palette-text-secondary);
+}
+
+::deep .trends-status-icon {
+  width: 48px;
+  height: 48px;
+  font-size: 48px;
+}
+
+::deep .trends-status-detail {
+  max-width: 32ch;
+}
+
 /* Each chart sits in a group container, so it takes the same large radius as a grouped list. */
 ::deep .trend-view {
   padding: 8px;

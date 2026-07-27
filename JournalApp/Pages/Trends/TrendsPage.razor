@@ -17,6 +17,25 @@
 </header>
 
 <main class="page-body">
+    @if (!_loaded)
+    {
+        <div class="trends-status">
+            <MudProgressCircular Color="Color.Primary" Indeterminate />
+        </div>
+    }
+    else if (AllPoints.Count == 0)
+    {
+        <div class="trends-status">
+            <MudIcon Class="trends-status-icon" Icon="@Icons.Material.Rounded.ShowChart" />
+
+            <MudText Typo="Typo.h6">Nothing to chart yet</MudText>
+
+            <MudText Class="trends-status-detail" Typo="Typo.body2" Align="Align.Center">
+                Anything you record on these days will show up here.
+            </MudText>
+        </div>
+    }
+
     <div id="trends-category-list">
         @foreach (var (category, points) in AllPoints.OrderBy(x => x.Key.Group).ThenBy(x => x.Key.Index))
         {
@@ -52,6 +71,8 @@
 
     Dictionary<DataPointCategory, IReadOnlyDictionary<DateOnly, IReadOnlyCollection<DataPoint>>> AllPoints = new();
 
+    bool _loaded;
+
     protected override void OnInitialized()
     {
         logger.LogDebug("Initializing");
@@ -67,6 +88,10 @@
     {
         logger.LogInformation("Loading trends for {StartDate}..{EndDate}", SelectedDates[0], SelectedDates[^1]);
         var sw = Stopwatch.StartNew();
+
+        // Charts take a moment to come back, and without this the page is blank in exactly the same way an empty month is.
+        _loaded = false;
+        StateHasChanged();
 
         await using var db = await DbFactory.CreateDbContextAsync();
 
@@ -96,6 +121,8 @@
 
             AllPoints.Add(group.Key, pointsByDate);
         }
+
+        _loaded = true;
 
         sw.Stop();
         logger.LogInformation("Loaded trends data in {ElapsedMilliseconds}ms (categories: {CategoryCount})", sw.ElapsedMilliseconds, AllPoints.Count);
