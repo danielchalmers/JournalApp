@@ -213,7 +213,8 @@ textarea,
   color: var(--mud-palette-secondary-darken);
   background-color: var(--mud-palette-secondary-lighten);
   border: none !important;
-  min-height: 48px;
+  /* The M3E extra-small connected group height. The timeline stacks a lot of these, so the taller sizes cost too much of the screen. */
+  min-height: 32px;
   font-size: 14px;
   font-weight: 500;
   border-radius: var(--ja-shape-sm);
