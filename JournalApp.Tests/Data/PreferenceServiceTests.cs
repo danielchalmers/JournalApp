@@ -44,6 +44,37 @@ public class PreferenceServiceTests : JaTestContext
     }
 
     [Fact]
+    public void HandleOsThemeChanged_KeepsTheUsersChoice()
+    {
+        // Arrange
+        var preferences = Services.GetService<IPreferences>();
+        var preferenceService = Services.GetService<PreferenceService>();
+        preferenceService.SelectedAppTheme = AppTheme.Light;
+
+        // Act
+        preferenceService.HandleOsThemeChanged();
+
+        // Assert
+        preferenceService.SelectedAppTheme.Should().Be(AppTheme.Light);
+        preferences.Get("theme", string.Empty).Should().Be(nameof(AppTheme.Light));
+    }
+
+    [Fact]
+    public void HandleOsThemeChanged_RaisesThemeChanged()
+    {
+        // Arrange
+        var preferenceService = Services.GetService<PreferenceService>();
+        var raised = 0;
+        preferenceService.ThemeChanged += (_, _) => raised++;
+
+        // Act
+        preferenceService.HandleOsThemeChanged();
+
+        // Assert
+        raised.Should().Be(1);
+    }
+
+    [Fact]
     public void SafetyPlan_WithMalformedJson_ReturnsNull()
     {
         // Arrange

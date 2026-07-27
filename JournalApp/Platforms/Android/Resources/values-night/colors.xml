@@ -2,4 +2,6 @@
 <resources>
     <!-- Matches the Orchid theme's dark background (neutral 6) so the splash flows straight into the Blazor loading screen. -->
     <color name="splash_background">#181215</color>
+    <!-- The dark palette lifts the primary to tone 80, and the selection handles have to follow or they read as ink on ink. -->
+    <color name="colorAccent">#F7B1DE</color>
 </resources>

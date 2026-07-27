@@ -10,6 +10,11 @@ public class MainActivity : MauiAppCompatActivity
 {
     protected override void OnCreate(Bundle savedInstanceState)
     {
+        // The WebView's selection handles, magnifier and caret are native chrome tinted from the activity theme, and the theme is read once when the view is created.
+        // The theme's own accent is the stock Orchid, so it only needs an overlay while the palette is actually coming from the wallpaper instead.
+        if (Preferences.Default.Get("device_colors", true) && OperatingSystem.IsAndroidVersionAtLeast(31))
+            Theme.ApplyStyle(Resource.Style.JournalApp_DeviceAccent, force: true);
+
         base.OnCreate(savedInstanceState);
 
         // The web layer dodges the keyboard itself by watching the visual viewport, so keep the window static and let CSS animate the dodge.

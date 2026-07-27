@@ -59,15 +59,15 @@ public static class MaterialTheme
                 Info = Hex(info[40]),
                 InfoContrastText = "#FFFFFF",
                 InfoLighten = Hex(info[90]),
-                InfoDarken = Hex(info[10]),
+                InfoDarken = Hex(info[30]),
                 Success = Hex(success[40]),
                 SuccessContrastText = "#FFFFFF",
                 SuccessLighten = Hex(success[90]),
-                SuccessDarken = Hex(success[10]),
+                SuccessDarken = Hex(success[30]),
                 Warning = Hex(warning[40]),
                 WarningContrastText = "#FFFFFF",
                 WarningLighten = Hex(warning[90]),
-                WarningDarken = Hex(warning[10]),
+                WarningDarken = Hex(warning[30]),
                 Background = Hex(neutral[98]),
                 BackgroundGray = Hex(neutral[96]),
                 Surface = Hex(neutral[94]),
@@ -84,6 +84,9 @@ public static class MaterialTheme
                 TableLines = Hex(neutralVariant[80]),
                 Dark = Hex(neutral[20]),
                 DarkContrastText = Hex(neutral[95]),
+
+                // M3 scrim is the neutral black at 32%; MudBlazor's default is a grey that lightens the page in dark mode.
+                OverlayDark = "rgba(0,0,0,0.32)",
 
                 HoverOpacity = 0.08,
             },
@@ -135,16 +138,26 @@ public static class MaterialTheme
                 Dark = Hex(neutral[90]),
                 DarkContrastText = Hex(neutral[20]),
 
+                // M3 scrim is the neutral black at 32%; MudBlazor's default is a grey that lightens the page in dark mode.
+                OverlayDark = "rgba(0,0,0,0.32)",
+
                 HoverOpacity = 0.08,
             },
 
             LayoutProperties = new()
             {
-                DefaultBorderRadius = "8px",
+                // The M3 medium corner, so anything not styled by hand still lands on a real shape token.
+                DefaultBorderRadius = "12px",
             },
 
             Typography = new()
             {
+                Default = new DefaultTypography()
+                {
+                    // The device's own UI font is what makes a WebView app read as native; Roboto is the Android fallback.
+                    FontFamily = ["system-ui", "Roboto", "Helvetica", "Arial", "sans-serif"],
+                },
+
                 Button = new ButtonTypography()
                 {
                     TextTransform = "none",

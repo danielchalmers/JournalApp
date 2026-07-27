@@ -5,10 +5,13 @@
   padding-top: 16px;
 }
 
+/* The month grid is a group container like every other list group: flat, tonal, large radius. */
 ::deep .calendar-month-grid {
   display: flex;
   flex-direction: column;
-  padding: 0;
+  padding: 4px;
+  border-radius: var(--ja-shape-lg-increased);
+  box-shadow: none;
 }
 
 ::deep .calendar-day-cell {
@@ -18,12 +21,25 @@
   padding: 1%;
   min-width: 32px;
   max-width: 96px;
-  border-radius: 8px;
-  transition: transform 0.1s ease-out;
+  border-radius: var(--ja-shape-md);
+  transition: transform var(--ja-motion-spatial);
 }
 
 ::deep .calendar-day-cell:has(:not(.calendar-day-empty)):active {
   transform: scale(0.95);
+}
+
+/* M3 calendar weekday labels are label-medium on onSurfaceVariant, not bold body text. */
+::deep .calendar-day-header {
+  justify-content: center;
+  color: var(--mud-palette-text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+::deep .calendar-day-header b {
+  font-weight: 500;
 }
 
 /* M3 marks today with a solid primary ring instead of a dashed generic outline. */

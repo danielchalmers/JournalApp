@@ -3,13 +3,13 @@
 
 <MudDialog @attributes="UserAttributes" Class="@Classname" OnBackdropClick="OnBackdropClick">
     <TitleContent>
-        @if (TitleContent is null)
-        {
-            <MudText Typo="Typo.h6">@Title</MudText>
-        }
-        else
+        @if (TitleContent is not null)
         {
             @TitleContent
+        }
+        else if (!string.IsNullOrWhiteSpace(Title))
+        {
+            <MudText Typo="Typo.h6">@Title</MudText>
         }
     </TitleContent>
     <DialogContent>

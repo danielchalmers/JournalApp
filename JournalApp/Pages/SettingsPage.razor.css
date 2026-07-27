@@ -8,7 +8,7 @@
 .settings-group {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
 }
 
 ::deep .settings-item {
@@ -16,18 +16,18 @@
   flex-direction: column;
   gap: 12px;
   background-color: var(--mud-palette-surface);
-  border-radius: 6px;
+  border-radius: var(--ja-shape-sm);
   padding: 14px 16px;
 }
 
 ::deep .settings-item:first-child {
-  border-top-left-radius: 18px;
-  border-top-right-radius: 18px;
+  border-top-left-radius: var(--ja-shape-lg-increased);
+  border-top-right-radius: var(--ja-shape-lg-increased);
 }
 
 ::deep .settings-item:last-child {
-  border-bottom-left-radius: 18px;
-  border-bottom-right-radius: 18px;
+  border-bottom-left-radius: var(--ja-shape-lg-increased);
+  border-bottom-right-radius: var(--ja-shape-lg-increased);
 }
 
 ::deep .settings-item-title {
