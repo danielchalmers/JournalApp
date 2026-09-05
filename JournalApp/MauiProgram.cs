@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Maui;
+using Microsoft.Maui.LifecycleEvents;
 using JournalApp.Data;
 
 namespace JournalApp;
@@ -23,6 +24,12 @@ public static class MauiProgram
 
         // Enable Blazor WebView.
         builder.Services.AddMauiBlazorWebView();
+
+#if ANDROID
+        // Android relaunches the activity for some configuration changes, like switching the navigation mode, and MAUI resets the system bar appearance each time it connects to one.
+        builder.ConfigureLifecycleEvents(events => events.AddAndroid(android => android.OnResume(_ =>
+            IPlatformApplication.Current?.Services.GetService<PreferenceService>()?.ApplyPlatformTheme())));
+#endif
 
 #if DEBUG
         // Add debugging tools and log output for development.

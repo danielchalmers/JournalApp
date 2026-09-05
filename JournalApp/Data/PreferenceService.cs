@@ -50,6 +50,7 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
         {
             _application = Application.Current;
             _application.RequestedThemeChanged += Application_RequestedThemeChanged;
+
         }
 
         ApplyPlatformTheme();
@@ -211,16 +212,39 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
         var surface = IsDarkMode ? GetTheme().PaletteDark.Background : GetTheme().PaletteLight.Background;
         var background = Color.FromRgb(surface.R, surface.G, surface.B);
 
-        // On Android 15 and up the system bars are transparent, so what shows behind them is this page background rather than any status bar color we set.
+        // The page shows through until the web view paints its first frame, so it carries the surface tone as well.
         if (_application.Windows.Count > 0 && _application.Windows[0].Page is ContentPage page)
             page.BackgroundColor = background;
 
-        if (OperatingSystem.IsAndroid())
+#if ANDROID
+        // Go through the MAUI window so this reaches the activity currently hosting it, which Platform.CurrentActivity can lag behind during a relaunch.
+        var window = (_application.Windows.Count > 0 ? _application.Windows[0].Handler?.PlatformView as Android.App.Activity : null)?.Window;
+        if (window is null)
+            return;
+
+        // The web view draws under the transparent bars on Android 15 and up, so icon contrast is the only knob left and it has to follow the in-app theme.
+        // MAUI guesses it once at startup from the theme's colorPrimary, which is a dark purple in both modes, so it always lands on light icons.
+        var controller = AndroidX.Core.View.WindowCompat.GetInsetsController(window, window.DecorView);
+        controller.AppearanceLightStatusBars = !IsDarkMode;
+        controller.AppearanceLightNavigationBars = !IsDarkMode;
+
+        // Three-button navigation gets a translucent scrim by default, which would grey the surface showing through the bar.
+        if (OperatingSystem.IsAndroidVersionAtLeast(29))
         {
-            // Still needed below Android 15, where the status bar has its own color instead of showing the page through.
+            window.StatusBarContrastEnforced = false;
+            window.NavigationBarContrastEnforced = false;
+        }
+
+        // Older versions still draw opaque bars, so tint them to the surface tone instead.
+        if (!OperatingSystem.IsAndroidVersionAtLeast(35))
+        {
             StatusBar.SetColor(background);
             StatusBar.SetStyle(IsDarkMode ? StatusBarStyle.LightContent : StatusBarStyle.DarkContent);
+#pragma warning disable CA1422 // Deprecated in API 35, which the surrounding check excludes.
+            window.SetNavigationBarColor(Android.Graphics.Color.Rgb(surface.R, surface.G, surface.B));
+#pragma warning restore CA1422
         }
+#endif
     }
 
     public string GetMoodColor(string emoji)
