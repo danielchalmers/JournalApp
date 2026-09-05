@@ -222,6 +222,8 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
         if (window is null)
             return;
 
+        var platformColor = Android.Graphics.Color.Rgb(surface.R, surface.G, surface.B);
+
         // The web view draws under the transparent bars on Android 15 and up, so icon contrast is the only knob left and it has to follow the in-app theme.
         // MAUI guesses it once at startup from the theme's colorPrimary, which is a dark purple in both modes, so it always lands on light icons.
         var controller = AndroidX.Core.View.WindowCompat.GetInsetsController(window, window.DecorView);
@@ -235,13 +237,18 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
             window.NavigationBarContrastEnforced = false;
         }
 
-        // Older versions still draw opaque bars, so tint them to the surface tone instead.
+        // The window itself is what shows through the transparent bars whenever the page is letterboxed, like on a web view too old to report the insets.
+        window.SetBackgroundDrawable(new Android.Graphics.Drawables.ColorDrawable(platformColor));
+
+        // Below Android 15 the bars are opaque, so tint them to the surface tone instead.
+        // Setting an opaque status bar color through the toolkit also makes the decor fit the system windows again, which letterboxes the page inside the bars.
+        // That is intentional there: those versions ship web views too old to pad for the bars themselves, and the themed opaque bars read the same as drawing under them.
         if (!OperatingSystem.IsAndroidVersionAtLeast(35))
         {
             StatusBar.SetColor(background);
             StatusBar.SetStyle(IsDarkMode ? StatusBarStyle.LightContent : StatusBarStyle.DarkContent);
 #pragma warning disable CA1422 // Deprecated in API 35, which the surrounding check excludes.
-            window.SetNavigationBarColor(Android.Graphics.Color.Rgb(surface.R, surface.G, surface.B));
+            window.SetNavigationBarColor(platformColor);
 #pragma warning restore CA1422
         }
 #endif
