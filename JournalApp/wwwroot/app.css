@@ -1,4 +1,4 @@
-* {
+﻿* {
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -661,32 +661,6 @@ a.list-group-title {
 .main-timeline .data-point-container-number .mud-input:focus-within,
 .main-timeline .data-point-container-text .mud-input:focus-within {
   border-bottom-color: var(--mud-palette-primary);
-}
-
-/* ApexCharts bakes its own greys into the SVG it draws, so the axis ink, gridlines and tooltip are re-pointed at the palette here. */
-/* These rules can't live in the scoped stylesheet because the chart's SVG is created outside Blazor and carries no scope attribute. */
-.apexcharts-xaxis-label,
-.apexcharts-yaxis-label {
-  fill: var(--mud-palette-text-secondary);
-}
-
-.apexcharts-gridline,
-.apexcharts-xaxis line,
-.apexcharts-xaxis-tick {
-  stroke: var(--mud-palette-lines-default);
-}
-
-.apexcharts-tooltip {
-  background-color: var(--mud-palette-dark) !important;
-  color: var(--mud-palette-dark-text) !important;
-  border: none !important;
-  border-radius: var(--ja-shape-xs) !important;
-  box-shadow: var(--ja-shadow-level3) !important;
-}
-
-.apexcharts-tooltip-title {
-  background-color: var(--mud-palette-dark) !important;
-  border-bottom-color: var(--mud-palette-lines-default) !important;
 }
 
 #blazor-error-ui {
