@@ -95,11 +95,18 @@
 
         await using var db = await DbFactory.CreateDbContextAsync();
 
-        // All the points we want to show.
+        // The selected days are always one unbroken run, so ask for a range instead of listing every date.
+        var firstDate = SelectedDates[0];
+        var lastDate = SelectedDates[^1];
+
+        // All the points we want to show. Nothing here is edited, so skip change tracking,
+        // but keep identity resolution so every point of a category shares one Category instance to group by.
         var query = db.Points
-            .Where(p => !p.Deleted && !p.Category.Deleted && p.Category.Enabled && SelectedDates.Contains(p.Day.Date))
+            .AsNoTrackingWithIdentityResolution()
+            .Where(p => !p.Deleted && !p.Category.Deleted && p.Category.Enabled && p.Day.Date >= firstDate && p.Day.Date <= lastDate)
             .Include(p => p.Category)
             .Include(p => p.Day)
+            // SQLite can't ORDER BY a DateTimeOffset, so the sort has to happen after the rows come back.
             .AsEnumerable()
             .OrderBy(p => p.Day.Date)
             .ThenBy(p => p.CreatedAt)
@@ -108,24 +115,26 @@
                 p => p
             );
 
-        // Group points by category then date.
+        // Group points by category then date, filling in the days that have nothing so they stay gaps.
         AllPoints.Clear();
         foreach (var group in query)
         {
-            var pointsByDate = new Dictionary<DateOnly, IReadOnlyCollection<DataPoint>>();
+            var pointsByDate = new Dictionary<DateOnly, List<DataPoint>>(SelectedDates.Count);
 
             foreach (var date in SelectedDates)
-            {
-                pointsByDate.Add(date, group.Where(p => p.Day.Date == date).ToHashSet());
-            }
+                pointsByDate[date] = [];
 
-            AllPoints.Add(group.Key, pointsByDate);
+            foreach (var point in group)
+                pointsByDate[point.Day.Date].Add(point);
+
+            AllPoints.Add(group.Key, pointsByDate.ToDictionary(x => x.Key, x => (IReadOnlyCollection<DataPoint>)x.Value));
         }
 
         _loaded = true;
 
         sw.Stop();
         logger.LogInformation("Loaded trends data in {ElapsedMilliseconds}ms (categories: {CategoryCount})", sw.ElapsedMilliseconds, AllPoints.Count);
+
     }
 
     void Close()
