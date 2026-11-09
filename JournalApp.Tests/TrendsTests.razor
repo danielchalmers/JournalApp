@@ -44,4 +44,134 @@
 
         TrendCategoryView.GetHeaderText(category).Should().Be(expectedHeader);
     }
+
+    static (IReadOnlyList<DateOnly>, IReadOnlyDictionary<DateOnly, IReadOnlyCollection<DataPoint>>) BuildDays(
+        DataPointCategory category, IReadOnlyList<double?> values, Action<DataPoint, double> assign)
+    {
+        var dates = new List<DateOnly>();
+        var pointsByDay = new Dictionary<DateOnly, IReadOnlyCollection<DataPoint>>();
+
+        for (var i = 0; i < values.Count; i++)
+        {
+            var date = new DateOnly(2024, 01, 01).AddDays(i);
+            dates.Add(date);
+
+            var day = Day.Create(date);
+            var points = new List<DataPoint>();
+
+            // A null stands for a day with no reading, which has to come through as a gap in the line.
+            if (values[i] is { } value)
+            {
+                var point = DataPoint.Create(day, category);
+                assign(point, value);
+                points.Add(point);
+            }
+
+            pointsByDay[date] = points;
+        }
+
+        return (dates, pointsByDay);
+    }
+
+    static IRenderedComponent<TrendCategoryView> RenderView(
+        BunitContext context, DataPointCategory category,
+        IReadOnlyList<DateOnly> dates, IReadOnlyDictionary<DateOnly, IReadOnlyCollection<DataPoint>> pointsByDay)
+    {
+        // The chart sizes its viewBox from a measured element, so without these it never builds anything to assert on.
+        context.JSInterop.Setup<MudBlazor.Interop.ElementSize>("mudObserveElementSize", _ => true)
+            .SetResult(new MudBlazor.Interop.ElementSize { Width = 390, Height = 160, Timestamp = 1 });
+        context.JSInterop.Setup<MudBlazor.Interop.ElementSize>("mudGetSvgBBox", _ => true)
+            .SetResult(new MudBlazor.Interop.ElementSize { Width = 28, Height = 15 });
+        context.JSInterop.Setup<bool>("hasDefinedParentHeight", _ => true).SetResult(true);
+
+        var layout = context.Render(
+            @<MainLayout>
+                <Body>
+                    <TrendCategoryView Category="category" Dates="dates" PointsByDay="pointsByDay" />
+                </Body>
+            </MainLayout>);
+
+        return layout.FindComponent<TrendCategoryView>();
+    }
+
+    static string[] AxisLabels(IRenderedComponent<TrendCategoryView> cut, string axisClass) =>
+        [.. cut.FindAll($"g.{axisClass} text").Select(x => x.TextContent)];
+
+    [Fact]
+    public void Chart_MoodAxisIsLabelledWithEmoji()
+    {
+        var category = new DataPointCategory { Guid = Guid.NewGuid(), Name = "Mood", Type = PointType.Mood };
+        var (dates, pointsByDay) = BuildDays(category, [1, 4, null, 7], (p, v) => p.Mood = TrendChartPointEmoji((int)v));
+
+        var cut = RenderView(this, category, dates, pointsByDay);
+
+        // The emoji replace the raw 1-7 so the scale explains itself without a legend.
+        AxisLabels(cut, "mud-charts-yaxis").Should().Contain(["😭", "🤩"]);
+    }
+
+    [Fact]
+    public void Chart_FlatSeriesStretchesTheAxisToZero()
+    {
+        var category = new DataPointCategory { Guid = Guid.NewGuid(), Name = "Vitamin D", Type = PointType.Number };
+        var (dates, pointsByDay) = BuildDays(category, [2000, 2000, 2000], (p, v) => p.Number = v);
+
+        var cut = RenderView(this, category, dates, pointsByDay);
+
+        // Without the zero point every reading sits on one gridline, which puts the line on the axis itself.
+        var labels = AxisLabels(cut, "mud-charts-yaxis");
+        labels.Should().Contain("0").And.Contain("2000");
+        labels.Should().NotContain("1999", because: "the axis should be a 1/2/5/10 ramp, not a window around the value");
+    }
+
+    [Fact]
+    public void Chart_OnlyEveryNthDateIsLabelled()
+    {
+        var category = new DataPointCategory { Guid = Guid.NewGuid(), Name = "Weight", Type = PointType.Number };
+        var (dates, pointsByDay) = BuildDays(category, [.. Enumerable.Range(0, 31).Select(i => (double?)i)], (p, v) => p.Number = v);
+
+        var cut = RenderView(this, category, dates, pointsByDay);
+
+        var labels = AxisLabels(cut, "mud-charts-xaxis");
+        labels.Length.Should().Be(31, because: "there is still a tick per day");
+        labels.Count(x => !string.IsNullOrEmpty(x)).Should().BeLessThanOrEqualTo(6,
+            because: "M/d dates collide at phone width if every day is labelled");
+        labels[0].Should().Be("1/1");
+        labels[^1].Should().Be("1/31", because: "the last day anchors the right edge");
+    }
+
+    [Fact]
+    public void Chart_GapsBreakTheLineAndLoneDaysStillDraw()
+    {
+        var category = new DataPointCategory { Guid = Guid.NewGuid(), Name = "Weight", Type = PointType.Number };
+        var (dates, pointsByDay) = BuildDays(category, [10, null, 30, null, 50], (p, v) => p.Number = v);
+
+        var cut = RenderView(this, category, dates, pointsByDay);
+
+        var d = cut.Find("path.mud-chart-line").GetAttribute("d");
+        (d.Split('M').Length - 1).Should().Be(3, because: "each reading is isolated by a missing day");
+
+        // A lone day has no line segment, so the marker is the only thing that puts it on the chart.
+        cut.FindAll("circle.mud-chart-point").Should().NotBeEmpty();
+    }
+
+    [Fact]
+    public void Chart_NotesCategoryRendersTextInsteadOfAChart()
+    {
+        var category = new DataPointCategory { Guid = Guid.NewGuid(), Group = "Notes", Type = PointType.Note };
+
+        var date = new DateOnly(2024, 01, 01);
+        var day = Day.Create(date);
+        var point = DataPoint.Create(day, category);
+        point.Text = "Hello world";
+
+        var cut = RenderView(this, category,
+            [date],
+            new Dictionary<DateOnly, IReadOnlyCollection<DataPoint>> { [date] = new List<DataPoint> { point } });
+
+        cut.FindAll("path.mud-chart-line").Should().BeEmpty();
+        cut.Markup.Should().Contain("Hello world");
+    }
+
+    static string TrendChartPointEmoji(int oneBasedIndex) =>
+        TrendChartPoint.ChartEmojis[oneBasedIndex - 1];
 }
