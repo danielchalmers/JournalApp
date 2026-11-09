@@ -1,9 +1,6 @@
-﻿/* The chart only sizes itself to the box when the box looks constrained to MudBlazor's parent-height probe,
-   which wants a flex or grid parent with both a height and a max-height. */
-.trend-view-chart {
+﻿.trend-view-chart {
   display: flex;
   height: 160px;
-  max-height: 160px;
 }
 
 /* The component ships with min-width/min-height: fit-content, which would hold the box open past its bounds. */
@@ -23,18 +20,7 @@
   margin-block-end: 16px;
 }
 
-/* The chart draws its own SVG, so its ink has to be pointed back at the palette from outside the scope.
-   Gridlines in particular ship as a hardcoded light grey that disappears on a dark surface. */
-::deep .mud-charts-gridlines-yaxis path {
-  stroke: var(--mud-palette-lines-default);
-}
-
-/* Data markers set no fill, so they fall back to SVG's default black; the surface turns them into rings on the line.
-   The hover marker carries an opacity attribute and keeps its own fill so a touched point still reads as selected. */
-::deep .mud-chart-point:not([opacity]) {
-  fill: var(--mud-palette-surface);
-}
-
+/* The chart draws its own SVG, so the axis text has to be pointed back at the palette from outside the scope. */
 ::deep .mud-charts-xaxis,
 ::deep .mud-charts-yaxis {
   fill: var(--mud-palette-text-secondary);

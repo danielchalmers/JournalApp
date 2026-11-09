@@ -132,11 +132,24 @@
         var cut = RenderView(this, category, dates, pointsByDay);
 
         var labels = AxisLabels(cut, "mud-charts-xaxis");
-        labels.Length.Should().Be(31, because: "there is still a tick per day");
-        labels.Count(x => !string.IsNullOrEmpty(x)).Should().BeLessThanOrEqualTo(6,
+        labels.Length.Should().BeLessThanOrEqualTo(6,
             because: "M/d dates collide at phone width if every day is labelled");
         labels[0].Should().Be("1/1");
         labels[^1].Should().Be("1/31", because: "the last day anchors the right edge");
+    }
+
+    [Fact]
+    public void Chart_TooltipNamesADayTheAxisLeftOut()
+    {
+        var category = new DataPointCategory { Guid = Guid.NewGuid(), Name = "Weight", Type = PointType.Number };
+        var (dates, pointsByDay) = BuildDays(category, [.. Enumerable.Range(0, 31).Select(i => (double?)i)], (p, v) => p.Number = v);
+
+        var cut = RenderView(this, category, dates, pointsByDay);
+
+        // The second day has no label on the axis, so the tooltip is the only place its date can come from.
+        cut.FindAll("circle.mud-chart-point[opacity]")[1].MouseOver();
+
+        cut.Find("g.mud-charts-tooltip").TextContent.Should().Contain("1/2");
     }
 
     [Fact]

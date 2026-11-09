@@ -72,12 +72,11 @@ else
 
         var values = points.Select(GetValue).ToList();
 
-        // Only every nth date gets a label; the rest are blank so the axis stays readable.
-        var stride = Math.Max(1, (int)Math.Ceiling(points.Count / (double)MaxDateLabels));
-        _labels = [.. points.Select((p, i) => i % stride == 0 ? p.DayLabel : string.Empty)];
+        // Every point carries its date so tooltips can show it; the axis only draws every nth one.
+        _labels = [.. points.Select(p => p.DayLabel)];
 
         _series = [new ChartSeries<decimal> { Data = values }];
-        _options = BuildOptions(values);
+        _options = BuildOptions(values, Math.Max(1, (int)Math.Ceiling(points.Count / (double)MaxDateLabels)));
     }
 
     decimal? GetValue(TrendChartPoint point) => Category.Type switch
@@ -91,7 +90,7 @@ else
         _ => null,
     };
 
-    LineChartOptions BuildOptions(IReadOnlyList<decimal?> values)
+    LineChartOptions BuildOptions(IReadOnlyList<decimal?> values, int labelInterval)
     {
         var options = new LineChartOptions
         {
@@ -99,9 +98,11 @@ else
             ShowLegend = false,
             // A day with no neighbours has no line segment to draw, so the marker is the only thing that shows it.
             ShowDataMarkers = true,
-            // Markers are only built when tooltips are on, so this has to stay enabled for them to appear.
             ShowToolTips = true,
             TooltipTitleFormat = "{{Y_VALUE}}",
+            TooltipSubtitleFormat = "{{X_VALUE}}",
+            // M/d dates collide at phone width, so the axis is thinned without taking the dates out of the tooltips.
+            XAxisLabelInterval = labelInterval,
             // Readings are a value per day, not a continuous signal, so don't curve between them.
             InterpolationOption = InterpolationOption.Straight,
             LineStrokeWidth = 3,
