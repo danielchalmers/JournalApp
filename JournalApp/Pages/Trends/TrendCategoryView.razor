@@ -2,6 +2,7 @@
 @using System.Globalization
 @implements IDisposable
 @inject PreferenceService PreferenceService
+@inject IJSRuntime JSRuntime
 
 @if (Category.Type is PointType.Text or PointType.Note)
 {
@@ -19,7 +20,7 @@
 }
 else
 {
-    <div class="trend-view trend-view-chart">
+    <div class="trend-view trend-view-chart" @ref="_chartView">
         <MudChart T="decimal"
                   ChartType="ChartType.Line"
                   ChartSeries="_series"
@@ -45,6 +46,8 @@ else
     List<ChartSeries<decimal>> _series = [];
     string[] _labels = [];
     LineChartOptions _options = new();
+    ElementReference _chartView;
+    bool _touchAttached;
 
     [Parameter]
     public DataPointCategory Category { get; set; }
@@ -67,6 +70,18 @@ else
         base.OnParametersSet();
 
         BuildChart();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        // Touch scrubbing has to be wired up before a finger lands, since only then can it stop the page scrolling under a sideways drag (chart-touch.js).
+        if (!_touchAttached && _chartView.Id is not null)
+        {
+            _touchAttached = true;
+            await JSRuntime.InvokeVoidAsync("attachChartTouch", _chartView);
+        }
     }
 
     void BuildChart()
