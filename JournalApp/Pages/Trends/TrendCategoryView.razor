@@ -1,4 +1,5 @@
 ﻿@namespace JournalApp
+@using System.Globalization
 @implements IDisposable
 @inject PreferenceService PreferenceService
 
@@ -26,7 +27,11 @@ else
                   ChartOptions="_options"
                   Width="100%"
                   Height="100%"
-                  MatchBoundsToSize />
+                  MatchBoundsToSize>
+            <TooltipTemplate>
+                <MudBlazor.Charts.ChartTooltip Title="@TooltipValue(context.Segment)" Subtitle="@context.Segment.LabelXValue" Color="@context.Color" X="0" Y="0" />
+            </TooltipTemplate>
+        </MudChart>
     </div>
 }
 
@@ -99,8 +104,6 @@ else
             // A day with no neighbours has no line segment to draw, so the marker is the only thing that shows it.
             ShowDataMarkers = true,
             ShowToolTips = true,
-            TooltipTitleFormat = "{{Y_VALUE}}",
-            TooltipSubtitleFormat = "{{X_VALUE}}",
             // M/d dates collide at phone width, so the axis is thinned without taking the dates out of the tooltips.
             XAxisLabelInterval = labelInterval,
             // Readings are a value per day, not a continuous signal, so don't curve between them.
@@ -199,6 +202,12 @@ else
 
         return Math.Max(1, (int)(step * magnitude));
     }
+
+    // The chart formats tooltip values on its own and ignores the axis formatter, so a mood would read as "4" next to an emoji axis.
+    string TooltipValue(SvgPath point) =>
+        _options.YAxisToStringFunc is { } format && double.TryParse(point.LabelYValue, NumberStyles.Float, CultureInfo.CurrentCulture, out var value)
+            ? format(value)
+            : point.LabelYValue;
 
     static string MoodLabel(double value)
     {

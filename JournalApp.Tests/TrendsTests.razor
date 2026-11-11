@@ -153,6 +153,34 @@
     }
 
     [Fact]
+    public void Chart_TooltipValueMatchesTheAxis()
+    {
+        var category = new DataPointCategory { Guid = Guid.NewGuid(), Name = "Mood", Type = PointType.Mood };
+        var (dates, pointsByDay) = BuildDays(category, [1, 4, null, 7], (p, v) => p.Mood = TrendChartPointEmoji((int)v));
+
+        var cut = RenderView(this, category, dates, pointsByDay);
+
+        cut.FindAll("circle.mud-chart-point[opacity]")[1].MouseOver();
+
+        // The axis is labelled with emoji, so a raw "4" in the tooltip would leave the reader to count rows.
+        var tooltip = cut.Find("g.mud-charts-tooltip").TextContent;
+        tooltip.Should().Contain(TrendChartPointEmoji(4)).And.Contain("1/2").And.NotContain("4");
+    }
+
+    [Fact]
+    public void Chart_SleepTooltipKeepsTheUnit()
+    {
+        var category = new DataPointCategory { Guid = Guid.NewGuid(), Name = "Sleep", Type = PointType.Sleep };
+        var (dates, pointsByDay) = BuildDays(category, [7.5, 8], (p, v) => p.SleepHours = (decimal)v);
+
+        var cut = RenderView(this, category, dates, pointsByDay);
+
+        cut.FindAll("circle.mud-chart-point[opacity]")[0].MouseOver();
+
+        cut.Find("g.mud-charts-tooltip").TextContent.Should().Contain("7.5h");
+    }
+
+    [Fact]
     public void Chart_GapsBreakTheLineAndLoneDaysStillDraw()
     {
         var category = new DataPointCategory { Guid = Guid.NewGuid(), Name = "Weight", Type = PointType.Number };
