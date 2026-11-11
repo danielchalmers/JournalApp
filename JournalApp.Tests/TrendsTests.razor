@@ -117,10 +117,8 @@
 
         var cut = RenderView(this, category, dates, pointsByDay);
 
-        // Without the zero point every reading sits on one gridline, which puts the line on the axis itself.
-        var labels = AxisLabels(cut, "mud-charts-yaxis");
-        labels.Should().Contain("0").And.Contain("2000");
-        labels.Should().NotContain("1999", because: "the axis should be a 1/2/5/10 ramp, not a window around the value");
+        // There's no range to split, so the axis runs from zero to the next round step past the value, which keeps the line off the axis itself.
+        AxisLabels(cut, "mud-charts-yaxis").Should().Equal("0", "5000");
     }
 
     [Fact]

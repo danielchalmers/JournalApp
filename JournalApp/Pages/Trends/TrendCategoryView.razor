@@ -39,8 +39,8 @@ else
     // How many x-axis labels a chart can show before M/d dates start colliding at phone width.
     const int MaxDateLabels = 6;
 
-    // How many horizontal gridlines to aim for when the value range isn't a known scale.
-    const int TargetValueTicks = 4;
+    // The most horizontal gridlines a chart draws when the value range isn't a known scale.
+    const int MaxValueLines = 5;
 
     List<ChartSeries<decimal>> _series = [];
     string[] _labels = [];
@@ -150,57 +150,18 @@ else
                 break;
 
             case PointType.Sleep:
-                options.YAxisTicks = NiceStep(values, TargetValueTicks, out _);
+                // 0 lets the chart pick a round step that fits the values.
+                options.YAxisTicks = 0;
+                options.MaxNumYAxisTicks = MaxValueLines;
                 options.YAxisToStringFunc = v => $"{v:0.#}h";
                 break;
 
             default:
-                options.YAxisTicks = NiceStep(values, TargetValueTicks, out var isFlat);
-                // A series that never changes sits on a single gridline, which lands it on the axis itself;
-                // stretching the axis down to zero puts the line back inside the chart.
-                options.YAxisRequireZeroPoint = isFlat;
+                options.YAxisTicks = 0;
+                options.MaxNumYAxisTicks = MaxValueLines;
                 options.YAxisFormat = "0.##";
                 break;
         }
-    }
-
-    /// <summary>
-    /// Picks a 1/2/5/10 gridline step that covers the values in roughly <paramref name="targetTicks"/> lines.
-    /// </summary>
-    static int NiceStep(IReadOnlyList<decimal?> values, int targetTicks, out bool isFlat)
-    {
-        var present = values.Where(v => v.HasValue).Select(v => v.Value).ToList();
-        isFlat = false;
-
-        if (present.Count == 0)
-            return 1;
-
-        var min = present.Min();
-        var max = present.Max();
-        var range = (double)(max - min);
-
-        if (range <= 0)
-        {
-            // Every reading is the same, so size the axis against the value itself instead of the range.
-            isFlat = true;
-            range = Math.Abs((double)max);
-        }
-
-        if (range <= 0)
-            return 1;
-
-        var rough = range / targetTicks;
-        var magnitude = Math.Pow(10, Math.Floor(Math.Log10(rough)));
-        var normalized = rough / magnitude;
-        var step = normalized switch
-        {
-            <= 1 => 1,
-            <= 2 => 2,
-            <= 5 => 5,
-            _ => 10,
-        };
-
-        return Math.Max(1, (int)(step * magnitude));
     }
 
     // The chart formats tooltip values on its own and ignores the axis formatter, so a mood would read as "4" next to an emoji axis.

@@ -28,12 +28,6 @@
   font-weight: var(--mud-typography-caption-weight);
 }
 
-/* Gridlines ship as a hardcoded light grey a third of a pixel wide, which disappears on the light surface and is the wrong colour on dark. */
-::deep .mud-charts-gridlines-yaxis path {
-  stroke: var(--mud-palette-lines-default);
-  stroke-width: 1px;
-}
-
 /* The tooltip bubble is drawn in the series color with a white keyline, which reads as a sticker on both themes. */
 ::deep .mud-charts-tooltip .svg-tooltip rect,
 ::deep .mud-charts-tooltip .svg-tooltip polygon {
