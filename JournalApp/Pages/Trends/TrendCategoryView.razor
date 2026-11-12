@@ -1,5 +1,4 @@
-﻿@namespace JournalApp
-@using System.Globalization
+@namespace JournalApp
 @implements IDisposable
 @inject PreferenceService PreferenceService
 @inject IJSRuntime JSRuntime
@@ -28,11 +27,7 @@ else
                   ChartOptions="_options"
                   Width="100%"
                   Height="100%"
-                  MatchBoundsToSize>
-            <TooltipTemplate>
-                <MudBlazor.Charts.ChartTooltip Title="@TooltipValue(context.Segment)" Subtitle="@context.Segment.LabelXValue" Color="@context.Color" X="0" Y="0" />
-            </TooltipTemplate>
-        </MudChart>
+                  MatchBoundsToSize />
     </div>
 }
 
@@ -133,6 +128,10 @@ else
 
         ConfigureYAxis(options, values);
 
+        // A tooltip names the value the way its axis does, so a mood reads as its emoji, while a plain number keeps every decimal the axis would round off.
+        options.TooltipTitleFormat = options.YAxisToStringFunc is null ? "{{Y_VALUE}}" : "{{Y_AXIS_VALUE}}";
+        options.TooltipSubtitleFormat = "{{X_VALUE}}";
+
         return options;
     }
 
@@ -178,12 +177,6 @@ else
                 break;
         }
     }
-
-    // The chart formats tooltip values on its own and ignores the axis formatter, so a mood would read as "4" next to an emoji axis.
-    string TooltipValue(SvgPath point) =>
-        _options.YAxisToStringFunc is { } format && double.TryParse(point.LabelYValue, NumberStyles.Float, CultureInfo.CurrentCulture, out var value)
-            ? format(value)
-            : point.LabelYValue;
 
     static string MoodLabel(double value)
     {

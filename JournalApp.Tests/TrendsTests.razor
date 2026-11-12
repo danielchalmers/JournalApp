@@ -179,6 +179,20 @@
     }
 
     [Fact]
+    public void Chart_NumberTooltipKeepsTheDecimalsTheAxisRounds()
+    {
+        var category = new DataPointCategory { Guid = Guid.NewGuid(), Name = "Dose", Type = PointType.Number };
+        var (dates, pointsByDay) = BuildDays(category, [0.125, 0.25], (p, v) => p.Number = v);
+
+        var cut = RenderView(this, category, dates, pointsByDay);
+
+        cut.FindAll("circle.mud-chart-point[opacity]")[0].MouseOver();
+
+        // The axis labels round to two places, but the tooltip is where the exact reading is looked up.
+        cut.Find("g.mud-charts-tooltip").TextContent.Should().Contain("0.125");
+    }
+
+    [Fact]
     public void Chart_GapsBreakTheLineAndLoneDaysStillDraw()
     {
         var category = new DataPointCategory { Guid = Guid.NewGuid(), Name = "Weight", Type = PointType.Number };
