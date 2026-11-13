@@ -1,8 +1,6 @@
 ﻿.trend-view-chart {
   display: flex;
   height: 160px;
-  /* A sideways drag scrubs the tooltip along the line (chart-touch.js), while an up or down drag still scrolls the page. */
-  touch-action: pan-y;
 }
 
 /* The component ships with min-width/min-height: fit-content, which would hold the box open past its bounds. */
