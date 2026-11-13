@@ -433,6 +433,12 @@ public class AppDataUIServiceTests : JaTestContext
         public Task<IDialogReference> ShowAsync<TComponent>(DialogParameters parameters) where TComponent : global::Microsoft.AspNetCore.Components.IComponent =>
             ShowAsync(typeof(TComponent), string.Empty, parameters, null);
 
+        public Task<IDialogReference> ShowAsync<TComponent>(DialogOptions options) where TComponent : global::Microsoft.AspNetCore.Components.IComponent =>
+            ShowAsync(typeof(TComponent), string.Empty, new DialogParameters(), options);
+
+        public Task<IDialogReference> ShowAsync<TComponent>(DialogParameters parameters, DialogOptions options) where TComponent : global::Microsoft.AspNetCore.Components.IComponent =>
+            ShowAsync(typeof(TComponent), string.Empty, parameters, options);
+
         public Task<IDialogReference> ShowAsync<TComponent>(string title) where TComponent : global::Microsoft.AspNetCore.Components.IComponent =>
             ShowAsync(typeof(TComponent), title, new DialogParameters(), null);
 

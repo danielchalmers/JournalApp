@@ -2,7 +2,7 @@
 
 internal record TrendChartPoint(DateOnly Date, DataPoint Point)
 {
-    private static readonly List<string> ChartEmojis = ["😭", "😢", "😕", "😐", "🙂", "😀", "🤩"];
+    internal static readonly List<string> ChartEmojis = ["😭", "😢", "😕", "😐", "🙂", "😀", "🤩"];
 
     public string DayLabel => Date.ToString("M/d");
 

@@ -1,5 +1,4 @@
-﻿@namespace JournalApp
-@using ApexCharts
+@namespace JournalApp
 @implements IDisposable
 @inject PreferenceService PreferenceService
 
@@ -20,68 +19,27 @@
 else
 {
     <div class="trend-view trend-view-chart">
-        <ApexChart @ref="_chart" TItem="TrendChartPoint" Options="ChartOptions">
-            @switch (Category.Type)
-            {
-                case PointType.Mood:
-                    <ApexPointSeries Name="Mood (1=low, 7=high)"
-                                     Items="_chartItems"
-                                     SeriesType="SeriesType.Line"
-                                     XValue="e => e.DayLabel"
-                                     YValue="e => e.Mood" />
-                    break;
-
-                case PointType.Sleep:
-                    <ApexPointSeries Name="Hours"
-                                     Items="_chartItems"
-                                     SeriesType="SeriesType.Line"
-                                     XValue="e => e.DayLabel"
-                                     YValue="e => e.SleepHours" />
-                    break;
-
-                case PointType.Scale:
-                case PointType.LowToHigh:
-                case PointType.MildToSevere:
-                    <ApexPointSeries Name="Scale (0=low, 5=high)"
-                                     Items="_chartItems"
-                                     SeriesType="SeriesType.Line"
-                                     XValue="e => e.DayLabel"
-                                     YValue="e => e.Scale" />
-                    break;
-
-                case PointType.Bool:
-                    <ApexPointSeries Name="Bool (0=no, 1=yes)"
-                                     Items="_chartItems"
-                                     SeriesType="SeriesType.Line"
-                                     XValue="e => e.DayLabel"
-                                     YValue="e => e.Bool" />
-                    break;
-
-                case PointType.Medication:
-                    <ApexPointSeries Name="Dose"
-                                     Items="_chartItems"
-                                     SeriesType="SeriesType.Line"
-                                     XValue="e => e.DayLabel"
-                                     YValue="e => e.MedDose" />
-                    break;
-
-                case PointType.Number:
-                    <ApexPointSeries Name="Number"
-                                     Items="_chartItems"
-                                     SeriesType="SeriesType.Line"
-                                     XValue="e => e.DayLabel"
-                                     YValue="e => e.Number" />
-                    break;
-            }
-        </ApexChart>
+        <MudChart T="decimal"
+                  ChartType="ChartType.Line"
+                  ChartSeries="_series"
+                  ChartLabels="_labels"
+                  ChartOptions="_options"
+                  Width="100%"
+                  Height="100%"
+                  MatchBoundsToSize />
     </div>
 }
 
 @code {
-    ApexChart<TrendChartPoint> _chart;
-    List<TrendChartPoint> _chartItems;
+    // How many x-axis labels a chart can show before M/d dates start colliding at phone width.
+    const int MaxDateLabels = 6;
 
-    ApexChartOptions<TrendChartPoint> ChartOptions;
+    // The most horizontal gridlines a chart draws when the value range isn't a known scale.
+    const int MaxValueLines = 5;
+
+    List<ChartSeries<decimal>> _series = [];
+    string[] _labels = [];
+    LineChartOptions _options = new();
 
     [Parameter]
     public DataPointCategory Category { get; set; }
@@ -92,120 +50,136 @@ else
     [Parameter]
     public IReadOnlyDictionary<DateOnly, IReadOnlyCollection<DataPoint>> PointsByDay { get; set; }
 
-    protected override async Task OnParametersSetAsync()
-    {
-        await base.OnParametersSetAsync();
-
-        _chartItems = new();
-        foreach (var (day, points) in PointsByDay)
-        {
-            _chartItems.Add(new(day, points.LastOrDefault()));
-        }
-
-        if (_chart != null)
-            await _chart.UpdateSeriesAsync(false);
-    }
-
     protected override void OnInitialized()
     {
         base.OnInitialized();
 
         PreferenceService.ThemeChanged += OnThemeChanged;
-
-        ChartOptions = new()
-        {
-            Theme = BuildChartTheme(),
-            Grid = new Grid
-            {
-                Padding = new Padding
-                {
-                    Bottom = 0,
-                    Left = 0,
-                    Right = 0,
-                    Top = -15,
-                },
-                BorderColor = "var(--mud-palette-lines-default)",
-            },
-            Chart = new Chart
-            {
-                Background = "transparent",
-                Height = "100%",
-                ParentHeightOffset = 0,
-                Zoom = new Zoom
-                {
-                    Enabled = false,
-                },
-                Toolbar = new Toolbar
-                {
-                    Show = false,
-                },
-                Animations = new Animations
-                {
-                    Enabled = false,
-                },
-            },
-            Xaxis = new XAxis
-            {
-                // Few enough ticks that M/d labels never collide on a phone-width chart.
-                TickAmount = 6,
-                Labels = new XAxisLabels
-                {
-                    HideOverlappingLabels = true,
-                    Rotate = 0,
-                    Style = new AxisLabelStyle
-                    {
-                        //FontSize = "var(--mud-typography-caption-size)",
-                        FontFamily = "var(--mud-typography-caption-family)",
-                        FontWeight = "var(--mud-typography-caption-weight)",
-                    },
-                },
-            },
-            Yaxis = new List<YAxis>
-                {
-                   new YAxis
-                   {
-                        Labels = new YAxisLabels
-                        {
-                            OffsetX = -15,
-                            Style = new AxisLabelStyle
-                            {
-                                //FontSize = "var(--mud-typography-caption-size)",
-                                FontFamily = "var(--mud-typography-caption-family)",
-                                FontWeight = "var(--mud-typography-caption-weight)",
-                            },
-                        },
-                   },
-                },
-            Markers = new Markers
-            {
-                ShowNullDataPoints = false,
-            },
-            Stroke = new Stroke
-            {
-                Curve = Curve.Smooth,
-                LineCap = LineCap.Round,
-            },
-        };
     }
 
-    Theme BuildChartTheme() => new()
+    protected override void OnParametersSet()
     {
-        Mode = PreferenceService.IsDarkMode ? Mode.Dark : Mode.Light,
-        // ApexCharts derives its shade ramp from this base color, so it needs a literal hex: the theme primary for the active mode.
-        Monochrome = new ThemeMonochrome
-        {
-            Color = PreferenceService.PrimaryColor,
-            Enabled = true,
-        },
+        base.OnParametersSet();
+
+        BuildChart();
+    }
+
+    void BuildChart()
+    {
+        var points = PointsByDay
+            .Select(x => new TrendChartPoint(x.Key, x.Value.LastOrDefault()))
+            .ToList();
+
+        var values = points.Select(GetValue).ToList();
+
+        // Every point carries its date so tooltips can show it; the axis only draws every nth one.
+        _labels = [.. points.Select(p => p.DayLabel)];
+
+        _series = [new ChartSeries<decimal> { Data = values }];
+        _options = BuildOptions(values, Math.Max(1, (int)Math.Ceiling(points.Count / (double)MaxDateLabels)));
+    }
+
+    decimal? GetValue(TrendChartPoint point) => Category.Type switch
+    {
+        PointType.Mood => point.Mood,
+        PointType.Sleep => point.SleepHours,
+        PointType.Scale or PointType.LowToHigh or PointType.MildToSevere => point.Scale,
+        PointType.Bool => point.Bool,
+        PointType.Medication => point.MedDose,
+        PointType.Number => point.Number,
+        _ => null,
     };
 
-    // Charts bake theme colors in at render time, so rebuild them when the theme changes (the System theme can flip mid-session).
-    async void OnThemeChanged(object sender, bool isDarkMode)
+    LineChartOptions BuildOptions(IReadOnlyList<decimal?> values, int labelInterval)
     {
-        ChartOptions.Theme = BuildChartTheme();
+        var options = new LineChartOptions
+        {
+            // Every chart plots one series, and the category name is already the header above it.
+            ShowLegend = false,
+            // A day with no neighbours has no line segment to draw, so the marker is the only thing that shows it.
+            ShowDataMarkers = true,
+            ShowToolTips = true,
+            // A finger can't hover, and this is mostly read on a phone: a sideways drag walks the tooltip from day to day and a tap opens the nearest day.
+            ShowToolTipsOnTouch = true,
+            // M/d dates collide at phone width, so the axis is thinned without taking the dates out of the tooltips.
+            XAxisLabelInterval = labelInterval,
+            // Readings are a value per day, not a continuous signal, so don't curve between them.
+            InterpolationOption = InterpolationOption.Straight,
+            LineStrokeWidth = 3,
+            YAxisLines = true,
+            XAxisLines = false,
+            // The chart writes colors straight into SVG attributes, where CSS variables don't resolve,
+            // so this has to be the literal hex of the theme primary for the active mode.
+            ChartPalette = [PreferenceService.PrimaryColor],
+        };
 
-        if (_chart != null)
-            await InvokeAsync(() => _chart.UpdateOptionsAsync(true, false, false));
+        ConfigureYAxis(options, values);
+
+        // A tooltip names the value the way its axis does, so a mood reads as its emoji, while a plain number keeps every decimal the axis would round off.
+        options.TooltipTitleFormat = options.YAxisToStringFunc is null ? "{{Y_VALUE}}" : "{{Y_AXIS_VALUE}}";
+        options.TooltipSubtitleFormat = "{{X_VALUE}}";
+
+        return options;
+    }
+
+    void ConfigureYAxis(LineChartOptions options, IReadOnlyList<decimal?> values)
+    {
+        switch (Category.Type)
+        {
+            case PointType.Mood:
+                // One line per emoji, labelled with the emoji itself so the scale explains itself.
+                options.YAxisTicks = 1;
+                options.MaxNumYAxisTicks = TrendChartPoint.ChartEmojis.Count;
+                options.YAxisToStringFunc = MoodLabel;
+                break;
+
+            case PointType.Bool:
+                // Anchor to zero so "No" is always on the axis even in a month that's all yes.
+                options.YAxisTicks = 1;
+                options.MaxNumYAxisTicks = 2;
+                options.YAxisRequireZeroPoint = true;
+                options.YAxisSuggestedMax = 1;
+                options.YAxisToStringFunc = v => v >= 0.5 ? "Yes" : "No";
+                break;
+
+            case PointType.Scale:
+            case PointType.LowToHigh:
+            case PointType.MildToSevere:
+                options.YAxisTicks = 1;
+                options.MaxNumYAxisTicks = 6;
+                options.YAxisFormat = "0";
+                break;
+
+            case PointType.Sleep:
+                // 0 lets the chart pick a round step that fits the values.
+                options.YAxisTicks = 0;
+                options.MaxNumYAxisTicks = MaxValueLines;
+                options.YAxisToStringFunc = v => $"{v:0.#}h";
+                break;
+
+            default:
+                options.YAxisTicks = 0;
+                options.MaxNumYAxisTicks = MaxValueLines;
+                options.YAxisFormat = "0.##";
+                break;
+        }
+    }
+
+    static string MoodLabel(double value)
+    {
+        var i = (int)Math.Round(value) - 1;
+
+        return i >= 0 && i < TrendChartPoint.ChartEmojis.Count ? TrendChartPoint.ChartEmojis[i] : string.Empty;
+    }
+
+    // Charts bake theme colors in at render time, so rebuild them when the theme changes (the System theme can flip mid-session).
+    void OnThemeChanged(object sender, bool isDarkMode)
+    {
+        InvokeAsync(() =>
+        {
+            BuildChart();
+            StateHasChanged();
+        });
     }
 
     public void Dispose()
