@@ -46,16 +46,39 @@ public class AppDbSeederTests : JaTestContext
     }
 
     [Fact]
-    public void PrepareDatabase_AppliesRemainingMigrations_WhenDatabaseIsBehind()
+    public async Task PrepareDatabase_AppliesRemainingMigrations_AndKeepsData_WhenDatabaseIsBehind()
     {
-        using var db = Services.GetService<IDbContextFactory<AppDbContext>>().CreateDbContext();
-        var migrations = db.Database.GetMigrations().ToList();
-        db.GetService<IMigrator>().Migrate(migrations[0]);
-        db.Database.GetAppliedMigrations().Should().Equal(migrations[0]);
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        appDbSeeder.SeedCategories();
+        int pointCount;
 
-        Services.GetService<AppDbSeeder>().PrepareDatabase();
+        using (var seedDb = await dbFactory.CreateDbContextAsync())
+        {
+            var day = await seedDb.GetOrCreateDayAndAddPoints(new DateOnly(2024, 1, 1));
+            var note = seedDb.CreateNote(day);
+            note.Text = "Written before the update";
+            seedDb.Points.Add(note);
+            await seedDb.SaveChangesAsync();
+            pointCount = seedDb.Points.Count();
+        }
 
+        // Take the database back to how the first release left it, with the journal still in it.
+        List<string> migrations;
+        using (var oldDb = await dbFactory.CreateDbContextAsync())
+        {
+            migrations = oldDb.Database.GetMigrations().ToList();
+            oldDb.GetService<IMigrator>().Migrate(migrations[0]);
+            oldDb.Database.GetAppliedMigrations().Should().Equal(migrations[0]);
+        }
+
+        appDbSeeder.PrepareDatabase();
+
+        using var db = await dbFactory.CreateDbContextAsync();
         db.Database.GetAppliedMigrations().Should().Equal(migrations);
+        db.Days.Should().ContainSingle().Which.Date.Should().Be(new DateOnly(2024, 1, 1));
+        db.Points.Count().Should().Be(pointCount);
+        db.Points.Should().ContainSingle(p => p.Text == "Written before the update");
     }
 
     [Fact]
