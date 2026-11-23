@@ -94,20 +94,121 @@ public class ImportExportTests : JaTestContext
     [Fact]
     public Task ReadArchive_ThrowsOnInvalidZip() =>
         AssertReadArchiveThrows<InvalidDataException>(
-            stream => stream.WriteAsync(System.Text.Encoding.UTF8.GetBytes("This is not a valid zip file")).AsTask());
+            stream => stream.WriteAsync(System.Text.Encoding.UTF8.GetBytes("This is not a valid zip file")).AsTask(),
+            expectedMessage: "This file isn't a Journal App backup, or it's damaged.");
 
     [Fact]
     public Task ReadArchive_ThrowsOnMissingInternalFile() =>
-        AssertReadArchiveThrows<InvalidOperationException>(
+        AssertReadArchiveThrows<Exception>(
             stream => WriteZipEntry(stream, "wrong-name.json", "{}"),
-            expectedMessage: "No valid backup found!*");
+            expectedMessage: "This file isn't a Journal App backup.");
 
     [Fact]
     public Task ReadArchive_ThrowsOnCorruptedJSON() =>
         AssertReadArchiveThrows<System.Text.Json.JsonException>(
-            stream => WriteZipEntry(stream, "journalapp-data.json", "{invalid json content"));
+            stream => WriteZipEntry(stream, "journalapp-data.json", "{invalid json content"),
+            expectedMessage: "This backup is damaged and can't be read.");
 
-    private static async Task AssertReadArchiveThrows<TException>(Func<Stream, Task> writeContents, string expectedMessage = null)
+    [Fact]
+    public async Task ReadArchive_ThrowsOnChecksumMismatch()
+    {
+        // Arrange - store the entry uncompressed so one byte of a text value can be changed without breaking the zip structure or the JSON.
+        using var stream = new MemoryStream();
+        using (var archive = new System.IO.Compression.ZipArchive(stream, System.IO.Compression.ZipArchiveMode.Create, leaveOpen: true))
+        {
+            var entry = archive.CreateEntry("journalapp-data.json", System.IO.Compression.CompressionLevel.NoCompression);
+            using var entryStream = entry.Open();
+            entryStream.Write("""{"Days":[],"Categories":[],"Points":[],"PreferenceBackups":[{"Name":"safety_plan","Value":"QQQQQQQQ"}]}"""u8);
+        }
+
+        var bytes = stream.ToArray();
+        var index = bytes.AsSpan().IndexOf("QQQQQQQQ"u8);
+        index.Should().BePositive();
+        bytes[index] = (byte)'X';
+
+        // Act
+        var act = async () => await BackupFile.ReadArchive(new MemoryStream(bytes));
+
+        // Assert - the changed text would otherwise be imported as if it were what the user wrote.
+        (await act.Should().ThrowAsync<BackupReadException>())
+            .WithMessage("This backup is damaged and can't be read.")
+            .WithInnerException<InvalidDataException>();
+    }
+
+    [Theory]
+    [InlineData("JournalApp-Data.JSON")]
+    [InlineData("backup-2024-01-01/journalapp-data.json")]
+    public async Task ReadArchive_FindsDataFileInFolderOrWithOtherCasing(string entryName)
+    {
+        using var stream = new MemoryStream();
+        await WriteZipEntry(stream, entryName, """{"Days":[{"Guid":"11111111-1111-1111-1111-111111111111","Date":"2024-01-01","Points":[]}]}""");
+        stream.Position = 0;
+
+        var backup = await BackupFile.ReadArchive(stream);
+
+        backup.Days.Should().ContainSingle().Which.Date.Should().Be(new DateOnly(2024, 1, 1));
+    }
+
+    [Fact]
+    public async Task ReadArchive_SkipsPointsWithoutBothDayAndCategory()
+    {
+        // Arrange - one complete point, one that is only under a day, one only under a category and one only in the flat list.
+        const string json = """
+            {
+              "Days": [{"Guid":"11111111-1111-1111-1111-111111111111","Date":"2024-01-01","Points":[
+                {"$id":"1","Guid":"aaaaaaaa-0000-0000-0000-000000000001","Type":1,"Mood":"😀"},
+                {"$id":"2","Guid":"aaaaaaaa-0000-0000-0000-000000000002","Type":1}
+              ]}],
+              "Categories": [{"Guid":"22222222-2222-2222-2222-222222222222","Group":"Mood","Name":"Mood","Type":1,"Points":[
+                {"$ref":"1"},
+                {"$id":"3","Guid":"aaaaaaaa-0000-0000-0000-000000000003","Type":1}
+              ]}],
+              "Points": [{"$ref":"1"},{"$ref":"2"},{"$ref":"3"},{"$id":"4","Guid":"aaaaaaaa-0000-0000-0000-000000000004","Type":1},null]
+            }
+            """;
+
+        using var stream = new MemoryStream();
+        await WriteZipEntry(stream, "journalapp-data.json", json);
+        stream.Position = 0;
+
+        // Act
+        var backup = await BackupFile.ReadArchive(stream);
+
+        // Assert
+        var complete = new Guid("aaaaaaaa-0000-0000-0000-000000000001");
+        backup.SkippedPointCount.Should().Be(3);
+        backup.Points.Should().ContainSingle().Which.Guid.Should().Be(complete);
+        backup.Days.Single().Points.Should().ContainSingle().Which.Guid.Should().Be(complete);
+        backup.Categories.Single().Points.Should().ContainSingle().Which.Guid.Should().Be(complete);
+
+        // What's left imports and can be read back with its relationships.
+        await Services.GetService<AppDataService>().RestoreDbSets(backup);
+        AssertBackupMatchesDatabase(backup);
+    }
+
+    [Fact]
+    public async Task WriteArchive_RecordsVersions_AndOlderBackupsReadWithoutThem()
+    {
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        var appDataService = Services.GetService<AppDataService>();
+        appDbSeeder.SeedCategories();
+
+        await using var stream = new MemoryStream();
+        await (await appDataService.CreateBackup()).WriteArchive(stream);
+        stream.Position = 0;
+        var written = await BackupFile.ReadArchive(stream);
+
+        written.FormatVersion.Should().Be(BackupFile.CurrentFormatVersion);
+        written.AppVersion.Should().NotBeNullOrEmpty();
+        written.IsFromNewerApp.Should().BeFalse();
+
+        var old = await BackupFile.ReadArchive("Data/backup-2023-01-01-to-2023-01-08.journalapp");
+        old.FormatVersion.Should().BeNull();
+        old.IsFromNewerApp.Should().BeFalse();
+        old.SkippedPointCount.Should().Be(0);
+    }
+
+    private static async Task AssertReadArchiveThrows<TException>(Func<Stream, Task> writeContents, string expectedMessage)
         where TException : Exception
     {
         using var stream = new MemoryStream();
@@ -115,10 +216,11 @@ public class ImportExportTests : JaTestContext
         stream.Position = 0;
 
         var act = async () => await BackupFile.ReadArchive(stream);
-        var assertion = await act.Should().ThrowAsync<TException>();
+        // Every read failure surfaces as one exception type with a message for the user, and keeps the cause for the log.
+        var assertion = (await act.Should().ThrowAsync<BackupReadException>()).WithMessage(expectedMessage);
 
-        if (expectedMessage != null)
-            assertion.WithMessage(expectedMessage);
+        if (typeof(TException) != typeof(Exception))
+            assertion.WithInnerException<TException>();
     }
 
     private static async Task WriteZipEntry(Stream stream, string entryName, string content)

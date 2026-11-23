@@ -3,7 +3,7 @@
 /// <summary>
 /// Provides services for managing app data, including backup and restore operations.
 /// </summary>
-public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<AppDbContext> dbFactory, PreferenceService preferences)
+public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFactory<AppDbContext> dbFactory, PreferenceService preferences, AppDbSeeder dbSeeder)
 {
     public async Task DeleteDbSets()
     {
@@ -36,6 +36,7 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
     /// <summary>
     /// Atomically deletes all existing data and restores from backup in a single transaction.
     /// This prevents database corruption if the operation is interrupted.
+    /// Built-in categories the backup doesn't have are added back afterwards, like they would be on the next launch.
     /// </summary>
     public async Task ReplaceDbSets(BackupFile backup)
     {
@@ -69,6 +70,17 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
             await transaction.RollbackAsync();
             throw;
         }
+
+        try
+        {
+            // The app needs its built-in categories, the notes one above all, and a backup isn't guaranteed to have them.
+            dbSeeder.SeedCategories();
+        }
+        catch (Exception ex)
+        {
+            // The import itself is committed, and the next launch seeds again.
+            logger.LogError(ex, "Couldn't seed categories after replacing data sets");
+        }
     }
 
     private async Task DeleteDbSetsInternal(AppDbContext db)
@@ -86,10 +98,21 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
 
     private async Task RestoreDbSetsInternal(AppDbContext db, BackupFile backup)
     {
-        await db.Days.AddRangeAsync(backup.Days);
-        await db.Categories.AddRangeAsync(backup.Categories);
-        await db.Points.AddRangeAsync(backup.Points);
-        await db.SaveChangesAsync();
+        // Everything is new, so there is nothing for change detection to find, and scanning the whole graph on every call is most of the cost.
+        var autoDetectChanges = db.ChangeTracker.AutoDetectChangesEnabled;
+        db.ChangeTracker.AutoDetectChangesEnabled = false;
+
+        try
+        {
+            db.Categories.AddRange(backup.Categories);
+            db.Days.AddRange(backup.Days);
+            db.Points.AddRange(backup.Points);
+            await db.SaveChangesAsync();
+        }
+        finally
+        {
+            db.ChangeTracker.AutoDetectChangesEnabled = autoDetectChanges;
+        }
     }
 
     public void SetPreferences(BackupFile backup)
@@ -110,26 +133,31 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
         preferences.Set(restored);
     }
 
-    public IEnumerable<PreferenceBackup> GetPreferenceBackups()
-    {
-        foreach (var item in preferences.Get(
-            "safety_plan",
-            "mood_palette",
-            "tip_click_mood_grid_day",
-            "tip_add_new_category"))
-        {
-            yield return new(item.Key, item.Value);
-        }
-    }
+    /// <summary>
+    /// The preferences worth carrying to another device. Ones that were never set are left out so they keep their default there.
+    /// </summary>
+    public IEnumerable<PreferenceBackup> GetPreferenceBackups() => preferences.GetBackupValues().Select(x => new PreferenceBackup(x.Key, x.Value));
 
     public async Task<BackupFile> CreateBackup()
     {
         var sw = Stopwatch.StartNew();
         await using var db = await dbFactory.CreateDbContextAsync();
 
-        var days = await db.Days.Include(d => d.Points).ToListAsync();
-        var categories = await db.Categories.Include(c => c.Points).ToListAsync();
+        // Load each table once and let the change tracker wire the points into their days and categories, instead of joining the points in twice.
+        var days = await db.Days.ToListAsync();
+        var categories = await db.Categories.ToListAsync();
         var points = await db.Points.ToListAsync();
+
+        // Nothing here gets modified, and with detection on, each entry lookup below would rescan every tracked entity.
+        db.ChangeTracker.AutoDetectChangesEnabled = false;
+
+        // The collections are complete, so mark them loaded or the proxies would try to lazy load them after this context is gone.
+        foreach (var entry in db.ChangeTracker.Entries<Day>())
+            entry.Collection(x => x.Points).IsLoaded = true;
+
+        foreach (var entry in db.ChangeTracker.Entries<DataPointCategory>())
+            entry.Collection(x => x.Points).IsLoaded = true;
+
         var preferencesBackup = GetPreferenceBackups().ToList();
 
         sw.Stop();
@@ -143,6 +171,8 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
 
         return new()
         {
+            FormatVersion = BackupFile.CurrentFormatVersion,
+            AppVersion = ThisAssembly.AssemblyInformationalVersion,
             Days = days,
             Categories = categories,
             Points = points,

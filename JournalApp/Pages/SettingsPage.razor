@@ -190,7 +190,31 @@ else
         if (pickResult == null)
             return;
 
-        await StartImport(pickResult.FullPath);
+        try
+        {
+            await StartImport(pickResult.FullPath);
+        }
+        finally
+        {
+            DeletePickedCopy(pickResult.FullPath);
+        }
+    }
+
+    void DeletePickedCopy(string path)
+    {
+        try
+        {
+            // On Android the picker hands us a copy it made in the cache, and nothing else ever removes it. Elsewhere the path is the user's own file.
+            if (path.StartsWith(FileSystem.CacheDirectory, StringComparison.Ordinal))
+            {
+                File.Delete(path);
+                logger.LogDebug("Deleted cached copy of picked file");
+            }
+        }
+        catch (Exception e)
+        {
+            logger.LogWarning(e, "Couldn't delete cached copy of picked file");
+        }
     }
 
     async Task StartImport(string path)

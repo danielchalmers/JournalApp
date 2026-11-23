@@ -145,7 +145,7 @@ public class AppDataUIServiceTests : JaTestContext
 
             preferenceService.LastExportDate.Should().Be(originalExportDate);
             preferenceService.SafetyPlan.WarningSigns.Should().Be("original warning");
-            dialogService.Messages.Should().Contain(message => message.StartsWith("Import failed:"));
+            dialogService.Messages.Should().Contain("Import failed: The backup has data that can't be imported. Your current data was not changed.");
         }
         finally
         {
@@ -380,6 +380,98 @@ public class AppDataUIServiceTests : JaTestContext
         }
     }
 
+    [Fact]
+    public async Task StartImportWizard_WarnsAboutNewerFormatAndSkippedEntries_AndLeavesAppUsable()
+    {
+        // Arrange - a backup from a future format with a point that has no category, and none of the built-in categories.
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDataService = Services.GetService<AppDataService>();
+        var preferenceService = Services.GetService<PreferenceService>();
+        preferenceService.LastExportDate = new DateTimeOffset(2099, 1, 1, 0, 0, 0, TimeSpan.Zero); // Skips the backup warning.
+
+        var importPath = await WriteRawBackup(
+            """{"FormatVersion":99,"AppVersion":"99.0","SomethingNew":{"a":1},"Days":[{"Guid":"11111111-1111-1111-1111-111111111111","Date":"2024-05-01","Points":[{"$id":"1","Guid":"aaaaaaaa-0000-0000-0000-000000000001","Type":1}]}],"Categories":[],"Points":[{"$ref":"1"}]}""");
+        var dialogService = new TestDialogService([true]);
+        var service = new AppDataUIService(
+            NullLogger<AppDataUIService>.Instance,
+            appDataService,
+            new TestFileSaver(),
+            preferenceService);
+
+        try
+        {
+            // Act
+            var imported = await service.StartImportWizard(dialogService, importPath);
+
+            // Assert
+            imported.Should().BeTrue();
+            var confirmation = dialogService.Messages.Should().ContainSingle().Subject;
+            confirmation.Should().Contain("Contains 1 days, 0 categories, 0 points");
+            confirmation.Should().Contain("1 entries in the backup are incomplete and will be skipped.");
+            confirmation.Should().Contain("made by a newer version of the app");
+
+            // The imported day opens and takes a note, which needs the built-in categories to be back.
+            using var db = await dbFactory.CreateDbContextAsync();
+            var day = await db.GetOrCreateDayAndAddPoints(new DateOnly(2024, 5, 1));
+            day.Guid.Should().Be(new Guid("11111111-1111-1111-1111-111111111111"));
+            day.Points.Should().NotBeEmpty().And.OnlyContain(x => x.Category != null);
+            db.CreateNote(day).Should().NotBeNull();
+        }
+        finally
+        {
+            File.Delete(importPath);
+        }
+    }
+
+    [Fact]
+    public async Task StartExportWizard_ThenImport_RestoresSettingsOnAnotherDevice()
+    {
+        // Arrange
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        var appDataService = Services.GetService<AppDataService>();
+        var preferenceService = Services.GetService<PreferenceService>();
+        var store = Services.GetService<IPreferences>();
+
+        appDbSeeder.SeedCategories();
+        preferenceService.SelectedAppTheme = AppTheme.Dark;
+        preferenceService.HideNotes = true;
+        preferenceService.UseDeviceColors = false;
+        preferenceService.SafetyPlan = new SafetyPlan { WarningSigns = "from the old phone" };
+
+        var fileSaver = new TestFileSaver();
+        var service = new AppDataUIService(
+            NullLogger<AppDataUIService>.Instance,
+            appDataService,
+            fileSaver,
+            preferenceService);
+
+        await service.StartExportWizard(new TestDialogService());
+        var importPath = Path.Combine(Path.GetTempPath(), $"settings-roundtrip-{Guid.NewGuid()}.journalapp");
+        await File.WriteAllBytesAsync(importPath, fileSaver.SaveCalls.Single().Bytes);
+
+        // A fresh install has none of it.
+        store.Clear();
+        preferenceService.SelectedAppTheme = AppTheme.Light;
+        preferenceService.LastExportDate = new DateTimeOffset(2099, 1, 1, 0, 0, 0, TimeSpan.Zero); // Skips the backup warning.
+
+        try
+        {
+            // Act
+            var imported = await service.StartImportWizard(new TestDialogService([true]), importPath);
+
+            // Assert
+            imported.Should().BeTrue();
+            preferenceService.SelectedAppTheme.Should().Be(AppTheme.Dark);
+            preferenceService.HideNotes.Should().BeTrue();
+            preferenceService.UseDeviceColors.Should().BeFalse();
+            preferenceService.SafetyPlan.WarningSigns.Should().Be("from the old phone");
+        }
+        finally
+        {
+            File.Delete(importPath);
+        }
+    }
+
     private static async Task<string> WriteRawBackup(string json)
     {
         var path = Path.Combine(Path.GetTempPath(), $"raw-import-{Guid.NewGuid()}.journalapp");
@@ -543,8 +635,7 @@ public class AppDataUIServiceTests : JaTestContext
 
             // Assert - fails on read, before the replace-all confirmation is ever shown.
             imported.Should().BeFalse();
-            dialogService.Messages.Should().Contain(message => message.StartsWith("Import failed:"));
-            dialogService.Messages.Should().NotContain(message => message.Contains("replace ALL current data"));
+            dialogService.Messages.Should().ContainSingle().Which.Should().Be("Import failed: This file isn't a Journal App backup, or it's damaged.");
         }
         finally
         {

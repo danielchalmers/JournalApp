@@ -15,8 +15,22 @@ public class BackupFile
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         ReferenceHandler = ReferenceHandler.Preserve,
-        WriteIndented = true,
     };
+
+    /// <summary>
+    /// The format this app writes. Only raise it for a change that an older reader would get wrong.
+    /// </summary>
+    public const int CurrentFormatVersion = 1;
+
+    /// <summary>
+    /// The format the backup was written in, or null for backups from before this was recorded.
+    /// </summary>
+    public int? FormatVersion { get; set; }
+
+    /// <summary>
+    /// The version of the app that wrote the backup, for information only.
+    /// </summary>
+    public string AppVersion { get; set; }
 
     public IReadOnlyCollection<Day> Days { get; set; }
 
@@ -27,32 +41,57 @@ public class BackupFile
     public IReadOnlyCollection<PreferenceBackup> PreferenceBackups { get; set; }
 
     /// <summary>
+    /// How many points were dropped while reading because they didn't belong to both a day and a category.
+    /// </summary>
+    [JsonIgnore]
+    public int SkippedPointCount { get; private set; }
+
+    /// <summary>
+    /// Whether the backup was written by a newer app whose format this one may not fully understand.
+    /// </summary>
+    [JsonIgnore]
+    public bool IsFromNewerApp => FormatVersion > CurrentFormatVersion;
+
+    /// <summary>
     /// Reads a backup file from the specified stream.
     /// </summary>
+    /// <exception cref="BackupReadException">The stream isn't a backup or the backup is damaged.</exception>
     public static async Task<BackupFile> ReadArchive(Stream stream)
     {
-        await using var archive = await ZipArchive.CreateAsync(stream, ZipArchiveMode.Read, leaveOpen: true, entryNameEncoding: null);
-
-        foreach (var entry in archive.Entries)
+        ZipArchive archive;
+        try
         {
-            if (entry.FullName == InternalBackupFileName)
-            {
-                await using var entryStream = await entry.OpenAsync();
-
-                var backup = await JsonSerializer.DeserializeAsync<BackupFile>(entryStream, SerializerOptions)
-                    ?? throw new InvalidDataException("The backup is empty.");
-
-                // Sections can be missing from older or hand-edited backups, and everything downstream expects them to exist.
-                backup.Days ??= [];
-                backup.Categories ??= [];
-                backup.Points ??= [];
-                backup.PreferenceBackups ??= [];
-
-                return backup;
-            }
+            archive = await ZipArchive.CreateAsync(stream, ZipArchiveMode.Read, leaveOpen: true, entryNameEncoding: null);
+        }
+        catch (InvalidDataException ex)
+        {
+            throw new BackupReadException("This file isn't a Journal App backup, or it's damaged.", ex);
         }
 
-        throw new InvalidOperationException("No valid backup found!");
+        await using (archive)
+        {
+            // Match on the file name alone so a backup that was unzipped and zipped again inside a folder still imports.
+            var entry = archive.Entries.FirstOrDefault(x => string.Equals(x.Name, InternalBackupFileName, StringComparison.OrdinalIgnoreCase))
+                ?? throw new BackupReadException("This file isn't a Journal App backup.");
+
+            BackupFile backup;
+            try
+            {
+                await using var entryStream = await entry.OpenAsync();
+                backup = await JsonSerializer.DeserializeAsync<BackupFile>(entryStream, SerializerOptions);
+            }
+            catch (Exception ex) when (ex is JsonException or InvalidDataException)
+            {
+                // InvalidDataException covers a failed checksum, which means the file changed after it was written.
+                throw new BackupReadException("This backup is damaged and can't be read.", ex);
+            }
+
+            if (backup == null)
+                throw new BackupReadException("The backup is empty.");
+
+            backup.Normalize();
+            return backup;
+        }
     }
 
     /// <summary>
@@ -63,6 +102,39 @@ public class BackupFile
         // Read-only access so a read-only file, or one that's open elsewhere, can still be imported.
         await using var fs = File.OpenRead(path);
         return await ReadArchive(fs);
+    }
+
+    /// <summary>
+    /// Makes a freshly read backup safe to import: no missing sections, and no points the app couldn't show.
+    /// </summary>
+    private void Normalize()
+    {
+        // Sections can be missing from older or hand-edited backups, and everything downstream expects them to exist.
+        Days = [.. (Days ?? []).Where(x => x != null)];
+        Categories = [.. (Categories ?? []).Where(x => x != null)];
+        PreferenceBackups ??= [];
+
+        foreach (var day in Days)
+            day.Points ??= [];
+
+        foreach (var category in Categories)
+            category.Points ??= [];
+
+        // A point only gets its day and category from being listed under them, and the app can't open a day that has a point without both.
+        var inDay = Days.SelectMany(x => x.Points).Where(x => x != null).ToHashSet<DataPoint>(ReferenceEqualityComparer.Instance);
+        var inCategory = Categories.SelectMany(x => x.Points).Where(x => x != null).ToHashSet<DataPoint>(ReferenceEqualityComparer.Instance);
+        bool IsUsable(DataPoint point) => point != null && inDay.Contains(point) && inCategory.Contains(point);
+
+        var all = (Points ?? []).Concat(inDay).Concat(inCategory).Where(x => x != null).ToHashSet<DataPoint>(ReferenceEqualityComparer.Instance);
+
+        foreach (var day in Days)
+            day.Points.RemoveWhere(x => !IsUsable(x));
+
+        foreach (var category in Categories)
+            category.Points.RemoveWhere(x => !IsUsable(x));
+
+        Points = [.. all.Where(IsUsable)];
+        SkippedPointCount = all.Count - Points.Count;
     }
 
     /// <summary>
@@ -87,6 +159,11 @@ public class BackupFile
         await WriteArchive(stream);
     }
 }
+
+/// <summary>
+/// Thrown when a file can't be read as a backup. The message is written for the user.
+/// </summary>
+public sealed class BackupReadException(string message, Exception innerException = null) : Exception(message, innerException);
 
 /// <summary>
 /// Represents a preference.

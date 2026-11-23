@@ -234,23 +234,57 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
     }
 
     /// <summary>
-    /// Overwrites the given preferences and leaves everything else, like the theme, as it was.
+    /// Overwrites the given preferences and leaves everything else as it was.
     /// </summary>
     public void Set(IReadOnlyDictionary<string, string> preferences)
     {
         foreach (var (key, value) in preferences)
         {
-            Set(key, value);
+            // These aren't stored as plain strings, so writing the backup text straight into the store would break the next typed read.
+            switch (key)
+            {
+                case "theme":
+                    if (Enum.TryParse<AppTheme>(value, out var theme) && Enum.IsDefined(theme))
+                        SelectedAppTheme = theme;
+                    break;
+                case "device_colors":
+                    if (bool.TryParse(value, out var deviceColors))
+                        UseDeviceColors = deviceColors;
+                    break;
+                case "hide_notes":
+                    if (bool.TryParse(value, out var hideNotes))
+                        HideNotes = hideNotes;
+                    break;
+                default:
+                    Set(key, value);
+                    break;
+            }
+
             logger.LogInformation($"Preference restored: {key}");
         }
     }
 
-    public IEnumerable<KeyValuePair<string, string>> Get(params string[] keys)
+    /// <summary>
+    /// The preferences that go into a backup, as text. Anything the user never set is skipped.
+    /// </summary>
+    public IEnumerable<KeyValuePair<string, string>> GetBackupValues()
     {
-        foreach (var key in keys)
+        foreach (var key in (string[])["safety_plan", "tip_click_mood_grid_day", "tip_add_new_category"])
         {
-            yield return new(key, Get(key, string.Empty));
+            var value = Get(key, string.Empty);
+
+            if (!string.IsNullOrEmpty(value))
+                yield return new(key, value);
         }
+
+        if (ContainsKey("theme"))
+            yield return new("theme", SelectedAppTheme.ToString());
+
+        if (ContainsKey("device_colors"))
+            yield return new("device_colors", UseDeviceColors.ToString());
+
+        if (ContainsKey("hide_notes"))
+            yield return new("hide_notes", HideNotes.ToString());
     }
 
     public void Dispose()
