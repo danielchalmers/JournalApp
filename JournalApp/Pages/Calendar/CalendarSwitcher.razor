@@ -41,15 +41,8 @@
         return YearClicked.InvokeAsync();
     }
 
-    public void NextYear()
-    {
-        SelectedYear++;
-        StateHasChanged();
-    }
+    // The page rerenders through the SelectedYear binding, which brings this component with it.
+    public void NextYear() => SelectedYear++;
 
-    public void PreviousYear()
-    {
-        SelectedYear--;
-        StateHasChanged();
-    }
+    public void PreviousYear() => SelectedYear--;
 }

@@ -85,7 +85,7 @@ public class DataPoint
     /// The list of predefined moods.
     /// </summary>
     [JsonIgnore]
-    public static IReadOnlyList<string> Moods { get; } = ["🤔", "🤩", "😀", "🙂", "😐", "😕", "😢", "😭"];
+    public static IReadOnlyList<string> Moods { get; } = (string[])["🤔", "🤩", "😀", "🙂", "😐", "😕", "😢", "😭"];
 
     public override string ToString() => $"{Type}, {Category}, {Day}";
 
