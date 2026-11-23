@@ -29,6 +29,15 @@ public class AppDbSeederTests : JaTestContext
     }
 
     [Fact]
+    public void DesignTimeFactory_ConfiguresTheContextLikeTheApp()
+    {
+        using var db = new AppDbContextDesignTimeFactory().CreateDbContext([]);
+
+        // The tooling generates the compiled model from this context, and EF only accepts that model for matching options.
+        db.Model.Should().BeSameAs(AppDbContextModel.Instance);
+    }
+
+    [Fact]
     public void PrepareDatabase_AppliesEveryMigration_ToNewDatabase()
     {
         using var db = Services.GetService<IDbContextFactory<AppDbContext>>().CreateDbContext();
