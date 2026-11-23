@@ -202,13 +202,17 @@ else
 
     void DeletePickedCopy(string path)
     {
+        // Only Android copies the picked file, into the app's cache, and nothing else ever removes it. Elsewhere the path is the user's own file.
+        if (!OperatingSystem.IsAndroid())
+            return;
+
         try
         {
-            // On Android the picker hands us a copy it made in the cache, and nothing else ever removes it. Elsewhere the path is the user's own file.
-            if (path.StartsWith(FileSystem.CacheDirectory, StringComparison.Ordinal))
+            // Match on the folder names because the picker reports the cache as /data/data/... while FileSystem.CacheDirectory is /data/user/0/...
+            if (path.Contains($"/{AppInfo.PackageName}/cache/", StringComparison.Ordinal))
             {
                 File.Delete(path);
-                logger.LogDebug("Deleted cached copy of picked file");
+                logger.LogInformation("Deleted cached copy of picked file");
             }
         }
         catch (Exception e)
