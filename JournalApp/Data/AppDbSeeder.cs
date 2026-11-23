@@ -6,6 +6,11 @@
 public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbContext> dbFactory)
 {
     /// <summary>
+    /// Completes once the database has been migrated and seeded, which is when it's safe to query.
+    /// </summary>
+    public Task Ready { get; set; } = Task.CompletedTask;
+
+    /// <summary>
     /// Prepares the database by applying any pending migrations and ensuring it's ready to use.
     /// </summary>
     public void PrepareDatabase()
@@ -30,7 +35,7 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
         try
         {
             phaseStopwatch.Restart();
-            var anyPendingMigrations = db.Database.GetPendingMigrations().Any();
+            var anyPendingMigrations = !IsLatestMigrationApplied(db) && db.Database.GetPendingMigrations().Any();
             logger.LogInformation(
                 "Database prepare phase {PhaseName} completed in {ElapsedMilliseconds}ms (pending migrations: {HasPendingMigrations})",
                 "CheckPendingMigrations",
@@ -67,6 +72,32 @@ public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbCon
 
         sw.Stop();
         logger.LogInformation("Finished preparing database in {ElapsedMilliseconds}ms", sw.ElapsedMilliseconds);
+    }
+
+    /// <summary>
+    /// Whether the newest migration in the app is also the newest one recorded in the database, which is the case on every launch except the first after an install or update.
+    /// </summary>
+    private static bool IsLatestMigrationApplied(AppDbContext db)
+    {
+        var latestMigration = db.Database.GetMigrations().LastOrDefault();
+
+        db.Database.OpenConnection();
+        try
+        {
+            // Asking EF which migrations are applied sets up its whole migration pipeline, which takes far longer at launch than reading this one row.
+            using var command = db.Database.GetDbConnection().CreateCommand();
+            command.CommandText = """SELECT "MigrationId" FROM "__EFMigrationsHistory" ORDER BY "MigrationId" DESC LIMIT 1""";
+            return latestMigration != null && (string)command.ExecuteScalar() == latestMigration;
+        }
+        catch (Microsoft.Data.Sqlite.SqliteException ex) when (ex.SqliteErrorCode == 1)
+        {
+            // A new database has no history table yet.
+            return false;
+        }
+        finally
+        {
+            db.Database.CloseConnection();
+        }
     }
 
     /// <summary>

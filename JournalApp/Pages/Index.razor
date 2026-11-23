@@ -340,7 +340,7 @@
             return;
 
         logger.LogInformation("Saving new note");
-        note.Category.Points.Add(note);
+        db.Points.Add(note); // Going through note.Category.Points would lazy-load every existing note first.
         await db.SaveChangesAsync();
     }
 

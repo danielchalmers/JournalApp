@@ -246,6 +246,93 @@ public class AppDbContextTests : JaTestContext
         missingPoints.Should().BeEmpty();
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task GetMissingPoints_DoesNotCreateWelcomeNote_WhenNotesAreSaved(bool deleted)
+    {
+        // Arrange
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        appDbSeeder.SeedCategories();
+
+        using (var seedDb = await dbFactory.CreateDbContextAsync())
+        {
+            var previousDay = Day.Create(new DateOnly(2024, 1, 1));
+            var note = seedDb.CreateNote(previousDay);
+            note.Deleted = deleted;
+            seedDb.Points.Add(note);
+            await seedDb.SaveChangesAsync();
+        }
+
+        using var db = await dbFactory.CreateDbContextAsync();
+        var currentDay = Day.Create(new DateOnly(2024, 1, 2));
+        var notesCategory = db.Categories.Single(c => c.Group == "Notes");
+
+        // Act
+        var missingPoints = db.GetMissingPoints(currentDay, notesCategory, null);
+
+        // Assert
+        missingPoints.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetMissingPoints_DoesNotLoadExistingNotes()
+    {
+        // Arrange
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        appDbSeeder.SeedCategories();
+
+        using (var seedDb = await dbFactory.CreateDbContextAsync())
+        {
+            for (var i = 1; i <= 5; i++)
+                seedDb.Points.Add(seedDb.CreateNote(Day.Create(new DateOnly(2024, 1, i))));
+
+            await seedDb.SaveChangesAsync();
+        }
+
+        using var db = await dbFactory.CreateDbContextAsync();
+        var day = Day.Create(new DateOnly(2024, 2, 1));
+        var notesCategory = db.Categories.Single(c => c.Group == "Notes");
+
+        // Act
+        db.GetMissingPoints(day, notesCategory, null);
+
+        // Assert
+        // A journal can hold years of notes, and checking whether any exist shouldn't pull them all into the context.
+        db.ChangeTracker.Entries<DataPoint>().Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetMissingPoints_ChecksForNotes_WhileOtherCategoriesAreStillUnloaded()
+    {
+        // Arrange
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        appDbSeeder.SeedCategories();
+        var date = new DateOnly(2024, 1, 1);
+
+        using (var seedDb = await dbFactory.CreateDbContextAsync())
+        {
+            await seedDb.GetOrCreateDayAndAddPoints(date);
+            await seedDb.SaveChangesAsync();
+        }
+
+        using var db = await dbFactory.CreateDbContextAsync();
+        var notesCategory = db.Categories.Single(c => c.Group == "Notes");
+        var day = db.Days.Single(d => d.Date == date);
+
+        // Opening a day that already exists tracks its points before most of their categories have been read.
+        day.Points.Should().NotBeEmpty();
+
+        // Act
+        var missingPoints = db.GetMissingPoints(day, notesCategory, null);
+
+        // Assert
+        missingPoints.Should().ContainSingle();
+    }
+
     [Fact]
     public async Task GetMissingPoints_DoesNotCreateWelcomeNote_InRandomMode()
     {

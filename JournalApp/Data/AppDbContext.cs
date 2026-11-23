@@ -15,20 +15,6 @@ public class AppDbContext : DbContext
     public DbSet<DataPoint> Points { get; set; } = default!;
 
     /// <summary>
-    /// Configures the database context. Useful for local tooling.
-    /// </summary>
-    protected override void OnConfiguring(DbContextOptionsBuilder builder)
-    {
-        if (!builder.IsConfigured)
-        {
-            // Uncomment to enable EF Core tooling (e.g., migrations)
-            //builder.UseSqlite($"Data Source = temp");
-        }
-
-        base.OnConfiguring(builder);
-    }
-
-    /// <summary>
     /// Configures entity relationships for EF Core.
     /// </summary>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -83,7 +69,7 @@ public class AppDbContext : DbContext
         if (category.Group == "Notes")
         {
             // Add a default welcome note only if no notes exist and not running in random mode.
-            if (random == null && category.Points.Count == 0)
+            if (random == null && !HasPoints(category))
             {
                 var note = CreateNote(day);
                 var sb = new StringBuilder();
@@ -119,6 +105,18 @@ public class AppDbContext : DbContext
         }
 
         return newPoints;
+    }
+
+    /// <summary>
+    /// Whether the category has any points at all, saved or still pending in this context.
+    /// </summary>
+    private bool HasPoints(DataPointCategory category)
+    {
+        // Reading category.Points would lazy-load every point the category has ever had just to find out if there is one.
+        var points = Entry(category).Collection(c => c.Points);
+
+        // The entry's own value holds whatever this context already tracks for the category, including points that aren't saved yet.
+        return points.CurrentValue?.Any() == true || points.Query().Any();
     }
 
     /// <summary>

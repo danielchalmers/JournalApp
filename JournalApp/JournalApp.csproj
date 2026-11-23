@@ -50,6 +50,8 @@
     <PackageReference Include="CommunityToolkit.Maui" Version="17.0.0" />
     <PackageReference Include="MaterialColorUtilities" Version="0.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="11.0.10" />
+    <!-- EF tooling runs against the plain net11.0 target, so the design-time package never ships in the app. -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="11.0.0" PrivateAssets="all" Condition="'$(TargetFramework)' == 'net11.0'" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="11.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="11.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="11.0.0">
