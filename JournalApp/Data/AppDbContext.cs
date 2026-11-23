@@ -15,20 +15,6 @@ public class AppDbContext : DbContext
     public DbSet<DataPoint> Points { get; set; } = default!;
 
     /// <summary>
-    /// Configures the database context. Useful for local tooling.
-    /// </summary>
-    protected override void OnConfiguring(DbContextOptionsBuilder builder)
-    {
-        if (!builder.IsConfigured)
-        {
-            // Uncomment to enable EF Core tooling (e.g., migrations)
-            //builder.UseSqlite($"Data Source = temp");
-        }
-
-        base.OnConfiguring(builder);
-    }
-
-    /// <summary>
     /// Configures entity relationships for EF Core.
     /// </summary>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
