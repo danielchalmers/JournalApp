@@ -18,7 +18,8 @@
 }
 else
 {
-    <div class="trend-view trend-view-chart">
+    @* MudChart only fits itself to a parent whose height is set inline, so the card height lives here and not in the stylesheet. *@
+    <div class="trend-view trend-view-chart" style="height: 160px;">
         <MudChart T="decimal"
                   ChartType="ChartType.Line"
                   ChartSeries="_series"
