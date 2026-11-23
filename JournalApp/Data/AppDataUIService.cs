@@ -66,9 +66,6 @@ public sealed class AppDataUIService(ILogger<AppDataUIService> logger, AppDataSe
             // Import data from backup atomically - delete and restore in a single transaction.
             // If this fails, the database will be rolled back to its original state.
             await appDataService.ReplaceDbSets(backup);
-
-            // Only restore preferences after database operations succeed.
-            appDataService.SetPreferences(backup);
         }
         catch (Exception ex)
         {
@@ -80,6 +77,18 @@ public sealed class AppDataUIService(ILogger<AppDataUIService> logger, AppDataSe
                 total.ElapsedMilliseconds);
             await dialogService.ShowJaMessageBox($"Import failed: {ex.Message}");
             return false;
+        }
+
+        // Only restore preferences after database operations succeed.
+        // The data is already committed at this point, so a problem here must not be reported as a failed import.
+        try
+        {
+            appDataService.SetPreferences(backup);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Data was imported but preferences could not be restored");
+            await dialogService.ShowJaMessageBox("Your data was imported, but some settings from the backup could not be restored.");
         }
 
         preferenceService.LastExportDate = DateTimeOffset.Now;
@@ -129,7 +138,8 @@ public sealed class AppDataUIService(ILogger<AppDataUIService> logger, AppDataSe
         try
         {
             using var saveStream = new MemoryStream(archiveBytes);
-            var fileName = $"backup-{DateTime.Now:yyyy-MM-dd}.journalapp";
+            // Invariant so the name doesn't follow the device calendar (Buddhist, Hijri, ...).
+            var fileName = $"backup-{DateTime.Now.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture)}.journalapp";
             var result = await fileSaver.SaveAsync(fileName, saveStream);
 
             if (result.IsSuccessful)
@@ -139,16 +149,17 @@ public sealed class AppDataUIService(ILogger<AppDataUIService> logger, AppDataSe
                 total.Stop();
                 logger.LogInformation("Export completed in {TotalElapsedMilliseconds}ms", total.ElapsedMilliseconds);
             }
-            else if (result.Exception != null)
+            else if (result.IsCancelled)
             {
+                // Backing out of the save dialog comes back as a cancellation exception, not as a result without one.
                 total.Stop();
-                logger.LogError(result.Exception, "File save failed");
-                await dialogService.ShowJaMessageBox($"Export failed: {result.Exception.Message}");
+                logger.LogInformation("Export cancelled by user");
             }
             else
             {
                 total.Stop();
-                logger.LogInformation("Export cancelled by user");
+                logger.LogError(result.Exception, "File save failed");
+                await dialogService.ShowJaMessageBox($"Export failed: {result.Exception.Message}");
             }
         }
         catch (Exception ex)

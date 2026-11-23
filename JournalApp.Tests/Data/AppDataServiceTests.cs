@@ -196,7 +196,7 @@ public class AppDataServiceTests : JaTestContext
 
     [Theory]
     [MemberData(nameof(SetPreferencesCases))]
-    public void SetPreferences_RestoresBackupKeysAndClearsUnrelatedPreferences(PreferenceBackup[] backups)
+    public void SetPreferences_RestoresBackupKeysAndKeepsUnrelatedPreferences(PreferenceBackup[] backups)
     {
         // Arrange
         var preferences = Services.GetService<IPreferences>();
@@ -211,9 +211,9 @@ public class AppDataServiceTests : JaTestContext
         // Act
         appDataService.SetPreferences(backup);
 
-        // Assert - restore is a full overwrite: unrelated preferences are always cleared...
-        preferences.Get<string>("theme", null).Should().BeNull();
-        preferences.Get("hide_notes", false).Should().BeFalse();
+        // Assert - preferences the backup doesn't carry are left alone...
+        preferences.Get<string>("theme", null).Should().Be(AppTheme.Dark.ToString());
+        preferences.Get("hide_notes", false).Should().BeTrue();
 
         // ...and the backup's keys are restored verbatim.
         foreach (var expected in backups)
@@ -486,6 +486,34 @@ public class AppDataServiceTests : JaTestContext
 
         // Assert - Deleted items should be included in backup
         backup.Points.Should().Contain(p => p.Deleted);
+    }
+
+    [Fact]
+    public void SetPreferences_ToleratesDuplicateAndUnnamedEntries()
+    {
+        // Arrange
+        var preferences = Services.GetService<IPreferences>();
+        var appDataService = Services.GetService<AppDataService>();
+
+        var backup = new BackupFile
+        {
+            PreferenceBackups =
+            [
+                new("safety_plan", "first"),
+                new("safety_plan", "second"),
+                new(null, "no name"),
+                null,
+                new("mood_palette", null),
+            ]
+        };
+
+        // Act
+        var act = () => appDataService.SetPreferences(backup);
+
+        // Assert - the last duplicate wins and unusable entries are skipped.
+        act.Should().NotThrow();
+        preferences.Get<string>("safety_plan", null).Should().Be("second");
+        preferences.Get<string>("mood_palette", null).Should().BeEmpty();
     }
 
     [Fact]

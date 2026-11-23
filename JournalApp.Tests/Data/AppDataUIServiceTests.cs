@@ -190,6 +190,207 @@ public class AppDataUIServiceTests : JaTestContext
     }
 
     [Fact]
+    public async Task StartExportWizard_IsSilent_WhenUserCancelsSaveDialog()
+    {
+        // Arrange
+        var appDataService = Services.GetService<AppDataService>();
+        var preferenceService = Services.GetService<PreferenceService>();
+
+        var oldExportDate = new DateTimeOffset(2024, 1, 10, 12, 0, 0, TimeSpan.Zero);
+        preferenceService.LastExportDate = oldExportDate;
+
+        // This is what the real file saver returns when the dialog is dismissed.
+        var fileSaver = new TestFileSaver
+        {
+            ResultFactory = (_, _) => new FileSaverResult(null, new OperationCanceledException("Operation cancelled."))
+        };
+        var dialogService = new TestDialogService();
+        var service = new AppDataUIService(
+            NullLogger<AppDataUIService>.Instance,
+            appDataService,
+            fileSaver,
+            preferenceService);
+
+        // Act
+        await service.StartExportWizard(dialogService);
+
+        // Assert
+        preferenceService.LastExportDate.Should().Be(oldExportDate);
+        dialogService.Messages.Should().BeEmpty();
+    }
+
+    [Theory]
+    [InlineData("th-TH")]
+    [InlineData("ar-SA")]
+    [InlineData("fa-IR")]
+    public async Task StartExportWizard_FileNameUsesGregorianDate_InAnyCulture(string culture)
+    {
+        // Arrange
+        var appDataService = Services.GetService<AppDataService>();
+        var preferenceService = Services.GetService<PreferenceService>();
+        var fileSaver = new TestFileSaver();
+        var service = new AppDataUIService(
+            NullLogger<AppDataUIService>.Instance,
+            appDataService,
+            fileSaver,
+            preferenceService);
+
+        var previousCulture = CultureInfo.CurrentCulture;
+
+        try
+        {
+            CultureInfo.CurrentCulture = new CultureInfo(culture);
+
+            // Act
+            await service.StartExportWizard(new TestDialogService());
+        }
+        finally
+        {
+            CultureInfo.CurrentCulture = previousCulture;
+        }
+
+        // Assert - tolerate the date rolling over midnight during the test.
+        var expected = new[] { DateTime.Now, DateTime.Now.AddDays(-1) }
+            .Select(d => $"backup-{d.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)}.journalapp");
+        expected.Should().Contain(fileSaver.SaveCalls.Single().FileName);
+    }
+
+    [Theory]
+    [InlineData("null", false)]
+    [InlineData("{}", true)]
+    [InlineData("""{"Days":[],"Categories":[],"Points":[]}""", true)]
+    [InlineData("""{"Days":null,"Categories":null,"Points":null,"PreferenceBackups":null}""", true)]
+    public async Task StartImportWizard_HandlesMissingSections(string json, bool expectImported)
+    {
+        // Arrange
+        var appDataService = Services.GetService<AppDataService>();
+        var preferenceService = Services.GetService<PreferenceService>();
+        preferenceService.LastExportDate = new DateTimeOffset(2099, 1, 1, 0, 0, 0, TimeSpan.Zero); // Skips the backup warning.
+
+        var importPath = await WriteRawBackup(json);
+        var dialogService = new TestDialogService([true]);
+        var service = new AppDataUIService(
+            NullLogger<AppDataUIService>.Instance,
+            appDataService,
+            new TestFileSaver(),
+            preferenceService);
+
+        try
+        {
+            // Act
+            var imported = await service.StartImportWizard(dialogService, importPath);
+
+            // Assert - missing sections count as empty, and a backup with no content at all is refused with a readable message.
+            imported.Should().Be(expectImported);
+
+            if (expectImported)
+                dialogService.Messages.Should().ContainSingle().Which.Should().Contain("Contains 0 days, 0 categories, 0 points, 0 preferences.");
+            else
+                dialogService.Messages.Should().ContainSingle().Which.Should().Be("Import failed: The backup is empty.");
+        }
+        finally
+        {
+            File.Delete(importPath);
+        }
+    }
+
+    [Fact]
+    public async Task StartImportWizard_ReportsSuccessAndKeepsOtherPreferences_WhenBackupPreferencesAreMalformed()
+    {
+        // Arrange
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDataService = Services.GetService<AppDataService>();
+        var preferenceService = Services.GetService<PreferenceService>();
+        preferenceService.LastExportDate = new DateTimeOffset(2099, 1, 1, 0, 0, 0, TimeSpan.Zero); // Skips the backup warning.
+        preferenceService.SelectedAppTheme = AppTheme.Dark;
+        preferenceService.HideNotes = true;
+
+        var dayGuid = Guid.NewGuid();
+        var importPath = await WriteRawBackup(
+            $$"""{"Days":[{"Guid":"{{dayGuid}}","Date":"2024-05-01","Points":[]}],"Categories":[],"Points":[],"PreferenceBackups":[{"Name":"mood_palette","Value":"1"},{"Name":"mood_palette","Value":"2"},{"Name":null,"Value":"3"}]}""");
+        var dialogService = new TestDialogService([true]);
+        var service = new AppDataUIService(
+            NullLogger<AppDataUIService>.Instance,
+            appDataService,
+            new TestFileSaver(),
+            preferenceService);
+
+        try
+        {
+            // Act
+            var imported = await service.StartImportWizard(dialogService, importPath);
+
+            // Assert - the data went in, so the wizard must not claim it failed.
+            imported.Should().BeTrue();
+            dialogService.Messages.Should().NotContain(message => message.StartsWith("Import failed:"));
+
+            using (var db = await dbFactory.CreateDbContextAsync())
+            {
+                db.Days.Select(day => day.Guid).Should().Equal(dayGuid);
+            }
+
+            // Preferences the backup doesn't carry survive, including after a restart when nothing is cached.
+            var store = Services.GetService<IPreferences>();
+            store.Get<string>("mood_palette", null).Should().Be("2");
+            var restarted = new PreferenceService(NullLogger<PreferenceService>.Instance, store);
+            restarted.SelectedAppTheme.Should().Be(AppTheme.Dark);
+            restarted.HideNotes.Should().BeTrue();
+        }
+        finally
+        {
+            File.Delete(importPath);
+        }
+    }
+
+    [Fact]
+    public async Task StartImportWizard_ReadsReadOnlyFileThatIsOpenElsewhere()
+    {
+        // Arrange
+        var appDataService = Services.GetService<AppDataService>();
+        var preferenceService = Services.GetService<PreferenceService>();
+        preferenceService.LastExportDate = new DateTimeOffset(2099, 1, 1, 0, 0, 0, TimeSpan.Zero); // Skips the backup warning.
+
+        var importPath = Path.Combine(Path.GetTempPath(), $"readonly-import-{Guid.NewGuid()}.journalapp");
+        await CreateBackup(new DateOnly(2024, 2, 1), "plan", "palette").WriteArchive(importPath);
+        File.SetAttributes(importPath, FileAttributes.ReadOnly);
+
+        var dialogService = new TestDialogService([true]);
+        var service = new AppDataUIService(
+            NullLogger<AppDataUIService>.Instance,
+            appDataService,
+            new TestFileSaver(),
+            preferenceService);
+
+        try
+        {
+            // Act - also hold the file open for reading, like a sync client or archive viewer would.
+            bool imported;
+            using (new FileStream(importPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                imported = await service.StartImportWizard(dialogService, importPath);
+            }
+
+            // Assert
+            imported.Should().BeTrue();
+        }
+        finally
+        {
+            File.SetAttributes(importPath, FileAttributes.Normal);
+            File.Delete(importPath);
+        }
+    }
+
+    private static async Task<string> WriteRawBackup(string json)
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"raw-import-{Guid.NewGuid()}.journalapp");
+        await using var fileStream = File.Create(path);
+        using var archive = new System.IO.Compression.ZipArchive(fileStream, System.IO.Compression.ZipArchiveMode.Create);
+        await using var entryStream = archive.CreateEntry("journalapp-data.json").Open();
+        await entryStream.WriteAsync(System.Text.Encoding.UTF8.GetBytes(json));
+        return path;
+    }
+
+    [Fact]
     public async Task StartExportWizard_DoesNotUpdateLastExportDate_WhenSaveFails()
     {
         // Arrange

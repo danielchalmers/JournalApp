@@ -39,7 +39,16 @@ public class BackupFile
             {
                 await using var entryStream = await entry.OpenAsync();
 
-                return await JsonSerializer.DeserializeAsync<BackupFile>(entryStream, SerializerOptions);
+                var backup = await JsonSerializer.DeserializeAsync<BackupFile>(entryStream, SerializerOptions)
+                    ?? throw new InvalidDataException("The backup is empty.");
+
+                // Sections can be missing from older or hand-edited backups, and everything downstream expects them to exist.
+                backup.Days ??= [];
+                backup.Categories ??= [];
+                backup.Points ??= [];
+                backup.PreferenceBackups ??= [];
+
+                return backup;
             }
         }
 
@@ -51,7 +60,8 @@ public class BackupFile
     /// </summary>
     public static async Task<BackupFile> ReadArchive(string path)
     {
-        await using var fs = File.Open(path, FileMode.Open);
+        // Read-only access so a read-only file, or one that's open elsewhere, can still be imported.
+        await using var fs = File.OpenRead(path);
         return await ReadArchive(fs);
     }
 

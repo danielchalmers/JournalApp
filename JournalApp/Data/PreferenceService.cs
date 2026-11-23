@@ -233,9 +233,11 @@ public sealed partial class PreferenceService : IPreferences, IDisposable
             return color;
     }
 
+    /// <summary>
+    /// Overwrites the given preferences and leaves everything else, like the theme, as it was.
+    /// </summary>
     public void Set(IReadOnlyDictionary<string, string> preferences)
     {
-        Clear();
         foreach (var (key, value) in preferences)
         {
             Set(key, value);

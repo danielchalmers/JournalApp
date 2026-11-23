@@ -98,7 +98,16 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
         ArgumentNullException.ThrowIfNull(backup.PreferenceBackups);
 
         logger.LogDebug("Restoring {PreferenceCount} preferences from backup", backup.PreferenceBackups.Count);
-        preferences.Set(backup.PreferenceBackups.ToDictionary(b => b.Name, b => b.Value));
+
+        // A hand-edited or damaged backup can repeat or omit names, and by now the data is already replaced, so take what's usable instead of throwing.
+        var restored = new Dictionary<string, string>();
+        foreach (var item in backup.PreferenceBackups)
+        {
+            if (!string.IsNullOrEmpty(item?.Name))
+                restored[item.Name] = item.Value ?? string.Empty;
+        }
+
+        preferences.Set(restored);
     }
 
     public IEnumerable<PreferenceBackup> GetPreferenceBackups()
