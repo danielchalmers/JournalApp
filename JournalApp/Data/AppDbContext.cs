@@ -83,7 +83,7 @@ public class AppDbContext : DbContext
         if (category.Group == "Notes")
         {
             // Add a default welcome note only if no notes exist and not running in random mode.
-            if (random == null && category.Points.Count == 0)
+            if (random == null && !HasPoints(category))
             {
                 var note = CreateNote(day);
                 var sb = new StringBuilder();
@@ -119,6 +119,15 @@ public class AppDbContext : DbContext
         }
 
         return newPoints;
+    }
+
+    /// <summary>
+    /// Whether the category has any points at all, saved or still pending in this context.
+    /// </summary>
+    private bool HasPoints(DataPointCategory category)
+    {
+        // Reading category.Points would lazy-load every point the category has ever had just to find out if there is one.
+        return Points.Local.Any(p => p.Category == category) || Points.Any(p => p.Category == category);
     }
 
     /// <summary>

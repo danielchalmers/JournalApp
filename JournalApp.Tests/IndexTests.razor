@@ -34,6 +34,45 @@
     }
 
     [Fact]
+    public async Task NewNoteIsSavedAndShown()
+    {
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+
+        // An older note, so today doesn't start with the welcome note.
+        using (var db = await dbFactory.CreateDbContextAsync())
+        {
+            var olderNote = db.CreateNote(Day.Create(new DateOnly(2024, 1, 1)));
+            olderNote.Text = "Older note";
+            db.Points.Add(olderNote);
+            await db.SaveChangesAsync();
+        }
+
+        var layout = Render(
+    @<MainLayout>
+        <Body>
+            <Index />
+        </Body>
+    </MainLayout>
+        );
+
+        layout.FindAll(".note-container").Should().BeEmpty();
+
+        layout.Find(".data-point-group .mud-card-actions button").Click(); // Keep sync: the click handler awaits the dialog result; ClickAsync would block until the dialog closes.
+
+        await layout.WaitForAssertionAsync(() => layout.HasComponent<EditNoteDialog>().Should().BeTrue());
+        await layout.FindComponent<EditNoteDialog>().Find("textarea").InputAsync("Fresh note");
+        await layout.Find(".submit-button").ClickAsync();
+
+        await layout.WaitForAssertionAsync(() => layout.FindAll(".note-container").Count.Should().Be(1));
+
+        using (var db = await dbFactory.CreateDbContextAsync())
+        {
+            var today = DateOnly.FromDateTime(DateTime.Now);
+            db.Points.Where(p => p.Day.Date == today && p.Type == PointType.Note).Select(p => p.Text).Should().Equal("Fresh note");
+        }
+    }
+
+    [Fact]
     public async Task CannotGoPastTomorrow()
     {
         var layout = Render(
