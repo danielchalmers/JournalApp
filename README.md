@@ -2,7 +2,7 @@
 
 **A private, open-source daily journal and mood tracker for Android.** Log your mood with an emoji, write about your day, and track habits, sleep, and medications. Everything stays on your device.
 
-➡️ **[Get it free on the Play Store](https://play.google.com/store/apps/details?id=com.danielchalmers.journalapp)**
+➡️ **[Get it free on the Play Store](https://play.google.com/store/apps/details?id=com.danielchalmers.journalapp)**, or download the signed APK from the [latest release](https://github.com/danielchalmers/JournalApp/releases/latest).
 
 ## Features
 
