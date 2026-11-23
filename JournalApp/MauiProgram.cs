@@ -59,56 +59,60 @@ public static class MauiProgram
         builder.Services.AddSingleton(Clipboard.Default);
         builder.Services.AddSingleton(CommunityToolkit.Maui.Storage.FileSaver.Default);
 
-        // Seed the database with required data.
         var phaseStopwatch = Stopwatch.StartNew();
-        using var provider = builder.Services.BuildServiceProvider();
-        var logger = provider.GetRequiredService<ILoggerFactory>().CreateLogger("JournalApp.Startup");
-        logger.LogInformation(
-            "Startup phase {PhaseName} completed in {ElapsedMilliseconds}ms (total: {TotalElapsedMilliseconds}ms)",
-            "BuildServiceProvider",
-            phaseStopwatch.ElapsedMilliseconds,
-            startupStopwatch.ElapsedMilliseconds);
-
-        var dbSeeder = provider.GetRequiredService<AppDbSeeder>();
-
-        phaseStopwatch.Restart();
-        dbSeeder.PrepareDatabase();
-        logger.LogInformation(
-            "Startup phase {PhaseName} completed in {ElapsedMilliseconds}ms (total: {TotalElapsedMilliseconds}ms)",
-            nameof(AppDbSeeder.PrepareDatabase),
-            phaseStopwatch.ElapsedMilliseconds,
-            startupStopwatch.ElapsedMilliseconds);
-
-        phaseStopwatch.Restart();
-        dbSeeder.SeedCategories();
-        logger.LogInformation(
-            "Startup phase {PhaseName} completed in {ElapsedMilliseconds}ms (total: {TotalElapsedMilliseconds}ms)",
-            nameof(AppDbSeeder.SeedCategories),
-            phaseStopwatch.ElapsedMilliseconds,
-            startupStopwatch.ElapsedMilliseconds);
-
-#if DEBUG
-        // Only seed sample days in debug mode.
-        phaseStopwatch.Restart();
-        dbSeeder.SeedDays();
-        logger.LogInformation(
-            "Startup phase {PhaseName} completed in {ElapsedMilliseconds}ms (total: {TotalElapsedMilliseconds}ms)",
-            "SeedDebugDays",
-            phaseStopwatch.ElapsedMilliseconds,
-            startupStopwatch.ElapsedMilliseconds);
-#endif
-
-        phaseStopwatch.Restart();
         var app = builder.Build();
+        var logger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger("JournalApp.Startup");
         logger.LogInformation(
             "Startup phase {PhaseName} completed in {ElapsedMilliseconds}ms (total: {TotalElapsedMilliseconds}ms)",
             "BuildMauiApp",
             phaseStopwatch.ElapsedMilliseconds,
             startupStopwatch.ElapsedMilliseconds);
 
-        startupStopwatch.Stop();
+        // The database takes longer to get ready than anything else at launch, so it starts now and the window and web view come up in the meantime.
+        var dbSeeder = app.Services.GetRequiredService<AppDbSeeder>();
+        dbSeeder.Ready = Task.Run(() => PrepareDatabase(dbSeeder, logger, startupStopwatch));
+
         logger.LogInformation("Created MAUI app in {ElapsedMilliseconds}ms", startupStopwatch.ElapsedMilliseconds);
 
         return app;
+    }
+
+    private static void PrepareDatabase(AppDbSeeder dbSeeder, ILogger logger, Stopwatch startupStopwatch)
+    {
+        try
+        {
+            var phaseStopwatch = Stopwatch.StartNew();
+            dbSeeder.PrepareDatabase();
+            logger.LogInformation(
+                "Startup phase {PhaseName} completed in {ElapsedMilliseconds}ms (total: {TotalElapsedMilliseconds}ms)",
+                nameof(AppDbSeeder.PrepareDatabase),
+                phaseStopwatch.ElapsedMilliseconds,
+                startupStopwatch.ElapsedMilliseconds);
+
+            phaseStopwatch.Restart();
+            dbSeeder.SeedCategories();
+            logger.LogInformation(
+                "Startup phase {PhaseName} completed in {ElapsedMilliseconds}ms (total: {TotalElapsedMilliseconds}ms)",
+                nameof(AppDbSeeder.SeedCategories),
+                phaseStopwatch.ElapsedMilliseconds,
+                startupStopwatch.ElapsedMilliseconds);
+
+#if DEBUG
+            // Only seed sample days in debug mode.
+            phaseStopwatch.Restart();
+            dbSeeder.SeedDays();
+            logger.LogInformation(
+                "Startup phase {PhaseName} completed in {ElapsedMilliseconds}ms (total: {TotalElapsedMilliseconds}ms)",
+                "SeedDebugDays",
+                phaseStopwatch.ElapsedMilliseconds,
+                startupStopwatch.ElapsedMilliseconds);
+#endif
+        }
+        catch (Exception ex)
+        {
+            // The page only shows a generic error bar when this fails, so the reason has to be logged here.
+            logger.LogCritical(ex, "Could not get the database ready");
+            throw;
+        }
     }
 }

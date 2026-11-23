@@ -6,6 +6,11 @@
 public class AppDbSeeder(ILogger<AppDbSeeder> logger, IDbContextFactory<AppDbContext> dbFactory)
 {
     /// <summary>
+    /// Completes once the database has been migrated and seeded, which is when it's safe to query.
+    /// </summary>
+    public Task Ready { get; set; } = Task.CompletedTask;
+
+    /// <summary>
     /// Prepares the database by applying any pending migrations and ensuring it's ready to use.
     /// </summary>
     public void PrepareDatabase()

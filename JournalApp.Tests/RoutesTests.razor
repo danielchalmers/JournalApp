@@ -1,0 +1,54 @@
+@namespace JournalApp.Tests
+@inherits JaTestContext
+
+@code {
+    public override async Task InitializeAsync()
+    {
+        await base.InitializeAsync();
+
+        AddDbContext();
+        Services.GetService<AppDbSeeder>().SeedCategories();
+    }
+
+    [Fact]
+    public async Task KeepsSplashUpUntilDatabaseIsReady()
+    {
+        var ready = new TaskCompletionSource();
+        Services.GetService<AppDbSeeder>().Ready = ready.Task;
+
+        var routes = Render(@<Routes />);
+
+        // Pages query the database as soon as they render, so none may exist yet.
+        routes.FindAll("#splash-screen").Should().ContainSingle();
+        routes.FindAll(".page-header").Should().BeEmpty();
+
+        ready.SetResult();
+
+        await routes.WaitForAssertionAsync(() => routes.FindAll(".switcher").Should().ContainSingle());
+        routes.FindAll("#splash-screen").Should().BeEmpty();
+    }
+
+    [Fact]
+    public void OpensHomeRightAway_WhenDatabaseIsReady()
+    {
+        var routes = Render(@<Routes />);
+
+        routes.FindAll(".switcher").Should().ContainSingle();
+        routes.FindAll("#splash-screen").Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task DoesNotOpenAnyPage_WhenDatabaseFailsToGetReady()
+    {
+        var ready = new TaskCompletionSource();
+        Services.GetService<AppDbSeeder>().Ready = ready.Task;
+
+        var routes = Render(@<Routes />);
+        ready.SetException(new InvalidOperationException("Migration failed"));
+
+        // The failure has to reach the app's error handling instead of leaving the splash up forever.
+        var exception = await Renderer.UnhandledException.WaitAsync(TimeSpan.FromSeconds(5));
+        exception.Should().BeOfType<InvalidOperationException>().Which.Message.Should().Be("Migration failed");
+        routes.FindAll(".page-header").Should().BeEmpty();
+    }
+}

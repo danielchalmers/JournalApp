@@ -1,6 +1,23 @@
-﻿<Router AppAssembly="@typeof(MauiProgram).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        @*<FocusOnNavigate RouteData="@routeData" Selector="h1" />*@
-    </Found>
-</Router>
+﻿@inject AppDbSeeder DbSeeder
+
+@if (DbSeeder.Ready.IsCompletedSuccessfully)
+{
+    <Router AppAssembly="@typeof(MauiProgram).Assembly">
+        <Found Context="routeData">
+            <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+            @*<FocusOnNavigate RouteData="@routeData" Selector="h1" />*@
+        </Found>
+    </Router>
+}
+else
+{
+    @* The same markup as the splash in index.html, so the screen doesn't change while the database is being prepared. *@
+    <div id="splash-screen">
+        <p id="loading-text">Getting things ready...</p>
+    </div>
+}
+
+@code {
+    // Pages query the database as soon as they render, and at launch it is still being migrated and seeded on another thread.
+    protected override Task OnInitializedAsync() => DbSeeder.Ready;
+}
