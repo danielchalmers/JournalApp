@@ -168,22 +168,83 @@ public class AppDataServiceTests : JaTestContext
     }
 
     [Fact]
-    public async Task GetPreferenceBackups_ReturnsConfiguredPreferences()
+    public void GetPreferenceBackups_ReturnsConfiguredPreferences()
     {
         // Arrange
         var preferences = Services.GetService<IPreferences>();
+        var preferenceService = Services.GetService<PreferenceService>();
         var appDataService = Services.GetService<AppDataService>();
 
         preferences.Set("safety_plan", "Test safety plan");
-        preferences.Set("mood_palette", "Test palette");
+        preferences.Set("tip_add_new_category", "seen");
+        preferences.Set("mood_palette", "No longer used");
+        preferenceService.SelectedAppTheme = AppTheme.Dark;
+        preferenceService.UseDeviceColors = false;
+        preferenceService.HideNotes = true;
 
         // Act
         var preferenceBackups = appDataService.GetPreferenceBackups().ToList();
 
+        // Assert - everything is text in the backup, whatever type it has in the store.
+        preferenceBackups.Should().BeEquivalentTo(
+        [
+            new PreferenceBackup("safety_plan", "Test safety plan"),
+            new PreferenceBackup("tip_add_new_category", "seen"),
+            new PreferenceBackup("theme", "Dark"),
+            new PreferenceBackup("device_colors", "False"),
+            new PreferenceBackup("hide_notes", "True"),
+        ]);
+    }
+
+    [Fact]
+    public void SetPreferences_RestoresTypedSettings_AndIgnoresValuesItCannotRead()
+    {
+        // Arrange
+        var preferences = Services.GetService<IPreferences>();
+        var preferenceService = Services.GetService<PreferenceService>();
+        var appDataService = Services.GetService<AppDataService>();
+
+        // Act
+        appDataService.SetPreferences(new BackupFile
+        {
+            PreferenceBackups = [new("theme", "Dark"), new("device_colors", "False"), new("hide_notes", "True")]
+        });
+
+        // Assert - stored in their own types, so the typed reads the app does everywhere keep working.
+        preferenceService.SelectedAppTheme.Should().Be(AppTheme.Dark);
+        preferenceService.UseDeviceColors.Should().BeFalse();
+        preferenceService.HideNotes.Should().BeTrue();
+        preferences.Get("hide_notes", false).Should().BeTrue();
+        preferences.Get("device_colors", true).Should().BeFalse();
+
+        // Act
+        appDataService.SetPreferences(new BackupFile
+        {
+            PreferenceBackups = [new("theme", "Sepia"), new("theme", "42"), new("device_colors", ""), new("hide_notes", "yes")]
+        });
+
         // Assert
-        preferenceBackups.Should().NotBeEmpty();
-        preferenceBackups.Should().Contain(pb => pb.Name == "safety_plan" && pb.Value == "Test safety plan");
-        preferenceBackups.Should().Contain(pb => pb.Name == "mood_palette" && pb.Value == "Test palette");
+        preferenceService.SelectedAppTheme.Should().Be(AppTheme.Dark);
+        preferenceService.UseDeviceColors.Should().BeFalse();
+        preferenceService.HideNotes.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ReplaceDbSets_AddsBackBuiltInCategoriesTheBackupLacks()
+    {
+        // Arrange
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDataService = Services.GetService<AppDataService>();
+        var customCategory = new DataPointCategory { Guid = Guid.NewGuid(), Group = "Custom", Name = "Only one", Type = PointType.Bool };
+
+        // Act
+        await appDataService.ReplaceDbSets(new BackupFile { Days = [], Categories = [customCategory], Points = [], PreferenceBackups = [] });
+
+        // Assert - without the notes category the app can't add a note until it is restarted.
+        using var db = await dbFactory.CreateDbContextAsync();
+        db.Categories.Should().Contain(x => x.Guid == customCategory.Guid);
+        var day = await db.GetOrCreateDayAndAddPoints(new DateOnly(2024, 1, 1));
+        db.CreateNote(day).Category.Group.Should().Be("Notes");
     }
 
     public static TheoryData<PreferenceBackup[]> SetPreferencesCases()
@@ -196,7 +257,7 @@ public class AppDataServiceTests : JaTestContext
 
     [Theory]
     [MemberData(nameof(SetPreferencesCases))]
-    public void SetPreferences_RestoresBackupKeysAndClearsUnrelatedPreferences(PreferenceBackup[] backups)
+    public void SetPreferences_RestoresBackupKeysAndKeepsUnrelatedPreferences(PreferenceBackup[] backups)
     {
         // Arrange
         var preferences = Services.GetService<IPreferences>();
@@ -211,9 +272,9 @@ public class AppDataServiceTests : JaTestContext
         // Act
         appDataService.SetPreferences(backup);
 
-        // Assert - restore is a full overwrite: unrelated preferences are always cleared...
-        preferences.Get<string>("theme", null).Should().BeNull();
-        preferences.Get("hide_notes", false).Should().BeFalse();
+        // Assert - preferences the backup doesn't carry are left alone...
+        preferences.Get<string>("theme", null).Should().Be(AppTheme.Dark.ToString());
+        preferences.Get("hide_notes", false).Should().BeTrue();
 
         // ...and the backup's keys are restored verbatim.
         foreach (var expected in backups)
@@ -489,6 +550,34 @@ public class AppDataServiceTests : JaTestContext
     }
 
     [Fact]
+    public void SetPreferences_ToleratesDuplicateAndUnnamedEntries()
+    {
+        // Arrange
+        var preferences = Services.GetService<IPreferences>();
+        var appDataService = Services.GetService<AppDataService>();
+
+        var backup = new BackupFile
+        {
+            PreferenceBackups =
+            [
+                new("safety_plan", "first"),
+                new("safety_plan", "second"),
+                new(null, "no name"),
+                null,
+                new("mood_palette", null),
+            ]
+        };
+
+        // Act
+        var act = () => appDataService.SetPreferences(backup);
+
+        // Assert - the last duplicate wins and unusable entries are skipped.
+        act.Should().NotThrow();
+        preferences.Get<string>("safety_plan", null).Should().Be("second");
+        preferences.Get<string>("mood_palette", null).Should().BeEmpty();
+    }
+
+    [Fact]
     public void SetPreferences_WithNullPreferenceBackups_ThrowsArgumentNullException()
     {
         // Arrange
@@ -507,7 +596,7 @@ public class AppDataServiceTests : JaTestContext
     }
 
     [Fact]
-    public void GetPreferenceBackups_WithNoPreferencesSet_ReturnsKnownKeysWithEmptyValues()
+    public void GetPreferenceBackups_WithNoPreferencesSet_ReturnsNothing()
     {
         // Arrange
         var preferences = Services.GetService<IPreferences>();
@@ -519,14 +608,8 @@ public class AppDataServiceTests : JaTestContext
         // Act
         var preferenceBackups = appDataService.GetPreferenceBackups().ToList();
 
-        // Assert
-        preferenceBackups.Should().BeEquivalentTo(
-        [
-            new PreferenceBackup("safety_plan", string.Empty),
-            new PreferenceBackup("mood_palette", string.Empty),
-            new PreferenceBackup("tip_click_mood_grid_day", string.Empty),
-            new PreferenceBackup("tip_add_new_category", string.Empty)
-        ]);
+        // Assert - an unset preference stays unset on the device that imports the backup.
+        preferenceBackups.Should().BeEmpty();
     }
 
     [Fact]

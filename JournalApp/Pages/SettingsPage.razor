@@ -190,7 +190,35 @@ else
         if (pickResult == null)
             return;
 
-        await StartImport(pickResult.FullPath);
+        try
+        {
+            await StartImport(pickResult.FullPath);
+        }
+        finally
+        {
+            DeletePickedCopy(pickResult.FullPath);
+        }
+    }
+
+    void DeletePickedCopy(string path)
+    {
+        // Only Android copies the picked file, into the app's cache, and nothing else ever removes it. Elsewhere the path is the user's own file.
+        if (!OperatingSystem.IsAndroid())
+            return;
+
+        try
+        {
+            // Match on the folder names because the picker reports the cache as /data/data/... while FileSystem.CacheDirectory is /data/user/0/...
+            if (path.Contains($"/{AppInfo.PackageName}/cache/", StringComparison.Ordinal))
+            {
+                File.Delete(path);
+                logger.LogInformation("Deleted cached copy of picked file");
+            }
+        }
+        catch (Exception e)
+        {
+            logger.LogWarning(e, "Couldn't delete cached copy of picked file");
+        }
     }
 
     async Task StartImport(string path)
@@ -260,6 +288,10 @@ else
 
     void Close()
     {
+        // Export and import no longer freeze the UI, so Back can arrive while one is running. Leaving then would show the home page over data that's being replaced.
+        if (_busy)
+            return;
+
         logger.LogInformation("Going to index");
         NavigationManager.NavigateTo("/", false, true);
     }

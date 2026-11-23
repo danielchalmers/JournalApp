@@ -94,20 +94,83 @@ public class ImportExportTests : JaTestContext
     [Fact]
     public Task ReadArchive_ThrowsOnInvalidZip() =>
         AssertReadArchiveThrows<InvalidDataException>(
-            stream => stream.WriteAsync(System.Text.Encoding.UTF8.GetBytes("This is not a valid zip file")).AsTask());
+            stream => stream.WriteAsync(System.Text.Encoding.UTF8.GetBytes("This is not a valid zip file")).AsTask(),
+            expectedMessage: "This file isn't a Journal App backup, or it's damaged.");
 
     [Fact]
     public Task ReadArchive_ThrowsOnMissingInternalFile() =>
-        AssertReadArchiveThrows<InvalidOperationException>(
+        AssertReadArchiveThrows<Exception>(
             stream => WriteZipEntry(stream, "wrong-name.json", "{}"),
-            expectedMessage: "No valid backup found!*");
+            expectedMessage: "This file isn't a Journal App backup.");
 
     [Fact]
     public Task ReadArchive_ThrowsOnCorruptedJSON() =>
         AssertReadArchiveThrows<System.Text.Json.JsonException>(
-            stream => WriteZipEntry(stream, "journalapp-data.json", "{invalid json content"));
+            stream => WriteZipEntry(stream, "journalapp-data.json", "{invalid json content"),
+            expectedMessage: "This backup is damaged and can't be read.");
 
-    private static async Task AssertReadArchiveThrows<TException>(Func<Stream, Task> writeContents, string expectedMessage = null)
+    [Fact]
+    public async Task ReadArchive_ThrowsOnChecksumMismatch()
+    {
+        // Arrange - store the entry uncompressed so one byte of a text value can be changed without breaking the zip structure or the JSON.
+        using var stream = new MemoryStream();
+        using (var archive = new System.IO.Compression.ZipArchive(stream, System.IO.Compression.ZipArchiveMode.Create, leaveOpen: true))
+        {
+            var entry = archive.CreateEntry("journalapp-data.json", System.IO.Compression.CompressionLevel.NoCompression);
+            using var entryStream = entry.Open();
+            entryStream.Write("""{"Days":[],"Categories":[],"Points":[],"PreferenceBackups":[{"Name":"safety_plan","Value":"QQQQQQQQ"}]}"""u8);
+        }
+
+        var bytes = stream.ToArray();
+        var index = bytes.AsSpan().IndexOf("QQQQQQQQ"u8);
+        index.Should().BePositive();
+        bytes[index] = (byte)'X';
+
+        // Act
+        var act = async () => await BackupFile.ReadArchive(new MemoryStream(bytes));
+
+        // Assert - the changed text would otherwise be imported as if it were what the user wrote.
+        (await act.Should().ThrowAsync<BackupReadException>())
+            .WithMessage("This backup is damaged and can't be read.")
+            .WithInnerException<InvalidDataException>();
+    }
+
+    [Theory]
+    [InlineData("JournalApp-Data.JSON")]
+    [InlineData("backup-2024-01-01/journalapp-data.json")]
+    public async Task ReadArchive_FindsDataFileInFolderOrWithOtherCasing(string entryName)
+    {
+        using var stream = new MemoryStream();
+        await WriteZipEntry(stream, entryName, """{"Days":[{"Guid":"11111111-1111-1111-1111-111111111111","Date":"2024-01-01","Points":[]}]}""");
+        stream.Position = 0;
+
+        var backup = await BackupFile.ReadArchive(stream);
+
+        backup.Days.Should().ContainSingle().Which.Date.Should().Be(new DateOnly(2024, 1, 1));
+    }
+
+    [Fact]
+    public async Task WriteArchive_RecordsVersions_AndOlderBackupsReadWithoutThem()
+    {
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        var appDataService = Services.GetService<AppDataService>();
+        appDbSeeder.SeedCategories();
+
+        await using var stream = new MemoryStream();
+        await (await appDataService.CreateBackup()).WriteArchive(stream);
+        stream.Position = 0;
+        var written = await BackupFile.ReadArchive(stream);
+
+        written.FormatVersion.Should().Be(BackupFile.CurrentFormatVersion);
+        written.AppVersion.Should().NotBeNullOrEmpty();
+        written.IsFromNewerApp.Should().BeFalse();
+
+        var old = await BackupFile.ReadArchive("Data/backup-2023-01-01-to-2023-01-08.journalapp");
+        old.FormatVersion.Should().BeNull();
+        old.IsFromNewerApp.Should().BeFalse();
+    }
+
+    private static async Task AssertReadArchiveThrows<TException>(Func<Stream, Task> writeContents, string expectedMessage)
         where TException : Exception
     {
         using var stream = new MemoryStream();
@@ -115,10 +178,11 @@ public class ImportExportTests : JaTestContext
         stream.Position = 0;
 
         var act = async () => await BackupFile.ReadArchive(stream);
-        var assertion = await act.Should().ThrowAsync<TException>();
+        // Every read failure surfaces as one exception type with a message for the user, and keeps the cause for the log.
+        var assertion = (await act.Should().ThrowAsync<BackupReadException>()).WithMessage(expectedMessage);
 
-        if (expectedMessage != null)
-            assertion.WithMessage(expectedMessage);
+        if (typeof(TException) != typeof(Exception))
+            assertion.WithInnerException<TException>();
     }
 
     private static async Task WriteZipEntry(Stream stream, string entryName, string content)

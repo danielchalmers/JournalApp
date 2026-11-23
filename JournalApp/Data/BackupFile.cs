@@ -15,8 +15,22 @@ public class BackupFile
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         ReferenceHandler = ReferenceHandler.Preserve,
-        WriteIndented = true,
     };
+
+    /// <summary>
+    /// The format this app writes. Only raise it for a change that an older reader would get wrong.
+    /// </summary>
+    public const int CurrentFormatVersion = 1;
+
+    /// <summary>
+    /// The format the backup was written in, or null for backups from before this was recorded.
+    /// </summary>
+    public int? FormatVersion { get; set; }
+
+    /// <summary>
+    /// The version of the app that wrote the backup, for information only.
+    /// </summary>
+    public string AppVersion { get; set; }
 
     public IReadOnlyCollection<Day> Days { get; set; }
 
@@ -27,23 +41,56 @@ public class BackupFile
     public IReadOnlyCollection<PreferenceBackup> PreferenceBackups { get; set; }
 
     /// <summary>
+    /// Whether the backup was written by a newer app whose format this one may not fully understand.
+    /// </summary>
+    [JsonIgnore]
+    public bool IsFromNewerApp => FormatVersion > CurrentFormatVersion;
+
+    /// <summary>
     /// Reads a backup file from the specified stream.
     /// </summary>
+    /// <exception cref="BackupReadException">The stream isn't a backup or the backup is damaged.</exception>
     public static async Task<BackupFile> ReadArchive(Stream stream)
     {
-        await using var archive = await ZipArchive.CreateAsync(stream, ZipArchiveMode.Read, leaveOpen: true, entryNameEncoding: null);
-
-        foreach (var entry in archive.Entries)
+        ZipArchive archive;
+        try
         {
-            if (entry.FullName == InternalBackupFileName)
-            {
-                await using var entryStream = await entry.OpenAsync();
-
-                return await JsonSerializer.DeserializeAsync<BackupFile>(entryStream, SerializerOptions);
-            }
+            archive = await ZipArchive.CreateAsync(stream, ZipArchiveMode.Read, leaveOpen: true, entryNameEncoding: null);
+        }
+        catch (InvalidDataException ex)
+        {
+            throw new BackupReadException("This file isn't a Journal App backup, or it's damaged.", ex);
         }
 
-        throw new InvalidOperationException("No valid backup found!");
+        await using (archive)
+        {
+            // Match on the file name alone so a backup that was unzipped and zipped again inside a folder still imports.
+            var entry = archive.Entries.FirstOrDefault(x => string.Equals(x.Name, InternalBackupFileName, StringComparison.OrdinalIgnoreCase))
+                ?? throw new BackupReadException("This file isn't a Journal App backup.");
+
+            BackupFile backup;
+            try
+            {
+                await using var entryStream = await entry.OpenAsync();
+                backup = await JsonSerializer.DeserializeAsync<BackupFile>(entryStream, SerializerOptions);
+            }
+            catch (Exception ex) when (ex is JsonException or InvalidDataException)
+            {
+                // InvalidDataException covers a failed checksum, which means the file changed after it was written.
+                throw new BackupReadException("This backup is damaged and can't be read.", ex);
+            }
+
+            if (backup == null)
+                throw new BackupReadException("The backup is empty.");
+
+            // Sections can be missing from older or hand-edited backups, and everything downstream expects them to exist.
+            backup.Days ??= [];
+            backup.Categories ??= [];
+            backup.Points ??= [];
+            backup.PreferenceBackups ??= [];
+
+            return backup;
+        }
     }
 
     /// <summary>
@@ -51,7 +98,8 @@ public class BackupFile
     /// </summary>
     public static async Task<BackupFile> ReadArchive(string path)
     {
-        await using var fs = File.Open(path, FileMode.Open);
+        // Read-only access so a read-only file, or one that's open elsewhere, can still be imported.
+        await using var fs = File.OpenRead(path);
         return await ReadArchive(fs);
     }
 
@@ -77,6 +125,11 @@ public class BackupFile
         await WriteArchive(stream);
     }
 }
+
+/// <summary>
+/// Thrown when a file can't be read as a backup. The message is written for the user.
+/// </summary>
+public sealed class BackupReadException(string message, Exception innerException = null) : Exception(message, innerException);
 
 /// <summary>
 /// Represents a preference.

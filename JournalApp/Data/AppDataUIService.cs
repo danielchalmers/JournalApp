@@ -29,7 +29,8 @@ public sealed class AppDataUIService(ILogger<AppDataUIService> logger, AppDataSe
         BackupFile backup;
         try
         {
-            backup = await BackupFile.ReadArchive(path);
+            // Off the UI thread so the busy spinner can paint. The dialogs below continue back on it.
+            backup = await Task.Run(() => BackupFile.ReadArchive(path));
             readStopwatch.Stop();
             logger.LogInformation("Backup file read successfully in {ElapsedMilliseconds}ms - contains {DayCount} days, {CategoryCount} categories, {PointCount} points",
                 readStopwatch.ElapsedMilliseconds, backup.Days.Count, backup.Categories.Count, backup.Points.Count);
@@ -43,15 +44,24 @@ public sealed class AppDataUIService(ILogger<AppDataUIService> logger, AppDataSe
                 "Failed to read backup file in {ElapsedMilliseconds}ms (total {TotalElapsedMilliseconds}ms)",
                 readStopwatch.ElapsedMilliseconds,
                 total.ElapsedMilliseconds);
-            await dialogService.ShowJaMessageBox($"Import failed: {ex.Message}");
+            // Only our own read errors are written for the user. Anything else is the file system, and its text isn't helpful.
+            var reason = ex is BackupReadException ? ex.Message : "The file couldn't be opened.";
+            await dialogService.ShowJaMessageBox($"Import failed: {reason}");
             return false;
         }
 
         // Warn the user of what's going to happen.
+        var summary = $"Contains {backup.Days.Count} days, {backup.Categories.Count} categories, {backup.Points.Count} points, {backup.PreferenceBackups.Count} preferences.\n\n";
+
+        if (backup.IsFromNewerApp)
+        {
+            logger.LogWarning("Backup format {FormatVersion} is newer than this app's {CurrentFormatVersion} (written by {AppVersion})", backup.FormatVersion, BackupFile.CurrentFormatVersion, backup.AppVersion);
+            summary += "This backup was made by a newer version of the app, so some of it may not import correctly. Updating the app first is safer.\n\n";
+        }
+
         readStopwatch.Restart();
         if (await dialogService.ShowJaMessageBox(
-            $"Contains {backup.Days.Count} days, {backup.Categories.Count} categories, {backup.Points.Count} points, {backup.PreferenceBackups.Count} preferences.\n\n" +
-            "⚠️ This will replace ALL current data and cannot be undone.",
+            summary + "⚠️ This will replace ALL current data and cannot be undone.",
             yesText: "Import", cancelText: "Cancel") == null)
         {
             total.Stop();
@@ -65,10 +75,7 @@ public sealed class AppDataUIService(ILogger<AppDataUIService> logger, AppDataSe
         {
             // Import data from backup atomically - delete and restore in a single transaction.
             // If this fails, the database will be rolled back to its original state.
-            await appDataService.ReplaceDbSets(backup);
-
-            // Only restore preferences after database operations succeed.
-            appDataService.SetPreferences(backup);
+            await Task.Run(() => appDataService.ReplaceDbSets(backup));
         }
         catch (Exception ex)
         {
@@ -78,8 +85,20 @@ public sealed class AppDataUIService(ILogger<AppDataUIService> logger, AppDataSe
                 "Import failed during database operations after {ElapsedMilliseconds}ms (total {TotalElapsedMilliseconds}ms)",
                 readStopwatch.ElapsedMilliseconds,
                 total.ElapsedMilliseconds);
-            await dialogService.ShowJaMessageBox($"Import failed: {ex.Message}");
+            await dialogService.ShowJaMessageBox("Import failed: The backup has data that can't be imported. Your current data was not changed.");
             return false;
+        }
+
+        // Only restore preferences after database operations succeed.
+        // The data is already committed at this point, so a problem here must not be reported as a failed import.
+        try
+        {
+            appDataService.SetPreferences(backup);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Data was imported but preferences could not be restored");
+            await dialogService.ShowJaMessageBox("Your data was imported, but some settings from the backup could not be restored.");
         }
 
         preferenceService.LastExportDate = DateTimeOffset.Now;
@@ -94,27 +113,25 @@ public sealed class AppDataUIService(ILogger<AppDataUIService> logger, AppDataSe
         logger.LogInformation("Starting export wizard");
         var total = Stopwatch.StartNew();
 
-        BackupFile backupFile;
-        byte[] archiveBytes;
+        using var archiveStream = new MemoryStream();
 
         try
         {
-            var sw = Stopwatch.StartNew();
-
-            backupFile = await appDataService.CreateBackup();
-            logger.LogInformation("Backup created in {ElapsedMilliseconds}ms - {DayCount} days, {CategoryCount} categories, {PointCount} points",
-                sw.ElapsedMilliseconds, backupFile.Days.Count, backupFile.Categories.Count, backupFile.Points.Count);
-
-            sw.Restart();
-
-            using (var memoryStream = new MemoryStream())
+            // Off the UI thread so the busy spinner can paint. The dialogs below continue back on it.
+            await Task.Run(async () =>
             {
-                await backupFile.WriteArchive(memoryStream);
-                archiveBytes = memoryStream.ToArray();
-            }
+                var sw = Stopwatch.StartNew();
 
-            logger.LogInformation("Archive created ({SizeKB} KB) in {ElapsedMilliseconds}ms",
-                archiveBytes.Length / 1024, sw.ElapsedMilliseconds);
+                var backupFile = await appDataService.CreateBackup();
+                logger.LogInformation("Backup created in {ElapsedMilliseconds}ms - {DayCount} days, {CategoryCount} categories, {PointCount} points",
+                    sw.ElapsedMilliseconds, backupFile.Days.Count, backupFile.Categories.Count, backupFile.Points.Count);
+
+                sw.Restart();
+                await backupFile.WriteArchive(archiveStream);
+
+                logger.LogInformation("Archive created ({SizeKB} KB) in {ElapsedMilliseconds}ms",
+                    archiveStream.Length / 1024, sw.ElapsedMilliseconds);
+            });
         }
         catch (Exception ex)
         {
@@ -128,9 +145,12 @@ public sealed class AppDataUIService(ILogger<AppDataUIService> logger, AppDataSe
 
         try
         {
-            using var saveStream = new MemoryStream(archiveBytes);
-            var fileName = $"backup-{DateTime.Now:yyyy-MM-dd}.journalapp";
-            var result = await fileSaver.SaveAsync(fileName, saveStream);
+            // Hand the saver the stream the archive was written to instead of copying it.
+            archiveStream.Position = 0;
+
+            // Invariant so the name doesn't follow the device calendar (Buddhist, Hijri, ...).
+            var fileName = $"backup-{DateTime.Now.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture)}.journalapp";
+            var result = await fileSaver.SaveAsync(fileName, archiveStream);
 
             if (result.IsSuccessful)
             {
@@ -139,16 +159,17 @@ public sealed class AppDataUIService(ILogger<AppDataUIService> logger, AppDataSe
                 total.Stop();
                 logger.LogInformation("Export completed in {TotalElapsedMilliseconds}ms", total.ElapsedMilliseconds);
             }
-            else if (result.Exception != null)
+            else if (result.IsCancelled)
             {
+                // Backing out of the save dialog comes back as a cancellation exception, not as a result without one.
                 total.Stop();
-                logger.LogError(result.Exception, "File save failed");
-                await dialogService.ShowJaMessageBox($"Export failed: {result.Exception.Message}");
+                logger.LogInformation("Export cancelled by user");
             }
             else
             {
                 total.Stop();
-                logger.LogInformation("Export cancelled by user");
+                logger.LogError(result.Exception, "File save failed");
+                await dialogService.ShowJaMessageBox($"Export failed: {result.Exception.Message}");
             }
         }
         catch (Exception ex)
