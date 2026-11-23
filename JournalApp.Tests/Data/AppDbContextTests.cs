@@ -305,6 +305,35 @@ public class AppDbContextTests : JaTestContext
     }
 
     [Fact]
+    public async Task GetMissingPoints_ChecksForNotes_WhileOtherCategoriesAreStillUnloaded()
+    {
+        // Arrange
+        var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
+        var appDbSeeder = Services.GetService<AppDbSeeder>();
+        appDbSeeder.SeedCategories();
+        var date = new DateOnly(2024, 1, 1);
+
+        using (var seedDb = await dbFactory.CreateDbContextAsync())
+        {
+            await seedDb.GetOrCreateDayAndAddPoints(date);
+            await seedDb.SaveChangesAsync();
+        }
+
+        using var db = await dbFactory.CreateDbContextAsync();
+        var notesCategory = db.Categories.Single(c => c.Group == "Notes");
+        var day = db.Days.Single(d => d.Date == date);
+
+        // Opening a day that already exists tracks its points before most of their categories have been read.
+        day.Points.Should().NotBeEmpty();
+
+        // Act
+        var missingPoints = db.GetMissingPoints(day, notesCategory, null);
+
+        // Assert
+        missingPoints.Should().ContainSingle();
+    }
+
+    [Fact]
     public async Task GetMissingPoints_DoesNotCreateWelcomeNote_InRandomMode()
     {
         // Arrange

@@ -127,7 +127,10 @@ public class AppDbContext : DbContext
     private bool HasPoints(DataPointCategory category)
     {
         // Reading category.Points would lazy-load every point the category has ever had just to find out if there is one.
-        return Points.Local.Any(p => p.Category == category) || Points.Any(p => p.Category == category);
+        var points = Entry(category).Collection(c => c.Points);
+
+        // The entry's own value holds whatever this context already tracks for the category, including points that aren't saved yet.
+        return points.CurrentValue?.Any() == true || points.Query().Any();
     }
 
     /// <summary>
