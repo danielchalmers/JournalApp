@@ -288,6 +288,10 @@ else
 
     void Close()
     {
+        // Export and import no longer freeze the UI, so Back can arrive while one is running. Leaving then would show the home page over data that's being replaced.
+        if (_busy)
+            return;
+
         logger.LogInformation("Going to index");
         NavigationManager.NavigateTo("/", false, true);
     }
