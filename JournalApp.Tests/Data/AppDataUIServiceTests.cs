@@ -381,16 +381,16 @@ public class AppDataUIServiceTests : JaTestContext
     }
 
     [Fact]
-    public async Task StartImportWizard_WarnsAboutNewerFormatAndSkippedEntries_AndLeavesAppUsable()
+    public async Task StartImportWizard_WarnsAboutNewerFormat_AndLeavesAppUsable()
     {
-        // Arrange - a backup from a future format with a point that has no category, and none of the built-in categories.
+        // Arrange - a backup from a future format with none of the built-in categories.
         var dbFactory = Services.GetService<IDbContextFactory<AppDbContext>>();
         var appDataService = Services.GetService<AppDataService>();
         var preferenceService = Services.GetService<PreferenceService>();
         preferenceService.LastExportDate = new DateTimeOffset(2099, 1, 1, 0, 0, 0, TimeSpan.Zero); // Skips the backup warning.
 
         var importPath = await WriteRawBackup(
-            """{"FormatVersion":99,"AppVersion":"99.0","SomethingNew":{"a":1},"Days":[{"Guid":"11111111-1111-1111-1111-111111111111","Date":"2024-05-01","Points":[{"$id":"1","Guid":"aaaaaaaa-0000-0000-0000-000000000001","Type":1}]}],"Categories":[],"Points":[{"$ref":"1"}]}""");
+            """{"FormatVersion":99,"AppVersion":"99.0","SomethingNew":{"a":1},"Days":[{"Guid":"11111111-1111-1111-1111-111111111111","Date":"2024-05-01","Points":[]}],"Categories":[],"Points":[]}""");
         var dialogService = new TestDialogService([true]);
         var service = new AppDataUIService(
             NullLogger<AppDataUIService>.Instance,
@@ -407,7 +407,6 @@ public class AppDataUIServiceTests : JaTestContext
             imported.Should().BeTrue();
             var confirmation = dialogService.Messages.Should().ContainSingle().Subject;
             confirmation.Should().Contain("Contains 1 days, 0 categories, 0 points");
-            confirmation.Should().Contain("1 entries in the backup are incomplete and will be skipped.");
             confirmation.Should().Contain("made by a newer version of the app");
 
             // The imported day opens and takes a note, which needs the built-in categories to be back.

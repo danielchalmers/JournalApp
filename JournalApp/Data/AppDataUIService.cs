@@ -53,12 +53,6 @@ public sealed class AppDataUIService(ILogger<AppDataUIService> logger, AppDataSe
         // Warn the user of what's going to happen.
         var summary = $"Contains {backup.Days.Count} days, {backup.Categories.Count} categories, {backup.Points.Count} points, {backup.PreferenceBackups.Count} preferences.\n\n";
 
-        if (backup.SkippedPointCount > 0)
-        {
-            logger.LogWarning("Backup has {SkippedPointCount} points without a day or category that will be skipped", backup.SkippedPointCount);
-            summary += $"{backup.SkippedPointCount} entries in the backup are incomplete and will be skipped.\n\n";
-        }
-
         if (backup.IsFromNewerApp)
         {
             logger.LogWarning("Backup format {FormatVersion} is newer than this app's {CurrentFormatVersion} (written by {AppVersion})", backup.FormatVersion, BackupFile.CurrentFormatVersion, backup.AppVersion);

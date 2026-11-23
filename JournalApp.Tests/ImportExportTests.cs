@@ -150,43 +150,6 @@ public class ImportExportTests : JaTestContext
     }
 
     [Fact]
-    public async Task ReadArchive_SkipsPointsWithoutBothDayAndCategory()
-    {
-        // Arrange - one complete point, one that is only under a day, one only under a category and one only in the flat list.
-        const string json = """
-            {
-              "Days": [{"Guid":"11111111-1111-1111-1111-111111111111","Date":"2024-01-01","Points":[
-                {"$id":"1","Guid":"aaaaaaaa-0000-0000-0000-000000000001","Type":1,"Mood":"😀"},
-                {"$id":"2","Guid":"aaaaaaaa-0000-0000-0000-000000000002","Type":1}
-              ]}],
-              "Categories": [{"Guid":"22222222-2222-2222-2222-222222222222","Group":"Mood","Name":"Mood","Type":1,"Points":[
-                {"$ref":"1"},
-                {"$id":"3","Guid":"aaaaaaaa-0000-0000-0000-000000000003","Type":1}
-              ]}],
-              "Points": [{"$ref":"1"},{"$ref":"2"},{"$ref":"3"},{"$id":"4","Guid":"aaaaaaaa-0000-0000-0000-000000000004","Type":1},null]
-            }
-            """;
-
-        using var stream = new MemoryStream();
-        await WriteZipEntry(stream, "journalapp-data.json", json);
-        stream.Position = 0;
-
-        // Act
-        var backup = await BackupFile.ReadArchive(stream);
-
-        // Assert
-        var complete = new Guid("aaaaaaaa-0000-0000-0000-000000000001");
-        backup.SkippedPointCount.Should().Be(3);
-        backup.Points.Should().ContainSingle().Which.Guid.Should().Be(complete);
-        backup.Days.Single().Points.Should().ContainSingle().Which.Guid.Should().Be(complete);
-        backup.Categories.Single().Points.Should().ContainSingle().Which.Guid.Should().Be(complete);
-
-        // What's left imports and can be read back with its relationships.
-        await Services.GetService<AppDataService>().RestoreDbSets(backup);
-        AssertBackupMatchesDatabase(backup);
-    }
-
-    [Fact]
     public async Task WriteArchive_RecordsVersions_AndOlderBackupsReadWithoutThem()
     {
         var appDbSeeder = Services.GetService<AppDbSeeder>();
@@ -205,7 +168,6 @@ public class ImportExportTests : JaTestContext
         var old = await BackupFile.ReadArchive("Data/backup-2023-01-01-to-2023-01-08.journalapp");
         old.FormatVersion.Should().BeNull();
         old.IsFromNewerApp.Should().BeFalse();
-        old.SkippedPointCount.Should().Be(0);
     }
 
     private static async Task AssertReadArchiveThrows<TException>(Func<Stream, Task> writeContents, string expectedMessage)

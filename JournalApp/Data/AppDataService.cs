@@ -98,21 +98,10 @@ public sealed class AppDataService(ILogger<AppDataService> logger, IDbContextFac
 
     private async Task RestoreDbSetsInternal(AppDbContext db, BackupFile backup)
     {
-        // Everything is new, so there is nothing for change detection to find, and scanning the whole graph on every call is most of the cost.
-        var autoDetectChanges = db.ChangeTracker.AutoDetectChangesEnabled;
-        db.ChangeTracker.AutoDetectChangesEnabled = false;
-
-        try
-        {
-            db.Categories.AddRange(backup.Categories);
-            db.Days.AddRange(backup.Days);
-            db.Points.AddRange(backup.Points);
-            await db.SaveChangesAsync();
-        }
-        finally
-        {
-            db.ChangeTracker.AutoDetectChangesEnabled = autoDetectChanges;
-        }
+        await db.Days.AddRangeAsync(backup.Days);
+        await db.Categories.AddRangeAsync(backup.Categories);
+        await db.Points.AddRangeAsync(backup.Points);
+        await db.SaveChangesAsync();
     }
 
     public void SetPreferences(BackupFile backup)
