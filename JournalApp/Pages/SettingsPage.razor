@@ -213,7 +213,11 @@ else
         try
         {
             _busy = true;
+
+            // The backup's SQLite queries finish synchronously, so without this the spinner wouldn't show until the export work was already done.
+#pragma warning disable BL0012
             StateHasChanged();
+#pragma warning restore BL0012
 
             await AppDataUIService.StartExportWizard(DialogService);
         }

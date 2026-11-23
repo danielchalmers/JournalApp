@@ -3,7 +3,7 @@
   <!-- Build -->
   <PropertyGroup>
     <TargetFrameworks>$(TargetFrameworks);net11.0</TargetFrameworks>
-    <NoWarn>BL0007,CA1822,CA2254,IDE0079,IDE0305</NoWarn>
+    <NoWarn>BL0007,BL0016,CA1822,CA2254,IDE0079,IDE0305</NoWarn>
   </PropertyGroup>
 
   <!-- Platform -->

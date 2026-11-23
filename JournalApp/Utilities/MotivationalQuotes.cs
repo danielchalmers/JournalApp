@@ -8,7 +8,7 @@ public static class MotivationalQuotes
     /// <summary>
     /// Collection of motivational quotes.
     /// </summary>
-    private static readonly IReadOnlyList<string> Quotes =
+    private static readonly string[] Quotes =
     [
         "Take a moment to breathe",
         "You don't have to have all the answers",
@@ -41,5 +41,5 @@ public static class MotivationalQuotes
     /// <summary>
     /// Gets a random motivational quote.
     /// </summary>
-    public static string GetRandomQuote() => Quotes[Random.Shared.Next(Quotes.Count)];
+    public static string GetRandomQuote() => Quotes[Random.Shared.Next(Quotes.Length)];
 }
